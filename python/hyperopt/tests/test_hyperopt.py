@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 import threading
-from eqpy import eqpy
+import eqpy
 import ast
 
 import unittest
@@ -34,7 +34,7 @@ class TestHyperopt(unittest.TestCase):
             max_parallel_param_count, trials, rstate=rstate)
 
         self.assertEqual(len(trials.results), 100)
-        self.assertEqual(trials.argmin['x'], -1.5805633657891858)
+        self.assertAlmostEqual(trials.argmin['x'], -1.5805633657891858)
 
     def test_simple_tpe(self):
         space = hp.uniform('x', -2, 2)
@@ -48,7 +48,7 @@ class TestHyperopt(unittest.TestCase):
             max_parallel_param_count, trials, rstate=rstate)
 
         self.assertEqual(len(trials.results), 100)
-        self.assertEqual(trials.argmin['x'], -1.5708577298673572)
+        self.assertAlmostEqual(trials.argmin['x'], -1.5708577298673572)
 
     def test_eqpy(self):
         p = threading.Thread(target=hr.run)

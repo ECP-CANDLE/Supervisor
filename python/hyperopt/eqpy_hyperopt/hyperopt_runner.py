@@ -1,5 +1,5 @@
 import numpy as np
-from eqpy import eqpy
+import eqpy
 
 from hyperopt import base, hp
 import hyperopt
@@ -77,7 +77,7 @@ def run():
     rstate = None
     if 'seed' in hp_dict:
         rstate = np.random.RandomState(hp_dict['seed'])
-        
+
     fmin(eqpy_func, hp_dict['space'], hp_dict['algo'], hp_dict['max_evals'],
         hp_dict['max_parallel_param_count'], trials, rstate)
     eqpy.OUT_put("FINAL")
