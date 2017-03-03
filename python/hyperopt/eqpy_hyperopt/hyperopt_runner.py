@@ -6,18 +6,18 @@ import hyperopt
 
 class Runner:
 
-    def __init__(self, algo, domain, max_evals, max_parallel_param_count, trials, rstate):
+    def __init__(self, algo, domain, max_evals, param_batch_size, trials, rstate):
         self.algo = algo
         self.domain = domain
         self.max_evals = max_evals
         self.trials = trials
         self.rstate = rstate
-        self.max_parallel_param_count = max_parallel_param_count
+        self.param_batch_size = param_batch_size
 
     def run(self):
         done = 0
         while done < self.max_evals:
-            n_to_enqueue = self.max_parallel_param_count
+            n_to_enqueue = self.param_batch_size
             if n_to_enqueue + done > self.max_evals:
                 n_to_enqueue = self.max_evals - done
 
@@ -79,11 +79,11 @@ def run():
         rstate = np.random.RandomState(hp_dict['seed'])
 
     fmin(eqpy_func, hp_dict['space'], hp_dict['algo'], hp_dict['max_evals'],
-        hp_dict['max_parallel_param_count'], trials, rstate)
+        hp_dict['param_batch_size'], trials, rstate)
     eqpy.OUT_put("FINAL")
     eqpy.OUT_put(str(trials.argmin))
 
-def fmin(fn, space, algo, max_evals, max_parallel_param_count, trials, rstate=None):
+def fmin(fn, space, algo, max_evals, param_batch_size, trials, rstate=None):
     """Minimize a function over a hyperparameter space.
 
     Partially copied over from the hyperopt.
@@ -115,6 +115,12 @@ def fmin(fn, space, algo, max_evals, max_parallel_param_count, trials, rstate=No
     max_evals : int
         Allow up to this many function evaluations before returning.
 
+    param_batch_size : int
+        Retrieve at most this many new parameters sets from the search
+        algorithm for evaluation up to max_evals. Note that the actual
+        number of new parameter sets to evaluate is dependent on the
+        search algorithm.
+
     trials : None or base.Trials (or subclass)
         Storage for completed, ongoing, and scheduled evaluation points.  If
         None, then a temporary `base.Trials` instance will be created.  If
@@ -129,6 +135,6 @@ def fmin(fn, space, algo, max_evals, max_parallel_param_count, trials, rstate=No
     # need a domain to pass to the algorithm to provide the space
     domain = base.Domain(fn, space, pass_expr_memo_ctrl=None)
 
-    runner = Runner(algo, domain, max_evals, max_parallel_param_count,
+    runner = Runner(algo, domain, max_evals, param_batch_size,
         trials, rstate)
     runner.run()

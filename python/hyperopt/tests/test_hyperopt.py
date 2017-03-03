@@ -27,11 +27,11 @@ class TestHyperopt(unittest.TestCase):
         max_evals = 100
         trials = base.Trials()
         algo = rand.suggest #tpe.suggest
-        max_parallel_param_count = 10
+        param_batch_size = 10
         # if seed is changed then the test will fail
         rstate = np.random.RandomState(42)
         hr.fmin(math_sin_func, space, algo, max_evals,
-            max_parallel_param_count, trials, rstate=rstate)
+            param_batch_size, trials, rstate=rstate)
 
         self.assertEqual(len(trials.results), 100)
         self.assertAlmostEqual(trials.argmin['x'], -1.5805633657891858)
@@ -60,7 +60,7 @@ class TestHyperopt(unittest.TestCase):
         # hyperopt args as string rep of dict:
         hp_params_dict = """{'space' : hyperopt.hp.uniform(\'x\', -2, 2),
             'algo' : hyperopt.rand.suggest, 'max_evals' : 100, 'seed' : 1234,
-            'max_parallel_param_count' : 10} """
+            'param_batch_size' : 10} """
         eqpy.input_q.put(hp_params_dict)
         # gets initial set of candidate parameters
         result = eqpy.output_q.get()
@@ -91,7 +91,7 @@ class TestHyperopt(unittest.TestCase):
         # hyperopt args as string rep of dict:
         hp_params_dict = """{'space' : hyperopt.hp.uniform(\'x\', -2, 2),
             'algo' : hyperopt.rand.suggest, 'max_evals' : 100,
-            'max_parallel_param_count' : 10} """
+            'param_batch_size' : 10} """
         eqpy.input_q.put(hp_params_dict)
         # gets initial set of candidate parameters
         result = eqpy.output_q.get()
