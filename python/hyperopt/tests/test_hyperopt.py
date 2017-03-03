@@ -80,5 +80,36 @@ class TestHyperopt(unittest.TestCase):
         # get final result
         self.assertEqual("{'x': -1.5477895914281512}", eqpy.output_q.get())
 
+    def test_no_seed(self):
+        """ Tests that passing no seed to eqpy_hyperopt doesn't raise
+        an exception """
+
+        p = threading.Thread(target=hr.run)
+        p.start()
+
+        eqpy.output_q.get()
+        # hyperopt args as string rep of dict:
+        hp_params_dict = """{'space' : hyperopt.hp.uniform(\'x\', -2, 2),
+            'algo' : hyperopt.rand.suggest, 'max_evals' : 100,
+            'max_parallel_param_count' : 10} """
+        eqpy.input_q.put(hp_params_dict)
+        # gets initial set of candidate parameters
+        result = eqpy.output_q.get()
+        while (True):
+            # result = {'x': [1.8382913715287232]};{...}
+            split_result = result.split(";")
+            rs = ",".join([str(math.sin(ast.literal_eval(r)['x'][0])) for r in split_result])
+            # iff algo is rand.suggest, then len(split_result) should
+            # equal max_parallel_param_count
+            self.assertEqual(len(split_result), 10)
+            eqpy.input_q.put(rs)
+            # get the next set of candidate parameters
+            result = eqpy.output_q.get()
+            if (result == "FINAL"):
+                break
+
+        # get final result
+        self.assertTrue(len(eqpy.output_q.get()) > 0)
+
 if __name__ == '__main__':
     unittest.main()
