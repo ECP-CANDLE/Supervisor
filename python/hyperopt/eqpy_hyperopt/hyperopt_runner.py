@@ -52,12 +52,7 @@ class Runner:
 def eqpy_func(params):
     retvals = []
     # unpack and send to out
-    out_params = ""
-    for p in params:
-        if (len(out_params) != 0):
-            out_params = "{};{}".format(out_params, p)
-        else:
-            out_params = "{}".format(p)
+    out_params = ";".join([str(p) for p in params])
     eqpy.OUT_put(out_params)
 
     # get result and format for hyperopt
