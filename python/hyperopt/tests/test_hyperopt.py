@@ -41,6 +41,8 @@ class TestHyperopt(unittest.TestCase):
         max_evals = 100
         trials = base.Trials()
         algo = tpe.suggest #tpe.suggest
+        # note that tpe won't always return more than 1
+        # parameter conbimation
         max_parallel_param_count = 10
         # if seed is changed then the test will fail
         rstate = np.random.RandomState(42)
