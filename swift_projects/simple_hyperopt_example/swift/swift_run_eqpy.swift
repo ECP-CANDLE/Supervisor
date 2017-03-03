@@ -23,7 +23,7 @@ string template =
 """
 import math
 
-params = %s;
+params = %s
 a = math.sin(params['x'][0])
 """;
 
