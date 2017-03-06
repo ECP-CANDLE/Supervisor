@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import eqpy_hyperopt.hyperopt_runner as hr
 from hyperopt import hp, base, tpe, rand
 import numpy as np

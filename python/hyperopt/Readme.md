@@ -68,6 +68,6 @@ context.
 
 Run the unit tests from within the tests directory with
 
-`python -m unittest test_hyperopt.py`
+`python -m unittest test_hyperopt`
 
  Source settings.sh to set the PYTHONPATH correctly.
