@@ -5,7 +5,7 @@ EMEWS.
 
 Requirements:
 
-* Python 3 (for now)
+* Python 2.7 or 3
 * hyperopt : (http://hyperopt.github.io/hyperopt/). Install with
 `pip install hyperopt`
 * Swift/T with python extension
