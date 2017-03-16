@@ -1,0 +1,14 @@
+
+= Overview
+
+This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
+
+== Key deadlines
+
+1. May 15: End-to-end demo of hyperparameter harness
+
+== Swift installations
+
+* http://swift-lang.github.io/swift-t/sites.html#_jlse_knl[JLSE KNL]
+
+* http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
