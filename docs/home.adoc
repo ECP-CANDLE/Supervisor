@@ -1,5 +1,5 @@
 
-= Overview
+= CANDLE Supervisor Home Page
 
 This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
 
