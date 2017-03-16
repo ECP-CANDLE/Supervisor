@@ -1,4 +1,8 @@
 #!/bin/sh
+set -eu
 
-asciidoc --attribute stylesheet=home.css \
-         -a max-width=800px
+THIS=$( cd $( dirname $0 ) ; /bin/pwd )
+
+asciidoc --attribute stylesheet=$THIS/home.css \
+         --attribute max-width=800px           \
+         $*
