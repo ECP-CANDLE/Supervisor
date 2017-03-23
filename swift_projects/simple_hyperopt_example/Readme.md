@@ -39,7 +39,7 @@ a = math.sin(params['x'][0])
 That code is then executed using swift's python call, and the result
 returned back to hyperopt via the eqpy_hyperopt package.
 
-The workflow:
+The swift workflow in `swift/swift_run_eqpy.swift` performs the following steps:
 
 1. Initialize the eqpy_hyperopt python with the hyperopt algorithm parameters.
 These are formated as a string representation of a python dictionary.
