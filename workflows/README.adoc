@@ -1,0 +1,15 @@
+
+
+== auen41_ff
+
+Use this Swift/T: 
+
+/home/wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin
+
+Example scripts are in git@github.com:ECP-CANDLE/Supervisor.git /workflows/auen41_ff
+
+The Swift test is py-keras.swift
+
+The run script that you launch is py-keras-cooley.sh
+
+This sets the correct paths, but you will need to fix the data directory
