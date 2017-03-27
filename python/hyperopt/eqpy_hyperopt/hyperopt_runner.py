@@ -5,6 +5,11 @@ import eqpy
 from hyperopt import base, hp
 import hyperopt
 
+# monkey patch hyperopt not to use bson. We don't
+# use any of the pymongo / bson parts of hyperopt and
+# they cause issues when running on Cori's compute node
+base.have_bson = False
+
 class Runner:
 
     def __init__(self, algo, domain, max_evals, param_batch_size, trials, rstate):

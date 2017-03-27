@@ -71,3 +71,6 @@ Run the unit tests from within the tests directory with
 `python -m unittest test_hyperopt`
 
  Source settings.sh to set the PYTHONPATH correctly.
+ 
+ ## Misc ##
+ Pymongo / BSON were causing issues on Cori so that's "monkey patched" by setting `hyperopt.base.have_bson = False`.  
