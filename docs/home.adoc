@@ -1,0 +1,24 @@
+
+////
+Accessible at:
+https://ecp-candle.github.io/Supervisor/home.html
+////
+
+////
+This prevents ^M from appearing in the output:
+////
+:miscellaneous.newline: \n
+
+= CANDLE Supervisor Home Page
+
+This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
+
+== Key deadlines
+
+1. May 15: End-to-end demo of hyperparameter harness
+
+== Swift installations
+
+* http://swift-lang.github.io/swift-t/sites.html#_jlse_knl[JLSE KNL]
+
+* http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]

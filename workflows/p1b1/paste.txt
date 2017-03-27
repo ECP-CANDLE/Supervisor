@@ -1,0 +1,31 @@
+
+## I've verified that the following works on cooley for both theano and tensorflow.
+## -Brettin email 2017/03/23
+
+# ENVIRONMENT SET UP (ADD THIS TO YOUR .bashrc FILE)
+export DEFAULT_CONDA_ENV_PATH=$(conda info | grep envs | awk '{print $NF}' )
+export CONDA_ANALYTICS_PATH=/soft/analytics/conda/env
+export CONDA_ENVS_PATH=~/.conda/$USER/cooley/envs:${CONDA_ANALYTICS_PATH}:${DEFAULT_CONDA_ENV_PATH}
+
+# YOU WILL HAVE TO LOG OUT AND THEN LOG BACK IN
+
+
+# RUN THIS FROM THE COMMAND LINE
+export LD_LIBRARY_PATH=/soft/libraries/unsupported/cudnn-7.5.1/cuda/lib64:$LD_LIBRARY_PATH
+export LIBRARY_PATH=/soft/libraries/unsupported/cudnn-7.5.1/cuda/lib64:$LIBRARY_PATH
+export CPATH=/soft/libraries/unsupported/cudnn-7.5.1/cuda/include:$CPATH
+source activate Candle_ML
+
+# DATA SETUP
+mkdir -p $HOME/.candle_benchmarks/datasets
+pushd $HOME/.candle_benchmarks/datasets
+wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.train.csv
+wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.test.csv
+popd
+
+# RUN JOB
+mkdir -p /projects/Candle_ECP/$USER
+pushd /projects/Candle_ECP/$USER
+git clone https://github.com/brettin/benchmarks
+pushd benchmarks/P1B1
+qsub qsub_p1b1_baseline.sh
