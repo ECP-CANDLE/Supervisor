@@ -117,10 +117,9 @@ def saveJsonResult(jsonResult, jsonFilename):
     f.write(']\n')
     f.close()
 
-# if __name__ == '__main__':
 def go(dir):
     # runs = 5
-    # jsonResult = []
+    jsonResult = []
     metaDataDict = {}
     metaDataDict['target'] = 'knl'
     metaDataDict['method'] = 'dl'
@@ -128,11 +127,14 @@ def go(dir):
     metaDataDict['benchmark-name'] = 'benchmark1'
     metaDataDict['type'] = 'autoencoder'
     # for i in range(runs):
-    autoencode = AutoEncoder(dir+'/breast.train1.csv', 
-                             dir+'/breast.test1.csv',
+    autoencode = AutoEncoder(dir+'/breast.train.csv',
+                             dir+'/breast.test.csv',
                              metaDataDict)
-    # jsonResult.append(autoencode.resultJson)
+    jsonResult.append(autoencode.resultJson)
     print jsonResult
     saveJsonResult(jsonResult, 'jsonResults.json')
-    # return repr(jsonResult)
-    return "OK"
+    return repr(jsonResult)
+    # return "OK"
+
+if __name__ == '__main__':
+    go('.')
