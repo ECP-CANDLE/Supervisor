@@ -31,7 +31,7 @@ The +go()+ function accepts the directory containing the +breast.train.csv+ and 
 
 The run script that you launch is https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/py-keras-cooley.sh[py-keras-cooley.sh] .  The only non-trivial thing here is that we have to set +PYTHONHOME+ for Keras but we cannot let +qsub+ see this variable (or it will fail), so we hide it as +PH+, and send it to Swift via +swift-t -e+.
 
-This obtains settings from https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/settings.sh[settings.sh].
+This obtains settings from https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/settings.sh[settings.sh], including +QUEUE+, +PROJECT+, etc.
 
 Output goes in numbered directories +out-NNN+.
 
