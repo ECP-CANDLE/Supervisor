@@ -22,3 +22,5 @@ This is the main home page about CANDLE Supervisor effort with links to workflow
 * http://swift-lang.github.io/swift-t/sites.html#_jlse_knl[JLSE KNL]
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
+
+* http://swift-lang.github.io/swift-t/sites.html#cooley_candle
