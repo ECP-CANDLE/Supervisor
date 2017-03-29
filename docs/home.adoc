@@ -19,6 +19,10 @@ This is the main home page about CANDLE Supervisor effort with links to workflow
 
 1. May 15: End-to-end demo of hyperparameter harness
 
+== Workflows
+
+The workflows are currently indexed in the README visible https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[here].
+
 == Swift installations
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
