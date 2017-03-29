@@ -12,7 +12,7 @@ Demonstration workflows for CANDLE.
 == auen41_ff on Cooley
 
 *Contacts:* Wozniak and Balaprakash +
-*Source:* git@github.com:ECP-CANDLE/Supervisor.git http://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[/workflows/auen41_ff] +
+*Source:* git@github.com:ECP-CANDLE/Supervisor.git http://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[+/workflows/auen41_ff+] +
 *Systems tested:* http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
 
 
