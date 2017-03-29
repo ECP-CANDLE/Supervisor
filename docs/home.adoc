@@ -2,6 +2,8 @@
 ////
 Accessible at:
 https://ecp-candle.github.io/Supervisor/home.html
+You can compile this locally with:
+$ ./adoc.sh README.adoc
 ////
 
 ////
@@ -19,8 +21,20 @@ This is the main home page about CANDLE Supervisor effort with links to workflow
 
 == Swift installations
 
-* http://swift-lang.github.io/swift-t/sites.html#_jlse_knl[JLSE KNL]
-
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
++
+This uses the system-installed Python with ML libs at: +
++/usr/common/software/python/2.7-anaconda/envs/deeplearning+
 
-* http://swift-lang.github.io/swift-t/sites.html#cooley_candle
+* http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
++
+This uses the system-installed Python with ML libs at: +
++/soft/analytics/conda/env/Candle_ML+
+
+* http://swift-lang.github.io/swift-t/sites.html#_jlse_knl[JLSE KNL]
++
+This does not yet have Python.
+
+* JLSE Prasanna +
+This uses a VirtualEnv Python at +/home/pbalapra/.virtualenvs+
+** +~wozniak/Public/sfw/icc/swift-t-pb/stc/bin+
