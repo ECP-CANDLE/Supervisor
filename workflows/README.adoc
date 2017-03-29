@@ -1,15 +1,48 @@
 
+////
+You can compile this locally with
+$ ../docs/adoc.sh README.adoc
+or just view it on GitHub.
+////
 
-== auen41_ff
+= Supervisor Workflows
 
-Use this Swift/T: 
+Demonstration workflows for CANDLE.
 
-/home/wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin
+== auen41_ff on Cooley
 
-Example scripts are in git@github.com:ECP-CANDLE/Supervisor.git /workflows/auen41_ff
+*Contacts:* Wozniak and Balaprakash +
+*Source:* +git@github.com:ECP-CANDLE/Supervisor.git https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[/workflows/auen41_ff]+ +
+*Systems tested:* http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
 
-The Swift test is py-keras.swift
+Add this Swift/T to your +PATH+: +~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin+
 
-The run script that you launch is py-keras-cooley.sh
+=== py-keras.swift
 
-This sets the correct paths, but you will need to fix the data directory
+This simply demonstrates that the model can be run from Swift/T +python()+.
+
+We took the Python program https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/auen41_ff.py[auen41_ff.py] and turned it into a library that can be imported and run from Swift/T.  The new function entry point is +go()+.  The program still works from the command line
+
+https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/py-keras.swift[py-keras.swift] simply loads the module +auen41_ff+ and runs +go()+.
+
+The +go()+ function accepts the directory containing the +breast.train.csv+ and +breast.test.csv+ files.  These can be obtained on Cooley at +~wozniak/Public/data/CANDLE/auen41_ff+ .
+
+The run script that you launch is https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/py-keras-cooley.sh[py-keras-cooley.sh] .  The only non-trivial thing here is that we have to set +PYTHONHOME+ for Keras but we cannot let +qsub+ see this variable (or it will fail), so we hide it as +PH+, and send it to Swift via +swift-t -e+.
+
+This obtains settings from https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/auen41_ff/settings.sh[settings.sh].
+
+Output goes in numbered directories +out-NNN+.
+
+==== Example transcript
+
+----
+$ ./py-keras-cooley.sh ~wozniak/Public/data/CANDLE/auen41_ff
+TURBINE-COBALT SCRIPT
+...
+JOB_ID=...
+... # Job runs...
+TOTAL_TIME=...
+# Job completed
+# View output:
+$ less out-001/output.txt
+----
