@@ -12,7 +12,7 @@ Demonstration workflows for CANDLE.
 == auen41_ff on Cooley
 
 *Contacts:* Wozniak and Balaprakash +
-*Source:* +link:git@github.com:ECP-CANDLE/Supervisor.git https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[/workflows/auen41_ff]+ +
+*Source:* +git@github.com:ECP-CANDLE/Supervisor.git link:https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[/workflows/auen41_ff]+ +
 *Systems tested:* http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
 
 Add this Swift/T to your +PATH+: +~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin+
