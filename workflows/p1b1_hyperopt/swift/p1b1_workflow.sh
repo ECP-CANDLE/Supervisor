@@ -52,11 +52,12 @@ EVALUATIONS=4
 PARAM_BATCH_SIZE=1
 
 SPACE_FILE="$EMEWS_PROJECT_ROOT/data/space_description.txt"
+DATA_DIRECTORY="$EMEW_PROJECT_ROOT/data"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
 # for your EQ/Py based run. $* will pass all of this script's
 # command line arguments to the swift script
-CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BATCH_SIZE -space_description_file=$SPACE_FILE"
+CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BATCH_SIZE -space_description_file=$SPACE_FILE -data_directory=$DATA_DIRECTORY"
 
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
