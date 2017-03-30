@@ -18,6 +18,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 int max_evals = toint(argv("max_evals", "100"));
 int param_batch_size = toint(argv("param_batch_size", "10"));
 string space_file = argv("space_description_file");
+string data_dir = argv("data_directory");
 
 string read_space_code =
 """
@@ -38,7 +39,9 @@ import p1b1_baseline
 import p1b1
 
 params = %s
-X_train, X_test = p1b1.load_data()
+test_path = '%s/P1B1.test.csv'
+train_path = '%s/P1B1.train.csv'
+X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
 
 epochs = params['epochs'][0]
 encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs)
@@ -83,6 +86,7 @@ string algo_params_template =
     // not using unique id suffix but we could use it to create
     // a per run unique directory if we need such
     string id_suffix = "%s_%i" % (iter_indiv_id,1);
+    string p1b1_code = p1b1_template % (params, data_dir, data_dir);
     obj_result = python(p1b1_template % params, "str(a)");
 }
 
