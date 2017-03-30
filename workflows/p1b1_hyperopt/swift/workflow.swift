@@ -45,6 +45,12 @@ X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
 
 epochs = params['epochs'][0]
 encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs)
+
+# works around this error:
+# https://github.com/tensorflow/tensorflow/issues/3388
+from keras import backend as K
+K.clear_session()
+
 # use the last validation_loss as the value to minimize
 val_loss = history.history['val_loss']
 a = val_loss[-1]
@@ -87,7 +93,7 @@ string algo_params_template =
     // a per run unique directory if we need such
     string id_suffix = "%s_%i" % (iter_indiv_id,1);
     string p1b1_code = p1b1_template % (params, data_dir, data_dir);
-    obj_result = python(p1b1_template % params, "str(a)");
+    obj_result = python(p1b1_code, "str(a)");
 }
 
 (void v) loop (location ME, int ME_rank, int trials) {

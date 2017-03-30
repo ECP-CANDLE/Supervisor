@@ -10,7 +10,7 @@ fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -20,14 +20,16 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
+# Cori: 32 cores per node, 128GB per node
 export PROCS=4
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
-export QUEUE=batch
-export WALLTIME=00:10:00
-export PPN=16
+# see http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
+export QUEUE=debug
+export WALLTIME=00:30:00
+export PPN=4
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # if R cannot be found, then these will need to be
@@ -35,9 +37,12 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
+
 P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$EMEWS_PROJECT_ROOT/../../python/hyperopt:$P1B1_DIR
-echo $PYTHONPATH
+#echo $PYTHONPATH
+
+export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -49,7 +54,7 @@ EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
 # total number of model runs
 EVALUATIONS=4
 # concurrent model runs
-PARAM_BATCH_SIZE=1
+PARAM_BATCH_SIZE=3
 
 SPACE_FILE="$EMEWS_PROJECT_ROOT/data/space_description.txt"
 DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
@@ -64,7 +69,7 @@ CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BA
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-MACHINE=""
+MACHINE="slurm"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
