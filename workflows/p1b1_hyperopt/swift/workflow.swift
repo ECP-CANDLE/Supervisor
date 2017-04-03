@@ -43,6 +43,9 @@ test_path = '%s/P1B1.test.csv'
 train_path = '%s/P1B1.train.csv'
 X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
 
+# this assumes a simple space. A more complicated space
+# will require additional unpacking. Note that hp.choice returns
+# the index into its list / tuple.
 epochs = params['epochs'][0]
 encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs)
 
