@@ -96,7 +96,7 @@ string algo_params_template =
     // a per run unique directory if we need such
     string id_suffix = "%s_%i" % (iter_indiv_id,1);
     string p1b1_code = p1b1_template % (params, data_dir, data_dir);
-    obj_result = python(p1b1_code, "str(a)");
+    obj_result = python_persist(p1b1_code, "str(a)");
 }
 
 (void v) loop (location ME, int ME_rank, int trials) {
