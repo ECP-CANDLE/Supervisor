@@ -48,3 +48,9 @@ TOTAL_TIME=...
 # View output:
 $ less out-001/output.txt
 ----
+
+== p1b1_hyperopt
+
+The P1B1 hyperopt workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a hyperopt instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, hyperopt minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_hyperopt for more details.
