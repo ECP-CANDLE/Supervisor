@@ -13,6 +13,8 @@ Requirements:
 to the supervisor branch.
 * P1B1 Data - `http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.train.csv` and `http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.test.csv`. Download these into some suitable directory (e.g. `workflows/p1b1_hyperopt/data`)
 * Hyperopt - http://hyperopt.github.io/hyperopt/
+* Keras - https://keras.io. The supervisor branch of P1B1 should work with
+both version 1 and 2.
 * Swift-t with Python 2.7 enabled - http://swift-lang.org/Swift-T/
 
 This workflow also uses code included in this repository: the EMEWS EQ/Py extension
@@ -36,6 +38,7 @@ p1b1_hyperopt/
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cori_settings.sh` - settings specific to the Cori supercomputer
  * `swift/cori_workflow.sh` - launch script customized for the Cori supercomputer
+ * `swift/cooley_workflow.sh` - launch script customized for the Cooley supercomputer
 
 
  ## Running the Workflow ##
@@ -61,8 +64,27 @@ of the launch script that was used to launch the workflow will also be written
 to this directory.
 
 ### Running on Cori ###
-0. Install hyperopt, if you haven't already:
-    * module load deeplearning
-    * pip install --user hyperopt
-1. Source the `swift/cori_settings.sh` file to load the required modules etc.
-2. In the swift directory, `./cori_workflow.sh X` where X is an experiment id.
+0. The Cori workflow uses Cori's existing deeplearing environment. This includes
+Keras, but NOT hyperopt. To install hyperopt, if you haven't already:
+
+    ```
+  module load deeplearning
+  pip install --user hyperopt
+    ```
+1. Source the `swift/cori_settings.sh` file to load the required modules etc:
+
+    ```source cori_settings```
+
+2. In the swift directory, run the `cori_workflow.sh` launch script with an
+experiment id. For example,
+
+ ```./cori_workflow.sh T1```
+
+### Running on Cooley ###
+0. Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with
+hyperopt, keras etc. already installed.
+1. Add this Swift/T to your PATH: `~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin`
+2. In the swift directory, run the `cooley_workflow.sh` launch scrip with an
+experiment id. For example,
+
+  ```./cooley_workflow.sh T1```
