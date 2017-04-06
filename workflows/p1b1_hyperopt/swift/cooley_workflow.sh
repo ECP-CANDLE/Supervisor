@@ -20,7 +20,6 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-# Cori: 32 cores per node, 128GB per node
 export PROCS=4
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
@@ -80,7 +79,7 @@ CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BA
 
 export MODE=cluster
 
-ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT"
+ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT -e TURBINE_OUTPUT=$TURBINE_OUTPUT"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
