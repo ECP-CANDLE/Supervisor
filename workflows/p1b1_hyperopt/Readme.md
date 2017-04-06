@@ -64,18 +64,18 @@ of the launch script that was used to launch the workflow will also be written
 to this directory.
 
 ### Running on Cori ###
-0. The Cori workflow uses Cori's existing deeplearing environment. This includes
+1. The Cori workflow uses Cori's existing deeplearing environment. This includes
 Keras, but NOT hyperopt. To install hyperopt, if you haven't already:
 
-    ```
+  ```
   module load deeplearning
   pip install --user hyperopt
-    ```
-1. Source the `swift/cori_settings.sh` file to load the required modules etc:
+  ```
+2. Source the `swift/cori_settings.sh` file to load the required modules etc:
 
     ```source cori_settings```
 
-2. In the swift directory, run the `cori_workflow.sh` launch script with an
+3. In the swift directory, run the `cori_workflow.sh` launch script with an
 experiment id. For example,
 
  ```./cori_workflow.sh T1```
