@@ -10,7 +10,7 @@ fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -27,8 +27,8 @@ export PROCS=4
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
 export QUEUE=default
-export WALLTIME=00:30:00
-export PPN=4
+export WALLTIME=00:45:00
+export PPN=2
 export TURBINE_JOBNAME="${EXPID}_job"
 export PROJECT=Candle_ECP
 
@@ -54,15 +54,11 @@ PH=/soft/analytics/conda/env/Candle_ML
 # we have to set PYTHONHOME for Keras but we cannot let qsub see this
 # variable (or it will fail), so we hide it as PH, and send it to Swift
 # via swift-t -e.
-ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP"
-
-
-export PYTHONPATH-:$P1B1_DIR
-#echo $PYTHONPATH
 
 # Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+# TURBINE_RESIDENT_WORK_WORKERS=1
+# RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
 
 # EQ/Py location
 EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
@@ -70,7 +66,8 @@ EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
 # total number of model runs
 EVALUATIONS=4
 # concurrent model runs
-PARAM_BATCH_SIZE=3
+# match this to available GPU count?
+PARAM_BATCH_SIZE=2
 
 SPACE_FILE="$EMEWS_PROJECT_ROOT/data/space_description.txt"
 DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
@@ -82,6 +79,8 @@ CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BA
 
 
 export MODE=cluster
+
+ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
