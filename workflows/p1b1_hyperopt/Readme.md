@@ -33,15 +33,15 @@ p1b1_hyperopt/
  * `etc` - additional code used by EMEWS
  * `ext/EQ-Py` - swift-t EQ\Py extension
  * `swift/workflow.swift` - the swift workflow script
- * `swift/p1b1_workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
+ * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cori_settings.sh` - settings specific to the Cori supercomputer
- * `swift/cori_p1b1_workflow.sh` - launch script customized for the Cori supercomputer
+ * `swift/cori_workflow.sh` - launch script customized for the Cori supercomputer
 
 
  ## Running the Workflow ##
 
  The launch scripts in the `swift` directory can be used to run the workflow.
- Copy the `p1b1_workflow.sh` and edit it as appropriate. The swift script takes
+ Copy the `workflow.sh` and edit it as appropriate. The swift script takes
  4 arguments, each of which is set in the launch script.
 
  * EVALUATIONS - the total number of runs to perform
@@ -65,4 +65,4 @@ to this directory.
     * module load deeplearning
     * pip install --user hyperopt
 1. Source the `swift/cori_settings.sh` file to load the required modules etc.
-2. In the swift directory, `./cori_p1b1_workflow.sh X` where X is an experiment id.
+2. In the swift directory, `./cori_workflow.sh X` where X is an experiment id.
