@@ -23,6 +23,10 @@ This is the main home page about CANDLE Supervisor effort with links to workflow
 
 The workflows are currently indexed in the README visible https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[here].
 
+== Database integration
+
+The database work is described in the README visible https://github.com/ECP-CANDLE/Database[here].
+
 == Swift installations
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
