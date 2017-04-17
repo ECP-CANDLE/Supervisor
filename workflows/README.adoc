@@ -9,6 +9,40 @@ or just view it on GitHub.
 
 Demonstration workflows for CANDLE.
 
+== Demonstrations
+
+=== SimpleSweepCommandLine
+
+Demonstrates calling Swift parameter sweep over Python command line tasks.
+
+git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepCommandLine
+
+*Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
+
+=== SimpleSweepPython
+
+Demonstrates calling Swift parameter sweep over Python in-memory tasks.
+
+git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPython
+
+*Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
+
+=== SimpleSweepPyDB (WIP)
+
+Demonstrates calling Swift parameter sweep over Python in-memory tasks plus inserts to Solr database via pysolr.
+
+git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPyDB
+
+*Systems tested:* WIP: Local machine
+
+== auen on Beagle
+
+This demo runs an AUEN/Theano parameter sweep over _NE_.
+
+See the https://github.com/CODARcode/SwiftExamples/tree/master/auen[README here].
+
+*Systems tested:* http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
+
 == auen41_ff on Cooley
 
 *Contacts:* Wozniak and Balaprakash +
