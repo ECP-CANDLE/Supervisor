@@ -68,6 +68,8 @@ p1b1_mlrMBO/
  initial set of "design" runs.
  * PARAM_SET_FILE - the path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
  * DATA_DIRECTORY - the directory containing the test and training data. The files themselves are assumed to be named `P1B1.train.csv` and `P1B1.test.csv`
+ 
+ Also see the TODOs in the launch script for additional variables to set.
 
  The launch script also sets PYTHONPATH to include the location of the P1B1
  python code. Edit P1B1_DIR as appropriate.
@@ -77,6 +79,8 @@ p1b1_mlrMBO/
  directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
+ 
+ If running on a cluster or HPC machine, edit QUEUE, WALLTIME
 
 ### Defining the Hyperparameter Space ###
 
@@ -139,6 +143,9 @@ R
 hyperopt, keras etc. already installed, so nothing needs to be done there.
 
 * Launching the workflow
+
+Edit cooley_workflow.sh, setting the relevant variables (see above) as appropriate.
+
 ```
 export PATH=/home/wozniak/Public/sfw/x86_64/login/swift-t-conda-r/stc/bin:$PATH
 cd p1b1_mlrMBO/swift
