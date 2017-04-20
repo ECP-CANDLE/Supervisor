@@ -5,7 +5,7 @@ EMEWS.
 
 Requirements:
 
-* R 3.3+
+* R 3.2+
 * All required R packages can be installed with
 `install.packages("<package name>")`
   * mlrMBO and dependencies : (https://mlr-org.github.io/mlrMBO/).

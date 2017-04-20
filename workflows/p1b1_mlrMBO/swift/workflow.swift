@@ -101,9 +101,8 @@ pp = %d, it = %d, param.set.file='%s'
       // e.g. finals is a ";" separated string and we want each
       // element on its own line:
       // multi_line_finals = join(split(finals, ";"), "\\n");
-      string fname = "%s/final_result_%i" % (turbine_output, ME_rank);
-      file results_file <fname> = write(finals) =>
-      printf("Writing final result to %s", fname) =>
+      string fname = "%s/final_res.Rds" % (turbine_output);
+      printf("See results in %s", fname) =>
       // printf("Results: %s", finals) =>
       v = make_void() =>
       c = false;
