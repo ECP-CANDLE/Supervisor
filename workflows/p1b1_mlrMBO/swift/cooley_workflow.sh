@@ -64,14 +64,17 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 # how many to evaluate concurrently
 MAX_CONCURRENT_EVALUATIONS=5
-MAX_ITERATIONS=5
+# number of iterations of MAX_CONCURRENT_EVALUATIONS
+# there will be an addtional 0th iteration that creates the
+# initial model. 
+ITERATIONS=5
 PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
 DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
 # for your EQ/Py based run. $* will pass all of this script's
 # command line arguments to the swift script
-CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
+CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 CMD_LINE_ARGS+="-data_directory=$DATA_DIRECTORY "
 
