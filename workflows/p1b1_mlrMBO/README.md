@@ -68,7 +68,7 @@ p1b1_mlrMBO/
  initial set of "design" runs.
  * PARAM_SET_FILE - the path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
  * DATA_DIRECTORY - the directory containing the test and training data. The files themselves are assumed to be named `P1B1.train.csv` and `P1B1.test.csv`
- 
+
  Also see the TODOs in the launch script for additional variables to set.
 
  The launch script also sets PYTHONPATH to include the location of the P1B1
@@ -79,7 +79,7 @@ p1b1_mlrMBO/
  directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
- 
+
  If running on a cluster or HPC machine, edit QUEUE, WALLTIME
 
 ### Defining the Hyperparameter Space ###
@@ -96,6 +96,56 @@ param.set <- makeParamSet(
 
 More information on the various functions that can be used to define the space
 can be found at: https://cran.r-project.org/web/packages/ParamHelpers/ParamHelpers.pdfmakeNum
+
+### final_res.Rds ###
+mlrMBO's mbo function produces a MBOSingleObjResult object. That object is
+saved to the file system in the experiment directory as final_res.Rds. The 'x'
+attribute of this object will contain the best hyper parameter. Sample R
+session:
+
+```R
+> res <- readRDS('~/Desktop/final_res.Rds')
+> print(res)
+Recommended parameters:
+epoch=4
+Objective: y = 0.037
+
+Optimization path
+4 + 12 entries in total, displaying last 10 (or less):
+   epoch          y dob eol error.message exec.time ei error.model train.time
+7      4 0.06319008   1  NA          <NA>   2746.58  0        <NA>         NA
+8      6 0.06321167   1  NA          <NA>   2746.58  0        <NA>         NA
+9      4 0.06323924   2  NA          <NA>   2777.96  0        <NA>      0.076
+10     6 0.06342043   2  NA          <NA>   2777.96  0        <NA>         NA
+11     6 0.06318849   2  NA          <NA>   2777.96  0        <NA>         NA
+12     4 0.03745013   2  NA          <NA>   2777.96  0        <NA>         NA
+13     2 0.06297304   3  NA          <NA>   1926.64  0        <NA>      0.075
+14     3 0.06274078   3  NA          <NA>   1926.64  0        <NA>         NA
+15     3 0.06298386   3  NA          <NA>   1926.64  0        <NA>         NA
+16     4 0.06296253   3  NA          <NA>   1926.64  0        <NA>         NA
+   prop.type propose.time           se       mean
+7  infill_ei        0.141 0.000000e+00 0.06272000
+8  infill_ei        0.150 2.572439e-12 0.06277278
+9  infill_ei        0.150 0.000000e+00 0.06315830
+10 infill_ei        0.154 0.000000e+00 0.06299223
+11 infill_ei        0.138 0.000000e+00 0.06290148
+12 infill_ei        0.145 0.000000e+00 0.06301220
+13 infill_ei        0.147 3.292723e-10 0.06275064
+14 infill_ei        0.168 0.000000e+00 0.06274738
+15 infill_ei        0.148 0.000000e+00 0.05431496
+16 infill_ei        0.147 0.000000e+00 0.05675149
+> print(res$x)
+$epoch
+[1] 4
+
+> print(res$y)
+[1] 0.03745013
+```
+Note that without the mlrMBO etc. packages installed, you can load the object
+but will not print etc. correctly.
+
+For more information see, the mbo and MBOSingleObjResult in the mlrMBO
+documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
 
 
 ## Running on Cooley ##
@@ -131,7 +181,7 @@ R
   TCL_LIBRARY=tcl8.6
   ```
   Then
-  
+
   ```
   soft add +autotools
   ./bootstrap
