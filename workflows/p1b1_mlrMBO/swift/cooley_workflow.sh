@@ -43,7 +43,8 @@ P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 PP=
 PP+=/soft/analytics/conda/env/Candle_ML/lib/python2.7/site-packages:
 PP+=/soft/analytics/conda/env/Candle_ML/lib/python2.7:
-PP+=$P1B1_DIR
+PP+=$P1B1_DIR:
+PP+=$EMEWS_PROJECT_ROOT/python
 
 # PYTHONHOME
 PH=/soft/analytics/conda/env/Candle_ML
@@ -66,7 +67,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 MAX_CONCURRENT_EVALUATIONS=5
 # number of iterations of MAX_CONCURRENT_EVALUATIONS
 # there will be an addtional 0th iteration that creates the
-# initial model. 
+# initial model.
 ITERATIONS=5
 PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
 DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
