@@ -100,5 +100,5 @@ log_script
 # echo's anything following this to standard out
 set -x
 SWIFT_FILE=workflow.swift
-swift-t -n $PROCS $MACHINE -p $ENVS -I $EQPY -r $EQPY \
+swift-t -n $PROCS $MACHINE -p $ENVS -I $EQR -r $EQR \
   $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
