@@ -42,6 +42,7 @@ p1b1_mlrMBO/
   ext/EQ-R
   etc/
   R/
+  python/
   swift/
 ```
 
@@ -50,7 +51,9 @@ p1b1_mlrMBO/
  * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
  * `R/mlrMBO.R` - the mlrMBO R code
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
- * `swift/workflow.swift` - the swift workflow script
+ * `python/p1b1_runner.py` - python code called by the swift script to run p1b1.
+ * `python/test/test.py` - python code for testing the p1b1_runner.
+ * `swift/workflow.swift` - the swift workflow scrip
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cooley_workflow.sh` - launch script customized for the Cooley supercomputer
 
@@ -96,6 +99,26 @@ param.set <- makeParamSet(
 
 More information on the various functions that can be used to define the space
 can be found at: https://cran.r-project.org/web/packages/ParamHelpers/ParamHelpers.pdfmakeNum
+
+The hyperparameters sampled from the hyperparameter space by the mlrMBO algorithm
+are unpacked in `python/p1b1_runner.py`. If the hyperparameter space is
+changed then that code will need to be changed as well. For example,
+
+```R
+param.set <- makeParamSet(
+  makeIntegerParam('epoch', lower = 2, upper = 5),
+  makeIntegerParam('batch_size', lower = 50, upper = 100)
+)
+```
+yields a parameter comma separated string, passed to p1b1_runner.run() that
+looks like like "4, 62" where epoch is 4 and batch_size is 62. And, the
+code to parse the string would look like
+
+```python
+params = parameter_string.split(',')
+epochs = int(params[0].strip())
+batch_size = int(params[1].strip())
+```
 
 ### final_res.Rds ###
 mlrMBO's mbo function produces a MBOSingleObjResult object. That object is
