@@ -49,7 +49,7 @@ pp = %d, it = %d, param.set.file='%s'
   // a per run unique directory if we need such
   string id_suffix = "%s_%i" % (iter_indiv_id,1);
   string p1b1_code = p1b1_template % (data_dir, params);
-  printf(p1b1_code);
+  //printf(p1b1_code);
   obj_result = python_persist(p1b1_code, "str(a)");
 }
 
