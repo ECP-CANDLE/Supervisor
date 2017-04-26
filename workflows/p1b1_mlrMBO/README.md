@@ -213,7 +213,7 @@ R
   make install
   ```
 * Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with
-hyperopt, keras etc. already installed, so nothing needs to be done there.
+keras etc. already installed, so nothing needs to be done there.
 
 * Launching the workflow
 
