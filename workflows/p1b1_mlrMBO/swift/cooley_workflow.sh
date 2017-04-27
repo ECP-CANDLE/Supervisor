@@ -38,6 +38,12 @@ export PROJECT=Candle_ECP
 # export PYTHONHOME=
 
 P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
+if ! [[ -d $P1B1_DIR ]]
+then
+  echo "Could not find P1B1 at: $P1B1_DIR"
+  exit 1
+fi
+
 
 # PYTHONPATH
 PP=
