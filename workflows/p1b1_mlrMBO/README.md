@@ -184,11 +184,11 @@ Prerequisites:
 
 * Install the required R packages. When R displays the list of mirrors to chose from, use an HTTP mirror!
   Not one of the initially listed HTTPS mirrors, they are not accessible.
-```
-soft add +gcc-4.8.1
-export PATH=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/bin:$PATH
-R -f install-mlrMBO.R
-```
+  ```
+  soft add +gcc-4.8.1
+  export PATH=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/bin:$PATH
+  R -f install-mlrMBO.R
+  ```
 
 * Compile the EQ/R swift-t extension:
   ```
