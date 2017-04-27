@@ -33,11 +33,11 @@ both version 1 and 2.
   * mlrMBO and dependencies : (https://mlr-org.github.io/mlrMBO/).
   https://cran.r-project.org/src/contrib/mlrMBO_1.0.0.tar.gz
   * parallelMap : (https://cran.r-project.org/web/packages/parallelMap/index.html)
-  * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html)
+  * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html) 
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
 
-
+Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
 ## Workflow ##
 
