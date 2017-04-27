@@ -105,7 +105,7 @@ param.set <- makeParamSet(
 ```
 
 More information on the various functions that can be used to define the space
-can be found at: https://cran.r-project.org/web/packages/ParamHelpers/ParamHelpers.pdfmakeNum
+can be found at: http://berndbischl.github.io/ParamHelpers/man/
 
 The hyperparameters sampled from the hyperparameter space by the mlrMBO algorithm
 are unpacked in `python/p1b1_runner.py`. If the hyperparameter space is
