@@ -24,13 +24,20 @@ both version 1 and 2.
 * Required R packages:
   * All required R packages can be installed from within R with:
   ```
-  install.packages(c("<package name 1>", "<package name 2", ...)
+  install.packages(c("<package name 1>", "<package name 2", ...),
+                   dependencies=TRUE)
   ```
+  * Or with shell command `R install-mlrMBO.R`
+  On ALCF: Use an HTTP mirror!
+  Not one of the initially listed HTTPS mirrors, they are not accessible.
   * mlrMBO and dependencies : (https://mlr-org.github.io/mlrMBO/).
+  https://cran.r-project.org/src/contrib/mlrMBO_1.0.0.tar.gz
   * parallelMap : (https://cran.r-project.org/web/packages/parallelMap/index.html)
   * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html)
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
+
+
 
 ## Workflow ##
 
