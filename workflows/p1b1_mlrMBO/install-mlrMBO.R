@@ -1,4 +1,4 @@
-# On Cooley: Use an HTTP mirror!
-# Not one of the initially listed HTTPS mirrors,
-# they are not accessible
+r <- getOption("repos")
+r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+options(repos = r)
 install.packages("mlrMBO", dependencies=TRUE)
