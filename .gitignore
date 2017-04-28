@@ -36,3 +36,6 @@ turbine-directory.txt
 *.cobaltlog
 *.error
 *.output
+
+# Bulk data
+*.csv
