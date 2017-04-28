@@ -54,7 +54,6 @@ TCL_INCLUDE=$TCL/include
 TCL_LIB=$TCL/lib
 TCL_LIBRARY=tcl8.6
 
-
 # a local tcl
 # TCL_INCLUDE=$HOME/sfw/tcl-8.6.0/include
 # TCL_LIB=$HOME/sfw/tcl-8.6.0/lib
