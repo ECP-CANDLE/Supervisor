@@ -36,6 +36,7 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$P1B1_DIR
+export PYTHONHOME=/soft/analytics/conda/env/Candle_ML
 
 P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 if ! [[ -d $P1B1_DIR ]]
