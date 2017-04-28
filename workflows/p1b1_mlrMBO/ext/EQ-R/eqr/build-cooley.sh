@@ -6,7 +6,7 @@ then
   ./bootstrap
 fi
 
-source settings.sh
+source settings-cooley.sh
 
 ./configure --prefix=$PWD/..
 
