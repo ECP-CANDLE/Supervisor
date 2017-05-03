@@ -16,7 +16,7 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 [options="header"]
 |========
 | Workflow  | Synth^1^ | AUEN | P1B1 | P1B2
-| Random^2^ | | | |
+| Random^2^ | <<simplesweepcommandline,SimpleSweepCommandLine>> | | |
 | Grid^3^   | | | |
 | https://github.com/DEAP/deap[DEAP] | | | |
 | Hyperopt  | | | |
@@ -29,6 +29,7 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 
 
 == Demonstrations
+
 
 === SimpleSweepCommandLine
 
