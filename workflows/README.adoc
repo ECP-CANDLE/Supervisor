@@ -12,12 +12,13 @@ internal links <<.>> have to be specified with headers [[.]]
 
 Demonstration workflows for CANDLE.
 
+[[matrix]]
 == The Matrix
 
 This is an matrix of workflow capabilities and CANDLE benchmarks.
 
 [options="header"]
-|========
+|====
 | Workflow  | Synth^1^ | AUEN | P1B1 | P1B2
 | Invoke^2^ | | <<py-keras.swift>> | |
 | Random^3^ | | | |
@@ -25,9 +26,9 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 | <<SimpleSweepCommandLine>>  +
   <<SimpleSweepPython>> | | |
 | https://github.com/DEAP/deap[DEAP] | | <<AUEN_DEAP>> | |
-| Hyperopt  | | | |
-| https://github.com/mlr-org/mlrMBO[mlrMBO] | | | |
-|========
+| Hyperopt  | | | <<p1b1_hyperopt>> |
+| https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> |
+|====
 
 . _Invoke_ means that we can call this one time from Swift
 . _Synth_ means some kind of synthetic task: not a real ML
@@ -112,12 +113,14 @@ TOTAL_TIME=...
 $ less out-001/output.txt
 ----
 
+[[p1b1_hyperopt]]
 == p1b1_hyperopt
 
 The P1B1 hyperopt workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a hyperopt instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, hyperopt minimizes the validation loss.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_hyperopt for more details.
 
+[[p1b1_mlrMBO]]
 == p1b1_mlrMBO
 
 The P1B1 mlrMBO workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, mlrMBO minimizes the validation loss.
