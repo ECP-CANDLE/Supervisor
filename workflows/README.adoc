@@ -15,10 +15,18 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 
 [options="header"]
 |========
-| Synth&#42; | AUEN | P1B1 | P1B2
+| Workflow  | Synth^1^ | AUEN | P1B1 | P1B2
+| Random^2^ | | | |
+| Grid^3^   | | | |
+| https://github.com/DEAP/deap[DEAP] | | | |
+| Hyperopt  | | | |
+| https://github.com/mlr-org/mlrMBO[mlrMBO] | | | |
 |========
 
-&#42;: _Synth_ means some kind of synthetic task: not a real ML.
+1. _Synth_ means some kind of synthetic task: not a real ML.
+2. Random search
+3. Grid search
+
 
 == Demonstrations
 
