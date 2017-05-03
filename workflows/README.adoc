@@ -16,9 +16,10 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 [options="header"]
 |========
 | Workflow  | Synth^1^ | AUEN | P1B1 | P1B2
-| Random^2^ | <<SimpleSweepCommandLine>>  +
-<<SimpleSweepPython>> | | |
-| Grid^3^   | | | |
+| Random^2^ | | | |
+| Grid^3^
+| <<SimpleSweepCommandLine>>  +
+  <<SimpleSweepPython>> | | |
 | https://github.com/DEAP/deap[DEAP] | | | |
 | Hyperopt  | | | |
 | https://github.com/mlr-org/mlrMBO[mlrMBO] | | | |
