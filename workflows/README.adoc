@@ -15,7 +15,7 @@ Demonstration workflows for CANDLE.
 
 Demonstrates calling Swift parameter sweep over Python command line tasks.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepCommandLine
+https://github.com/CODARcode/SwiftExamples/tree/master/SimpleSweepCommandLine[CODARCode/SwiftExamples] SimpleSweepCommandLine
 
 *Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
 
@@ -23,7 +23,7 @@ git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepC
 
 Demonstrates calling Swift parameter sweep over Python in-memory tasks.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPython
+http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPython
 
 *Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
 
@@ -31,7 +31,7 @@ git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepP
 
 Demonstrates calling Swift parameter sweep over Python in-memory tasks plus inserts to Solr database via pysolr.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPyDB
+http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPyDB
 
 *Systems tested:* WIP: Local machine
 
