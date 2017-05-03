@@ -9,6 +9,17 @@ or just view it on GitHub.
 
 Demonstration workflows for CANDLE.
 
+== The Matrix
+
+This is an matrix of workflow capabilities and CANDLE benchmarks.
+
+[options="header"]
+|========
+| Synth&#42; | AUEN | P1B1 | P1B2
+|========
+
+&#42;: _Synth_ means some kind of synthetic task: not a real ML.
+
 == Demonstrations
 
 === SimpleSweepCommandLine
