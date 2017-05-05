@@ -182,7 +182,7 @@ documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
 
 Prerequisites:
 
-* Install the required R packages. When R displays the list of mirrors to chose from, use an HTTP mirror!
+* Install the required R packages. (They are already installed on Cooley.) When R displays the list of mirrors to chose from, use an HTTP mirror!
   Not one of the initially listed HTTPS mirrors, they are not accessible.
   ```
   soft add +gcc-4.8.1
@@ -190,7 +190,12 @@ Prerequisites:
   R -f install-mlrMBO.R
   ```
 
-* Compile the EQ/R swift-t extension:
+* Compile the EQ/R swift-t extension (see ext/EQ-R/eqr/COMPILING.txt for details):
+```
+./build-cooley.sh
+```
+
+Details:
   ```
   soft add +gcc-4.8.1
   export PATH=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/bin:$PATH
@@ -209,7 +214,6 @@ Prerequisites:
   TCL_LIB=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/lib
   TCL_LIBRARY=tcl8.6
   ```
-  Then
 
   ```
   soft add +autotools
