@@ -3,16 +3,20 @@ pragma worktypedef resident_work;
 
 @dispatch=resident_work
 (void v) _void_py(string code, string expr="\"\"") "turbine" "0.1.0"
-    [ "turbine::python 1 <<code>> <<expr>> 1"];
+    [ "turbine::python 1 1 <<code>> <<expr>>"];
 
 @dispatch=resident_work
 (string output) _string_py(string code, string expr) "turbine" "0.1.0"
-    [ "set <<output>> [ turbine::python 1 <<code>> <<expr>> 1]" ];
+    [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
 
-string init_package_string = "import eqpy\nimport %s\n" +
-"import threading\n" +
-"p = threading.Thread(target=%s.run)\np.start()";
-
+string init_package_string =
+"""
+import eqpy          
+import %s            
+import threading 
+p = threading.Thread(target=%s.run) 
+p.start()
+""";
 
 (void v) EQPy_init_package(location loc, string packageName){
     //printf("EQPy_init_package called");
