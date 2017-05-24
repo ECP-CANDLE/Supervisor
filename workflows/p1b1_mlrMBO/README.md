@@ -24,13 +24,20 @@ both version 1 and 2.
 * Required R packages:
   * All required R packages can be installed from within R with:
   ```
-  install.packages(c("<package name 1>", "<package name 2", ...)
+  install.packages(c("<package name 1>", "<package name 2", ...),
+                   dependencies=TRUE)
   ```
+  * Or with shell command `R -f install-mlrMBO.R`
+  On ALCF: Use an HTTP mirror!
+  Not one of the initially listed HTTPS mirrors, they are not accessible.
   * mlrMBO and dependencies : (https://mlr-org.github.io/mlrMBO/).
+  https://cran.r-project.org/src/contrib/mlrMBO_1.0.0.tar.gz
   * parallelMap : (https://cran.r-project.org/web/packages/parallelMap/index.html)
-  * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html)
+  * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html) 
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
+
+Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
 ## Workflow ##
 
@@ -98,7 +105,7 @@ param.set <- makeParamSet(
 ```
 
 More information on the various functions that can be used to define the space
-can be found at: https://cran.r-project.org/web/packages/ParamHelpers/ParamHelpers.pdfmakeNum
+can be found at: http://berndbischl.github.io/ParamHelpers/man/
 
 The hyperparameters sampled from the hyperparameter space by the mlrMBO algorithm
 are unpacked in `python/p1b1_runner.py`. If the hyperparameter space is
@@ -175,16 +182,20 @@ documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
 
 Prerequisites:
 
-* Install the required R packages:
+* Install the required R packages. (They are already installed on Cooley.) When R displays the list of mirrors to chose from, use an HTTP mirror!
+  Not one of the initially listed HTTPS mirrors, they are not accessible.
+  ```
+  soft add +gcc-4.8.1
+  export PATH=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/bin:$PATH
+  R -f install-mlrMBO.R
+  ```
+
+* Compile the EQ/R swift-t extension (see ext/EQ-R/eqr/COMPILING.txt for details):
 ```
-soft add +gcc-4.8.1
-export PATH=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/bin:$PATH
-R
-> install.packages(c("RcppArmadillo", "parallelMap", "mlrMBO", "DiceKriging", "rgenoud"))
-> q()
+./build-cooley.sh
 ```
 
-* Compile the EQ/R swift-t extension:
+Details:
   ```
   soft add +gcc-4.8.1
   export PATH=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/bin:$PATH
@@ -203,7 +214,6 @@ R
   TCL_LIB=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/lib
   TCL_LIBRARY=tcl8.6
   ```
-  Then
 
   ```
   soft add +autotools
@@ -213,7 +223,7 @@ R
   make install
   ```
 * Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with
-hyperopt, keras etc. already installed, so nothing needs to be done there.
+keras etc. already installed, so nothing needs to be done there.
 
 * Launching the workflow
 

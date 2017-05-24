@@ -3,27 +3,55 @@
 You can compile this locally with
 $ ../docs/adoc.sh README.adoc
 or just view it on GitHub.
+
+For compatibility for the GitHub and asciidoc program,
+internal links <<.>> have to be specified with headers [[.]]
 ////
 
 = Supervisor Workflows
 
 Demonstration workflows for CANDLE.
 
+[[matrix]]
+== The Matrix
+
+This is an matrix of workflow capabilities and CANDLE benchmarks.
+
+[options="header"]
+|====
+| Workflow  | Synth^1^ | AUEN | P1B1 | P1B2
+| Invoke^2^ | | <<py-keras.swift>> | |
+| Random^3^ | | | |
+| Grid^4^
+| <<SimpleSweepCommandLine>>  +
+  <<SimpleSweepPython>> | | |
+| https://github.com/DEAP/deap[DEAP] | | <<AUEN_DEAP>> | |
+| Hyperopt  | | | <<p1b1_hyperopt>> |
+| https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> |
+|====
+
+. _Invoke_ means that we can call this one time from Swift
+. _Synth_ means some kind of synthetic task: not a real ML
+. Random search
+. Grid search
+
 == Demonstrations
 
+[[SimpleSweepCommandLine]]
 === SimpleSweepCommandLine
 
 Demonstrates calling Swift parameter sweep over Python command line tasks.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepCommandLine
+https://github.com/CODARcode/SwiftExamples/tree/master/SimpleSweepCommandLine[CODARCode/SwiftExamples] SimpleSweepCommandLine
 
 *Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
 
+[[SimpleSweepPython]]
 === SimpleSweepPython
 
 Demonstrates calling Swift parameter sweep over Python in-memory tasks.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPython
+http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPython
 
 *Systems tested:* Local machine, http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
 
@@ -31,13 +59,14 @@ git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepP
 
 Demonstrates calling Swift parameter sweep over Python in-memory tasks plus inserts to Solr database via pysolr.
 
-git@github.com:CODARcode/SwiftExamples.git[CODARCode/SwiftExamples] SimpleSweepPyDB
+http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPyDB
 
 *Systems tested:* WIP: Local machine
 
-== auen on Beagle
+[[AUEN_DEAP]]
+== AUEN_DEAP
 
-This demo runs an AUEN/Theano parameter sweep over _NE_.
+This demo runs an AUEN/Theano evolutionary algorithm.
 
 See the https://github.com/CODARcode/SwiftExamples/tree/master/auen[README here].
 
@@ -53,6 +82,7 @@ See the https://github.com/CODARcode/SwiftExamples/tree/master/auen[README here]
 
 Add this Swift/T to your +PATH+: +~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin+
 
+[[py-keras.swift]]
 === py-keras.swift
 
 This simply demonstrates that the model can be run from Swift/T +python()+.
@@ -83,12 +113,14 @@ TOTAL_TIME=...
 $ less out-001/output.txt
 ----
 
+[[p1b1_hyperopt]]
 == p1b1_hyperopt
 
 The P1B1 hyperopt workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a hyperopt instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, hyperopt minimizes the validation loss.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_hyperopt for more details.
 
+[[p1b1_mlrMBO]]
 == p1b1_mlrMBO
 
 The P1B1 mlrMBO workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, mlrMBO minimizes the validation loss.

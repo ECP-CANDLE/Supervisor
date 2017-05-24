@@ -4,8 +4,9 @@ COMPILING THE EQR EXTENSION
 
 1. cp settings.template.sh settings.sh
 2. Edit settings.sh to match your setup
-3. ./bootstrap
-4. ./configure --prefix=$PWD/..
+3. source settings.sh
+4. ./bootstrap
+5. ./configure --prefix=$PWD/..
 
 Additional configure settings that might be necessary are:
 

@@ -64,6 +64,9 @@ of the launch script that was used to launch the workflow will also be written
 to this directory.
 
 ### Running on Cori ###
+
+0. You can debug on the login node with `nice swift/workflow.sh ID`
+
 1. The Cori workflow uses Cori's existing deeplearing environment. This includes
 Keras, but NOT hyperopt. To install hyperopt, if you haven't already:
 
@@ -80,9 +83,13 @@ experiment id. For example,
 
  ```./cori_workflow.sh T1```
 
+
+
 ### Running on Cooley ###
-0. Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with
-hyperopt, keras etc. already installed.
+
+Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with hyperopt, keras etc. already installed.
+
+0. You can debug on the login node with `nice swift/workflow.sh ID`
 1. Add this Swift/T to your PATH: `~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin`
 2. In the swift directory, run the `cooley_workflow.sh` launch scrip with an
 experiment id. For example,
