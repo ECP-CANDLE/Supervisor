@@ -22,6 +22,7 @@ import p1b3_runner
 import json
 
 hyper_parameter_map = json.loads('%s')
+hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['feature_subsample'] = 500
 hyper_parameter_map['train_steps'] = 100
 hyper_parameter_map['val_steps'] = 10

@@ -1,14 +1,16 @@
-import p1b1_runner, os
-
+import p1b3_runner
 
 def main():
-    data_directory = os.path.dirname(os.path.realpath(__file__))
-    # should load the data
-    p1b1_runner.run(data_directory, "2")
-    # data should now be loaded
-    assert p1b1_runner.X_train is not None
-    assert p1b1_runner.X_test is not None
-    p1b1_runner.run(data_directory, "2")
 
+    hyper_parameter_map = {'epochs' : 3}
+    hyper_parameter_map['framework'] = 'keras'
+    hyper_parameter_map['feature_subsample'] = 500
+    hyper_parameter_map['train_steps'] = 100
+    hyper_parameter_map['val_steps'] = 10
+    hyper_parameter_map['test_steps'] = 10
+    hyper_parameter_map['save'] = './output'
+
+    validation_loss = p1b3_runner.run(hyper_parameter_map)
+    print("Validation Loss: {}".format(validation_loss))
 if __name__ == '__main__':
     main()
