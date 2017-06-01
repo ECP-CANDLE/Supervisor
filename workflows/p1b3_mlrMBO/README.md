@@ -92,24 +92,17 @@ The following shell variables in caps correspond to the Swift workflow argument 
 * The number of evaluations (i.e P1B3 runs) to perform each iteration.
 
 
-<dt>
 `ITERATIONS` (`-it`)
-</dt>
-<dd>
-The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
-</dd>
 
-<dt>
+* The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
+
 `PARAM_SET_FILE` (`-param_set_file`)
-</dt>
-<dd>
-The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
-</dd>
-</dl>
+
+* The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
 
 Also see the TODOs in the launch script for additional variables to set.
 
-The launch script also sets PYTHONPATH to include the location of the P1B3
+The launch script also sets `PYTHONPATH` to include the location of the P1B3
 python code. Edit P1B3_DIR as appropriate.
 
  The launch script takes as a required argument an experiment id. The workflow
