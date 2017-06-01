@@ -87,19 +87,33 @@ Backup the `workflow.sh` and edit it as appropriate. The `workflow.swift` script
 
 The following shell variables in caps correspond to the Swift workflow argument in parentheses:
 
+<dl>
+<dt>
 `MAX_CONCURRENT_EVALUATIONS` (`-pp`)
-: The number of evaluations (i.e P1B3 runs) to perform each iteration.
+</dt>
+<dd>
+The number of evaluations (i.e P1B3 runs) to perform each iteration.
+</dd>
 
+<dt>
 `ITERATIONS` (`-it`)
-: The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
+</dt>
+<dd>
+The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
+</dd>
 
+<dt>
 `PARAM_SET_FILE` (`-param_set_file`)
-: The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
+</dt>
+<dd>
+The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
+</dd>
+</dl>
 
- Also see the TODOs in the launch script for additional variables to set.
+Also see the TODOs in the launch script for additional variables to set.
 
- The launch script also sets PYTHONPATH to include the location of the P1B3
- python code. Edit P1B3_DIR as appropriate.
+The launch script also sets PYTHONPATH to include the location of the P1B3
+python code. Edit P1B3_DIR as appropriate.
 
  The launch script takes as a required argument an experiment id. The workflow
  output, various swift-t related files, and the `final_res.Rds` file will be written into a `P1B3_mlrMBO\experiments\X`
