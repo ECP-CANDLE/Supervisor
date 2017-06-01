@@ -1,6 +1,40 @@
 #! /usr/bin/env bash
-
 set -eu
+
+# Autodetect this workflow directory
+export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
+
+# USER SETTINGS START
+
+# See README.md for more information
+
+# The directory in the Benchmarks repo containing P1B3
+P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+
+# The number of MPI processes
+# Note that 2 processes are reserved for Swift/EMEMS
+# The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
+export PROCS=${PROCS:-4}
+
+# MPI processes per node
+# Cori has 32 cores per node, 128GB per node
+export PPN=4
+
+# See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
+export QUEUE=${QUEUE:-debug}
+export WALLTIME=${WALLTIME:-00:30:00}
+
+# mlrMBO settings
+# How many to runs evaluate per iteration
+MAX_CONCURRENT_EVALUATIONS=2
+# Total iterations
+MAX_ITERATIONS=3
+PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
+
+# USER SETTINGS END
+
+# Source some utility functions used by EMEWS in this script
+source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 if [ "$#" -ne 1 ]; then
   script_name=$(basename $0)
@@ -11,25 +45,11 @@ fi
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
 #export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-# source some utility functions used by EMEWS in this script
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 export EXPID=$1
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
-# TODO edit the number of processes as required.
-# Cori: 32 cores per node, 128GB per node
-export PROCS=4
-
-# TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
-# as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
-# be ignored if MACHINE flag (see below) is not set
-# see http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
-export QUEUE=debug
-export WALLTIME=00:30:00
-export PPN=4
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # if R cannot be found, then these will need to be
@@ -38,7 +58,6 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR
@@ -53,21 +72,11 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
-# how many to evaluate concurrently
-MAX_CONCURRENT_EVALUATIONS=2
-MAX_ITERATIONS=3
-PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
 
-# TODO edit command line arguments, e.g. -nv etc., as appropriate
-# for your EQ/R based run. $* will pass all of this script's
-# command line arguments to the swift script
 CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 
-# Uncomment this for the BG/Q:
-#export MODE=BGQ QUEUE=default
-
-# set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
+# set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 MACHINE="slurm"
 
