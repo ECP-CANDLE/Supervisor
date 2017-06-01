@@ -14,11 +14,18 @@ The workflow ultimately produces a `final_res.Rds` serialized R object that
 contains the final best parameter values and various metadata about the
 parameter evaluations.
 
- ## Requirements ##
+## User requirements ##
+
+What you need to install to run the workflow:
+
+* P1B3 benchmark - `gi&#8203;t@github.com:ECP-CANDLE/Benchmarks.git` . Clone and switch to the `frameworks` branch.
+
+
+## System requirements ##
+
+These may already be installed on your system
 
 * Python 2.7
-* P1B3 benchmark - git@github.com:ECP-CANDLE/Benchmarks.git. Clone and switch
-to the *frameworks* branch.
 * Keras - https://keras.io. The supervisor branch of P1B3 should work with
 both version 1 and 2.
 * Swift-t with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
