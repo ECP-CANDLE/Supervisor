@@ -28,7 +28,7 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 | https://github.com/DEAP/deap[DEAP] | | <<AUEN_DEAP>> | | |
 | Hyperopt  | | | <<p1b1_hyperopt>> | |
 | https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> | |
-| | | | | | <<p1b3_mlrMBO>>
+                                                  <<p1b3_mlrMBO>>
 |====
 
 . _Invoke_ means that we can call this one time from Swift
