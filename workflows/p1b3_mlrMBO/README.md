@@ -18,7 +18,7 @@ parameter evaluations.
 
 What you need to install to run the workflow:
 
-* P1B3 benchmark - `gi<nolink>t@github.com:ECP-CANDLE/Benchmarks.git` . Clone and switch to the `frameworks` branch.
+* P1B3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` . Clone and switch to the `frameworks` branch.
 
 
 ## System requirements ##
