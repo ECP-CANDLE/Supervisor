@@ -89,7 +89,7 @@ The following shell variables in caps correspond to the Swift workflow argument 
 
 `MAX_CONCURRENT_EVALUATIONS` (`-pp`)
 
-> The number of evaluations (i.e P1B3 runs) to perform each iteration.
+* The number of evaluations (i.e P1B3 runs) to perform each iteration.
 
 
 <dt>
