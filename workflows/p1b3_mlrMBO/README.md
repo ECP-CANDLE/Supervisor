@@ -87,13 +87,10 @@ Backup the `workflow.sh` and edit it as appropriate. The `workflow.swift` script
 
 The following shell variables in caps correspond to the Swift workflow argument in parentheses:
 
-<dl>
-<dt>
 `MAX_CONCURRENT_EVALUATIONS` (`-pp`)
-</dt>
-<dd>
-The number of evaluations (i.e P1B3 runs) to perform each iteration.
-</dd>
+
+> The number of evaluations (i.e P1B3 runs) to perform each iteration.
+
 
 <dt>
 `ITERATIONS` (`-it`)
