@@ -87,9 +87,14 @@ Backup the `workflow.sh` and edit it as appropriate. The `workflow.swift` script
 
 The following shell variables in caps correspond to the Swift workflow argument in parentheses:
 
-* `MAX_CONCURRENT_EVALUATIONS` (`-pp`) The number of evaluations (i.e P1B3 runs) to perform each iteration.
-* `ITERATIONS` (`-it`) - the total number of iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
-* `PARAM_SET_FILE` (`-param_set_file`) - the path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
+`MAX_CONCURRENT_EVALUATIONS` (`-pp`)
+: The number of evaluations (i.e P1B3 runs) to perform each iteration.
+
+`ITERATIONS` (`-it`)
+: The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
+
+`PARAM_SET_FILE` (`-param_set_file`)
+: The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
 
  Also see the TODOs in the launch script for additional variables to set.
 
