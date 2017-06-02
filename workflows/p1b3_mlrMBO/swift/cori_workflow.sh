@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -eu
 
+# CORI WORKFLOW
+# Main entry point for P1B3 mlrMBO workflow
+
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
@@ -91,7 +94,12 @@ USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
+R_LIB=/global/homes/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
+GCC_LIB=/opt/gcc/6.3.0/snos/lib64
+
 # echo's anything following this to standard out
 set -x
 SWIFT_FILE=workflow.swift
-swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
+swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
+        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
+        $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
