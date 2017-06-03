@@ -202,6 +202,6 @@ changed for a production run.
 ```
 cd Supervisor/workflows/p1b3_mlrMBO/swift
 source cori_settings.sh
-./cori_workflow T1
+./cori_workflow.sh T1
 ```
 where T1 is the experiment ID.
