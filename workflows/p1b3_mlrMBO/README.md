@@ -2,10 +2,11 @@
 
 The P1B3 mlrMBO workflow evaluates the P1B3 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss. EMEWS R queues are used to:
+minimizes the validation loss. Swift is used to scalably distribute
+work across the system, and EMEWS is used to:
 
-1. pass the hyperparameters to evaluate from the running mlrMBO algorithm to the swift script to launch a P1B3 run, and to
-2. pass the validation loss from a P1B3 run back to the running mlrBMO algorithm via the swift script.
+1. Pass the hyperparameters to evaluate from the running mlrMBO algorithm to the Swift script to launch a P1B3 run, and to
+2. Pass the validation loss from a P1B3 run back to the running mlrBMO algorithm via the swift script.
 
 Currently, this example is working with the keras based code and does not yet
 work with mxnet or neon.
@@ -14,14 +15,27 @@ The workflow ultimately produces a `final_res.Rds` serialized R object that
 contains the final best parameter values and various metadata about the
 parameter evaluations.
 
- ## Requirements ##
+## User requirements ##
 
-* Python 2.7
-* P1B3 benchmark - git@github.com:ECP-CANDLE/Benchmarks.git. Clone and switch
-to the *frameworks* branch.
+What you need to install to run the workflow:
+
+* This workflow - `git@github.com:ECP-CANDLE/Supervisor.git` .
+  Clone and `cd` to `workflows/p1b3_mlrMBO`
+  (the directory containing this README).
+* P1B3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
+  Clone and switch to the `frameworks` branch.
+
+## System requirements ##
+
+These may already be installed on your system.
+The CANDLE team has installed these on many popular supercomputers.
+
+* Python 2.7, R 3.4
 * Keras - https://keras.io. The supervisor branch of P1B3 should work with
 both version 1 and 2.
-* Swift-t with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
+* Swift/T with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
+** Installation guide:
+   http://swift-lang.github.io/swift-t/guide.html#_installation
 * Required R packages:
   * All required R packages can be installed from within R with:
   ```
@@ -37,8 +51,8 @@ both version 1 and 2.
   * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html)
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
-
-Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
+** TL;DR: On Cori, type `ext/EQ-R/eqr/cori_build.sh`
+* Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
 ## Workflow ##
 
@@ -61,28 +75,35 @@ P1B3_mlrMBO/
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
  * `python/P1B3_runner.py` - python code called by the swift script to run P1B3.
  * `python/test/test.py` - python code for testing the P1B3_runner.
- * `swift/workflow.swift` - the swift workflow scrip
+ * `swift/workflow.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cori_workflow.sh` - launch script customized for the Cori supercomputer
  * `swift/cori_settings.sh` - settings for running on the Cori supercomputer
 
- ## Running the Workflow ##
+## Running the Workflow ##
 
- The launch scripts in the `swift` directory can be used to run the workflow.
- Copy the `workflow.sh` and edit it as appropriate. The swift script takes
- 3 arguments, each of which is set in the launch script.
+The launch scripts in the `swift` directory can be used to run the workflow.
+Backup the `workflow.sh` and edit it as appropriate. The `workflow.swift` script takes 3 arguments, each of which is set in the `workflow.sh` script.  Swift receives the arguments with its `argv()` builtin.
 
- * MAX_CONCURRENT_EVALUATIONS - the number of evaluations (i.e P1B3 runs) to
- perform each iteration.
- * ITERATIONS - the total number of iterations to perform. The total number of
- P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's
- initial set of "design" runs.
- * PARAM_SET_FILE - the path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
+The following shell variables in caps correspond to the Swift workflow argument in parentheses:
 
- Also see the TODOs in the launch script for additional variables to set.
+`MAX_CONCURRENT_EVALUATIONS` (`-pp`)
 
- The launch script also sets PYTHONPATH to include the location of the P1B3
- python code. Edit P1B3_DIR as appropriate.
+* The number of evaluations (i.e P1B3 runs) to perform each iteration.
+
+
+`ITERATIONS` (`-it`)
+
+* The total number of mlrMBO iterations to perform. The total number of P1B3 runs performed will be ITERATIONS * MAX_CONCURRENT_EVALUATIONS + mlrMBO's initial set of "design" runs.
+
+`PARAM_SET_FILE` (`-param_set_file`)
+
+* The path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
+
+Also see the TODOs in the launch script for additional variables to set.
+
+The launch script also sets `PYTHONPATH` to include the location of the P1B3
+python code. Edit P1B3_DIR as appropriate.
 
  The launch script takes as a required argument an experiment id. The workflow
  output, various swift-t related files, and the `final_res.Rds` file will be written into a `P1B3_mlrMBO\experiments\X`
