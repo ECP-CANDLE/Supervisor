@@ -21,15 +21,15 @@ check_directory_exists
 
 # TODO edit the number of processes as required.
 # Cori: 32 cores per node, 128GB per node
-export PROCS=4
+export PROCS=120
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
 # see http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
-export QUEUE=debug
+export QUEUE=regular
 export WALLTIME=00:30:00
-export PPN=4
+export PPN=1
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # if R cannot be found, then these will need to be
@@ -38,7 +38,9 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+#P1B3_DIR=/global/u1/w/pbalapra/Benchmarks/Pilot1/P1B3
+P1B3_DIR=/global/homes/p/pbalapra/Benchmarks/Pilot1/P1B3
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR
@@ -54,9 +56,9 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 # how many to evaluate concurrently
-MAX_CONCURRENT_EVALUATIONS=2
+MAX_CONCURRENT_EVALUATIONS=100
 MAX_ITERATIONS=3
-PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
+PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
 # for your EQ/R based run. $* will pass all of this script's
