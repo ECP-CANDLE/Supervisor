@@ -29,6 +29,7 @@ def run(hyper_parameter_map):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
 
+    print(params)
     history = pkg.run(params)
 
     if framework is 'keras':

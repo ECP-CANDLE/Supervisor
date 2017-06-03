@@ -4,3 +4,4 @@ options(repos = r)
 
 install.packages("rgenoud")
 install.packages("DiceKriging")
+install.packages("randomForest")
