@@ -216,7 +216,7 @@ cd Supervisor/workflows/p1b3_mlrMBO/ext/EQ-R/eqr
 Launching the workflow:
 
 Use the cori_* files in the `swift` directory to launch the workflow. Edit
-`cori_workflow.sh` setting the relevant variables (see above) as appropriate.
+`cori_workflow.sh` setting the relevant variables as appropriate.  All easily changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END` markers.
 By default these are set up for short debugging runs and will need to be
 changed for a production run.
 
