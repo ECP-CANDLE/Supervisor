@@ -21,7 +21,7 @@ export PROCS=${PROCS:-4}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=4
+export PPN=${PPN:-4}
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
@@ -29,10 +29,10 @@ export WALLTIME=${WALLTIME:-00:02:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
-MAX_CONCURRENT_EVALUATIONS=2
+MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-2}
 # Total iterations
-MAX_ITERATIONS=3
-PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
+MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 # pbalabra: 
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
