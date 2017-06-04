@@ -24,6 +24,7 @@ import json
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['feature_subsample'] = 500
+hyper_parameter_map['epocs'] = 30
 hyper_parameter_map['train_steps'] = 100
 hyper_parameter_map['val_steps'] = 10
 hyper_parameter_map['test_steps'] = 10
@@ -109,7 +110,7 @@ pp = %d, it = %d, param.set.file='%s'
 
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO.R");
+    string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>

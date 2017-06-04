@@ -25,7 +25,7 @@ export PPN=4
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
-export WALLTIME=${WALLTIME:-00:30:00}
+export WALLTIME=${WALLTIME:-00:02:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
@@ -33,6 +33,8 @@ MAX_CONCURRENT_EVALUATIONS=2
 # Total iterations
 MAX_ITERATIONS=3
 PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
+# pbalabra: 
+# PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
 
@@ -61,6 +63,8 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
+#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR
@@ -74,7 +78,6 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
-
 
 CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
@@ -99,7 +102,7 @@ GCC_LIB=/opt/gcc/6.3.0/snos/lib64
 
 # echo's anything following this to standard out
 set -x
-SWIFT_FILE=workflow.swift
+WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
-        $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
