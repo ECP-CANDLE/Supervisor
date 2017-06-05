@@ -143,7 +143,13 @@ hyper_parameter_map['val_steps'] = 10
 hyper_parameter_map['test_steps'] = 10
 ```
 
-These should be removed when doing a production run.
+These should be removed when doing a production run. The `save` and `instance_directory`
+hyperparameters should not be reset.
+
+```
+hyper_parameter_map['save'] = '%s/output'
+hyper_parameter_map['instance_directory'] = '%s'
+```
 
 ### final_res.Rds ###
 mlrMBO's mbo function produces a MBOSingleObjResult object. That object is
@@ -194,6 +200,12 @@ but will not print etc. correctly.
 
 For more information see, the mbo and MBOSingleObjResult in the mlrMBO
 documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
+
+In addition to final_res.Rds, for each run the workflow writes out the hyperparameters
+used in that run to a `parameters.txt` file in each run's instance directory.
+`parameters.txt` can be used to run the model outside of the workflow using
+the `--config_file` command line argument. For example,
+`python p1b3_baseline_keras2.py --config_file parameters.txt`
 
 ### Running on Cori ###
 
