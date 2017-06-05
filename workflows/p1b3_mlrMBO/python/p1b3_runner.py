@@ -11,6 +11,18 @@ import numpy as np
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
+def write_params(params, hyper_parameter_map):
+    parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
+    f = "{}/parameters.txt".format(parent_dir)
+    with open(f, "w") as f_out:
+        f_out.write("[parameters]\n")
+        for k,v in params.items():
+            if type(v) in DATA_TYPES:
+                v = DATA_TYPES[type(v)]
+            if isinstance(v, basestring):
+                v = "'{}'".format(v)
+            f_out.write("{}={}\n".format(k, v))
+
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
     if framework is 'keras':
@@ -32,16 +44,7 @@ def run(hyper_parameter_map):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
 
-    parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
-    f = "{}/parameters.txt".format(parent_dir)
-    with open(f, "w") as f_out:
-        f_out.write("[parameters]\n")
-        for k,v in params.items():
-            if type(v) in DATA_TYPES:
-                v = DATA_TYPES[type(v)]
-            if isinstance(v, basestring):
-                v = "'{}'".format(v)
-            f_out.write("{}={}\n".format(k, v))
+    write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
     if framework is 'keras':
