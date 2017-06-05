@@ -1,9 +1,6 @@
 #! /usr/bin/env bash
-set -eu
 
-# May need this on Cori: -Wozniak
-# module swap PrgEnv-intel PrgEnv-gnu
-# module load deeplearning
+set -eu
 
 if [ "$#" -ne 1 ]; then
   script_name=$(basename $0)
@@ -19,62 +16,51 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 export EXPID=$1
-if [ $EXPID = "-a" ]; then
-  export TURBINE_OUTPUT_ROOT=$EMEWS_PROJECT_ROOT/experiments
-  export TURBINE_OUTPUT_FORMAT=X%Q
-  EXPID=SWIFT
-else
-  export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-  check_directory_exists
-fi
+export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+check_directory_exists
 
 # TODO edit the number of processes as required.
-PROCS=4
+export PROCS=4
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
-# export QUEUE=batch
+export QUEUE=batch
 export WALLTIME=00:10:00
-export PPN=${PPN:-16}
+export PPN=16
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # if R cannot be found, then these will need to be
 # uncommented and set correctly.
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-# export PYTHONHOME=/path/to/python
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR
 
-# EQ/Py location
-EQPY=$EMEWS_PROJECT_ROOT/ext/EQ-Py
-
-# Reorder PYTHONPATH -Wozniak
-PYTHONPATH_USER=${PYTHONPATH:-}
-export PYTHONPATH=
-PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
-PYTHONPATH+=$EQPY:
-PYTHONPATH+=$EMEWS_PROJECT_ROOT/../../python/hyperopt:
-PYTHONPATH+=/usr/common/software/python/2.7-anaconda/envs/deeplearning:
-PYTHONPATH+=$PYTHONPATH_USER
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
-EVALUATIONS=100
-PARAM_BATCH_SIZE=10
+# EQ/R location
+EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
+
+# how many to evaluate concurrently
+MAX_CONCURRENT_EVALUATIONS=2
+MAX_ITERATIONS=3
+PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
-# for your EQ/Py based run. $* will pass all of this script's
+# for your EQ/R based run. $* will pass all of this script's
 # command line arguments to the swift script
-CMD_LINE_ARGS="$* -seed=1234 -max_evals=$EVALUATIONS -param_batch_size=$PARAM_BATCH_SIZE"
-
+CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-MACHINE=${MACHINE:-}
+MACHINE=""
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
@@ -83,17 +69,11 @@ fi
 # Add any script variables that you want to log as
 # part of the experiment meta data to the USER_VARS array,
 # for example, USER_VARS=("VAR_1" "VAR_2")
-USER_VARS=($CMD_LINE_ARGS)
+USER_VARS=()
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
-PYTHONHOME=${PYTHONHOME:-}
-PATH=$PYTHONHOME/bin:$PATH
-
 # echo's anything following this to standard out
-# set -x
-SWIFT_FILE=swift_run_eqpy.swift
-swift-t -O0 -l -n $PROCS $MACHINE -p -I $EQPY -r $EQPY \
-        -e PATH=$PATH \
-        -e PYTHONPATH=$PYTHONPATH \
-        $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
+set -x
+SWIFT_FILE=workflow.swift
+swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS

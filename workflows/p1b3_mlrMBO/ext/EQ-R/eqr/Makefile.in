@@ -1,0 +1,77 @@
+
+# EQ.R
+# MAKEFILE
+
+.DELETE_ON_ERROR:
+
+PREFIX = @prefix@
+
+include settings.mk
+
+EQR_SO = libeqr.so
+
+all: pkg
+
+pkg: pkgIndex.tcl
+
+EQR_wrap.cxx: EQR.i EQR.h Makefile
+	swig -c++ -pkgversion 0.1 $(<)
+
+EQR_wrap.o: EQR_wrap.cxx
+	g++ -c $(CXXFLAGS) $(CPPFLAGS) \
+		$(<)
+
+# Rebuild everything if any header changes
+HEADERS = $(wildcard *.h) Makefile
+
+%.o: %.cpp $(HEADERS)
+	g++ -c $(CXXFLAGS) $(CPPFLAGS) \
+		$(<)
+
+%.x: %.o EQR.o
+	g++ -o $(@) $(<) EQR.o \
+		$(LDFLAGS)
+
+$(EQR_SO): EQR_wrap.o EQR.o
+	g++ -shared -o $(@) \
+		$(^)        \
+		$(LDFLAGS)  \
+		-lRInside
+
+pkgIndex.tcl: make-package.tcl $(EQR_SO) Makefile
+	$(TCLSH) $(<) > $(@)
+
+INSTALLABLES = pkgIndex.tcl $(EQR_SO) EQR.swift
+INSTALL_TARGETS = $(patsubst %, $(PREFIX)/%, $(INSTALLABLES))
+
+install: $(INSTALL_TARGETS)
+
+$(PREFIX):
+	mkdir -pv $(PREFIX)
+
+$(INSTALL_TARGETS): $(PREFIX)/%: % $(PREFIX)
+	cp $(<) $(@)
+
+tests: test-cpp.x tcl-pkg
+
+run-tests: tests test-cpp.out test-tcl.out
+
+test-cpp.out: tests
+	./test-cpp.x      2>&1 > $(@)
+
+test-tcl.out: tests
+# 	Set VALGRIND in the environment to run under valgrind
+	${VALGRIND} $(TCLSH) test.tcl 2>&1 | tee test-tcl.out
+
+.PRECIOUS: %.o
+
+.PHONY: all tcl-pkg tests run-tests
+
+clean:
+	rm -fv *.out pkgIndex.tcl *.x *.so *.o EQR_wrap.cxx
+
+distclean: clean
+	rm -fv Makefile *.mk configure config.cache autoscan.log
+	rm -fv config.h config.h.in config.log config.status*
+	rm -fv *.pdf
+	rm -rf autom4te.cache
