@@ -25,9 +25,8 @@ import p1b1_runner
 a = p1b1_runner.run('%s', '%s')
 """;
 
-// algorithm params format is a string representation
-// of a python dictionary. eqpy_hyperopt evals this
-// string to create the dictionary. This, unfortunately,
+// algorithm params format is a key=value
+// comma separated string representation
 string algo_params_template =
 """
 pp = %d, it = %d, param.set.file='%s'

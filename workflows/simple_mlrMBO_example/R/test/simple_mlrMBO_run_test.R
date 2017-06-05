@@ -1,4 +1,4 @@
-
+source("test/test_utils.R")
 # Functions to supply OUT_put and IN_get
 for.In_get = ""
 last.time = FALSE
@@ -9,7 +9,7 @@ OUT_put <- function(x) {
       last.time <<- TRUE
     }
     else if (x == "Params") {
-      for.In_get <<- "pp = 5, it = 5"
+      for.In_get <<- "pp = 2, it = 5"
     }
     else {
       res <- split.into.param.lines(x)

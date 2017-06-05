@@ -18,21 +18,30 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
+  if (fun == proposePointsByInfillOptimization){
+    return (lapply(...,fun,more.args = list(),
+    simplify = FALSE,
+    use.names = FALSE,
+    impute.error = NULL,
+    level = NA_character_,
+    show.info = NA))
+  }
+  else {
+    dots <- list(...)
+    string_params <- elements_of_lists_to_string(dots[[1L]])
+    print(paste0("parallelMap2 called with list_param: ",string_params))
+    OUT_put(string_params)
+    string_results = IN_get()
 
-  dots <- list(...)
-  string_params <- elements_of_lists_to_string(dots[[1L]])
-  print(paste0("parallelMap2 called with list_param: ",string_params))
-  OUT_put(string_params)
-  string_results = IN_get()
+    st = proc.time() - st
 
-  st = proc.time() - st
-
-  # Assumes results are in the form a;b;c
-  # Note: can also handle vector returns for each,
-  # i.e., a,b;c,d;e,f
-  res <- string_to_list_of_vectors(string_results)
-  # using dummy time
-  return(result_with_extras_if_exist(res,st[3]))
+    # Assumes results are in the form a;b;c
+    # Note: can also handle vector returns for each,
+    # i.e., a,b;c,d;e,f
+    res <- string_to_list_of_vectors(string_results)
+    # using dummy time
+    return(result_with_extras_if_exist(res,st[3]))
+  }
 }
 
 require(parallelMap)
