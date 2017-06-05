@@ -23,12 +23,17 @@ import json
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
+
+## debugging params
 hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epocs'] = 30
+hyper_parameter_map['epochs'] = 3
 hyper_parameter_map['train_steps'] = 100
 hyper_parameter_map['val_steps'] = 10
 hyper_parameter_map['test_steps'] = 10
+## end debugging params
+
 hyper_parameter_map['save'] = '%s/output'
+hyper_parameter_map['instance_directory'] = '%s'
 
 validation_loss = p1b3_runner.run(hyper_parameter_map)
 """;
@@ -43,7 +48,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir);
+  string code = code_template % (params, outdir, outdir);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
