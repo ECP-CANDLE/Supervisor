@@ -72,13 +72,39 @@ See the https://github.com/CODARcode/SwiftExamples/tree/master/auen[README here]
 
 *Systems tested:* http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
 
+== Synthetic examples
+
+These do not actually use an ML call, but demonstrate relevant use of Swift
+
+=== Simple Sweep Command Line
+
+Simple parameter sweep that uses a Python command line task.
+
+* https://github.com/CODARcode/SwiftExamples/tree/master/SimpleSweepCommandLine
+
+=== Simple Sweep Python
+
+Simple parameter sweep that uses a Python function task.
+
+* https://github.com/CODARcode/SwiftExamples/tree/master/SimpleSweepPython
+
+=== GA0
+
+Genetic algorithm, difficulty zero.
+
+https://github.com/emews/EQ-Py/tree/master/examples/ga0
+
+=== Older auen workflow
+
+This is a Beagle parameter sweep over an older AUEN.
+
+* https://github.com/CODARcode/SwiftExamples/tree/master/auen
+
 == auen41_ff on Cooley
 
 *Contacts:* Wozniak and Balaprakash +
 *Source:* +git@github.com:ECP-CANDLE/Supervisor.git+ http://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[+/workflows/auen41_ff+] +
 *Systems tested:* http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
-
-
 
 Add this Swift/T to your +PATH+: +~wozniak/Public/sfw/x86_64/login/swift-t-conda/stc/bin+
 
@@ -126,3 +152,11 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_hyperopt
 The P1B1 mlrMBO workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, mlrMBO minimizes the validation loss.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_mlrMBO for more details.
+
+== Works in progress
+
+=== Oversample
+
+Some kind of preliminary test.
+
+https://github.com/CODARcode/SwiftExamples/tree/master/oversample
