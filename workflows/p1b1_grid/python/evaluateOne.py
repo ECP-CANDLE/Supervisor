@@ -12,24 +12,23 @@ filename        = sys.argv[2]
 print (parameterString)
 print ("filename is ", filename)
 
-epochs = int(parameterString[0].strip())
-batch_size = int(parameterString[2].strip())
-print ("Running p1b1 for epochs ", epochs, batch_size)
 
-# N1 = int(parameterString[2].strip())
-# NE = int(parameterString[3].strip())
+integs = [int(x) for x in parameterString.split(',')]
+print (integs)
 
-print("Set the correct paths for test and train file")
-test_path="/home/jain/Benchmarks/Data/Pilot1/P1B1.test.csv"
-train_path="/home/jain/Benchmarks/Data/Pilot1/P1B1.train.csv"
+epochs = integs[0]
+batch_size = integs[1]
+N1 = integs[2]
+NE = integs[3]
 
 print ("Starting to loading Xtrain and Xtest")
-X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
+X_train, X_test = p1b1.load_data()
 print ("Done loading Xtrain and Xtest")
 
-print ("Running p1b1 for epochs ", epochs)
+print ("Running p1b1 for epochs, batch_size, N1, NE", epochs, batch_size, N1, NE)
+# Need to introduce N1 and NE as parameters to the run_p1b1 function
 encoder, decoder, history = p1b1_baseline_keras2.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size)
-print ("Done running p1b1 for epochs ", epochs)
+print ("Done running p1b1")
 
 # works around this error:
 # https://github.com/tensorflow/tensorflow/issues/3388
