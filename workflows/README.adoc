@@ -25,7 +25,8 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 | Grid^4^
 | <<SimpleSweepCommandLine>>  +
   <<SimpleSweepPython>> | | <<p1b1_grid>> | | |
-| https://github.com/DEAP/deap[DEAP] | | <<AUEN_DEAP>> | | | |
+| https://github.com/DEAP/deap[DEAP] |
+  <<GA0>> | <<AUEN_DEAP>> | | | |
 | Hyperopt  | | | <<p1b1_hyperopt>> | | |
 | https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> | |
                                                   <<p1b3_mlrMBO>> |
@@ -97,9 +98,10 @@ Simple parameter sweep that uses a Python function task.
 
 * https://github.com/CODARcode/SwiftExamples/tree/master/SimpleSweepPython
 
+[[GA0]]
 === GA0
 
-Genetic algorithm, difficulty zero.
+Genetic algorithm, difficulty zero.  Pure math objective function with DEAP optimization.
 
 https://github.com/emews/EQ-Py/tree/master/examples/ga0
 
