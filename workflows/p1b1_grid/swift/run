@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Usage: ./run 
+#
+
+#### set this variable to your P1B1 benchmark directory (supervisor branch)
+P1B1_DIR=/home/jain/newCANDLE/Benchmarks/Pilot1/P1B1
+###
+
+THIS=$( cd $( dirname $0 ); /bin/pwd )
+export APP_HOME=$THIS
+
+PROJECT_ROOT=$APP_HOME/..
+
+### set 
+export PYTHONPATH=/usr/local/lib/python2.7/
+###
+export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$P1B1_DIR
+
+echo $PYTHONPATH
+
+### set the desired number of processors
+PROCS=3
+###
+
+# remove -l option for removing printing processors ranks
+# settings.json file has all the parameter combinations to be tested
+echo swift-t  -n $PROCS $APP_HOME/run-sweep.swift $*
+swift-t  -l -n $PROCS $APP_HOME/run-sweep.swift $* --settings=$PWD/../data/settings.json
