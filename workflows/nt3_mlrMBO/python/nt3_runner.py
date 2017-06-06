@@ -10,6 +10,27 @@ import numpy as np
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
+def str2lst(string_val):
+    result = [int(x) for x in string_val.split(' ')]
+    return result
+
+def is_numeric(val):
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False
+
+def format_params(hyper_parameter_map):
+    for k,v in hyper_parameter_map.items():
+        vals = str(v).split(" ")
+        if len(vals) > 1 and is_numeric(vals[0]):
+            # assume this should be a list
+            if "." in vals[0]:
+                hyper_parameter_map[k] = [float(x) for x in vals]
+            else:
+                hyper_parameter_map[k] = [int(x) for x in vals]
+
 def write_params(params, hyper_parameter_map):
     parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
     f = "{}/parameters.txt".format(parent_dir)
@@ -35,6 +56,8 @@ def run(hyper_parameter_map):
     #     pkg = nt3_baseline_neon
     else:
         raise ValueError("Invalid framework: {}".format(framework))
+
+    format_params(hyper_parameter_map)
 
     # params is python dictionary
     params = pkg.initialize_parameters()

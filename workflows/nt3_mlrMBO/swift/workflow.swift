@@ -23,11 +23,6 @@ import json
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
-
-## debugging params
-hyper_parameter_map['conv'] = [32, 20, 16, 32, 10, 1]
-## end debugging params
-
 hyper_parameter_map['save'] = '%s/output'
 hyper_parameter_map['instance_directory'] = '%s'
 
