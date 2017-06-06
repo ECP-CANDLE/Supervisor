@@ -12,44 +12,46 @@ string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-string data_dir = argv("data_directory");
-int propose_points = toint(argv("pp", "3"));
-int max_iterations = toint(argv("it", "5"));
+int propose_points = toint(argv("pp", "10"));
+int max_budget = toint(argv("mb", "110"));
+int max_iterations = toint(argv("mi", "10"));
+int design_size = toint(argv("ds", "10"));
+
+
+
 string param_set = argv("param_set_file");
 
-string p1b1_template =
+string code_template =
 """
-import p1b1_runner
+import p1b3_runner
+import json
 
-# args: p1b1 data directory, parameter string
-a = p1b1_runner.run('%s', '%s')
+hyper_parameter_map = json.loads('%s')
+hyper_parameter_map['framework'] = 'keras'
+hyper_parameter_map['feature_subsample'] = 500
+hyper_parameter_map['epocs'] = 30
+hyper_parameter_map['train_steps'] = 100
+hyper_parameter_map['val_steps'] = 10
+hyper_parameter_map['test_steps'] = 10
+hyper_parameter_map['save'] = '%s/output'
+
+validation_loss = p1b3_runner.run(hyper_parameter_map)
 """;
 
-// algorithm params format is a key=value
-// comma separated string representation
+// algorithm params format is a string representation
+// of a python dictionary. eqpy_hyperopt evals this
+// string to create the dictionary. This, unfortunately,
 string algo_params_template =
 """
-pp = %d, it = %d, param.set.file='%s'
+max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
 (string obj_result) obj(string params, string iter_indiv_id) {
-  // Typical code might create multiple sets of parameters from a single
-  // set by duplicating that set some number of times and appending a
-  // different random seed to each of the new sets. The example doesn't
-  // do that so we only need to run obj rather than create those new
-  // parameters and iterate over them.
-  // string parameter_combos[] = create_parameter_combinations(params, trials);
-  // float fresults[];
-  //foreach f,i in params {
-  //    string id_suffix = "%s_%i" % (iter_indiv_id,i);
-  //    fresults[i] = run_obj(f, id_suffix);
-  //}
-  // not using unique id suffix but we could use it to create
-  // a per run unique directory if we need such
-  string id_suffix = "%s_%i" % (iter_indiv_id,1);
-  string p1b1_code = p1b1_template % (data_dir, params);
-  //printf(p1b1_code);
-  obj_result = python_persist(p1b1_code, "str(a)");
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
+  string code = code_template % (params, outdir);
+  make_dir(outdir) =>
+  obj_result = python_persist(code, "str(validation_loss)");
+  printf(obj_result);
 }
 
 (void v) loop(location ME, int ME_rank) {
@@ -90,9 +92,11 @@ pp = %d, it = %d, param.set.file='%s'
         string results[];
         foreach p, j in param_array
         {
+            printf(p);
             results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j));
         }
         string res = join(results, ";");
+        printf(res);
         EQR_put(ME, res) => c = true;
     }
   }
@@ -109,9 +113,10 @@ pp = %d, it = %d, param.set.file='%s'
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
     // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (propose_points,
-      max_iterations, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO.R");
+
+    string algo_params = algo_params_template % (max_budget, max_iterations, 
+	design_size, propose_points, param_set);
+    string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
