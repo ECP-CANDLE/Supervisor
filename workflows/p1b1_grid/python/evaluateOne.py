@@ -1,5 +1,5 @@
 import sys
-import p1b1_baseline
+import p1b1_baseline_keras2
 import p1b1
 
 if (len(sys.argv) < 3):
@@ -28,7 +28,7 @@ X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
 print ("Done loading Xtrain and Xtest")
 
 print ("Running p1b1 for epochs ", epochs)
-encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size)
+encoder, decoder, history = p1b1_baseline_keras2.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size)
 print ("Done running p1b1 for epochs ", epochs)
 
 # works around this error:
