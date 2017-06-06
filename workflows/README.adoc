@@ -24,7 +24,7 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 | Random^3^ | | | | |
 | Grid^4^
 | <<SimpleSweepCommandLine>>  +
-  <<SimpleSweepPython>> | | | |
+  <<SimpleSweepPython>> | | <<p1b1_grid>> | |
 | https://github.com/DEAP/deap[DEAP] | | <<AUEN_DEAP>> | | |
 | Hyperopt  | | | <<p1b1_hyperopt>> | |
 | https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> | |
@@ -63,6 +63,13 @@ Demonstrates calling Swift parameter sweep over Python in-memory tasks plus inse
 http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPyDB
 
 *Systems tested:* WIP: Local machine
+
+[[p1b1_grid]]
+=== p1b1_grid
+
+Demonstration of P1B1 on a regular grid parameter sweep.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_grid for more details.
 
 [[AUEN_DEAP]]
 == AUEN_DEAP
