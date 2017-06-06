@@ -1,4 +1,5 @@
 
+#include <getopt.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,24 +8,30 @@
 #include "io.h"
 #include "py-eval.h"
 
-char* usage =
+static char* usage =
 "usage: py-eval [code_files]* expr_file\n"
 "use - to reset the interpreter\n"  
 "see the README\n";
+
+static bool verbose = false;
 
 static void crash(char* fmt, ...);
 static void do_python_code(char* code_file);
 static void do_python_eval(char* expr_file);
 
+static void options(int argc, char* argv[]);
+
 int
 main(int argc, char* argv[])
 {
   if (argc == 1) crash(usage);
-  
+
+  options(argc, argv);
   python_init();
 
   int cf; // current file
-  for (cf = 1; cf < argc-1; cf++)
+  
+  for (cf = optind; cf < argc-1; cf++)
   {
     char* code_file = argv[cf];
     if (strcmp(code_file, "-") == 0)
@@ -40,6 +47,21 @@ main(int argc, char* argv[])
   // Clean up
   python_finalize();
   exit(EXIT_SUCCESS);
+}
+
+static int
+options(int argc, char* argv[])
+{
+  int opt;
+  while ((opt = getopt(argc, argv, "v")) != -1)
+  {
+    switch (opt)
+    {
+      case 'v': verbose = true; break;
+      default: crash("bad option: %c", opt);
+    }
+  }
+  return optind;
 }
 
 static void
