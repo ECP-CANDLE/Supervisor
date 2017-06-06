@@ -31,26 +31,3 @@ result_with_extras_if_exist <- function(res,time_value){
   lapply(res, function(x) append_extras_if_exist(c(list(y=x[1]),
                                                    list(time=time_value)),x))
 }
-
-strsubst <-
-function(template, map, verbose=getOption("verbose")) {
-  pat <- "\\$\\([^\\)]+\\)"
-  res <- template
-  map[["$"]] <- "$"
-  m <- gregexpr(pat, template)
-  idx <- which(sapply(m, function(x) x[[1]]!=-1)) # faster than 1:length(template)?
-  for (i in idx) {
-    line <- template[[i]]
-    if(verbose) cat("input: |", template[[i]], "|\n")
-    starts <- m[[i]]
-    ml <- attr(m[[i]], "match.length")
-    sym <- substring(line, starts+2, starts+ml-2)
-    repl <- map[sym]
-    idx1 <- is.null(repl)
-    repl[idx1] <- sym[idx1]
-    norepl <- substring(line, c(1, starts+ml), c(starts-1, nchar(line)))
-    res[[i]] <- paste(norepl, c(repl, ""), sep="", collapse="") # more elegant?
-    if (verbose) cat("output: |", res[[i]], "|\n")
-  }
-  return(res)
-}

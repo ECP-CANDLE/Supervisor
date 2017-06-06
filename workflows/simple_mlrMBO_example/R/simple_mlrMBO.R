@@ -31,7 +31,8 @@ parallelMap2 <- function(fun, ...,
   # Note: can also handle vector returns for each,
   # i.e., a,b;c,d;e,f
   res <- string_to_list_of_vectors(string_results)
-  # using dummy time
+  # Return results with timing information for
+  # running this invocation of parallelMap2
   return(result_with_extras_if_exist(res,st[3]))
 }
 
