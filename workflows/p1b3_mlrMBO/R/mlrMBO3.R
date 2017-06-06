@@ -18,13 +18,9 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
-  if (fun == proposePointsByInfillOptimization){
-    return (lapply(...,fun,more.args = list(),
-    simplify = FALSE,
-    use.names = FALSE,
-    impute.error = NULL,
-    level = NA_character_,
-    show.info = NA))
+  if (deparse(substitute(fun)) == "proposePointsByInfillOptimization"){
+    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
+       level = level, show.info = show.info))
   }
   else{
     dots <- list(...)
@@ -47,6 +43,8 @@ parallelMap2 <- function(fun, ...,
 require(parallelMap)
 require(jsonlite)
 
+pm <- parallelMap
+
 unlockBinding("parallelMap", as.environment("package:parallelMap"))
 assignInNamespace("parallelMap", parallelMap2, ns="parallelMap", envir=as.environment("package:parallelMap"))
 assign("parallelMap", parallelMap2, as.environment("package:parallelMap"))
@@ -64,7 +62,6 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
   # ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
-  print(design)
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
   return(res)
@@ -85,6 +82,7 @@ obj.fun = makeSingleObjectiveFunction(
   fn = simple.obj.fun,
   par.set = param.set
 )
+
 
 # remove this as its not an arg to the function
 l$param.set.file <- NULL
