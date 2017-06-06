@@ -10,11 +10,11 @@
 
 static char* usage =
 "usage: py-eval [code_files]* expr_file\n"
-"use - to reset the interpreter\n"  
+"use - to reset the interpreter\n"
 "see the README\n";
 
-static bool verbose = false;
-
+static int verbosity = 0;
+static void verbose(char* fmt, ...);
 static void crash(char* fmt, ...);
 static void do_python_code(char* code_file);
 static void do_python_eval(char* expr_file);
@@ -24,18 +24,19 @@ static void options(int argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-  if (argc == 1) crash(usage);
-
+  // Set up
   options(argc, argv);
+  if (argc == optind) crash(usage);
   python_init();
 
+  // Execute files
   int cf; // current file
-  
   for (cf = optind; cf < argc-1; cf++)
   {
     char* code_file = argv[cf];
     if (strcmp(code_file, "-") == 0)
     {
+      verbose("reset");
       python_reset();
       continue;
     }
@@ -43,13 +44,13 @@ main(int argc, char* argv[])
   }
 
   do_python_eval(argv[cf]);
-  
+
   // Clean up
   python_finalize();
   exit(EXIT_SUCCESS);
 }
 
-static int
+static void
 options(int argc, char* argv[])
 {
   int opt;
@@ -57,16 +58,17 @@ options(int argc, char* argv[])
   {
     switch (opt)
     {
-      case 'v': verbose = true; break;
-      default: crash("bad option: %c", opt);
+      case 'v': verbosity = 1; break;
+      default: crash("option processing");
     }
   }
-  return optind;
 }
 
 static void
 do_python_code(char* code_file)
 {
+  verbose("code: %s", code_file);
+
   char* code = slurp(code_file);
   chomp(code);
   if (code == NULL) crash("failed to read: %s", code_file);
@@ -78,6 +80,8 @@ do_python_code(char* code_file)
 static void
 do_python_eval(char* expr_file)
 {
+  verbose("eval: %s", expr_file);
+
    // Read Python expr file
   if (strcmp(expr_file, "-") == 0)
     crash("expr file cannot be -");
@@ -94,14 +98,28 @@ do_python_eval(char* expr_file)
 }
 
 static void
-crash(char* fmt, ...)
+verbose(char* fmt, ...)
 {
+  if (verbosity == 0) return;
+
   printf("py-eval: ");
   va_list ap;
   va_start(ap, fmt);
   vprintf(fmt, ap);
   va_end(ap);
   printf("\n");
-  
+  fflush(stdout);
+}
+
+static void
+crash(char* fmt, ...)
+{
+  printf("py-eval: abort: ");
+  va_list ap;
+  va_start(ap, fmt);
+  vprintf(fmt, ap);
+  va_end(ap);
+  printf("\n");
+
   exit(EXIT_FAILURE);
 }
