@@ -52,6 +52,7 @@ lockBinding("parallelMap", as.environment("package:parallelMap"))
 
 library(mlrMBO)
 
+# dummy objective function
 simple.obj.fun = function(x){}
 
 main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
