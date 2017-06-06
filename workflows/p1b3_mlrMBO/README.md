@@ -82,8 +82,19 @@ P1B3_mlrMBO/
 
 ## Running the Workflow ##
 
-The launch scripts in the `swift` directory can be used to run the workflow.
-Backup the `workflow.sh` and edit it as appropriate. The `workflow.swift` script takes 3 arguments, each of which is set in the `workflow.sh` script.  Swift receives the arguments with its `argv()` builtin.
+The launch scripts in the `swift` directory are used to run the workflow.
+Backup the workflow script and edit it as appropriate. The `workflow.swift` script takes 3 arguments, each of which is set in the workflow script.  Swift receives the arguments with its `argv()` builtin.
+
+Run the *workflow script*:
+
+* On Cori, run
+```
+source swift/cori_settings.sh
+swift/cori_workflow.sh <EXPID>
+```
+* On other systems, run `swift/workflow.sh <EXPID>`
+
+where `EXPID` is the experiment ID (provide any token you want).
 
 The following shell variables in caps correspond to the Swift workflow argument in parentheses:
 
@@ -106,7 +117,7 @@ The launch script also sets `PYTHONPATH` to include the location of the P1B3
 python code. Edit P1B3_DIR as appropriate.
 
  The launch script takes as a required argument an experiment id. The workflow
- output, various swift-t related files, and the `final_res.Rds` file will be written into a `P1B3_mlrMBO\experiments\X`
+ output, various Swift/T related files, and the `final_res.Rds` file will be written into a `P1B3_mlrMBO/experiments/X`
  directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
@@ -133,7 +144,7 @@ are passed to swift-t as semi-colon separated as JSON strings. Swift-t then
 splits these into individual JSON strings each of which contains the
 parameters for a single run.
 
-**Note** `swift\workflow.swift` may have some default hyperparameters parameters
+**Note** `swift/workflow.swift` may have some default hyperparameters parameters
 set in the template code for debugging purposes:
 
 ```
@@ -208,6 +219,8 @@ the `--config_file` command line argument. For example,
 `python p1b3_baseline_keras2.py --config_file parameters.txt`
 
 ### Running on Cori ###
+
+These steps were performed on Cori for installation.
 
 Prerequisites:
 
