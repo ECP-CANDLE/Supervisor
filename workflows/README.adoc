@@ -15,7 +15,7 @@ Demonstration workflows for CANDLE.
 [[matrix]]
 == The Matrix
 
-This is an matrix of workflow capabilities and CANDLE benchmarks.
+This is a matrix of workflow capabilities and CANDLE benchmarks.
 
 [options="header"]
 |====
