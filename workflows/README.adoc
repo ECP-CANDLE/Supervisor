@@ -165,6 +165,11 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b3_mlrMBO f
 
 *Systems tested:* http://www.nersc.gov/users/computational-systems/cori[Cori]
 
+[[nt3_mlrMBO]]
+== nt3_mlrMBO
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
+
 == Works in progress
 
 === Oversample
