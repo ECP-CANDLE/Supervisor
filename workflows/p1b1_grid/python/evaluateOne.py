@@ -27,7 +27,7 @@ print ("Done loading Xtrain and Xtest")
 
 print ("Running p1b1 for epochs, batch_size, N1, NE", epochs, batch_size, N1, NE)
 # Need to introduce N1 and NE as parameters to the run_p1b1 function
-encoder, decoder, history = p1b1_baseline_keras2.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size)
+encoder, decoder, history = p1b1_baseline_keras2.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size, N1=N1, NE=NE)
 print ("Done running p1b1")
 
 # works around this error:
