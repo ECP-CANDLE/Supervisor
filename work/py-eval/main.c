@@ -69,12 +69,15 @@ do_python_code(char* code_file)
 {
   verbose("code: %s", code_file);
 
+  // Read Python code file
   char* code = slurp(code_file);
-  chomp(code);
   if (code == NULL) crash("failed to read: %s", code_file);
+  chomp(code);
+
+  // Execute Python code
   bool rc = python_code(code);
-  free(code);
   if (!rc) crash("python code failed.");
+  free(code);
 }
 
 static void
@@ -82,7 +85,7 @@ do_python_eval(char* expr_file)
 {
   verbose("eval: %s", expr_file);
 
-   // Read Python expr file
+  // Read Python expr file
   if (strcmp(expr_file, "-") == 0)
     crash("expr file cannot be -");
   char* expr = slurp(expr_file);
@@ -92,8 +95,8 @@ do_python_eval(char* expr_file)
   // Do Python eval
   char* result;
   bool rc = python_eval(expr, &result);
-  free(expr);
   if (!rc) crash("python expr failed.");
+  free(expr);
   printf("%s\n", result);
 }
 
