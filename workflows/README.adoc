@@ -23,7 +23,7 @@ This is an matrix of workflow capabilities and CANDLE benchmarks.
 | Invoke^2^ | | <<py-keras.swift>> | | | |
 | Random^3^ | | | | | |
 | Grid^4^
-| <<SimpleSweepCommandLine>>  +
+| <<SimpleSweepCommandLine,SimpleSweepCLI>>  +
   <<SimpleSweepPython>> | | <<p1b1_grid>> | | |
 | https://github.com/DEAP/deap[DEAP] |
   <<GA0>> | <<AUEN_DEAP>> | | | |
