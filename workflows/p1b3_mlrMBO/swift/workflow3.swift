@@ -55,8 +55,10 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
 
   make_dir(outdir) =>
   string fname = "%s/params.json" % outdir;
-  file results_file <fname> = write(params) =>
-  run_model(model_script, fname, outdir) =>
+  file out <"%s/out.txt" % outdir>;
+  file err <"%s/err.txt" % outdir>;
+  file params_file <fname> = write(params) =>
+  (out,err) = run_model(model_script, fname, outdir) =>
   file line = input("%s/result.txt" % outdir) =>
   obj_result = trim(read(line));
   printf(obj_result);
