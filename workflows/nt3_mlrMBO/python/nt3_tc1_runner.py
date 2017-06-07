@@ -7,12 +7,9 @@ if not hasattr(sys, 'argv'):
 import json
 import os
 import numpy as np
+import importlib
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
-
-def str2lst(string_val):
-    result = [int(x) for x in string_val.split(' ')]
-    return result
 
 def is_numeric(val):
     try:
@@ -45,9 +42,10 @@ def write_params(params, hyper_parameter_map):
 
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
+    model_name = hyper_parameter_map['model_name']
     if framework is 'keras':
-        import nt3_baseline_keras2
-        pkg = nt3_baseline_keras2
+        module_name = "{}_baseline_keras2".format(model_name)
+        pkg = importlib.import_module(module_name)
     # elif framework is 'mxnet':
     #     import nt3_baseline_mxnet
     #     pkg = nt3_baseline_keras_baseline_mxnet
