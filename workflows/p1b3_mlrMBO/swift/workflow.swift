@@ -46,6 +46,12 @@ string algo_params_template =
 pp = %d, it = %d, param.set.file='%s'
 """;
 
+string stage_data_py =
+"""
+import p1b3
+p1b3.stage_data()
+""";
+
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
   string code = code_template % (params, outdir, outdir);
@@ -116,6 +122,8 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
+    printf("Staging Data") =>
+    python_persist(stage_data_py, "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
