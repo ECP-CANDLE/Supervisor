@@ -26,7 +26,7 @@ hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['save'] = '%s/output'
 hyper_parameter_map['instance_directory'] = '%s'
 
-validation_loss = nt3_runner.run(hyper_parameter_map)
+validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
 """;
 
 // algorithm params format is a string representation
