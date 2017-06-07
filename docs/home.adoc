@@ -30,6 +30,12 @@ The database work is described in the README visible https://github.com/ECP-CAND
 
 == Swift installations
 
+* http://swift-lang.github.io/swift-t/sites.html#_theta[Theta]
++
+This is linked to Python and R but currently without ML libs.
++
+Other Theta ESP notes are here: https://collab.cels.anl.gov/display/ESP
+
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
 +
 This uses the system-installed Python with ML libs at: +
