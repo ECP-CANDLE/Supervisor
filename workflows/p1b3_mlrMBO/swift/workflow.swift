@@ -15,6 +15,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
+file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
 string code_template =
 """
@@ -46,11 +47,21 @@ string algo_params_template =
 pp = %d, it = %d, param.set.file='%s'
 """;
 
+app (file out, file err) run_model (file shfile, string param_file, string instance)
+{
+    "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
+}
+
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
   string code = code_template % (params, outdir, outdir);
+
   make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
+  string fname = "%s/params.json" % outdir;
+  file results_file <fname> = write(params) =>
+  run_model(model_script, fname, outdir) =>
+  file line = input("%s/result.txt" % outdir) =>
+  obj_result = trim(read(line));
   printf(obj_result);
 }
 

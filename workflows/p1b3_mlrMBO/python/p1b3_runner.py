@@ -59,3 +59,34 @@ def run(hyper_parameter_map):
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
     return val_loss[-1]
+
+def write_output(result, instance_directory):
+    with open('{}/result.txt'.format(instance_directory), 'w') as f_out:
+        f_out.write("{}\n".format(result))
+
+def init(param_file, instance_directory):
+    with open(param_file) as f_in:
+        hyper_parameter_map = json.load(f_in)
+
+    hyper_parameter_map['framework'] = 'keras'
+
+    ## debugging params
+    hyper_parameter_map['feature_subsample'] = 500
+    hyper_parameter_map['epochs'] = 3
+    hyper_parameter_map['train_steps'] = 100
+    hyper_parameter_map['val_steps'] = 10
+    hyper_parameter_map['test_steps'] = 10
+    ## end debugging params
+
+    hyper_parameter_map['save'] = '{}/output'.format(instance_directory)
+    hyper_parameter_map['instance_directory'] = instance_directory
+    return hyper_parameter_map
+
+if __name__ == '__main__':
+    param_file = sys.argv[1]
+    instance_directory = sys.argv[2]
+    hyper_parameter_map = init(param_file, instance_directory)
+    # clear sys.argv so that argparse doesn't object
+    sys.argv = ['p1b3_runner']
+    result = run(hyper_parameter_map)
+    write_output(result, instance_directory)
