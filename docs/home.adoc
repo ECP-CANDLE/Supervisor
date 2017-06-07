@@ -11,6 +11,8 @@ This prevents ^M from appearing in the output:
 ////
 :miscellaneous.newline: \n
 
+:toc:
+
 = CANDLE Supervisor Home Page
 
 This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
