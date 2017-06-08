@@ -23,6 +23,23 @@ def write_params(params, hyper_parameter_map):
                 v = "'{}'".format(v)
             f_out.write("{}={}\n".format(k, v))
 
+def is_numeric(val):
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False
+
+def format_params(hyper_parameter_map):
+    for k,v in hyper_parameter_map.items():
+        vals = str(v).split(" ")
+        if len(vals) > 1 and is_numeric(vals[0]):
+            # assume this should be a list
+            if "." in vals[0]:
+                hyper_parameter_map[k] = [float(x) for x in vals]
+            else:
+                hyper_parameter_map[k] = [int(x) for x in vals]
+
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
     if framework is 'keras':
@@ -39,6 +56,8 @@ def run(hyper_parameter_map):
 
     # params is python dictionary
     params = pkg.initialize_parameters()
+    format_params(hyper_parameter_map)
+    
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))

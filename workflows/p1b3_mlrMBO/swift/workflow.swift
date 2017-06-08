@@ -17,28 +17,6 @@ int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
 file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
-string code_template =
-"""
-import p1b3_runner
-import json
-
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-
-## debugging params
-hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epochs'] = 3
-hyper_parameter_map['train_steps'] = 100
-hyper_parameter_map['val_steps'] = 10
-hyper_parameter_map['test_steps'] = 10
-## end debugging params
-
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['instance_directory'] = '%s'
-
-validation_loss = p1b3_runner.run(hyper_parameter_map)
-""";
-
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
 // string to create the dictionary. This, unfortunately,
@@ -60,7 +38,7 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir);
+  //string code = code_template % (params, outdir, outdir);
 
   make_dir(outdir) =>
   string fname = "%s/params.json" % outdir;
