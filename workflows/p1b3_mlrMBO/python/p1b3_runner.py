@@ -57,7 +57,7 @@ def run(hyper_parameter_map):
     # params is python dictionary
     params = pkg.initialize_parameters()
     format_params(hyper_parameter_map)
-    
+
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
@@ -88,17 +88,9 @@ def init(param_file, instance_directory):
         hyper_parameter_map = json.load(f_in)
 
     hyper_parameter_map['framework'] = 'keras'
-
-    ## debugging params
-    hyper_parameter_map['feature_subsample'] = 500
-    hyper_parameter_map['epochs'] = 3
-    hyper_parameter_map['train_steps'] = 100
-    hyper_parameter_map['val_steps'] = 10
-    hyper_parameter_map['test_steps'] = 10
-    ## end debugging params
-
     hyper_parameter_map['save'] = '{}/output'.format(instance_directory)
     hyper_parameter_map['instance_directory'] = instance_directory
+    
     return hyper_parameter_map
 
 if __name__ == '__main__':
