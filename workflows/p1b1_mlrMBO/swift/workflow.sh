@@ -27,7 +27,7 @@ export PROCS=4
 # be ignored if MACHINE flag (see below) is not set
 export QUEUE=batch
 export WALLTIME=00:10:00
-export PPN=16
+export PPN=1
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # if R cannot be found, then these will need to be
