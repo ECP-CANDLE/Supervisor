@@ -16,7 +16,7 @@ int propose_points = toint(argv("pp", "10"));
 int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
-file model_script = input("%s/scripts/run_model.sh" % (emews_root));
+file model_script = input(argv("script_file"));
 string param_set = argv("param_set_file");
 
 string code_template =
@@ -27,7 +27,7 @@ import json
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epocs'] = 30
+#hyper_parameter_map['epocs'] = 30
 hyper_parameter_map['train_steps'] = 100
 hyper_parameter_map['val_steps'] = 10
 hyper_parameter_map['test_steps'] = 10
