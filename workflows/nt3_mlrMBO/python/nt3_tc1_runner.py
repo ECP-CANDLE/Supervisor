@@ -11,6 +11,18 @@ import importlib
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
+
+def stage_data(framework, model_name):
+    pkg = import_pkg(framework, model_name)
+    params = pkg.initialize_parameters()
+    import data_utils
+    file_train = params['train_data']
+    file_test = params['test_data']
+    url = params['data_url']
+
+    train_file = data_utils.get_file(file_train, url+file_train, cache_subdir='Pilot1')
+    test_file = data_utils.get_file(file_test, url+file_test, cache_subdir='Pilot1')
+
 def is_numeric(val):
     try:
         float(val)
@@ -40,9 +52,7 @@ def write_params(params, hyper_parameter_map):
                 v = "'{}'".format(v)
             f_out.write("{}={}\n".format(k, v))
 
-def run(hyper_parameter_map):
-    framework = hyper_parameter_map['framework']
-    model_name = hyper_parameter_map['model_name']
+def import_pkg(framework, model_name):
     if framework is 'keras':
         module_name = "{}_baseline_keras2".format(model_name)
         pkg = importlib.import_module(module_name)
@@ -54,6 +64,12 @@ def run(hyper_parameter_map):
     #     pkg = nt3_baseline_neon
     else:
         raise ValueError("Invalid framework: {}".format(framework))
+    return pkg
+
+def run(hyper_parameter_map):
+    framework = hyper_parameter_map['framework']
+    model_name = hyper_parameter_map['model_name']
+    pkg = import_pkg(framework, model_name)
 
     format_params(hyper_parameter_map)
 

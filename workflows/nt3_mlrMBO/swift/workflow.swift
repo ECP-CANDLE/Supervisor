@@ -15,18 +15,26 @@ string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
+string model_name = argv("model_name");
 
 string code_template =
 """
-import nt3_runner
+import nt3_tc1_runner
 import json
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['save'] = '%s/output'
 hyper_parameter_map['instance_directory'] = '%s'
+hyper_parameter_map['model_name'] = '%s'
 
 validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
+""";
+
+string stage_data_py =
+"""
+import nt3_tc1_runner
+nt3_tc1_runner.stage_data('%s', '%s')
 """;
 
 // algorithm params format is a string representation
@@ -39,7 +47,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir);
+  string code = code_template % (params, outdir, outdir, model_name);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
@@ -107,6 +115,8 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
+    printf("Staging Data") =>
+    python_persist(stage_data_py % ("keras", model_name), "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
