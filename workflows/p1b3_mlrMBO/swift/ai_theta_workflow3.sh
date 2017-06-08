@@ -37,7 +37,7 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
-# pbalabra: 
+# pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
@@ -106,7 +106,7 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=workflow3.swift
+WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \

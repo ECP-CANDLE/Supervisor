@@ -15,28 +15,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
-
-string code_template =
-"""
-import p1b3_runner
-import json
-
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-
-## debugging params
-hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epochs'] = 3
-hyper_parameter_map['train_steps'] = 100
-hyper_parameter_map['val_steps'] = 10
-hyper_parameter_map['test_steps'] = 10
-## end debugging params
-
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['instance_directory'] = '%s'
-
-validation_loss = p1b3_runner.run(hyper_parameter_map)
-""";
+file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
@@ -46,17 +25,23 @@ string algo_params_template =
 pp = %d, it = %d, param.set.file='%s'
 """;
 
-string stage_data_py =
-"""
-import p1b3
-p1b3.stage_data()
-""";
+app (file out, file err) run_model (file shfile, string param_file, string instance)
+{
+    "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
+}
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir);
+  //string code = code_template % (params, outdir, outdir);
+
   make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
+  string fname = "%s/params.json" % outdir;
+  file out <"%s/out.txt" % outdir>;
+  file err <"%s/err.txt" % outdir>;
+  file params_file <fname> = write(params) =>
+  (out,err) = run_model(model_script, fname, outdir) =>
+  file line = input("%s/result.txt" % outdir) =>
+  obj_result = trim(read(line));
   printf(obj_result);
 }
 
@@ -123,7 +108,7 @@ p1b3.stage_data()
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
     printf("Staging Data") =>
-    python_persist(stage_data_py, "''") =>
+    //python_persist(stage_data_py, "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>

@@ -16,7 +16,9 @@ int propose_points = toint(argv("pp", "10"));
 int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
-file model_script = input(argv("script_file"));
+
+
+
 string param_set = argv("param_set_file");
 
 string code_template =
@@ -51,23 +53,11 @@ string algo_params_template =
 max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
-app (file out, file err) run_model (file shfile, string param_file, string instance)
-{
-    "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
-}
-
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  //string code = code_template % (params, outdir, outdir);
-
+  string code = code_template % (params, outdir);
   make_dir(outdir) =>
-  string fname = "%s/params.json" % outdir;
-  file out <"%s/out.txt" % outdir>;
-  file err <"%s/err.txt" % outdir>;
-  file params_file <fname> = write(params) =>
-  (out,err) = run_model(model_script, fname, outdir) =>
-  file line = input("%s/result.txt" % outdir) =>
-  obj_result = trim(read(line));
+  obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
 }
 
