@@ -34,17 +34,8 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # uncommented and set correctly.
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$P1B1_DIR
-export PYTHONHOME=/soft/analytics/conda/env/Candle_ML
-
-P1B1_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
-if ! [[ -d $P1B1_DIR ]]
-then
-  echo "Could not find P1B1 at: $P1B1_DIR"
-  exit 1
-fi
-
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR
 
 
 # Resident task workers and ranks
@@ -55,22 +46,17 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 # how many to evaluate concurrently
-MAX_CONCURRENT_EVALUATIONS=5
-MAX_ITERATIONS=5
+MAX_CONCURRENT_EVALUATIONS=2
+MAX_ITERATIONS=3
 PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
-DATA_DIRECTORY="$EMEWS_PROJECT_ROOT/data"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
 # for your EQ/R based run. $* will pass all of this script's
 # command line arguments to the swift script
 CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
-CMD_LINE_ARGS+="-data_directory=$DATA_DIRECTORY "
-
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
-
-
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
