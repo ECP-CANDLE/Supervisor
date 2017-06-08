@@ -24,14 +24,6 @@ import json
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 
-## debugging params
-hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epochs'] = 3
-hyper_parameter_map['train_steps'] = 100
-hyper_parameter_map['val_steps'] = 10
-hyper_parameter_map['test_steps'] = 10
-## end debugging params
-
 hyper_parameter_map['save'] = '%s/output'
 hyper_parameter_map['instance_directory'] = '%s'
 
