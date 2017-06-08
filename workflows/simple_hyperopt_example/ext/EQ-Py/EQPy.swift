@@ -3,11 +3,11 @@ pragma worktypedef resident_work;
 
 @dispatch=resident_work
 (void v) _void_py(string code, string expr="\"\"") "turbine" "0.1.0"
-    [ "turbine::python 1 <<code>> <<expr>> "];
+    [ "turbine::python 1 1 <<code>> <<expr>> "];
 
 @dispatch=resident_work
 (string output) _string_py(string code, string expr) "turbine" "0.1.0"
-    [ "set <<output>> [ turbine::python 1 <<code>> <<expr>> ]" ];
+    [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
 
 string init_package_string = "import eqpy\nimport %s\n" +
 "import threading\n" +

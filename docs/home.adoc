@@ -11,6 +11,8 @@ This prevents ^M from appearing in the output:
 ////
 :miscellaneous.newline: \n
 
+:toc:
+
 = CANDLE Supervisor Home Page
 
 This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
@@ -29,6 +31,12 @@ The workflows are currently indexed in the README visible https://github.com/ECP
 The database work is described in the README visible https://github.com/ECP-CANDLE/Database[here].
 
 == Swift installations
+
+* http://swift-lang.github.io/swift-t/sites.html#_theta[Theta]
++
+This is linked to Python and R but currently without ML libs.
++
+Other Theta ESP notes are here: https://collab.cels.anl.gov/display/ESP
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
 +

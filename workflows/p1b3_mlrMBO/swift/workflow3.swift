@@ -27,13 +27,20 @@ import json
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['feature_subsample'] = 500
-#hyper_parameter_map['epocs'] = 30
+hyper_parameter_map['epochs'] = 3
 hyper_parameter_map['train_steps'] = 100
 hyper_parameter_map['val_steps'] = 10
 hyper_parameter_map['test_steps'] = 10
 hyper_parameter_map['save'] = '%s/output'
 
 validation_loss = p1b3_runner.run(hyper_parameter_map)
+""";
+
+string stage_data_py =
+"""
+import p1b3
+p1b3.stage_data()
+a = "done"
 """;
 
 // algorithm params format is a string representation
@@ -127,6 +134,8 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
     string algo_params = algo_params_template % (max_budget, max_iterations,
 	design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
+    printf("Staging Data") =>
+    python_persist(stage_data_py, "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
