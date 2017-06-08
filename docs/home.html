@@ -736,13 +736,17 @@ install: function(toclevels) {
 }
 
 }
-asciidoc.install();
+asciidoc.install(2);
 /*]]>*/
 </script>
 </head>
 <body class="article" style="max-width:800px">
 <div id="header">
 <h1>CANDLE Supervisor Home Page</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
@@ -785,6 +789,13 @@ June 5-9: ANL hackathon and Theta reservation
 <div class="ulist"><ul>
 <li>
 <p>
+<a href="http://swift-lang.github.io/swift-t/sites.html#_theta">Theta</a>
+</p>
+<div class="paragraph"><p>This is linked to Python and R but currently without ML libs.</p></div>
+<div class="paragraph"><p>Other Theta ESP notes are here: <a href="https://collab.cels.anl.gov/display/ESP">https://collab.cels.anl.gov/display/ESP</a></p></div>
+</li>
+<li>
+<p>
 <a href="http://swift-lang.github.io/swift-t/sites.html#_cori">Cori</a>
 </p>
 <div class="paragraph"><p>This uses the system-installed Python with ML libs at:<br />
@@ -823,8 +834,7 @@ This uses a VirtualEnv Python at <code>/home/pbalapra/.virtualenvs</code>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated
- 2017-06-01 14:44:20 CDT
+Last updated 2017-06-07 11:35:47 CDT
 </div>
 </div>
 </body>

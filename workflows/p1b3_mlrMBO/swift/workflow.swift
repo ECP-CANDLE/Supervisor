@@ -47,6 +47,12 @@ string algo_params_template =
 pp = %d, it = %d, param.set.file='%s'
 """;
 
+string stage_data_py =
+"""
+import p1b3
+p1b3.stage_data()
+""";
+
 app (file out, file err) run_model (file shfile, string param_file, string instance)
 {
     "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
@@ -129,6 +135,8 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
+    printf("Staging Data") =>
+    python_persist(stage_data_py, "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
