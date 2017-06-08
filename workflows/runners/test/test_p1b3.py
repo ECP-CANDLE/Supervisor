@@ -8,7 +8,7 @@ def main():
     hyper_parameter_map['train_steps'] = 100
     hyper_parameter_map['val_steps'] = 10
     hyper_parameter_map['test_steps'] = 10
-    hyper_parameter_map['save'] = './output'
+    hyper_parameter_map['save'] = './p1b3_output'
 
     validation_loss = p1b3_runner.run(hyper_parameter_map)
     print("Validation Loss: {}".format(validation_loss))

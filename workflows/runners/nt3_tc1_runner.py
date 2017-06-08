@@ -42,7 +42,7 @@ def format_params(hyper_parameter_map):
 
 def write_params(params, hyper_parameter_map):
     parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
-    f = "{}/parameters.txt".format(parent_dir)
+    f = "{}/parameters_nt3_tc1.txt".format(parent_dir)
     with open(f, "w") as f_out:
         f_out.write("[parameters]\n")
         for k,v in params.items():
@@ -95,29 +95,3 @@ def run(hyper_parameter_map):
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
     return val_loss[-1]
-
-def write_output(result, instance_directory):
-    with open('{}/result.txt'.format(instance_directory), 'w') as f_out:
-        f_out.write("{}\n".format(result))
-
-def init(param_file, instance_directory, model_name):
-    with open(param_file) as f_in:
-        hyper_parameter_map = json.load(f_in)
-
-    hyper_parameter_map['framework'] = 'keras'
-    hyper_parameter_map['save'] = '{}/output'.format(instance_directory)
-    hyper_parameter_map['instance_directory'] = instance_directory
-    hyper_parameter_map['model_name'] = model_name
-
-
-    return hyper_parameter_map
-
-if __name__ == '__main__':
-    param_file = sys.argv[1]
-    instance_directory = sys.argv[2]
-    model_name = sys.argv[3]
-    hyper_parameter_map = init(param_file, instance_directory, model_name)
-    # clear sys.argv so that argparse doesn't object
-    sys.argv = ['nt3_tc1_runner']
-    result = run(hyper_parameter_map)
-    write_output(result, instance_directory)

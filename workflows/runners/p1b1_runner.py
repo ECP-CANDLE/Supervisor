@@ -2,18 +2,18 @@
 # so we need to create a synthetic argv.
 import sys
 if not hasattr(sys, 'argv'):
-    sys.argv  = ['p1b3']
+    sys.argv  = ['p1b1']
 
 import json
 import os
-import p1b3
+import p1b1
 import numpy as np
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
 def write_params(params, hyper_parameter_map):
     parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
-    f = "{}/parameters.txt".format(parent_dir)
+    f = "{}/parameters_p1b1.txt".format(parent_dir)
     with open(f, "w") as f_out:
         f_out.write("[parameters]\n")
         for k,v in params.items():
@@ -40,17 +40,18 @@ def format_params(hyper_parameter_map):
             else:
                 hyper_parameter_map[k] = [int(x) for x in vals]
 
+
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
     if framework is 'keras':
-        import p1b3_baseline_keras2
-        pkg = p1b3_baseline_keras2
+        import p1b1_baseline_keras2
+        pkg = p1b1_baseline_keras2
     elif framework is 'mxnet':
-        import p1b3_baseline_mxnet
-        pkg = p1b3_baseline_mxnet
+        import p1b1_baseline_mxnet
+        pkg = p1b1_baseline_mxnet
     elif framework is 'neon':
-        import p1b3_baseline_neon
-        pkg = p1b3_baseline_neon
+        import p1b1_baseline_neon
+        pkg = p1b1_baseline_neon
     else:
         raise ValueError("Invalid framework: {}".format(framework))
 
@@ -63,6 +64,7 @@ def run(hyper_parameter_map):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
 
+    print(params)
     write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
@@ -98,6 +100,6 @@ if __name__ == '__main__':
     instance_directory = sys.argv[2]
     hyper_parameter_map = init(param_file, instance_directory)
     # clear sys.argv so that argparse doesn't object
-    sys.argv = ['p1b3_runner']
+    sys.argv = ['p1b1_runner']
     result = run(hyper_parameter_map)
     write_output(result, instance_directory)
