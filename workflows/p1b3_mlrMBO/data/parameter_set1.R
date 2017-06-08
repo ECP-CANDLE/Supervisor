@@ -15,6 +15,7 @@ param.set <- makeParamSet(
   makeIntegerParam("feature_subsample", lower=500, upper=500),
   makeIntegerParam("train_steps", lower=100, upper=100),
   makeIntegerParam("val_steps", lower=10, upper=10),
-  makeIntegerParam("test_steps", lower=10, upper=10)
+  makeIntegerParam("test_steps", lower=10, upper=10),
+  makeIntegerParam("epochs", lower = 3, upper = 3)
   ## END DEBUG PARAMS
 )
