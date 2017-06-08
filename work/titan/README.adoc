@@ -1,0 +1,12 @@
+
+Use
+
+----
+./workflow.sh hello.swift
+----
+
+or
+
+----
+./workflow.sh pyr.swift
+----
