@@ -4,46 +4,42 @@ import sys
 if not hasattr(sys, 'argv'):
     sys.argv  = ['p1b1']
 
+import json
 import os
-import p1b1_baseline
 import p1b1
 
-X_train = None
-X_test = None
+def run(hyper_parameter_map):
+    framework = hyper_parameter_map['framework']
+    if framework is 'keras':
+        import p1b1_baseline_keras2
+        pkg = p1b1_baseline_keras2
+    elif framework is 'mxnet':
+        import p1b1_baseline_mxnet
+        pkg = p1b1_baseline_mxnet
+    elif framework is 'neon':
+        import p1b1_baseline_neon
+        pkg = p1b1_baseline_neon
+    else:
+        raise ValueError("Invalid framework: {}".format(framework))
 
-def run(data_directory, parameter_string):
-    global X_train, X_test
-    # params are a comma separated list where the order of the
-    # params is the param.set order. For example:
-    # param.set <- makeParamSet(
-    #  makeIntegerParam('epoch', lower = 2, upper = 5),
-    #  makeIntegerParam('batch size', lower = 50, upper = 100)
-    # )
-    # yields strings like 4, 62 where epoch is 4 and batch size is 62
+    # params is python dictionary
+    params = pkg.initialize_parameters()
+    for k,v in hyper_parameter_map.items():
+        #if not k in params:
+        #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
+        params[k] = v
 
-    if X_train is None:
-        print("loading data")
-        test_path = '{}/P1B1.test.csv'.format(data_directory)
-        train_path = '{}/P1B1.train.csv'.format(data_directory)
-        if not os.path.exists(test_path):
-            raise IOError("Invalid test data path: '{}'".format(test_path))
-        if not os.path.exists(train_path):
-            raise IOError("Invalid training data path: '{}'".format(train_path))
+    print(params)
+    history = pkg.run(params)
 
-        X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
-
-    params = parameter_string.split(',')
-
-    # this assumes a simple space. A more complicated space
-    # will require additional unpacking.
-
-    epochs = int(params[0].strip())
-    encoder, decoder, history = p1b1_baseline.run_p1b1(X_train, X_test, epochs=epochs)
-
-    # works around this error:
-    # https://github.com/tensorflow/tensorflow/issues/3388
-    from keras import backend as K
-    K.clear_session()
+    if framework is 'keras':
+        # works around this error:
+        # https://github.com/tensorflow/tensorflow/issues/3388
+        try:
+            from keras import backend as K
+            K.clear_session()
+        except AttributeError:      # theano does not have this function
+            pass
 
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']

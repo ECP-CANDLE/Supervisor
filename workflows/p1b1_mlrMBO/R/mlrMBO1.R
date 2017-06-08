@@ -47,15 +47,23 @@ library(mlrMBO)
 simple.obj.fun = function(x){}
 
 main_function <- function(pp = 2, it = 5){
-  ctrl = makeMBOControl(propose.points = pp)
-  ctrl = setMBOControlInfill(ctrl, crit = crit.ei)
-  ctrl = setMBOControlMultiPoint(ctrl, method = "cl", cl.lie = min)
-  ctrl = setMBOControlTermination(ctrl, iters = it)
+  #surr.rf = makeLearner("regr.randomForest", predict.type = "se")
+  ctrl = makeMBOControl(n.objectives = 1, propose.points = pp)
+  ctrl = setMBOControlTermination(ctrl, max.evals = pp)
+  ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
+  design = generateDesign(n = pp, par.set = getParamSet(obj.fun))
+  print(design)
+  configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
+  res = mbo(obj.fun, design = design, control = ctrl, show.info = TRUE)
+  #ctrl = makeMBOControl(propose.points = pp)
+  #ctrl = setMBOControlInfill(ctrl, crit = crit.ei)
+  #ctrl = setMBOControlMultiPoint(ctrl, method = "cl", cl.lie = min)
+  #ctrl = setMBOControlTermination(ctrl, iters = it)
   #ctrl = setMBOControlTermination(ctrl, max.evals = 10)
-  configureMlr(on.learner.warning = "quiet", show.learner.output = FALSE)
-
-  res = mbo(obj.fun, control = ctrl, show.info = FALSE)
+  #configureMlr(on.learner.warning = "quiet", show.learner.output = FALSE)
+  #res = mbo(obj.fun, control = ctrl, show.info = FALSE)
   return(res)
+
 }
 
 # ask for parameters from queue
