@@ -2,9 +2,9 @@
 
 set -eu
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
+  echo "Usage: ${script_name} EXPERIMENT_ID SWIFT_FILE (e.g. ${script_name} experiment_1 workflow.swift)"
   exit 1
 fi
 
@@ -77,5 +77,5 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-SWIFT_FILE=workflow.swift
+SWIFT_FILE=$2
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
