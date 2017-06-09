@@ -23,11 +23,6 @@ import json
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['feature_subsample'] = 500
-hyper_parameter_map['epocs'] = 30
-hyper_parameter_map['train_steps'] = 100
-hyper_parameter_map['val_steps'] = 10
-hyper_parameter_map['test_steps'] = 10
 hyper_parameter_map['save'] = '%s/output'
 
 validation_loss = p1b1_runner.run(hyper_parameter_map)
