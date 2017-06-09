@@ -3,40 +3,54 @@ import files;
 import io;
 import sys;
 
-// ===== Interface definitions for the three programs that we call ======
+// ===== Interface definitions for the programs that we call ======
+// Random values are created from bounds specified in data/settings.json file
 app (file f)
 determineParameters(string settingsFilename)
 {
   (getenv("APP_HOME")+"/determineParameters.sh") settingsFilename f;
 }
 
+// This is where the p1b1 runner is called
 app (file f)
 evaluateOne(string params)
 {
   (getenv("APP_HOME")+"/evaluateOne.sh") params f;
 }
 
+// call this to read all the resultsFiles and compute stats
 app ()
 computeStats(string resultsFile)
 {
   (getenv("APP_HOME")+"/computeStats.sh") resultsFile;
 }
 
+// call this to create any required directories
+app (void o) make_dir(string dirname) {
+  "mkdir" "-p" dirname;
+}
+
 
 // ===== The program proper ==============================================
+string turbine_output = getenv("TURBINE_OUTPUT");
 float results[string];
+
+//make the experiments dir
+make_dir(turbine_output);
 
 // Get parameters
 settingsFilename = argv("settings");
-printf(settingsFilename);
-file parametersFile<"parameters.txt"> = determineParameters(settingsFilename);
+string sweepParamFile = turbine_output+"/sweep-parameters.txt";
+file parametersFile<sweepParamFile> = determineParameters(settingsFilename);
 parametersString = read(parametersFile);
 parameters = split(parametersString, ":");
 
 // Run experiments in parallel, passing each a different parameter set
 foreach param in parameters
 {
-    file resultFile<"result-%s.txt"%param> = evaluateOne(param);
+	string rName = turbine_output+"/result-"+param+".txt";
+	printf(rName);
+    file resultFile<rName> = evaluateOne(param);
     results[param] = string2float(read(resultFile));
 }
 
@@ -48,3 +62,4 @@ file tmp = write(repr(results));
 //trace("Temporary filename is: " + filename(tmp));
 
 computeStats(filename(tmp));
+
