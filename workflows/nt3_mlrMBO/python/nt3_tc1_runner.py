@@ -24,7 +24,7 @@ def write_params(params, hyper_parameter_map):
             f_out.write("{}={}\n".format(k, v))
 
 def import_pkg(framework, model_name):
-    if framework is 'keras':
+    if framework == 'keras':
         module_name = "{}_baseline_keras2".format(model_name)
         pkg = importlib.import_module(module_name)
     # elif framework is 'mxnet':
@@ -54,7 +54,7 @@ def run(hyper_parameter_map):
     runner_utils.write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
-    if framework is 'keras':
+    if framework == 'keras':
         # works around this error:
         # https://github.com/tensorflow/tensorflow/issues/3388
         try:

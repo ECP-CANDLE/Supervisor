@@ -12,36 +12,31 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P1B3
-P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-10}
+export PROCS=${PROCS:-4}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-4}
 
-
-export QUEUE="debug-cache-quad"
-export WALLTIME=${WALLTIME:-00:30:00}
+# See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
+export QUEUE=${QUEUE:-debug}
+export WALLTIME=${WALLTIME:-00:02:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
-
-
-MAX_BUDGET=${MAX_BUDGET:-110}
+MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-2}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
-PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
+MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 # pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
-
 
 # Source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -70,15 +65,15 @@ export TURBINE_JOBNAME="${EXPID}_job"
 
 #P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
 
-TCL=/gpfs/mira-home/wozniak/Public/sfw/theta/tcl-8.6.1
-export R=/home/wozniak/mira-home/Public/sfw/theta/R-3.4.0/lib64/R
-export PY=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
-export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
+export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$COMMON_DIR
-export PYTHONHOME=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
+export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
-export PATH=/gpfs/mira-home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$PYTHONHOME/bin:$TCL/bin:$PATH
+export KERAS_BACKEND=theano
+
+export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -87,12 +82,12 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
-CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/theta_run_model.sh"
+CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-MACHINE="theta"
+MACHINE="slurm"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
@@ -105,15 +100,12 @@ USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
+R_LIB=/global/homes/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
+GCC_LIB=/opt/gcc/6.3.0/snos/lib64
+
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=ai_workflow3.swift
+WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-    -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-    -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-    -e PYTHONPATH=$PYTHONPATH \
-    -e PYTHONHOME=$PYTHONHOME \
-    -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS

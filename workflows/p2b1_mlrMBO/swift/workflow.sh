@@ -34,9 +34,11 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # uncommented and set correctly.
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR:$COM
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR:$COMMON_DIR
+
+export KERAS_BACKEND=theano
 
 
 # Resident task workers and ranks
@@ -76,5 +78,5 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-SWIFT_FILE=ai_workflow.swift
+SWIFT_FILE=workflow.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS

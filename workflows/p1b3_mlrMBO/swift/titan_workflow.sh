@@ -33,7 +33,7 @@ MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-2}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
-# pbalabra: 
+# pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
@@ -67,7 +67,8 @@ export TURBINE_JOBNAME="${EXPID}_job"
 
 export LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/cuda/lib64
 
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$PYTHONPATH
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$COMMON_DIR:$PYTHONPATH
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -93,7 +94,7 @@ USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
-R_LIB=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib 
+R_LIB=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
 GCC_LIB=/opt/gcc/4.9.3/snos/lib64
 
 set -x

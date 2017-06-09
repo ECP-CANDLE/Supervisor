@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+# BOOTSTRAP
+
+for TOOL in autoheader autoconf
+do
+  echo "Running $TOOL..."
+  $TOOL
+  printf "%-25s OK\n" $TOOL:
+done
+printf "%-25s OK\n" "bootstrap:"

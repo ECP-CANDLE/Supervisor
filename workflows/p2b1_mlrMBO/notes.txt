@@ -1,0 +1,6 @@
+python deps:
+
+opencv
+tqdm
+
+env var: KERAS_BACKEND
