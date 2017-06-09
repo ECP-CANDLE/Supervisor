@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=4
+TIMEOUT_ARG_INDEX=5
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -38,6 +38,8 @@ emews_root=$2
 instance_directory=$3
 cd $instance_directory
 
+framework=$4
+
 # TODO: Define the command to run the model
 #VERSION="$(<$emews_root/../Release/version.txt)"
 #APP=$emews_root/../Release/transmission_model-$VERSION
@@ -48,8 +50,9 @@ PYTHON="/home/pbalapra/anaconda2/envs/idp/bin/python"
 export LD_LIBRARY_PATH="/home/pbalapra/anaconda2/envs/idp/lib"
 export PATH="/home/pbalapra/anaconda2/envs/idp/bin:$PATH"
 export PYTHONHOME="/home/pbalapra/anaconda2/envs/idp"
-export PYTHONPATH="/home/pbalapra/anaconda2/envs/idp/lib/python2.7:/home/ncollier/repos/Benchmarks/Pilot1/P1B3:/home/pbalapra/anaconda2/envs/idp/lib/python2.7/site-packages"
-MODEL_CMD="python $emews_root/python/p1b3_runner.py $param_file $instance_directory"
+COMMON_DIR=$emews_root/../common/python
+export PYTHONPATH="/home/pbalapra/anaconda2/envs/idp/lib/python2.7:/home/ncollier/repos/Benchmarks/Pilot1/P1B3:/home/pbalapra/anaconda2/envs/idp/lib/python2.7/site-packages:$COMMON_DIR"
+MODEL_CMD="python $emews_root/python/p1b3_runner.py $param_file $instance_directory $framework"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value

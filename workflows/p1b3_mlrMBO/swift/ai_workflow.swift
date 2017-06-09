@@ -17,6 +17,8 @@ int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
 file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
+string FRAMEWORK = "keras";
+
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
 // string to create the dictionary. This, unfortunately,
@@ -27,7 +29,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 app (file out, file err) run_model (file shfile, string param_file, string instance)
 {
-    "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
+    "bash" shfile param_file emews_root instance FRAMEWORK @stdout=out @stderr=err;
 }
 
 (string obj_result) obj(string params, string iter_indiv_id) {

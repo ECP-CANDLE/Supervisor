@@ -13,7 +13,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # The directory in the Benchmarks repo containing NT3
 BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
-BENCHMARK_DIR+=":$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -69,7 +69,7 @@ export TURBINE_JOBNAME="${EXPID}_job"
 
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
 export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"

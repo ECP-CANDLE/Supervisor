@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
-P1B3_DIR=../../../../../Benchmarks/Pilot1/P1B3
-export PYTHONPATH="$PWD/..:$P1B3_DIR"
+BENCHMARK_DIR=../../../../../Benchmarks/Pilot1/P1B3
+COMMON_DIR=../../../common/python
+export PYTHONPATH="$PWD/..:$BENCHMARK_DIR:$COMMON_DIR"
 
 python test.py

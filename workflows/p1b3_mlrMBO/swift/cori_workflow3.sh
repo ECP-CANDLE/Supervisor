@@ -37,7 +37,7 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
-# pbalabra: 
+# pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
@@ -71,7 +71,8 @@ export TURBINE_JOBNAME="${EXPID}_job"
 
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$COMMON_DIR
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
 export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
