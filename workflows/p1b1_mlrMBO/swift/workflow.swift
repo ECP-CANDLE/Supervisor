@@ -15,6 +15,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
+string exp_id = argv("exp_id")
 
 string code_template =
 """
@@ -26,6 +27,25 @@ hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['save'] = '%s/output'
 
 validation_loss = p1b1_runner.run(hyper_parameter_map)
+""";
+
+string code_log_start =
+"""
+import exp_logger
+
+parameter_map = []
+parameter_map['algo_params'] = '%s'
+parameter_map['algorithm'] = '%s'
+parameter_map['experiment_id'] = '%s'
+
+exp_logger.start(parameter_map)
+""";
+
+string code_log_end =
+"""
+import exp_logger
+
+exp_logger.end('%s')
 """;
 
 // algorithm params format is a key=value
@@ -91,6 +111,18 @@ pp = %d, it = %d, param.set.file='%s'
   }
 }
 
+(void o) log_start(string algo_params, string algorithm) {
+    string code = code_log_start % (algo_params, algorithm, exp_id);
+    python_persist(code);
+    o = propagate();
+}
+
+(void o) log_end(){
+    string code = code_log_end % (exp_id);
+    python_persist(code);
+    o = propagate();
+}
+
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the R
@@ -105,12 +137,14 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
+    log_start(algo_params, algorithm);
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
+        log_end();
         o = propagate();
     }
 }
