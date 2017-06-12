@@ -43,7 +43,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir,turbine_output,model_name);
+  string code = code_template % (params, outdir,outdir,model_name);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
