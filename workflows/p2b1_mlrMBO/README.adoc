@@ -1,6 +1,7 @@
+
 = P2B1 with mlrMBO 
 
-= Setup
+== Setup
 
 Make sure you are using the correct Python.
 
@@ -18,15 +19,17 @@ $ python
 
 If not, you can do:
 
+----
+$ pip install --user opencv-python
+----
++
+(This was tested on Cori with module +deeplearning+.)
+
 == Download the data
 
-Do this by running a test on the login node
-
+Do this by running a test on the login node:
 ----
 $ nice workflows/p2b1_mlrMBO/python/test/run_test.sh
 ----
 
-
-
-
-
+This should download the data and start training, kill it after you can see it working.
