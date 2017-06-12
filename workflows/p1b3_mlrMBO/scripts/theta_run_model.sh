@@ -38,17 +38,19 @@ emews_root=$2
 instance_directory=$3
 cd $instance_directory
 
-# TODO: Define the command to run the model
-#VERSION="$(<$emews_root/../Release/version.txt)"
-#APP=$emews_root/../Release/transmission_model-$VERSION
-#PROPS_FILE=$emews_root/../config/model.props
-# TODO configure python correctly
-# export PYTHONPATH=$emews_root/python:$benchmark_path
-PYTHON="/home/pbalapra/anaconda2/envs/idp/bin/python"
-export LD_LIBRARY_PATH="/home/pbalapra/anaconda2/envs/idp/lib"
-export PATH="/home/pbalapra/anaconda2/envs/idp/bin:$PATH"
-export PYTHONHOME="/home/pbalapra/anaconda2/envs/idp"
-export PYTHONPATH="/home/pbalapra/anaconda2/envs/idp/lib/python2.7:/home/ncollier/repos/Benchmarks/Pilot1/P1B3:/home/pbalapra/anaconda2/envs/idp/lib/python2.7/site-packages"
+module load intel
+
+# Theta / Tensorflow env vars
+export KMP_BLOCKTIME=30
+export KMP_SETTINGS=1
+export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
+export OMP_NUM_THREADS=144
+
+export PYTHONHOME="/home/brettin/anaconda2/envs/vrane"
+PYTHON="$PYTHONHOME/bin/python"
+export LD_LIBRARY_PATH="$PYTHONHOME/lib"
+export PATH="$PYTHONHOME/bin:$PATH"
+export PYTHONPATH="$PYTHONHOME/lib/python2.7:/home/ncollier/repos/Benchmarks/Pilot1/P1B3:$PYTHONHOME/lib/python2.7/site-packages"
 MODEL_CMD="python $emews_root/python/p1b3_runner.py $param_file $instance_directory"
 
 # Turn bash error checking off. This is

@@ -24,8 +24,8 @@ export PROCS=${PROCS:-10}
 export PPN=${PPN:-1}
 
 
-export QUEUE="debug-cache-quad"
-export WALLTIME=${WALLTIME:-00:30:00}
+export QUEUE="debug-flat-quad"
+export WALLTIME=${WALLTIME:-00:59:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
