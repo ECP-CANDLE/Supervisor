@@ -15,7 +15,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
-string exp_id = argv("exp_id")
+string exp_id = argv("exp_id");
 
 string code_template =
 """
@@ -33,8 +33,8 @@ string code_log_start =
 """
 import exp_logger
 
-parameter_map = []
-parameter_map['algo_params'] = '%s'
+parameter_map = {}
+parameter_map['algo_params'] = \"\"\"%s\"\"\"
 parameter_map['algorithm'] = '%s'
 parameter_map['experiment_id'] = '%s'
 
