@@ -1,3 +1,0 @@
-# P2B1 with mlrMBO  #
-
-TODO ....
