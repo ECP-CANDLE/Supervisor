@@ -43,7 +43,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir);
+  string code = code_template % (params, outdir,turbine_output,model_name);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
@@ -112,8 +112,6 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
     string algo_params = algo_params_template % (max_budget, max_iterations,
 	design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
-    printf("Staging Data") =>
-    python_persist(stage_data_py, "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>

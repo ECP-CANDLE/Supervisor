@@ -18,21 +18,21 @@ BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-4}
+export PROCS=${PROCS:-10}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-4}
+export PPN=${PPN:-2}
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
-export WALLTIME=${WALLTIME:-00:02:00}
+export WALLTIME=${WALLTIME:-00:30:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
-MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-2}
+MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-8}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+MAX_ITERATIONS=${MAX_ITERATIONS:-16}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 MODEL_NAME="nt3"
 # pbalabra:
@@ -65,11 +65,11 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
-
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/tc1
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+export PYTHONPATH=$BENCHMARK_DIR:$COMMON_DIR:$EMEWS_PROJECT_ROOT/python
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
 export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
