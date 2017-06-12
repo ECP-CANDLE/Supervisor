@@ -10,19 +10,6 @@ import numpy as np
 import importlib
 import runner_utils
 
-
-def write_params(params, hyper_parameter_map):
-    parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
-    f = "{}/parameters.txt".format(parent_dir)
-    with open(f, "w") as f_out:
-        f_out.write("[parameters]\n")
-        for k,v in params.items():
-            if type(v) in DATA_TYPES:
-                v = DATA_TYPES[type(v)]
-            if isinstance(v, basestring):
-                v = "'{}'".format(v)
-            f_out.write("{}={}\n".format(k, v))
-
 def import_pkg(framework, model_name):
     if framework == 'keras':
         module_name = "{}_baseline_keras2".format(model_name)

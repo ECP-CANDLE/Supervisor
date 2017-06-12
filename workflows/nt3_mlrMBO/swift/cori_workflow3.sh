@@ -11,9 +11,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing NT3
-BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
-BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1"
+# The directory in the Benchmarks repo containing P1B3
+P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -22,7 +21,7 @@ export PROCS=${PROCS:-10}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-2}
+export PPN=${PPN:-1}
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
@@ -30,10 +29,14 @@ export WALLTIME=${WALLTIME:-00:30:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
-MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-8}
+
+
+MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-16}
-PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
+MAX_ITERATIONS=${MAX_ITERATIONS:-4}
+DESIGN_SIZE=${DESIGN_SIZE:-8}
+PROPOSE_POINTS=${PROPOSE_POINTS:-8}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 MODEL_NAME="nt3"
 # pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
@@ -65,11 +68,16 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/tc1
+#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
+
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-export PYTHONPATH=$BENCHMARK_DIR:$COMMON_DIR:$EMEWS_PROJECT_ROOT/python
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1"
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR:$COMMON_DIR
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
 export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
@@ -81,8 +89,9 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
-CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
+CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME"
+
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -104,7 +113,7 @@ GCC_LIB=/opt/gcc/6.3.0/snos/lib64
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=workflow.swift
+WORKFLOW_SWIFT=workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
