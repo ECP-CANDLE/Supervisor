@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 
-BENCHMARK_DIR=../../../../../Benchmarks/Pilot2/P2B1
-COMMON_DIR=../../../common/python
-export PYTHONPATH="$PWD/..:$BENCHMARK_DIR:$COMMON_DIR"
+THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 
-KERAS_BACKEND="theano" python test.py
+BENCHMARK_DIR=$( cd $THIS/../../../../../Benchmarks/Pilot2/P2B1 ; /bin/pwd )
+COMMON_DIR=$( cd $THIS/../../../common/python ; /bin/pwd )
+export PYTHONPATH="$THIS/..:$BENCHMARK_DIR:$COMMON_DIR"
+
+echo $PYTHONPATH | tr : '\n' | nl
+
+KERAS_BACKEND="theano" python $THIS/test.py
