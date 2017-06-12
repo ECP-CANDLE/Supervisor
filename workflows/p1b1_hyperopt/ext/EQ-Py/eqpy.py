@@ -15,6 +15,8 @@ def OUT_put(string_params):
 
 def IN_get():
     global input_q
+    # print("IN_get() ...")
     result = input_q.get()
+    # print("IN_get(): " + result)
     return result
 

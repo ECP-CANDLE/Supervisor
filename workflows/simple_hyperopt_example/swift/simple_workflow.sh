@@ -90,10 +90,22 @@ log_script
 PYTHONHOME=${PYTHONHOME:-}
 PATH=$PYTHONHOME/bin:$PATH
 
+echo Python settings:
+echo "executable: $( which python )"
+echo PYTHONHOME ${PYTHONHOME:-}
+echo PYTHONPATH ${PYTHONPATH:-}
+
+# export TURBINE_LOG=1
+
 # echo's anything following this to standard out
 # set -x
 SWIFT_FILE=swift_run_eqpy.swift
+# SWIFT_FILE=simpler_imports.swift
+
+#         -e PYTHONHOME=$PYTHONHOME
+
 swift-t -O0 -l -n $PROCS $MACHINE -p -I $EQPY -r $EQPY \
         -e PATH=$PATH \
         -e PYTHONPATH=$PYTHONPATH \
         $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
+

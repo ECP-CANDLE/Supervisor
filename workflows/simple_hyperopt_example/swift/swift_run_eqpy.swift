@@ -14,9 +14,12 @@ import EQPy;
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
+printf("resident_work_ranks: %i", resident_work_ranks);
 string r_ranks[] = split(resident_work_ranks,",");
 int max_evals = toint(argv("max_evals", "100"));
 int param_batch_size = toint(argv("param_batch_size", "10"));
+
+printf("PYTHONPATH: %s", getenv("PYTHONPATH"));
 
 // this is the "model"
 string template =
@@ -143,13 +146,14 @@ string algo_params_template =
     // as a multiline string so I left it like that and fixed it here.
     string trimmed_algo_params = trim(replace_all(algo_params, "\n", " ", 0));
 
+    printf("ME_rank: %i", ME_rank);
     EQPy_init_package(ME,"eqpy_hyperopt.hyperopt_runner") =>
     EQPy_get(ME) =>
     EQPy_put(ME, trimmed_algo_params) =>
       loop(ME, ME_rank, num_variations) => {
         EQPy_stop(ME);
         o = propagate();
-    }
+      }
 }
 
 // deletes the specified directory
@@ -178,6 +182,8 @@ main() {
   // for each model run, and the random seed for the python algorithm.
   int num_variations = toint(argv("nv", "1"));
   int random_seed = toint(argv("seed", "0"));
+
+  printf("turbine_workers(): %i", turbine_workers());
 
   // PYTHONPATH needs to be set for python code to be run
   assert(strlen(getenv("PYTHONPATH")) > 0, "Set PYTHONPATH!");
