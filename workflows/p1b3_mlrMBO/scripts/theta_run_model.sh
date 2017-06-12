@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=4
+TIMEOUT_ARG_INDEX=5
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -38,7 +38,7 @@ emews_root=$2
 instance_directory=$3
 cd $instance_directory
 
-module load intel
+frameworks=$4
 
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30

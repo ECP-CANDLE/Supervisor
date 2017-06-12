@@ -18,6 +18,8 @@ string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
+string FRAMEWORK = "keras";
+
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
 // string to create the dictionary. This, unfortunately,
@@ -28,7 +30,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 app (file out, file err) run_model (file shfile, string param_file, string instance)
 {
-    "bash" shfile param_file emews_root instance model_name @stdout=out @stderr=err;
+    "bash" shfile param_file emews_root instance model_name FRAMEWORK @stdout=out @stderr=err;
 }
 
 

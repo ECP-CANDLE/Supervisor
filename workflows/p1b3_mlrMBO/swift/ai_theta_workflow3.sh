@@ -74,7 +74,8 @@ TCL=/gpfs/mira-home/wozniak/Public/sfw/theta/tcl-8.6.1
 export R=/home/wozniak/mira-home/Public/sfw/theta/R-3.4.0/lib64/R
 export PY=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
 export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$COMMON_DIR
 export PYTHONHOME=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
 
 export PATH=/gpfs/mira-home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$PYTHONHOME/bin:$TCL/bin:$PATH

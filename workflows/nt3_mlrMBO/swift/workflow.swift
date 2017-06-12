@@ -31,11 +31,6 @@ hyper_parameter_map['model_name'] = '%s'
 validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
 """;
 
-string stage_data_py =
-"""
-import nt3_tc1_runner
-nt3_tc1_runner.stage_data('%s', '%s')
-""";
 
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
@@ -115,8 +110,6 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    printf("Staging Data") =>
-    python_persist(stage_data_py % ("keras", model_name), "''") =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>

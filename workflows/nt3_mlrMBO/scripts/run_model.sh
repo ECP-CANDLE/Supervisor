@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=5
+TIMEOUT_ARG_INDEX=6
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -39,14 +39,12 @@ instance_directory=$3
 cd $instance_directory
 
 model_name=$4
+framework=$5
 
-# TODO: Define the command to run the model
-#VERSION="$(<$emews_root/../Release/version.txt)"
-#APP=$emews_root/../Release/transmission_model-$VERSION
-#PROPS_FILE=$emews_root/../config/model.props
-# TODO configure python correctly
-# export PYTHONPATH=$emews_root/python:$benchmark_path
-MODEL_CMD="python $emews_root/python/nt3_tc1_runner.py $param_file $instance_directory $model_name"
+BENCHMARK_DIR=$emews_root/../../../Benchmarks/Pilot1/NT3:$emews_root/../../../Benchmarks/Pilot1/TC1
+COMMON_DIR=$emews_root/../common/python
+export PYTHONPATH="$PYTHONPATH:$BENCHMARK_DIR:$COMMON_DIR"
+MODEL_CMD="python $emews_root/python/nt3_tc1_runner.py $param_file $instance_directory $model_name $framework"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value

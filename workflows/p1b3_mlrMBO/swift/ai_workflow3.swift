@@ -18,6 +18,7 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 file model_script = input(argv("script_file"));
 string param_set = argv("param_set_file");
+string FRAMEWORK = "keras";
 
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
@@ -29,7 +30,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 app (file out, file err) run_model (file shfile, string param_file, string instance)
 {
-    "bash" shfile param_file emews_root instance @stdout=out @stderr=err;
+    "bash" shfile param_file emews_root instance FRAMEWORK @stdout=out @stderr=err;
 }
 
 (string obj_result) obj(string params, string iter_indiv_id) {
