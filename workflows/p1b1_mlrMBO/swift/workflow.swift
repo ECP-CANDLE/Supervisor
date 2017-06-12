@@ -34,11 +34,14 @@ string code_log_start =
 import exp_logger
 
 parameter_map = {}
-parameter_map['algo_params'] = \"\"\"%s\"\"\"
+parameter_map['pp'] = '%d'
+parameter_map['iterations'] = '%d'
+parameter_map['params'] = \"\"\"%s\"\"\"
 parameter_map['algorithm'] = '%s'
 parameter_map['experiment_id'] = '%s'
+sys_env = \"\"\"%s\"\"\"
 
-exp_logger.start(parameter_map)
+exp_logger.start(parameter_map, sys_env)
 """;
 
 string code_log_end =
@@ -111,8 +114,10 @@ pp = %d, it = %d, param.set.file='%s'
   }
 }
 
-(void o) log_start(string algo_params, string algorithm) {
-    string code = code_log_start % (algo_params, algorithm, exp_id);
+(void o) log_start(string algorithm) {
+    string ps = join(file_lines(input(param_set)), " ");
+    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
+    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
     python_persist(code);
     o = propagate();
 }
@@ -137,7 +142,7 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    log_start(algo_params, algorithm);
+    log_start(algorithm);
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
