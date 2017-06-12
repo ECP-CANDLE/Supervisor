@@ -19,17 +19,18 @@ This is a matrix of workflow capabilities and CANDLE benchmarks.
 
 [options="header"]
 |====
-| Workflow  | Synth^1^ | AUEN | P1B1 | P1B2 | P1B3 | NT3
-| Invoke^2^ | | <<py-keras.swift>> | | | |
-| Random^3^ | | | | | |
+| Workflow  | Synth^1^ | AUEN | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B1[P1B1] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B2[P1B2] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B3[P1B3] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot2/P2B1[P2B1] | NT3
+| Invoke^2^ | | <<py-keras.swift>> | | | | |
+| Random^3^ | | | | | | |
 | Grid^4^
 | <<SimpleSweepCommandLine,SimpleSweepCLI>>  +
-  <<SimpleSweepPython>> | | <<p1b1_grid>> | | |
+  <<SimpleSweepPython>> | | <<p1b1_grid>> | | | |
 | https://github.com/DEAP/deap[DEAP] |
-  <<GA0>> | <<AUEN_DEAP>> | | | |
-| Hyperopt  | | | <<p1b1_hyperopt>> | | |
+  <<GA0>> | <<AUEN_DEAP>> | | | | |
+| Hyperopt  | | | <<p1b1_hyperopt>> | | | |
 | https://github.com/mlr-org/mlrMBO[mlrMBO] | | | <<p1b1_mlrMBO>> | |
                                                   <<p1b3_mlrMBO>> |
+                                                  <<p2b1_mlrMBO>> |
                                                   <<nt3_mlrMBO>>
 |====
 
@@ -174,6 +175,18 @@ minimizes the validation loss.
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b3_mlrMBO for more details.
 
 *Systems tested:* http://www.nersc.gov/users/computational-systems/cori[Cori]
+
+[[p2b1_mlrMBO]]
+== p2b1_mlrMBO
+
+The P2B1 mlrMBO workflow evaluates the P2B1 benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss (???).
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+
+*Systems tested:* http://www.nersc.gov/users/computational-systems/cori[Cori]
+
 
 [[nt3_mlrMBO]]
 == nt3_mlrMBO
