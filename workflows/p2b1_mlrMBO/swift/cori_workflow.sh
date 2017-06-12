@@ -2,14 +2,15 @@
 set -eu
 
 # CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
+# Main entry point for P2B1 mlrMBO workflow
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
+WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 
 # USER SETTINGS START
 
-# See README.md for more information
+# See ../README.adoc for more information
 
 # The directory in the Benchmarks repo containing P1B3
 BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
@@ -39,41 +40,19 @@ PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 # USER SETTINGS END
 
 # Source some utility functions used by EMEWS in this script
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+source $EMEWS_PROJECT_ROOT/etc/emews_utils.sh
+source $WORKFLOWS_ROOT/common/sh/utils.sh
 
-if [ "$#" -ne 1 ]; then
-  script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
-  exit 1
-fi
+# Obtain settings for Cori
+source $WORKFLOWS_ROOT/common/sh/cori.sh
 
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-#export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+PYTHONPATH=$PYTHONPATH:$HOME/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 
-export EXPID=$1
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-check_directory_exists
-
+# See utils.sh
+get_expid $*
 export TURBINE_JOBNAME="${EXPID}_job"
 
-# if R cannot be found, then these will need to be
-# uncommented and set correctly.
-# export R_HOME=/path/to/R
-# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-# export PYTHONHOME=
-
-#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
-
-export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
-COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
-export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
-
 export KERAS_BACKEND=theano
-
-export TURBINE_DIRECTIVE="#SBATCH --constraint=haswell\n#SBATCH --license=SCRATCH"
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -85,27 +64,9 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 
-# set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
-# or empty for an immediate non-queued unscheduled run
-MACHINE="slurm"
-
-if [ -n "$MACHINE" ]; then
-  MACHINE="-m $MACHINE"
-fi
-
-# Add any script variables that you want to log as
-# part of the experiment meta data to the USER_VARS array,
-# for example, USER_VARS=("VAR_1" "VAR_2")
-USER_VARS=($CMD_LINE_ARGS)
-# log variables and script to to TURBINE_OUTPUT directory
-log_script
-
-R_LIB=/global/homes/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
-GCC_LIB=/opt/gcc/6.3.0/snos/lib64
-
-# echo's anything following this to standard out
+# Echos anything following this to stderr
 set -x
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
+        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
