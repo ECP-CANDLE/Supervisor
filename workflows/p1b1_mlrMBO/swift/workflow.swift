@@ -25,6 +25,8 @@ import json
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['save'] = '%s/output'
+hyper_parameter_map['experiment_id'] = '%s'
+hyper_parameter_map['run_id'] = '%s'
 
 validation_loss = p1b1_runner.run(hyper_parameter_map)
 """;
@@ -60,7 +62,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir);
+  string code = code_template % (params, outdir, exp_id, iter_indiv_id);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
