@@ -1,3 +1,4 @@
+module load gcc
 export PATH=$PATH:/gpfs/mira-home/wozniak/Public/sfw/theta/swig-3.0.12/bin
 
 R_HOME=/home/wozniak/mira-home/Public/sfw/theta/R-3.4.0/lib64/R
