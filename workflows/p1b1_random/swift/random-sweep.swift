@@ -31,6 +31,9 @@ app (void o) make_dir(string dirname) {
 }
 
 
+printf("PYTHONPATH: %s", getenv("PYTHONPATH"));
+printf("PYTHONHOME: %s", getenv("PYTHONHOME"));
+
 // ===== The program proper ==============================================
 string turbine_output = getenv("TURBINE_OUTPUT");
 float results[string];
