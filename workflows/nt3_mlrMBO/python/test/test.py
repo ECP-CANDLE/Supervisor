@@ -4,7 +4,7 @@ def main():
 
     hyper_parameter_map = {'epochs' : 2}
     hyper_parameter_map['framework'] = 'keras'
-    hyper_parameter_map['model_name'] = 'tc1'
+    hyper_parameter_map['model_name'] = 'nt3'
     hyper_parameter_map['save'] = './tc_output'
 
     hyper_parameter_map['conv'] = [32, 20, 16, 32, 10, 1]

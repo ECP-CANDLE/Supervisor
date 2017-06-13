@@ -12,7 +12,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P1B3
-P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -24,7 +24,7 @@ export PROCS=${PROCS:-10}
 export PPN=${PPN:-1}
 
 
-export QUEUE="debug-flat-quad"
+export QUEUE="default"
 export WALLTIME=${WALLTIME:-00:59:00}
 
 # mlrMBO settings
@@ -37,6 +37,7 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
+MODEL_NAME="nt3"
 # pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
@@ -68,17 +69,18 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+
 
 TCL=/gpfs/mira-home/wozniak/Public/sfw/theta/tcl-8.6.1
 export R=/home/wozniak/mira-home/Public/sfw/theta/R-3.4.0/lib64/R
 export PY=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
 export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$P1B3_DIR:$COMMON_DIR
-export PYTHONHOME=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
+PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
+PYTHONHOME=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
 
-export PATH=/gpfs/mira-home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$PYTHONHOME/bin:$TCL/bin:$PATH
+export PATH=/gpfs/mira-home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$TCL/bin:$PATH
+#$PYTHONHOME/bin:$TCL/bin:$PATH
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
@@ -88,7 +90,8 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/theta_run_model.sh"
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/theta_run_model.sh "
+CMD_LINE_ARGS+="-model_name=$MODEL_NAME"
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -107,7 +110,7 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=ai_workflow3.swift
+WORKFLOW_SWIFT=theta_workflow.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \

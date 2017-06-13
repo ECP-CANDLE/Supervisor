@@ -39,7 +39,7 @@ instance_directory=$3
 cd $instance_directory
 
 model_name=$4
-frameworks=$5
+framework=$5
 
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
@@ -55,10 +55,10 @@ export PATH="$PYTHONHOME/bin:$PATH"
 BENCHMARK_DIR=$emews_root/../../../Benchmarks/Pilot1/NT3:$emews_root/../../../Benchmarks/Pilot1/TC1
 COMMON_DIR=$emews_root/../common/python
 PYTHONPATH="$PYTHONHOME/lib/python2.7:"
-PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR3:"
+PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
-MODEL_CMD="python $emews_root/python/p1b3_runner.py $param_file $instance_directory $model_name $framework"
+MODEL_CMD="python $emews_root/python/nt3_tc1_runner.py $param_file $instance_directory $model_name $framework"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
