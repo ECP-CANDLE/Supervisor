@@ -40,18 +40,23 @@ cd $instance_directory
 
 framework=$4
 
-# TODO: Define the command to run the model
-#VERSION="$(<$emews_root/../Release/version.txt)"
-#APP=$emews_root/../Release/transmission_model-$VERSION
-#PROPS_FILE=$emews_root/../config/model.props
-# TODO configure python correctly
-# export PYTHONPATH=$emews_root/python:$benchmark_path
-PYTHON="/home/pbalapra/anaconda2/envs/idp/bin/python"
-export LD_LIBRARY_PATH="/home/pbalapra/anaconda2/envs/idp/lib"
-export PATH="/home/pbalapra/anaconda2/envs/idp/bin:$PATH"
-export PYTHONHOME="/home/pbalapra/anaconda2/envs/idp"
+# Theta / Tensorflow env vars
+export KMP_BLOCKTIME=30
+export KMP_SETTINGS=1
+export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
+export OMP_NUM_THREADS=144
+
+export PYTHONHOME="/home/brettin/anaconda2/envs/vrane"
+PYTHON="$PYTHONHOME/bin/python"
+export LD_LIBRARY_PATH="$PYTHONHOME/lib"
+export PATH="$PYTHONHOME/bin:$PATH"
+
+BENCHMARK_DIR=$emews_root/../../../Benchmarks/Pilot2/p2b1
 COMMON_DIR=$emews_root/../common/python
-export PYTHONPATH="/home/pbalapra/anaconda2/envs/idp/lib/python2.7:/home/ncollier/repos/Benchmarks/Pilot1/P1B3:/home/pbalapra/anaconda2/envs/idp/lib/python2.7/site-packages:$COMMON_DIR"
+PYTHONPATH="$PYTHONHOME/lib/python2.7:"
+PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
+PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
+export PYTHONPATH
 MODEL_CMD="python $emews_root/python/p2b1_runner.py $param_file $instance_directory $framework"
 
 # Turn bash error checking off. This is
