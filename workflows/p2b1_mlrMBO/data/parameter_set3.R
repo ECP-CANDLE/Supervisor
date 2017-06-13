@@ -3,5 +3,5 @@
 # the benchmark
 param.set <- makeParamSet(
   makeDiscreteParam("batch_size", values = c(32, 64, 128)),
-  makeIntegerParam("epochs", lower = 1, upper = 3),
+  makeIntegerParam("epochs", lower = 1, upper = 3)
 )
