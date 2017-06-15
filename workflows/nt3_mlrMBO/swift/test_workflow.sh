@@ -25,7 +25,7 @@ export PROCS=4
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
-export QUEUE=batch
+export QUEUE=default
 export WALLTIME=00:10:00
 export PPN=16
 export TURBINE_JOBNAME="${EXPID}_job"
