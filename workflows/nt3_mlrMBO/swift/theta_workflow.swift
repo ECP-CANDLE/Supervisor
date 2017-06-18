@@ -33,14 +33,13 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
     "bash" shfile param_file emews_root instance model_name FRAMEWORK @stdout=out @stderr=err;
 }
 
-
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-
-  make_dir(outdir) =>
   string fname = "%s/params.json" % outdir;
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
+  
+  make_dir(outdir) =>  
   file params_file <fname> = write(params) =>
   (out,err) = run_model(model_script, fname, outdir) =>
   file line = input("%s/result.txt" % outdir) =>
