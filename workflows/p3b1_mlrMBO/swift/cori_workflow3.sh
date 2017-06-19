@@ -27,9 +27,12 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
+# set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
+# or empty for an immediate non-queued unscheduled run
+MACHINE="slurm"
+
 # mlrMBO settings
 # How many to runs evaluate per iteration
-
 
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
@@ -37,6 +40,8 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
+
+
 # USER SETTINGS END
 
 # Source some utility functions used by EMEWS in this script
@@ -83,11 +88,6 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
-
-
-# set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
-# or empty for an immediate non-queued unscheduled run
-MACHINE="slurm"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

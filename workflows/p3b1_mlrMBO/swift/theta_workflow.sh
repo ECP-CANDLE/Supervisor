@@ -11,8 +11,6 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing P1B3
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
