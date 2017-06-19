@@ -42,7 +42,7 @@ both version 1 and 2.
   install.packages(c("<package name 1>", "<package name 2", ...),
                    dependencies=TRUE)
   ```
-  * Or with shell command `R -f install-mlrMBO.R`
+  * Or with shell command `nice R -f install-mlrMBO.R`
   On ALCF: Use an HTTP mirror!
   Not one of the initially listed HTTPS mirrors, they are not accessible.
   * mlrMBO and dependencies : (https://mlr-org.github.io/mlrMBO/).
