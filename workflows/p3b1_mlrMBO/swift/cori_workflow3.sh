@@ -12,7 +12,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P2B1
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -21,7 +21,7 @@ export PROCS=${PROCS:-10}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-4}
+export PPN=${PPN:-1}
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
