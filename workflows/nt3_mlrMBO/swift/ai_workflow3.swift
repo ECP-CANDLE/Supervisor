@@ -12,20 +12,19 @@ string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int propose_points = toint(argv("pp", "3"));
-int max_iterations = toint(argv("it", "5"));
+int propose_points = toint(argv("pp", "10"));
+int max_budget = toint(argv("mb", "110"));
+int max_iterations = toint(argv("mi", "10"));
+int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 file model_script = input("%s/scripts/run_model.sh" % (emews_root));
 
 string FRAMEWORK = "keras";
 
-// algorithm params format is a string representation
-// of a python dictionary. eqpy_hyperopt evals this
-// string to create the dictionary. This, unfortunately,
 string algo_params_template =
 """
-pp = %d, it = %d, param.set.file='%s'
+max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
 app (file out, file err) run_model (file shfile, string param_file, string instance)
@@ -38,9 +37,9 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
 
   make_dir(outdir) =>
-  string fname = "%s/params.json" % outdir;
-  file out <"%s/out.txt" % outdir>;
-  file err <"%s/err.txt" % outdir>;
+  string fname = "%s/params.json" % outdir =>
+  file out <"%s/out.txt" % outdir> =>
+  file err <"%s/err.txt" % outdir> =>
   file params_file <fname> = write(params) =>
   (out,err) = run_model(model_script, fname, outdir) =>
   file line = input("%s/result.txt" % outdir) =>
@@ -107,12 +106,9 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
     // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (propose_points,
-      max_iterations, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    // TODO Stage Data???
-    //printf("Staging Data") =>
-    //python_persist(stage_data_py % ("keras", model_name), "''") =>
+    string algo_params = algo_params_template % (max_budget, max_iterations,
+	design_size, propose_points, param_set);
+    string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
