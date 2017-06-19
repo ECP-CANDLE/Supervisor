@@ -1,0 +1,5 @@
+.lazybones
+*.tic
+README.pdf
+experiments/
+test_workflow.sh
