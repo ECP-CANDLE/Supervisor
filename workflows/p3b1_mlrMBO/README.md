@@ -26,14 +26,14 @@ What you need to install to run the workflow:
 * P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz.
 `P3B1_data.tgz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
 is the parent directory path of your Benchmark repository.  For example, from
-within X/Benchmarks
+within `X/Benchmarks`
 
-```
-mkdir -p Data/P3B1
-cd Data/P3B1
-wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
-tar xf P3B1_data.tgz
-```
+  ```
+  mkdir -p Data/P3B1
+  cd Data/P3B1
+  wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
+  tar xf P3B1_data.tgz
+  ```
 
 ## System requirements ##
 
@@ -101,10 +101,10 @@ There are two different version of the workflow.
 
 1. The first runs the benchmark code directly from within swift using swift's
 python integration.
-2. The second runs the benchmark code by invoking the python interpreter using
-an bash script which is in turn invoked using a swift app function.
+2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
+a bash script which is in turn invoked using a swift app function.
 
-The latter of these is necessary on machines like theta when it is not possible
+The latter of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
 
 The launch scripts in the `swift` directory are used to run the workflow.
@@ -113,10 +113,10 @@ you should only need to edit the values between `# USER SETTINGS START` and
 `# USER SETTINGS END`. This includes the following shell variables:
 
 * `BENCHMARK_DIR` - this should be set to the location of the P3B1 benchmark
-* `MAX_BUDGET` -
-* `MAX_ITERATIONS` -
-* `DESIGN_SIZE` -
-* `PROPOSE_POINTS` -
+* `MAX_BUDGET` - Maximum total number of model evaluations, including both design and iteration evaluations.
+* `MAX_ITERATIONS` - Total number of iterative sampling rounds after the initial design sampling.
+* `DESIGN_SIZE` - Total number of design points/evaluations in the initial sampling.
+* `PROPOSE_POINTS` - Total number of evaluations within each iteration of the mbo algorithm.
 * `PARAM_SET_FILE` - the file that defines the hyperparameter space used by R.
 
 The latter 5 of these are passed directly to the swift script and retrieved
@@ -131,8 +131,9 @@ string param_set = argv("param_set_file");
 ```
 
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
-as appropriate. Also see the TODOs in the launch script for any additional
- variables to set.
+as appropriate.
+
+Lastly, see the TODOs in the launch script for any additional variables to set.
 
 Running the *workflow script*:
 
@@ -147,8 +148,9 @@ experiment ID (provide any token you want). The workflow
 ### Defining the Hyperparameter Space ###
 
 The hyperparameter space is defined in by a small snippet of R code in the
-PARAM_SET_FILE (see above). The R code must set a `param.set` variable with
-an mlrMBO parameter set description. For example:
+the file defined by PARAM_SET_FILE (see above) shell variable. The R code
+must set a `param.set` variable with
+a mlrMBO parameter set description. For example:
 
 ```R
 param.set <- makeParamSet(
@@ -160,13 +162,13 @@ More information on the various functions that can be used to define the space
 can be found at: http://berndbischl.github.io/ParamHelpers/man/
 
 The hyperparameters sampled from the hyperparameter space by the mlrMBO algorithm
-are passed to swift-t as semi-colon separated as JSON strings. Swift-t then
+are passed to swift-t as set of semi-colon separated JSON strings. Swift-t then
 splits these into individual JSON strings each of which contains the
 parameters for a single run.
 
 ### final_res.Rds ###
 mlrMBO's mbo function produces a MBOSingleObjResult object. That object is
-saved to the file system in the experiment directory as final_res.Rds. The 'x'
+saved to the file system in the experiment directory as `final_res.Rds`. The 'x'
 attribute of this object will contain the best hyper parameter. Sample R
 session:
 
@@ -222,9 +224,11 @@ the `--config_file` command line argument. For example,
 
 ### Running on Cori ###
 
-These steps were performed on Cori for installation.
+* Download, install etc. the user requirements listed at the top of this
+document.
 
-Prerequisites:
+All the system requirements (see above) have been installed on Cori except
+for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
@@ -240,6 +244,8 @@ Use the cori_* files in the `swift` directory to launch the workflow. Edit
 markers.  Note that these variables can be easily overwritten from the calling
 environment (use `export` in your shell). By default these are set up for short
 debugging runs and will need to be changed for a production run.
+
+An example:
 
 ```
 cd Supervisor/workflows/p1b3_mlrMBO/swift

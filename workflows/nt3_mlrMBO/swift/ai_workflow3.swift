@@ -18,7 +18,7 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-file model_script = input("%s/scripts/run_model.sh" % (emews_root));
+file model_script = input(argv("script_file"));
 
 string FRAMEWORK = "keras";
 
