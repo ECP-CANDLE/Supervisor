@@ -22,12 +22,17 @@ string model_name = argv("model_name");
 string code_template =
 """
 import nt3_tc1_runner
-import json
+import json, os
+
+outdir = '%s'
+
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['instance_directory'] = '%s'
+hyper_parameter_map['save'] = '{}/output'.format(outdir)
+hyper_parameter_map['instance_directory'] = outdir
 hyper_parameter_map['model_name'] = '%s'
 
 validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
@@ -43,8 +48,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir,outdir,model_name);
-  make_dir(outdir) =>
+  string code = code_template % (outdir, params, model_name);
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
 }
