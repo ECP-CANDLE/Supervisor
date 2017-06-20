@@ -7,9 +7,10 @@ def write_output(result, instance_directory):
     with open('{}/result.txt'.format(instance_directory), 'w') as f_out:
         f_out.write("{}\n".format(result))
 
-def init(param_file, instance_directory, framework, out_dir_key):
-    with open(param_file) as f_in:
-        hyper_parameter_map = json.load(f_in)
+def init(param_string, instance_directory, framework, out_dir_key):
+    #with open(param_file) as f_in:
+    #    hyper_parameter_map = json.load(f_in)
+    hyper_parameter_map = json.loads(param_string.strip())
 
     if not os.path.exists(instance_directory):
         os.makedirs(instance_directory)

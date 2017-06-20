@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=6
+TIMEOUT_ARG_INDEX=7
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -41,6 +41,8 @@ cd $instance_directory
 model_name=$4
 framework=$5
 
+parameter_string=$6
+
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
 export KMP_SETTINGS=1
@@ -58,14 +60,16 @@ PYTHONPATH="$PYTHONHOME/lib/python2.7:"
 PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
-MODEL_CMD="python $emews_root/python/nt3_tc1_runner.py $param_file $instance_directory $model_name $framework"
+
+arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework")
+MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
 echo $MODEL_CMD
-$TIMEOUT_CMD $MODEL_CMD
+$TIMEOUT_CMD python "${arg_array[@]}"
 # $? is the exit status of the most recently executed command (i.e the
 # line above)
 RES=$?

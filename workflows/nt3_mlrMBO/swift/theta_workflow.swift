@@ -28,9 +28,9 @@ string algo_params_template =
 max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
-app (file out, file err) run_model (file shfile, string param_file, string instance)
+app (file out, file err) run_model (file shfile, string params_string, string instance)
 {
-    "bash" shfile param_file emews_root instance model_name FRAMEWORK @stdout=out @stderr=err;
+    "bash" shfile params_string emews_root instance model_name FRAMEWORK @stdout=out @stderr=err;
 }
 
 (string obj_result) obj(string params, string iter_indiv_id) {
@@ -38,9 +38,9 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
 
-  string fname = "%s/params.json" % outdir =>
-  file params_file <fname> = write(params) =>
-  (out,err) = run_model(model_script, fname, outdir) =>
+  //string fname = "%s/params.json" % outdir =>
+  //file params_file <fname> = write(params) =>
+  (out,err) = run_model(model_script, params, outdir) =>
   file line = input("%s/result.txt" % outdir) =>
   obj_result = trim(read(line));
   printf(obj_result);
