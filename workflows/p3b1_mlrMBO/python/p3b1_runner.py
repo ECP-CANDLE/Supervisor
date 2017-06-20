@@ -27,8 +27,7 @@ def run(hyper_parameter_map):
         params[k] = v
 
     runner_utils.write_params(params, hyper_parameter_map)
-    #loss_history = pkg.run(params)
-    pkg.do_n_fold(params)
+    avg_loss = pkg.do_n_fold(params)
 
     if framework == 'keras':
         # works around this error:
@@ -39,8 +38,7 @@ def run(hyper_parameter_map):
         except AttributeError:      # theano does not have this function
             pass
 
-    # TODO fix with appropriate value
-    return 0.3
+    return avg_loss
 
 if __name__ == '__main__':
     param_file = sys.argv[1]
