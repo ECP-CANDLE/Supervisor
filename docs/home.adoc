@@ -43,6 +43,22 @@ Other Theta ESP notes are here: https://collab.cels.anl.gov/display/ESP
 This uses the system-installed Python with ML libs at: +
 +/usr/common/software/python/2.7-anaconda/envs/deeplearning+
 
+[[titan]]
+* Titan
++
+This is a CANDLE-only installation.
++
+Add to +PATH+: +/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin+
++
+Run with:
++
+----
+$ export TITAN=true
+$ export PROJECT=... QUEUE=...
+$ export LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/cuda/lib64:/opt/gcc/4.9.3/snos/lib64:/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
+$ swift-t -m cray -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH workflow.swift
+----
+
 * http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
 +
 This uses the system-installed Python with ML libs at: +
