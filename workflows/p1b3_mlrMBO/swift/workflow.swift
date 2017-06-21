@@ -161,7 +161,7 @@ p1b3.stage_data()
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        EQR_delete_R(ME) =>
+        EQR_delete_R(ME);
         log_end() =>
         o = propagate();
     }
