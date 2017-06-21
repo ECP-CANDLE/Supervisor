@@ -803,6 +803,21 @@ June 5-9: ANL hackathon and Theta reservation
 </li>
 <li>
 <p>
+Titan
+</p>
+<div class="paragraph" id="titan"><p>This is a CANDLE-only installation.</p></div>
+<div class="paragraph"><p>Add to <code>PATH</code>: <code>/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin</code></p></div>
+<div class="paragraph"><p>Run with:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ export TITAN=true
+$ export PROJECT=... QUEUE=...
+$ export LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/cuda/lib64:/opt/gcc/4.9.3/snos/lib64:/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
+$ swift-t -m cray -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH workflow.swift</code></pre>
+</div></div>
+</li>
+<li>
+<p>
 <a href="http://swift-lang.github.io/swift-t/sites.html#cooley_candle">Cooley</a>
 </p>
 <div class="paragraph"><p>This uses the system-installed Python with ML libs at:<br />
@@ -834,7 +849,8 @@ This uses a VirtualEnv Python at <code>/home/pbalapra/.virtualenvs</code>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-06-07 11:35:47 CDT
+Last updated
+ 2017-06-21 13:14:34 CDT
 </div>
 </div>
 </body>
