@@ -84,6 +84,9 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 
+# P2B1 requires theano -- doesn't work with tensor flow
+KERAS_BACKEND=theano
+
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -108,4 +111,5 @@ set -x
 WORKFLOW_SWIFT=workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
+        -e KERAS_BACKEND=$KERAS_BACKEND \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
