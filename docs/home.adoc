@@ -44,7 +44,7 @@ This uses the system-installed Python with ML libs at: +
 +/usr/common/software/python/2.7-anaconda/envs/deeplearning+
 
 [[titan]]
-* Titan
+* https://www.olcf.ornl.gov/titan[Titan]
 +
 This is a CANDLE-only installation.
 +
