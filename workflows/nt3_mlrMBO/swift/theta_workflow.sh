@@ -112,7 +112,7 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=theta_workflow.swift
+WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
