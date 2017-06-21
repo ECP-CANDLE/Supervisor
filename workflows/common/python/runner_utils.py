@@ -1,5 +1,5 @@
 import numpy as np
-import json
+import json, os
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
@@ -10,6 +10,9 @@ def write_output(result, instance_directory):
 def init(param_file, instance_directory, framework, out_dir_key):
     with open(param_file) as f_in:
         hyper_parameter_map = json.load(f_in)
+
+    if not os.path.exists(instance_directory):
+        os.makedirs(instance_directory)
 
     hyper_parameter_map['framework'] = framework
     hyper_parameter_map[out_dir_key] = '{}/output'.format(instance_directory)

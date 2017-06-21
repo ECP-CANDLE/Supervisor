@@ -34,12 +34,10 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  //string code = code_template % (params, outdir, outdir);
-
-  make_dir(outdir) =>
-  string fname = "%s/params.json" % outdir;
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
+
+  string fname = "%s/params.json" % outdir =>
   file params_file <fname> = write(params) =>
   (out,err) = run_model(model_script, fname, outdir) =>
   file line = input("%s/result.txt" % outdir) =>

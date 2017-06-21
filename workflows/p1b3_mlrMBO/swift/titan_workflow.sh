@@ -14,8 +14,6 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # The directory in the Benchmarks repo containing P1B3
 P1B3_DIR=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3 ; /bin/pwd )
 
-echo $P1B3_DIR ; ls $P1B3_DIR
-
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
@@ -24,8 +22,10 @@ export PROCS=${PROCS:-4}
 # MPI processes per node
 export PPN=${PPN:-4}
 
+export TITAN=true
+export PROJECT=${PROJECT:-CSC249ADOA01}
 export QUEUE=${QUEUE:-debug}
-export WALLTIME=${WALLTIME:-00:02:00}
+export WALLTIME=${WALLTIME:-00:03:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
@@ -97,9 +97,11 @@ log_script
 R_LIB=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
 GCC_LIB=/opt/gcc/4.9.3/snos/lib64
 
+SWIFT=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin/swift-t
+
 set -x
 WORKFLOW_SWIFT=workflow.swift
-swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
+$SWIFT -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
         -e EMEWS_PROJECT_ROOT \
         -e TURBINE_RESIDENT_WORK_WORKERS \

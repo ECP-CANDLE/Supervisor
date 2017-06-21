@@ -5,10 +5,12 @@ set -eu
 # Compiles and installs the EQ/R module
 
 THIS=$( dirname $0 )
-P1B3_MLRMBO=$( cd $THIS/../../.. ; /bin/pwd )
 
 source $THIS/cori_build_settings.sh
 module load swig
+
+module swap PrgEnv-intel PrgEnv-gnu
+module load gcc
 
 cd $THIS
 ./bootstrap

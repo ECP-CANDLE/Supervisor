@@ -17,7 +17,7 @@ int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
-file model_script = input("%s/scripts/theta_run_model.sh" % (emews_root));
+file model_script = input(argv("script_file"));
 
 string FRAMEWORK = "keras";
 
@@ -35,11 +35,10 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-
-  make_dir(outdir) =>
-  string fname = "%s/params.json" % outdir;
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
+
+  string fname = "%s/params.json" % outdir =>
   file params_file <fname> = write(params) =>
   (out,err) = run_model(model_script, fname, outdir) =>
   file line = input("%s/result.txt" % outdir) =>

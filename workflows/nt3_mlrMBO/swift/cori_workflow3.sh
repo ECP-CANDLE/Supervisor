@@ -11,8 +11,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing P1B3
-P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
+# The directory in the Benchmarks repo containing NT3
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -34,13 +34,9 @@ export WALLTIME=${WALLTIME:-00:30:00}
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
+DESIGN_SIZE=${DESIGN_SIZE:-30}
+PROPOSE_POINTS=${PROPOSE_POINTS:-30}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
-MODEL_NAME="nt3"
-# pbalabra:
-# PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
-
 # USER SETTINGS END
 
 # Source some utility functions used by EMEWS in this script
@@ -68,14 +64,10 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-#P1B3_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B3
-
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R/lib
 
-COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
-BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1"
+
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR:$COMMON_DIR
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
@@ -89,6 +81,7 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
+MODEL_NAME="nt3"
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME"
 

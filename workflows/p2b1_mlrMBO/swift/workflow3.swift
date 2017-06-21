@@ -21,13 +21,18 @@ string param_set = argv("param_set_file");
 string code_template =
 """
 import p2b1_runner
-import json
+import json, os
+
+outdir = '%s'
+
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
+hyper_parameter_map['save'] = '{}/output'.format(outdir)
+hyper_parameter_map['instance_directory'] = outdir
 
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['instance_directory'] = '%s'
 
 validation_loss = p2b1_runner.run(hyper_parameter_map)
 """;
@@ -42,8 +47,8 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir);
-  make_dir(outdir) =>
+  string code = code_template % (outdir, params);
+  //make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
 }
