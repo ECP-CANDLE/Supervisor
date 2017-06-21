@@ -1,19 +1,17 @@
 #! /usr/bin/env bash
-#! /usr/bin/env bash
 set -eu
 
-# CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
-
-# Autodetect this workflow directory
+# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
+# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # USER SETTINGS START
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing P1B3
-BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
+# The directory in the Benchmarks repo containing P2B1
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -39,11 +37,12 @@ MAX_BUDGET=${MAX_BUDGET:-110}
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
-PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 
+SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
 # USER SETTINGS END
 
-# Source some utility functions used by EMEWS in this script
+# source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 if [ "$#" -ne 1 ]; then
@@ -68,7 +67,6 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-MODEL_NAME="nt3"
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 export PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py:$BENCHMARK_DIR:$COMMON_DIR
 
@@ -78,9 +76,10 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
+MODEL_NAME="nt3"
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME -script_file=$SCRIPT_FILE"
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$SCRIPT_FILE -model_name=$MODEL_NAME"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
@@ -95,6 +94,6 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=$EMEWS_PROJECT_ROOT/swift/workflow3.swift
+WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
-        $WORKFLOW_SWIFT $CMD_LINE_ARGS
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS

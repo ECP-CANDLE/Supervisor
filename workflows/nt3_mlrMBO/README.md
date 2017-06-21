@@ -95,7 +95,11 @@ nt3_mlrMBO/
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cori_workflow3.sh` - launch script customized for the Cori supercomputer
  * `swift/cori_settings.sh` - settings for running on the Cori supercomputer
- * `swift/ai_workflow3.swift` - app invocation ("ai") version (see below) of the swift workflow
+ * `swift/ai_workflow.sh` - launch script for running the app invocation ("ai") workflow (see below).
+ * `swift/ai_workflow3.swift` - app invocation version (see below) of the swift workflow
+ * `swift/theta_workflow.sh` - launch script for running on theta. This uses the app invocation workflow.
+ * `scripts/theta_run_model.sh` - theta-specific bash script used to launch nt3_runner.py
+ * `scripts/run_model.sh` - generic bash script used to to launch nt3_runner.py
 
 ## Running the Workflow ##
 
@@ -104,7 +108,9 @@ There are two different versions of the workflow.
 1. The first runs the benchmark code directly from within swift using swift's
 python integration.
 2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
-a bash script which is in turn invoked using a swift app function.
+a bash script which is in turn invoked using a swift app function.  The bash scripts
+`scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
+bash script.
 
 The latter of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
@@ -139,8 +145,12 @@ the workflow is run, by defining which swift is actually run.
    * Set to `$EMEWS_PROJECT_ROOT\swift\workflow3.swift` to run the benchmarks via swift's integrated python.
    * Set to `$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
    app function.
-* `SCRIPT_FILE` - the bash script used to run benchmark when the benchmark is
-run via a swift app function.
+
+ If you need to run the _ai_-version of the workflow, there is an addtional shell
+variable to set:
+
+* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
+   benchmark runner code (e.g. `scripts/run_model.sh`).
 
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.
