@@ -46,7 +46,7 @@ This uses the system-installed Python with ML libs at: +
 [[titan]]
 * https://www.olcf.ornl.gov/titan[Titan]
 +
-This is a CANDLE-only installation.
+This is a CANDLE-only installation.  It uses the OLCF-provided Python  +deeplearning+ module (Python 3.6 plus TensorFlow, Theano, and Keras) and R 3.3.2 .
 +
 Add to +PATH+: +/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin+
 +
