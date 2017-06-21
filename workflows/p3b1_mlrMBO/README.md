@@ -32,7 +32,7 @@ within `X/Benchmarks`
   mkdir -p Data/P3B1
   cd Data/P3B1
   wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
-  tar xf P3B1_data.tgz
+  tar -xf P3B1_data.tgz
   ```
 
 ## System requirements ##
