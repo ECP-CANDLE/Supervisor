@@ -17,7 +17,7 @@ int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
-file model_script = input("%s/scripts/theta_run_model.sh" % (emews_root));
+file model_script = input(argv("script_file"));
 
 string FRAMEWORK = "keras";
 
