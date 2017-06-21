@@ -17,25 +17,25 @@ BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-10}
+export PROCS=${PROCS:-302}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
-export QUEUE=${QUEUE:-debug}
-export WALLTIME=${WALLTIME:-00:30:00}
+export QUEUE=${QUEUE:-regular}
+export WALLTIME=${WALLTIME:-01:00:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
 
 
-MAX_BUDGET=${MAX_BUDGET:-110}
+MAX_BUDGET=${MAX_BUDGET:-1000}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
+MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+DESIGN_SIZE=${DESIGN_SIZE:-300}
+PROPOSE_POINTS=${PROPOSE_POINTS:-300}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 # USER SETTINGS END
 
@@ -53,7 +53,8 @@ fi
 #export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+#export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+export TURBINE_OUTPUT=/project/projectdirs/m2759/pbalapra/experiments/$EXPID
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
@@ -110,3 +111,4 @@ WORKFLOW_SWIFT=workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
+

@@ -64,6 +64,7 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
   # ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+  print(design)
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
   return(res)

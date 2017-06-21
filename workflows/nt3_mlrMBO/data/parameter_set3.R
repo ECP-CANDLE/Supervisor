@@ -6,7 +6,7 @@ param.set <- makeParamSet(
   makeIntegerParam("epochs", lower = 1, upper = 2),
   makeDiscreteParam("activation", values = c("softmax","elu","softplus","softsign", 
   				  	   	"relu", "tanh","sigmoid","hard_sigmoid",
-						"linear" )),
+						"linear")),
   makeDiscreteParam("dense", values = c("500 100 50", "1000 500 100 50", 
   			     	      	     "2000 1000 500 100 50")),
   makeDiscreteParam("optimizer", values = c("adam", "sgd", "rmsprop","adagrad",
