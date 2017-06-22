@@ -151,7 +151,7 @@ pp = %d, it = %d, param.set.file='%s'
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
-        log_end();
+        log_end() =>
         o = propagate();
     }
 }

@@ -79,7 +79,8 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 MODEL_NAME="nt3"
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$SCRIPT_FILE -model_name=$MODEL_NAME"
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$SCRIPT_FILE -model_name=$MODEL_NAME "
+CMD_LINE_ARGS+="-exp_id=$EXPID "
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

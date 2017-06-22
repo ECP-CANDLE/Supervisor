@@ -19,6 +19,7 @@ int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 file model_script = input(argv("script_file"));
+string exp_id = argv("exp_id");
 
 string FRAMEWORK = "keras";
 
@@ -27,9 +28,9 @@ string algo_params_template =
 max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
-app (file out, file err) run_model (file shfile, string param_file, string instance)
+app (file out, file err) run_model (file shfile, string param_file, string instance, string run_id)
 {
-    "bash" shfile param_file emews_root instance model_name FRAMEWORK @stdout=out @stderr=err;
+    "bash" shfile param_file emews_root instance model_name FRAMEWORK exp_id run_id @stdout=out @stderr=err;
 }
 
 
@@ -40,7 +41,7 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
 
   string fname = "%s/params.json" % outdir =>
   file params_file <fname> = write(params) =>
-  (out,err) = run_model(model_script, fname, outdir) =>
+  (out,err) = run_model(model_script, fname, outdir, iter_indiv_id) =>
   file line = input("%s/result.txt" % outdir) =>
   obj_result = trim(read(line));
   printf(obj_result);
