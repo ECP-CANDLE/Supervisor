@@ -2,7 +2,7 @@
 
 The NT3 mlrMBO workflow evaluates the NT3 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the TODO. Swift is used to scalably distribute
+minimizes the validation loss. Swift is used to scalably distribute
 work across the system, and EMEWS is used to:
 
 1. Pass the hyperparameters to evaluate from the running mlrMBO algorithm to

@@ -1,13 +1,13 @@
-# P3B1 mlrMBO Workflow #
+# P2B1 mlrMBO Workflow #
 
-The P3B1 mlrMBO workflow evaluates the P3B1 benchmark
+The P2B1 mlrMBO workflow evaluates the P2B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss. Swift is used to scalably distribute
+minimizes the TODO. Swift is used to scalably distribute
 work across the system, and EMEWS is used to:
 
 1. Pass the hyperparameters to evaluate from the running mlrMBO algorithm to
-the Swift script to launch a P3B1 run, and to
-2. Pass the validation loss from a P3B1 run back to the running mlrBMO algorithm
+the Swift script to launch a P2B1 run, and to
+2. Pass the return value (TODO  specify this) from a P2B1 run back to the running mlrBMO algorithm
  via the swift script.
 
 The workflow ultimately produces a `final_res.Rds` serialized R object that
@@ -19,21 +19,35 @@ parameter evaluations.
 What you need to install to run the workflow:
 
 * This workflow - `git@github.com:ECP-CANDLE/Supervisor.git` .
-  Clone and `cd` to `workflows/p3b1_mlrMBO`
+  Clone and `cd` to `workflows/p2b1_mlrMBO`
   (the directory containing this README).
-* p3b1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
+* P2B1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
-* P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz.
-`P3B1_data.tgz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
-is the parent directory path of your Benchmark repository.  For example, from
-within `X/Benchmarks`
+* P2B1 benchmark data - the default data set is:
+  ```
+  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
+  ```
+  It should be downloaded into X/Benchmarks/Data/common and untarred,
+  where X is the parent directory path of your Benchmark repository. Do not
+  delete the tar archive after untarring it as the benchmark code checks for
+  its existence. For example, from within `X/Benchmarks`
 
   ```
-  mkdir -p Data/P3B1
-  cd Data/P3B1
-  wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
-  tar -xf P3B1_data.tgz
+  mkdir -p Data/common
+  cd Data/common
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz .
+  tar -xf 3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
+
+  Additional data sets are available and will need to be downloaded and untarred
+  in Data/common if the _set\_sel_ benchmark argument is not set to `3k_Disordered`. The
+  other data sets are:
+
+  * 3k_Ordered' - 3k_run32_10us.35fs-DPPC.50-DOPC.10-CHOL.40.dir.tar.gz
+  * 3k_Ordered_and_gel - 3k_run43_10us.35fs-DPPC.70-DOPC.10-CHOL.20.dir.tar.gz
+  * 6k_Disordered - 6k_run10_25us.35fs-DPPC.10-DOPC.70-CHOL.20.dir.tar.gz
+  * 6k_Ordered - 6k_run32_25us.35fs-DPPC.50-DOPC.10-CHOL.40.dir.tar.g
+  * 6k_Ordered_and_gel - 6k_run43_25us.35fs-DPPC.70-DOPC.10-CHOL.20.dir.tar.gz
 
 ## System requirements ##
 
@@ -71,7 +85,7 @@ See below for instructions for running on specific machines (e.g. Cori, Theta)
 The workflow project consists of the following directories.
 
 ```
-p3b1_mlrMBO/
+nt3_mlrMBO/
   data/
   ext/EQ-R
   etc/
@@ -86,7 +100,7 @@ p3b1_mlrMBO/
  * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
  * `R/mlrMBO3.R` - the mlrMBO R code
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
- * `python/p3b1_runner.py` - python code called by the swift script to run P3B1.
+ * `python/nt3_runner.py` - python code called by the swift script to run P3B1.
  * `python/test/test.py` - python code for testing the p3b1_runner.
  * `swift/workflow3.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
@@ -95,17 +109,17 @@ p3b1_mlrMBO/
  * `swift/ai_workflow.sh` - launch script for running the app invocation ("ai") workflow (see below).
  * `swift/ai_workflow3.swift` - app invocation version (see below) of the swift workflow
  * `swift/theta_workflow.sh` - launch script for running on theta. This uses the app invocation workflow.
- * `scripts/theta_run_model.sh` - theta-specific bash script used to launch p3b1_runner.py
- * `scripts/run_model.sh` - generic bash script used to to launch p3b1_runner.py
+ * `scripts/theta_run_model.sh` - theta-specific bash script used to launch nt3_runner.py
+ * `scripts/run_model.sh` - generic bash script used to to launch nt3_runner.py
 
 ## Running the Workflow ##
 
-There are two different version of the workflow.
+There are two different versions of the workflow.
 
 1. The first runs the benchmark code directly from within swift using swift's
 python integration.
 2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
-a bash script which is in turn invoked using a swift app function. The bash scripts
+a bash script which is in turn invoked using a swift app function.  The bash scripts
 `scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
 bash script.
 
@@ -135,16 +149,24 @@ int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 ```
 
+In addition, the following variable is used to determine which version of
+the workflow is run, by defining which swift is actually run.
+
+* `SWIFT_FILE` - the swift workflow file to run
+   * Set to `$EMEWS_PROJECT_ROOT\swift\workflow3.swift` to run the benchmarks via swift's integrated python.
+   * Set to `$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
+   app function.
+
+ If you need to run the _ai_-version of the workflow, there is an addtional shell
+variable to set:
+
+* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
+   benchmark runner code (e.g. `scripts/run_model.sh`).
+
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
-
-If you need to run the _ai_-version of the workflow, there is an addtional shell
-variable to set:
-
-* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
-benchmark runner code (e.g. `scripts/run_model.sh`).
 
 Running the *workflow script*:
 
@@ -152,7 +174,7 @@ The workflow is executed by running the launch script and passing it an
 'experiment id', i.e., `swift/workflow.sh <EXPID>` where `EXPID` is the
 experiment ID (provide any token you want). The workflow
  output, various swift related files, and the `final_res.Rds` file will be written
- into a `P3B1_mlrMBO/experiments/X` directory where X is the experiment id. A copy
+ into a `nt3_mlrMBO/experiments/X` directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
 
@@ -231,7 +253,7 @@ In addition to final_res.Rds, for each run the workflow writes out the hyperpara
 used in that run to a `parameters.txt` file in each run's instance directory.
 `parameters.txt` can be used to run the model outside of the workflow using
 the `--config_file` command line argument. For example,
-`python p3b1_baseline_keras2.py --config_file parameters.txt`
+`python nt3_baseline_keras2.py --config_file parameters.txt`
 
 ### Running on Cori ###
 
@@ -243,23 +265,23 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
 ./cori_build.sh
 ```
 
 Launching the workflow:
 
-Use the cori_* files in the `swift` directory to launch the workflow. Edit
+Edit
 `cori_workflow3.sh` setting the relevant variables as appropriate.  All easily
- changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
+changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
 markers.  Note that these variables can be easily overwritten from the calling
-environment (use `export` in your shell). By default these are set up for short
+environment (use `export` in your shell). By default these are set up for a short-ish
 debugging runs and will need to be changed for a production run.
 
 An example:
 
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/swift
+cd Supervisor/workflows/nt3_mlrMBO/swift
 source cori_settings.sh
 ./cori_workflow.sh T1
 ```
