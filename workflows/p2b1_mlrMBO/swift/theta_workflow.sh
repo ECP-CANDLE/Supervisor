@@ -12,7 +12,7 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P1B3
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/nt3
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -28,18 +28,12 @@ export QUEUE="default"
 export WALLTIME=${WALLTIME:-02:00:00}
 
 # mlrMBO settings
-# How many to runs evaluate per iteration
-
-
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
-
-# pbalabra:
-# PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
 # USER SETTINGS END
 

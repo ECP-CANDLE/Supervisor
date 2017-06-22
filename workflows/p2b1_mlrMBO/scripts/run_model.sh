@@ -43,7 +43,7 @@ framework=$4
 export KERAS_BACKEND=theano
 BENCHMARK_DIR=$emews_root/../../../Benchmarks/Pilot2/P2B1
 COMMON_DIR=$emews_root/../common/python
-export PYTHONPATH="$PYTHONPATH:$BENCHMARK_DIR:$COMMON_DIR"
+export PYTHONPATH="$BENCHMARK_DIR:$COMMON_DIR"
 MODEL_CMD="python $emews_root/python/p2b1_runner.py $param_file $instance_directory $framework"
 
 # Turn bash error checking off. This is

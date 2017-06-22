@@ -25,7 +25,7 @@ What you need to install to run the workflow:
   Clone and switch to the `frameworks` branch.
 * P2B1 benchmark data - the default data set is:
   ```
-  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
+  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
   It should be downloaded into X/Benchmarks/Data/common and untarred,
   where X is the parent directory path of your Benchmark repository. Do not
@@ -35,7 +35,7 @@ What you need to install to run the workflow:
   ```
   mkdir -p Data/common
   cd Data/common
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz .
+  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   tar -xf 3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
 
@@ -55,8 +55,9 @@ These may already be installed on your system.
 The CANDLE team has installed these on many popular supercomputers.
 
 * Python 2.7, R 3.4
-* Keras - https://keras.io. The frameworks branch of p3b1 should work with
+* Keras - https://keras.io. The frameworks branch of p2b1 should work with
 both version 1 and 2.
+* Theano - P2B1 only works with Theano and will crash when running with TensorFlow
 * Swift/T with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
 ** Installation guide:
    http://swift-lang.github.io/swift-t/guide.html#_installation
@@ -77,6 +78,16 @@ both version 1 and 2.
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
 ** TL;DR: On Cori, type `ext/EQ-R/eqr/cori_build.sh`
 * Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
+* The following python packages are required:
+  * opencv-python
+  * matplotlib
+  * pillow
+  * tqdm
+  These can be installed with
+  ```
+  pip install --user opencv-python matplotlib pillow tqdm
+  ```
+  Note that these may aleady be installed (e.g. on Cori).
 
 See below for instructions for running on specific machines (e.g. Cori, Theta)
 
@@ -85,7 +96,7 @@ See below for instructions for running on specific machines (e.g. Cori, Theta)
 The workflow project consists of the following directories.
 
 ```
-nt3_mlrMBO/
+p2b1_mlrMBO/
   data/
   ext/EQ-R
   etc/
@@ -100,7 +111,7 @@ nt3_mlrMBO/
  * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
  * `R/mlrMBO3.R` - the mlrMBO R code
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
- * `python/nt3_runner.py` - python code called by the swift script to run P3B1.
+ * `python/p2b1_runner.py` - python code called by the swift script to run P3B1.
  * `python/test/test.py` - python code for testing the p3b1_runner.
  * `swift/workflow3.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
