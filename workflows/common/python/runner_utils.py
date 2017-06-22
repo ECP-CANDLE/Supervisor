@@ -1,6 +1,11 @@
 import numpy as np
 import json, os
 
+try:
+  basestring
+except NameError:
+  basestring = str
+
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
 def write_output(result, instance_directory):
