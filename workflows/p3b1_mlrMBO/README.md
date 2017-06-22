@@ -2,7 +2,7 @@
 
 The P3B1 mlrMBO workflow evaluates the P3B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the TODO. Swift is used to scalably distribute
+minimizes the validation loss. Swift is used to scalably distribute
 work across the system, and EMEWS is used to:
 
 1. Pass the hyperparameters to evaluate from the running mlrMBO algorithm to
@@ -32,7 +32,7 @@ within `X/Benchmarks`
   mkdir -p Data/P3B1
   cd Data/P3B1
   wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
-  tar xf P3B1_data.tgz
+  tar -xf P3B1_data.tgz
   ```
 
 ## System requirements ##
@@ -94,6 +94,9 @@ p3b1_mlrMBO/
  * `swift/cori_settings.sh` - settings for running on the Cori supercomputer
  * `swift/ai_workflow.sh` - launch script for running the app invocation ("ai") workflow (see below).
  * `swift/ai_workflow3.swift` - app invocation version (see below) of the swift workflow
+ * `swift/theta_workflow.sh` - launch script for running on theta. This uses the app invocation workflow.
+ * `scripts/theta_run_model.sh` - theta-specific bash script used to launch p3b1_runner.py
+ * `scripts/run_model.sh` - generic bash script used to to launch p3b1_runner.py
 
 ## Running the Workflow ##
 
@@ -102,7 +105,9 @@ There are two different version of the workflow.
 1. The first runs the benchmark code directly from within swift using swift's
 python integration.
 2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
-a bash script which is in turn invoked using a swift app function.
+a bash script which is in turn invoked using a swift app function. The bash scripts
+`scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
+bash script.
 
 The latter of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
@@ -134,6 +139,12 @@ If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHI
 as appropriate.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
+
+If you need to run the _ai_-version of the workflow, there is an addtional shell
+variable to set:
+
+* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
+benchmark runner code (e.g. `scripts/run_model.sh`).
 
 Running the *workflow script*:
 
@@ -232,7 +243,7 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/p3b1_mlrMBO/ext/EQ-R/eqr
 ./cori_build.sh
 ```
 
@@ -248,7 +259,7 @@ debugging runs and will need to be changed for a production run.
 An example:
 
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/swift
+cd Supervisor/workflows/p3b1_mlrMBO/swift
 source cori_settings.sh
 ./cori_workflow.sh T1
 ```

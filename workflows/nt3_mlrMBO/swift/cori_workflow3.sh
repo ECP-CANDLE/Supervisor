@@ -12,7 +12,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing NT3
-BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -33,9 +34,10 @@ export WALLTIME=${WALLTIME:-01:00:00}
 
 MAX_BUDGET=${MAX_BUDGET:-1000}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-3}
-DESIGN_SIZE=${DESIGN_SIZE:-300}
-PROPOSE_POINTS=${PROPOSE_POINTS:-300}
+MAX_ITERATIONS=${MAX_ITERATIONS:-4}
+DESIGN_SIZE=${DESIGN_SIZE:-30}
+PROPOSE_POINTS=${PROPOSE_POINTS:-30}
+
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 # USER SETTINGS END
 
@@ -84,8 +86,8 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 MODEL_NAME="nt3"
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME"
-
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME "
+CMD_LINE_ARGS+="-exp_id=$EXPID "
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run

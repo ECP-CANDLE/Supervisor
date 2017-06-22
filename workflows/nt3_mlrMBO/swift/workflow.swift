@@ -16,6 +16,7 @@ int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
+string exp_id = argv("exp_id");
 
 string code_template =
 """
@@ -27,10 +28,33 @@ hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['save'] = '%s/output'
 hyper_parameter_map['instance_directory'] = '%s'
 hyper_parameter_map['model_name'] = '%s'
+hyper_parameter_map['experiment_id'] = '%s'
+hyper_parameter_map['run_id'] = '%s'
 
 validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
 """;
 
+string code_log_start =
+"""
+import exp_logger
+
+parameter_map = {}
+parameter_map['pp'] = '%d'
+parameter_map['iterations'] = '%d'
+parameter_map['params'] = \"\"\"%s\"\"\"
+parameter_map['algorithm'] = '%s'
+parameter_map['experiment_id'] = '%s'
+sys_env = \"\"\"%s\"\"\"
+
+exp_logger.start(parameter_map, sys_env)
+""";
+
+string code_log_end =
+"""
+import exp_logger
+
+exp_logger.end('%s')
+""";
 
 // algorithm params format is a string representation
 // of a python dictionary. eqpy_hyperopt evals this
@@ -42,7 +66,7 @@ pp = %d, it = %d, param.set.file='%s'
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir, model_name);
+  string code = code_template % (params, outdir, outdir, model_name, exp_id, iter_indiv_id);
   make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
@@ -96,6 +120,20 @@ pp = %d, it = %d, param.set.file='%s'
   }
 }
 
+(void o) log_start(string algorithm) {
+    string ps = join(file_lines(input(param_set)), " ");
+    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
+    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
+    python_persist(code);
+    o = propagate();
+}
+
+(void o) log_end(){
+    string code = code_log_end % (exp_id);
+    python_persist(code);
+    o = propagate();
+}
+
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the R
@@ -110,12 +148,14 @@ pp = %d, it = %d, param.set.file='%s'
     string algo_params = algo_params_template % (propose_points,
       max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
+    log_start(algorithm);
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
+        log_end() =>
         o = propagate();
     }
 }

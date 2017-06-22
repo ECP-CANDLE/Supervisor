@@ -41,13 +41,6 @@ DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 
-# swift script to run
-SWIFT_FILE=$EMEWS_PROJECT_ROOT/swift/workflow3.swift
-# if invoking the benchmark via app function, this is
-# the bash script that runs the benchmark. Otherwise,
-# this is ignored.
-SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
-
 # USER SETTINGS END
 
 # Source some utility functions used by EMEWS in this script
@@ -102,6 +95,6 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-WORKFLOW_SWIFT=$SWIFT_FILE
+WORKFLOW_SWIFT=$EMEWS_PROJECT_ROOT/swift/workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         $WORKFLOW_SWIFT $CMD_LINE_ARGS

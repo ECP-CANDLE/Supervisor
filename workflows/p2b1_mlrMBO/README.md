@@ -1,13 +1,13 @@
-# NT3 mlrMBO Workflow #
+# P2B1 mlrMBO Workflow #
 
-The NT3 mlrMBO workflow evaluates the NT3 benchmark
+The P2B1 mlrMBO workflow evaluates the P2B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss. Swift is used to scalably distribute
+minimizes the TODO. Swift is used to scalably distribute
 work across the system, and EMEWS is used to:
 
 1. Pass the hyperparameters to evaluate from the running mlrMBO algorithm to
-the Swift script to launch a NT3 run, and to
-2. Pass the validation loss from a NT3 run back to the running mlrBMO algorithm
+the Swift script to launch a P2B1 run, and to
+2. Pass the return value (TODO  specify this) from a P2B1 run back to the running mlrBMO algorithm
  via the swift script.
 
 The workflow ultimately produces a `final_res.Rds` serialized R object that
@@ -19,24 +19,35 @@ parameter evaluations.
 What you need to install to run the workflow:
 
 * This workflow - `git@github.com:ECP-CANDLE/Supervisor.git` .
-  Clone and `cd` to `workflows/nt3_mlrMBO`
+  Clone and `cd` to `workflows/p2b1_mlrMBO`
   (the directory containing this README).
-* NT3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
+* P2B1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
-* NT3 benchmark data -
+* P2B1 benchmark data - the default data set is:
   ```
-  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_train2.csv
-  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_test2.csv
+  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
-  `nt_train2.csv` and `nt_test2.csv` should be copied into X/Benchmarks/Data/Pilot1,
-  where X is the parent directory path of your Benchmark repository.  For example, from within `X/Benchmarks`
+  It should be downloaded into X/Benchmarks/Data/common and untarred,
+  where X is the parent directory path of your Benchmark repository. Do not
+  delete the tar archive after untarring it as the benchmark code checks for
+  its existence. For example, from within `X/Benchmarks`
 
   ```
-  mkdir -p Data/Pilot1
-  cd Data/Pilot1
-  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_train2.csv .
-  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_test2.csv .
+  mkdir -p Data/common
+  cd Data/common
+  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
+  tar -xf 3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
+
+  Additional data sets are available and will need to be downloaded and untarred
+  in Data/common if the _set\_sel_ benchmark argument is not set to `3k_Disordered`. The
+  other data sets are:
+
+  * 3k_Ordered' - 3k_run32_10us.35fs-DPPC.50-DOPC.10-CHOL.40.dir.tar.gz
+  * 3k_Ordered_and_gel - 3k_run43_10us.35fs-DPPC.70-DOPC.10-CHOL.20.dir.tar.gz
+  * 6k_Disordered - 6k_run10_25us.35fs-DPPC.10-DOPC.70-CHOL.20.dir.tar.gz
+  * 6k_Ordered - 6k_run32_25us.35fs-DPPC.50-DOPC.10-CHOL.40.dir.tar.g
+  * 6k_Ordered_and_gel - 6k_run43_25us.35fs-DPPC.70-DOPC.10-CHOL.20.dir.tar.gz
 
 ## System requirements ##
 
@@ -44,8 +55,9 @@ These may already be installed on your system.
 The CANDLE team has installed these on many popular supercomputers.
 
 * Python 2.7, R 3.4
-* Keras - https://keras.io. The frameworks branch of p3b1 should work with
+* Keras - https://keras.io. The frameworks branch of p2b1 should work with
 both version 1 and 2.
+* Theano - P2B1 only works with Theano and will crash when running with TensorFlow
 * Swift/T with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
 ** Installation guide:
    http://swift-lang.github.io/swift-t/guide.html#_installation
@@ -66,6 +78,16 @@ both version 1 and 2.
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
 ** TL;DR: On Cori, type `ext/EQ-R/eqr/cori_build.sh`
 * Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
+* The following python packages are required:
+  * opencv-python
+  * matplotlib
+  * pillow
+  * tqdm
+  These can be installed with
+  ```
+  pip install --user opencv-python matplotlib pillow tqdm
+  ```
+  Note that these may aleady be installed (e.g. on Cori).
 
 See below for instructions for running on specific machines (e.g. Cori, Theta)
 
@@ -74,7 +96,7 @@ See below for instructions for running on specific machines (e.g. Cori, Theta)
 The workflow project consists of the following directories.
 
 ```
-nt3_mlrMBO/
+p2b1_mlrMBO/
   data/
   ext/EQ-R
   etc/
@@ -89,7 +111,7 @@ nt3_mlrMBO/
  * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
  * `R/mlrMBO3.R` - the mlrMBO R code
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
- * `python/nt3_runner.py` - python code called by the swift script to run P3B1.
+ * `python/p2b1_runner.py` - python code called by the swift script to run P3B1.
  * `python/test/test.py` - python code for testing the p3b1_runner.
  * `swift/workflow3.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script

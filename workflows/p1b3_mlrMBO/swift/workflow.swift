@@ -162,7 +162,7 @@ p1b3.stage_data()
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
-        log_end();
+        log_end() =>
         o = propagate();
     }
 }

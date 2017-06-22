@@ -12,7 +12,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P2B1
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -83,6 +84,10 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
+CMD_LINE_ARGS+="-exp_id=$EXPID "
+
+# P2B1 requires theano -- doesn't work with tensor flow
+KERAS_BACKEND=theano
 
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
@@ -108,4 +113,5 @@ set -x
 WORKFLOW_SWIFT=workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_LIB:$GCC_LIB \
+        -e KERAS_BACKEND=$KERAS_BACKEND \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
