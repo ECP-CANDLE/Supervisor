@@ -155,14 +155,14 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
     string algo_params = algo_params_template % (max_budget, max_iterations,
 	design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
-    log_start(algorithm);
+    log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        EQR_delete_R(ME);
         log_end() =>
+        EQR_delete_R(ME);
         o = propagate();
     }
 }

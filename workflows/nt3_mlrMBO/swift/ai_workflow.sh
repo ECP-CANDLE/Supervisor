@@ -16,7 +16,7 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-10}
+export PROCS=${PROCS:-4}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -34,12 +34,13 @@ MACHINE=""
 # How many to runs evaluate per iteration
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
-PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
+MAX_ITERATIONS=${MAX_ITERATIONS:-2}
+DESIGN_SIZE=${DESIGN_SIZE:-4}
+PROPOSE_POINTS=${PROPOSE_POINTS:-4}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 
 SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+LOG_SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_logger.sh
 # USER SETTINGS END
 
 # source some utility functions used by EMEWS in this script
@@ -80,7 +81,7 @@ MODEL_NAME="nt3"
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$SCRIPT_FILE -model_name=$MODEL_NAME "
-CMD_LINE_ARGS+="-exp_id=$EXPID "
+CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$LOG_SCRIPT_FILE "
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

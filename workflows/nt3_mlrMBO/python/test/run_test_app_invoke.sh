@@ -8,4 +8,4 @@ PARAM_STRING="$(<./params.json)"
 
 export PYTHONPATH="$PWD/..:$NT3_DIR:$TC1_DIR:$COMMON_DIR"
 
-python ../nt3_tc1_runner.py "$PARAM_STRING" ./ nt3 keras
+python ../nt3_tc1_runner.py "$PARAM_STRING" ./ nt3 keras foo bar
