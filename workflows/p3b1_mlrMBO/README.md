@@ -243,7 +243,7 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/p3b1_mlrMBO/ext/EQ-R/eqr
 ./cori_build.sh
 ```
 
@@ -259,7 +259,7 @@ debugging runs and will need to be changed for a production run.
 An example:
 
 ```
-cd Supervisor/workflows/p1b3_mlrMBO/swift
+cd Supervisor/workflows/p3b1_mlrMBO/swift
 source cori_settings.sh
 ./cori_workflow.sh T1
 ```
