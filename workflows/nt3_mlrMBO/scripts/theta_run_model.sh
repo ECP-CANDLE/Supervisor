@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=7
+TIMEOUT_ARG_INDEX=6
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -27,7 +27,7 @@ fi
 
 # Set param_line from the first argument to this script
 # param_line is the string containing the model parameters for a run.
-param_file=$1
+parameter_string=$1
 
 # Set emews_root to the root directory of the project (i.e. the directory
 # that contains the scripts, swift, etc. directories and files)
@@ -40,8 +40,6 @@ cd $instance_directory
 
 model_name=$4
 framework=$5
-
-parameter_string=$6
 
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
