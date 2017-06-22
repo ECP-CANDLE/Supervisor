@@ -59,9 +59,13 @@ if __name__ == '__main__':
     instance_directory = sys.argv[2]
     model_name = sys.argv[3]
     framework = sys.argv[4]
+    exp_id = sys.argv[5]
+    run_id = sys.argv[6]
     hyper_parameter_map = runner_utils.init(param_file, instance_directory,
                                             framework, 'save')
     hyper_parameter_map['model_name'] = model_name
+    hyper_parameter_map['experiment_id'] = exp_id
+    hyper_parameter_map['run_id'] = run_id
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['nt3_tc1_runner']
     result = run(hyper_parameter_map)
