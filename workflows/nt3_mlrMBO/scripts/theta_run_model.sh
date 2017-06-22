@@ -27,7 +27,7 @@ fi
 
 # Set param_line from the first argument to this script
 # param_line is the string containing the model parameters for a run.
-param_file=$1
+parameter_string=$1
 
 # Set emews_root to the root directory of the project (i.e. the directory
 # that contains the scripts, swift, etc. directories and files)
@@ -60,14 +60,16 @@ PYTHONPATH="$PYTHONHOME/lib/python2.7:"
 PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
-MODEL_CMD="python $emews_root/python/nt3_tc1_runner.py $param_file $instance_directory $model_name $framework $exp_id $run_id"
+
+arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id")
+MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
 echo $MODEL_CMD
-$TIMEOUT_CMD $MODEL_CMD
+$TIMEOUT_CMD python "${arg_array[@]}"
 # $? is the exit status of the most recently executed command (i.e the
 # line above)
 RES=$?
