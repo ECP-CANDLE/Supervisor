@@ -12,7 +12,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P2B1
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -88,6 +89,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
+CMD_LINE_ARGS+="-exp_id=$EXPID "
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
