@@ -34,13 +34,13 @@ MACHINE=""
 # How many to runs evaluate per iteration
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-2}
+MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-4}
 PROPOSE_POINTS=${PROPOSE_POINTS:-4}
-PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 
 SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
-LOG_SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_logger.sh
+LOG_SCRIPT_FILE=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
 # USER SETTINGS END
 
 # source some utility functions used by EMEWS in this script

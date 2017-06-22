@@ -41,11 +41,15 @@ def run(hyper_parameter_map):
     return avg_loss
 
 if __name__ == '__main__':
-    param_file = sys.argv[1]
+    param_string = sys.argv[1]
     instance_directory = sys.argv[2]
     framework = sys.argv[3]
-    hyper_parameter_map = runner_utils.init(param_file, instance_directory,
+    exp_id = sys.argv[4]
+    run_id = sys.argv[5]
+    hyper_parameter_map = runner_utils.init(param_string, instance_directory,
                                             framework, 'save_path')
+    hyper_parameter_map['experiment_id'] = exp_id
+    hyper_parameter_map['run_id'] = run_id
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p3b1_runner']
     result = run(hyper_parameter_map)

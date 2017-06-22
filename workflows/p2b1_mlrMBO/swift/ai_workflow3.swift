@@ -18,6 +18,8 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 file model_script = input(argv("script_file"));
+file log_script = input(argv("log_script"));
+string exp_id = argv("exp_id");
 
 string FRAMEWORK = "keras";
 
@@ -27,20 +29,53 @@ string algo_params_template =
 max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
-app (file out, file err) run_model (file shfile, string param_file, string instance)
+app (file out, file err) run_model (file shfile, string params_string, string instance, string run_id)
 {
-    "bash" shfile param_file emews_root instance FRAMEWORK @stdout=out @stderr=err;
+    "bash" shfile params_string emews_root instance FRAMEWORK exp_id run_id @stdout=out @stderr=err;
 }
 
+
+app (file out, file err) run_log_start(file shfile, string ps, string sys_env, string algorithm)
+{
+    "bash" shfile "start" emews_root propose_points max_iterations ps algorithm exp_id sys_env @stdout=out @stderr=err;
+}
+
+app (file out, file err) run_log_end(file shfile)
+{
+    "bash" shfile "end" emews_root exp_id @stdout=out @stderr=err;
+}
+
+(void o) log_start(string algorithm) {
+    file out <"%s/log_start_out.txt" % turbine_output>;
+    file err <"%s/log_start_err.txt" % turbine_output>;
+
+    string ps = join(file_lines(input(param_set)), " ");
+    string t_log = "%s/turbine.log" % turbine_output;
+    if (file_exists(t_log)) {
+      string sys_env = join(file_lines(input(t_log)), ", ");
+      (out, err) = run_log_start(log_script, ps, sys_env, algorithm) =>
+      o = propagate();
+    } else {
+      (out, err) = run_log_start(log_script, ps, "", algorithm) =>
+      o = propagate();
+    }
+}
+
+(void o) log_end() {
+  file out <"%s/log_end_out.txt" % turbine_output>;
+  file err <"%s/log_end_err.txt" % turbine_output>;
+  (out, err) = run_log_end(log_script) =>
+  o = propagate();
+}
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
 
-  string fname = "%s/params.json" % outdir =>
-  file params_file <fname> = write(params) =>
-  (out,err) = run_model(model_script, fname, outdir) =>
+  //string fname = "%s/params.json" % outdir =>
+  //file params_file <fname> = write(params) =>
+  (out,err) = run_model(model_script, params, outdir, iter_indiv_id) =>
   file line = input("%s/result.txt" % outdir) =>
   obj_result = trim(read(line));
   printf(obj_result);
@@ -108,11 +143,13 @@ app (file out, file err) run_model (file shfile, string param_file, string insta
     string algo_params = algo_params_template % (max_budget, max_iterations,
   design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
+    log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
+        log_end() =>
         EQR_delete_R(ME);
         o = propagate();
     }

@@ -25,8 +25,7 @@ if [ -n "$TIMEOUT" ]; then
   TIMEOUT_CMD="timeout $TIMEOUT"
 fi
 
-# Set param_line from the first argument to this script
-# param_line is the string containing the model parameters for a run.
+
 parameter_string=$1
 
 # Set emews_root to the root directory of the project (i.e. the directory

@@ -40,6 +40,9 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-4}
 DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-8}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
+
+SCRIPT_FILE=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+LOG_SCRIPT_FILE=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
 # USER SETTINGS END
 
 # source some utility functions used by EMEWS in this script
@@ -78,7 +81,8 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE  -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh "
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE  -script_file=$SCRIPT_FILE "
+CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$LOG_SCRIPT_FILE "
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
