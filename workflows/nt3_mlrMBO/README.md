@@ -10,9 +10,25 @@ the Swift script to launch a NT3 run, and to
 2. Pass the validation loss from a NT3 run back to the running mlrBMO algorithm
  via the swift script.
 
-The workflow ultimately produces a `final_res.Rds` serialized R object that
-contains the final best parameter values and various metadata about the
-parameter evaluations.
+ For each run of the workflow, the following are produced:
+
+ * `final_res.Rds` - a serialized R object that
+ contains the final best parameter values and various metadata about the
+ parameter evaluations. This file will be written to the experiment directory (see below).
+ * `experiment_start.json` - a json file containing experiment (i.e. workflow)
+ level data (e.g. the start time, mlrMBO parameters, etc.). This will be
+ written to the experiment directory.
+ * `experiment_end.json` -  a json file containing experiment (i.e. workflow)
+ level data (e.g. the stop time, status info, etc). This will be
+ written to the experiment directory.
+
+ For each run of the benchmark model, the following is produced:
+
+ * `run.json` - a json file containing data describing the individual run: the
+ parameters for that run and per epoch details such as the validation loss. This
+ file will be written to the output directory for that particular run (e.g.)
+ `nt3_mlrMBO/experiments/E1/run_1_1_0/output/run.json`.
+
 
 ## User requirements ##
 
@@ -34,8 +50,8 @@ What you need to install to run the workflow:
   ```
   mkdir -p Data/Pilot1
   cd Data/Pilot1
-  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_train2.csv .
-  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_test2.csv .
+  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_train2.csv
+  wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_test2.csv
   ```
 
 ## System requirements ##
@@ -146,18 +162,28 @@ the workflow is run, by defining which swift is actually run.
    * Set to `$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
    app function.
 
- If you need to run the _ai_-version of the workflow, there is an addtional shell
-variable to set:
-
-* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
-   benchmark runner code (e.g. `scripts/run_model.sh`).
-
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
 
-Running the *workflow script*:
+### App Invocation Shell Variables ###
+
+If you need to run the _ai_-version of the workflow, there are two additional shell
+variables to set:
+
+*  `SWIFT_FILE` - the swift workflow file to run - set to
+`$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
+app function.
+* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
+benchmark runner code (e.g. `scripts/run_model.sh`).
+* `LOG_SCRIPT_FILE` - the path to the bash script that is used to launch the python
+logging code code. By default these scripts are in the
+`Supervisor/workflows/common/sh` directory as they can be shared among the
+different workflows. See for example `Supervisor/workflows/common/sh/run_logger.sh`
+
+
+### Running the *workflow script* ###
 
 The workflow is executed by running the launch script and passing it an
 'experiment id', i.e., `swift/workflow.sh <EXPID>` where `EXPID` is the

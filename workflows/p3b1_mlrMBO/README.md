@@ -10,9 +10,25 @@ the Swift script to launch a P3B1 run, and to
 2. Pass the validation loss from a P3B1 run back to the running mlrBMO algorithm
  via the swift script.
 
-The workflow ultimately produces a `final_res.Rds` serialized R object that
+For each run of the workflow, the following are produced:
+
+* `final_res.Rds` - a serialized R object that
 contains the final best parameter values and various metadata about the
-parameter evaluations.
+parameter evaluations. This file will be written to the experiment directory (see below).
+* `experiment_start.json` - a json file containing experiment (i.e. workflow)
+level data (e.g. the start time, mlrMBO parameters, etc.). This will be
+written to the experiment directory.
+* `experiment_end.json` -  a json file containing experiment (i.e. workflow)
+level data (e.g. the stop time, status info, etc). This will be
+written to the experiment directory.
+
+For each run of the benchmark model, the following is produced:
+
+* `run.json` - a json file containing data describing the individual run: the
+parameters for that run and per epoch details such as the validation loss. This
+file will be written to the output directory for that particular run (e.g.)
+`p3b1_mlrMBO/experiments/E1/run_1_1_0/output/run.json`.
+
 
 ## User requirements ##
 
@@ -31,7 +47,7 @@ within `X/Benchmarks`
   ```
   mkdir -p Data/P3B1
   cd Data/P3B1
-  wget  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz .
+  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz
   tar -xf P3B1_data.tgz
   ```
 
@@ -140,19 +156,25 @@ as appropriate.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
 
-If you need to run the _ai_-version of the workflow, there is an addtional shell
-variable to set:
+### App Invocation Shell Variables ###
+
+If you need to run the _ai_-version of the workflow, there are two additional shell
+variables to set:
 
 * `SCRIPT_FILE` - the path to the bash script that is used to launch the python
 benchmark runner code (e.g. `scripts/run_model.sh`).
+* `LOG_SCRIPT_FILE` - the path to the bash script that is used to launch the python
+logging code code. By default these scripts are in the
+`Supervisor/workflows/common/sh` directory as they can be shared among the
+different workflows. See for example `Supervisor/workflows/common/sh/run_logger.sh`
 
-Running the *workflow script*:
+### Running the *workflow script* ###
 
 The workflow is executed by running the launch script and passing it an
 'experiment id', i.e., `swift/workflow.sh <EXPID>` where `EXPID` is the
 experiment ID (provide any token you want). The workflow
  output, various swift related files, and the `final_res.Rds` file will be written
- into a `P3B1_mlrMBO/experiments/X` directory where X is the experiment id. A copy
+ into a `p3b1_mlrMBO/experiments/X` directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
 

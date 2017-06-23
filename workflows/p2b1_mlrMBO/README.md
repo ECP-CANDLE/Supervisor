@@ -10,9 +10,24 @@ the Swift script to launch a P2B1 run, and to
 2. Pass the return value (TODO  specify this) from a P2B1 run back to the running mlrBMO algorithm
  via the swift script.
 
-The workflow ultimately produces a `final_res.Rds` serialized R object that
-contains the final best parameter values and various metadata about the
-parameter evaluations.
+ For each run of the workflow, the following are produced:
+
+ * `final_res.Rds` - a serialized R object that
+ contains the final best parameter values and various metadata about the
+ parameter evaluations. This file will be written to the experiment directory (see below).
+ * `experiment_start.json` - a json file containing experiment (i.e. workflow)
+ level data (e.g. the start time, mlrMBO parameters, etc.). This will be
+ written to the experiment directory.
+ * `experiment_end.json` -  a json file containing experiment (i.e. workflow)
+ level data (e.g. the stop time, status info, etc). This will be
+ written to the experiment directory.
+
+ For each run of the benchmark model, the following is produced:
+
+ * `run.json` - a json file containing data describing the individual run: the
+ parameters for that run and per epoch details such as the validation loss. This
+ file will be written to the output directory for that particular run (e.g.)
+ `p2b1_mlrMBO/experiments/E1/run_1_1_0/output/run.json`.
 
 ## User requirements ##
 
@@ -112,7 +127,7 @@ p2b1_mlrMBO/
  * `R/mlrMBO3.R` - the mlrMBO R code
  * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
  * `python/p2b1_runner.py` - python code called by the swift script to run P3B1.
- * `python/test/test.py` - python code for testing the p3b1_runner.
+ * `python/test/test.py` - python code for testing the p2b1_runner.
  * `swift/workflow3.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
  * `swift/cori_workflow3.sh` - launch script customized for the Cori supercomputer
@@ -120,8 +135,8 @@ p2b1_mlrMBO/
  * `swift/ai_workflow.sh` - launch script for running the app invocation ("ai") workflow (see below).
  * `swift/ai_workflow3.swift` - app invocation version (see below) of the swift workflow
  * `swift/theta_workflow.sh` - launch script for running on theta. This uses the app invocation workflow.
- * `scripts/theta_run_model.sh` - theta-specific bash script used to launch nt3_runner.py
- * `scripts/run_model.sh` - generic bash script used to to launch nt3_runner.py
+ * `scripts/theta_run_model.sh` - theta-specific bash script used to launch p2b1_runner.py
+ * `scripts/run_model.sh` - generic bash script used to to launch p2b1_runner.py
 
 ## Running the Workflow ##
 
@@ -160,32 +175,30 @@ int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 ```
 
-In addition, the following variable is used to determine which version of
-the workflow is run, by defining which swift is actually run.
-
-* `SWIFT_FILE` - the swift workflow file to run
-   * Set to `$EMEWS_PROJECT_ROOT\swift\workflow3.swift` to run the benchmarks via swift's integrated python.
-   * Set to `$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
-   app function.
-
- If you need to run the _ai_-version of the workflow, there is an addtional shell
-variable to set:
-
-* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
-   benchmark runner code (e.g. `scripts/run_model.sh`).
-
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
 
-Running the *workflow script*:
+### App Invocation Shell Variables ###
+
+If you need to run the _ai_-version of the workflow, there are two additional shell
+variables to set:
+
+* `SCRIPT_FILE` - the path to the bash script that is used to launch the python
+benchmark runner code (e.g. `scripts/run_model.sh`).
+* `LOG_SCRIPT_FILE` - the path to the bash script that is used to launch the python
+logging code code. By default these scripts are in the
+`Supervisor/workflows/common/sh` directory as they can be shared among the
+different workflows. See for example `Supervisor/workflows/common/sh/run_logger.sh`
+
+### Running the *workflow script* ###
 
 The workflow is executed by running the launch script and passing it an
 'experiment id', i.e., `swift/workflow.sh <EXPID>` where `EXPID` is the
 experiment ID (provide any token you want). The workflow
  output, various swift related files, and the `final_res.Rds` file will be written
- into a `nt3_mlrMBO/experiments/X` directory where X is the experiment id. A copy
+ into a `p2b1_mlrMBO/experiments/X` directory where X is the experiment id. A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
 
@@ -264,7 +277,7 @@ In addition to final_res.Rds, for each run the workflow writes out the hyperpara
 used in that run to a `parameters.txt` file in each run's instance directory.
 `parameters.txt` can be used to run the model outside of the workflow using
 the `--config_file` command line argument. For example,
-`python nt3_baseline_keras2.py --config_file parameters.txt`
+`python p2b1_baseline_keras2.py --config_file parameters.txt`
 
 ### Running on Cori ###
 
@@ -276,7 +289,7 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/p2b1_mlrMBO/ext/EQ-R/eqr
 ./cori_build.sh
 ```
 
@@ -292,7 +305,7 @@ debugging runs and will need to be changed for a production run.
 An example:
 
 ```
-cd Supervisor/workflows/nt3_mlrMBO/swift
+cd Supervisor/workflows/p2b1_mlrMBO/swift
 source cori_settings.sh
 ./cori_workflow.sh T1
 ```
