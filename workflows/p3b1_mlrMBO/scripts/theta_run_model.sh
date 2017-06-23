@@ -46,7 +46,7 @@ export KMP_SETTINGS=1
 export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
 export OMP_NUM_THREADS=144
 
-export PYTHONHOME="/home/brettin/anaconda2/envs/vrane"
+export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
 PYTHON="$PYTHONHOME/bin/python"
 export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"

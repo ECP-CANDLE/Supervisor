@@ -9,7 +9,6 @@ export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"
 
 COMMON=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common
-echo $COMMON
 PYTHONPATH="$PYTHONHOME/lib/python2.7:$COMMON:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
