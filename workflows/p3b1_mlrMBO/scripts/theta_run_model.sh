@@ -67,8 +67,7 @@ MODEL_CMD="python ${arg_array[@]}"
 set +e
 echo $MODEL_CMD
 $TIMEOUT_CMD python "${arg_array[@]}"
-# $? is the exit status of the most recently executed command (i.e the
-# line above)
+
 RES=$?
 if [ "$RES" -ne 0 ]; then
 	if [ "$RES" == 124 ]; then
