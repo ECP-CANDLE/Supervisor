@@ -71,17 +71,15 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
 
-
-
-TCL=/gpfs/mira-home/wozniak/Public/sfw/theta/tcl-8.6.1
-export R=/home/wozniak/mira-home/Public/sfw/theta/R-3.4.0/lib64/R
-export PY=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
+TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
+export R=/home/wozniak/Public/sfw/theta/R-3.4.0/lib64/R
+export PY=/home/wozniak/Public/sfw/theta/Python-2.7.12
 export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
-PYTHONHOME=/gpfs/mira-home/wozniak/Public/sfw/theta/Python-2.7.12
+PYTHONHOME=/home/wozniak/Public/sfw/theta/Python-2.7.12
 
-export PATH=/gpfs/mira-home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$TCL/bin:$PATH
+export PATH=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$TCL/bin:$PATH
 #$PYTHONHOME/bin:$TCL/bin:$PATH
 
 # Resident task workers and ranks
@@ -95,6 +93,8 @@ CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$D
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/theta_run_model.sh "
 CMD_LINE_ARGS+="-model_name=$MODEL_NAME "
 CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/theta_run_logger.sh"
+
+TURBINE_DIR=/home/wozniak/Public/sfw/theta/swift-t-pyr/turbine/lib
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -114,7 +114,7 @@ log_script
 # echo's anything following this to standard out
 set -x
 WORKFLOW_SWIFT=ai_workflow3.swift
-swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR \
+swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR  -r $TURBINE_DIR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
     -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
