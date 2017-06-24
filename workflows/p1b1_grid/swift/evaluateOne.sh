@@ -1,3 +1,3 @@
 #!/bin/bash
-filename=result-$1.txt
-python $APP_HOME/../python/evaluateOne.py $1 $filename
+filename=$TURBINE_OUTPUT/result-$1.txt
+python -u $APP_HOME/../python/evaluateOne.py $1 $filename

@@ -1,6 +1,7 @@
 import sys
-import p1b1_baseline_keras2
-import p1b1
+import p1b1_runner
+import json
+
 
 if (len(sys.argv) < 3):
 	print('requires arg1=param and arg2=filename')
@@ -9,38 +10,27 @@ if (len(sys.argv) < 3):
 parameterString = sys.argv[1]
 filename        = sys.argv[2]
 
-print (parameterString)
-print ("filename is ", filename)
+# print (parameterString)
+print ("filename is " + filename)
 
-epochs = int(parameterString[0].strip())
-batch_size = int(parameterString[2].strip())
-print ("Running p1b1 for epochs ", epochs, batch_size)
 
-# N1 = int(parameterString[2].strip())
-# NE = int(parameterString[3].strip())
+integs = [int(x) for x in parameterString.split(',')]
+print (integs)
 
-print("Set the correct paths for test and train file")
-test_path="/home/jain/Benchmarks/Data/Pilot1/P1B1.test.csv"
-train_path="/home/jain/Benchmarks/Data/Pilot1/P1B1.train.csv"
+hyper_parameter_map = {'epochs' : integs[0]}
+hyper_parameter_map['framework'] = 'keras'
+hyper_parameter_map['batch_size'] = integs[1]
+hyper_parameter_map['dense'] = [integs[2], integs[3]] 
+hyper_parameter_map['save'] = './output'
 
-print ("Starting to loading Xtrain and Xtest")
-X_train, X_test = p1b1.load_data(test_path=test_path, train_path=train_path)
-print ("Done loading Xtrain and Xtest")
-
-print ("Running p1b1 for epochs ", epochs)
-encoder, decoder, history = p1b1_baseline_keras2.run_p1b1(X_train, X_test, epochs=epochs, batch_size=batch_size)
-print ("Done running p1b1 for epochs ", epochs)
-
+val_loss = p1b1_runner.run(hyper_parameter_map)
+print (val_loss)
 # works around this error:
 # https://github.com/tensorflow/tensorflow/issues/3388
 from keras import backend as K
 K.clear_session()
 
-# use the last validation_loss as the value to minimize
-val_loss = history.history['val_loss']
-r = val_loss[-1]
-
 # writing the val loss to the output file
 with open(filename, 'w') as the_file:
-    the_file.write(repr(r))
+    the_file.write(repr(val_loss))
 
