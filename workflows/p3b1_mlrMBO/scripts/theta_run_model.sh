@@ -51,7 +51,7 @@ PYTHON="$PYTHONHOME/bin/python"
 export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"
 
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot2/P2B1
+BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot3/P3B1
 COMMON_DIR=$emews_root/../common/python
 PYTHONPATH="$PYTHONHOME/lib/python2.7:"
 PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
