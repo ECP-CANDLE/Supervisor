@@ -42,13 +42,14 @@ What you need to install to run the workflow:
 * P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz.
 `P3B1_data.tgz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
 is the parent directory path of your Benchmark repository.  For example, from
-within `X/Benchmarks`
+within `X/Benchmarks`. Note that the file must be named `P3B1_data.tgz.tar.gz` and remain in the
+`X/Benchmarks/Data/P3B1` after untarring.
 
   ```
   mkdir -p Data/P3B1
   cd Data/P3B1
-  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz
-  tar -xf P3B1_data.tgz
+  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz -O P3B1_data.tgz.tar.gz
+  tar -xf P3B1_data.tgz.tar.gz
   ```
 
 ## System requirements ##

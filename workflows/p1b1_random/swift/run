@@ -35,10 +35,10 @@ export TURBINE_JOBNAME="${EXPID}_job"
 echo $PYTHONPATH
 
 ### set the desired number of processors
-PROCS=2
+PROCS=3
 ###
 
 # remove -l option for removing printing processors ranks
 # settings.json file has all the parameter combinations to be tested
-echo swift-t  -n $PROCS $APP_HOME/grid-sweep.swift $*
-swift-t  -l -n $PROCS $APP_HOME/grid-sweep.swift $* --settings=$PWD/../data/settings.json
+echo swift-t  -n $PROCS $APP_HOME/random-sweep.swift $*
+swift-t  -l -n $PROCS $APP_HOME/random-sweep.swift $* --settings=$PWD/../data/settings.json
