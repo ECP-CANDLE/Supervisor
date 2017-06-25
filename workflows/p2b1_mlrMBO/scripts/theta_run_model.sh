@@ -47,6 +47,11 @@ export KERAS_BACKEND=theano
 #export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
 #export OMP_NUM_THREADS=144
 
+#export THEANO_FLAGS="config.base_compiledir=$instance_directory"
+export THEANO_FLAGS="base_compiledir=$instance_directory"
+
+
+
 export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
 PYTHON="$PYTHONHOME/bin/python"
 export LD_LIBRARY_PATH="$PYTHONHOME/lib"
