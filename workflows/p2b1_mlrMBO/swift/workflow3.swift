@@ -23,8 +23,10 @@ string code_template =
 """
 import p2b1_runner
 import json, os
+import theano
 
 outdir = '%s'
+theano.config.base_compiledir = outdir
 
 if not os.path.exists(outdir):
     os.makedirs(outdir)
