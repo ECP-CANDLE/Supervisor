@@ -147,7 +147,14 @@ python integration.
 2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
 a bash script which is in turn invoked using a swift app function.  The bash scripts
 `scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
-bash script.
+bash script. Note the bash script used to launch the p2b1 benchmark must
+export the following env var:
+
+```
+export THEANO_FLAGS="base_compiledir=$instance_directory"
+```
+
+This assigns each theano process its own directory in which to work.
 
 The latter of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
