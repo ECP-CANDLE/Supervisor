@@ -77,7 +77,7 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -exp_id=$EXPID "
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
