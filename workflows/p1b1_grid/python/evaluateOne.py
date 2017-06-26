@@ -1,6 +1,6 @@
 import sys
 import p1b1_runner
-import json
+import json, os
 
 
 if (len(sys.argv) < 3):
@@ -21,7 +21,7 @@ hyper_parameter_map = {'epochs' : integs[0]}
 hyper_parameter_map['framework'] = 'keras'
 hyper_parameter_map['batch_size'] = integs[1]
 hyper_parameter_map['dense'] = [integs[2], integs[3]] 
-hyper_parameter_map['save'] = './output'
+hyper_parameter_map['save'] = os.environ['TURBINE_OUTPUT']+ "/"+'./output'+parameterString
 
 val_loss = p1b1_runner.run(hyper_parameter_map)
 print (val_loss)

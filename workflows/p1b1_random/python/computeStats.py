@@ -15,7 +15,11 @@ def computeStats(swiftArrayAsString):
     for a in A:
         vals += [A[a]]
     print('%d values, with min=%f, max=%f, avg=%f\n'%(len(vals),min(vals),max(vals),sum(vals)/float(len(vals))))
-
+    
+    filename = os.environ['TURBINE_OUTPUT']+ "/final_stats.txt"
+    # writing the val loss to the output file
+    with open(filename, 'w') as the_file:
+        the_file.write('%d values, with min=%f, max=%f, avg=%f\n'%(len(vals),min(vals),max(vals),sum(vals)/float(len(vals))))
 
 if (len(sys.argv) < 2):
 	print('requires arg=dataFilename')
@@ -31,4 +35,3 @@ except IOError as e:
     print("PWD is: '%s'" % os.getcwd())
 
 computeStats(data)
-
