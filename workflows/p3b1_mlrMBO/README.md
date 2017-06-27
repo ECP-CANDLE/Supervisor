@@ -39,17 +39,16 @@ What you need to install to run the workflow:
   (the directory containing this README).
 * p3b1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
-* P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz.
-`P3B1_data.tgz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
+* P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
+`P3B1_data.tar.gz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
 is the parent directory path of your Benchmark repository.  For example, from
-within `X/Benchmarks`. Note that the file must be named `P3B1_data.tgz.tar.gz` and remain in the
-`X/Benchmarks/Data/P3B1` after untarring.
+within `X/Benchmarks`:
 
   ```
   mkdir -p Data/P3B1
   cd Data/P3B1
-  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz -O P3B1_data.tgz.tar.gz
-  tar -xf P3B1_data.tgz.tar.gz
+  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
+  tar -xf P3B1_data.tar.gz
   ```
 
 ## System requirements ##
