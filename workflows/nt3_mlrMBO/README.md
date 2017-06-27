@@ -24,10 +24,10 @@ the Swift script to launch a NT3 run, and to
 
  For each run of the benchmark model, the following is produced:
 
- * `run.json` - a json file containing data describing the individual run: the
+ * `run.[run_id].json` - a json file containing data describing the individual run: the
  parameters for that run and per epoch details such as the validation loss. This
  file will be written to the output directory for that particular run (e.g.)
- `nt3_mlrMBO/experiments/E1/run_1_1_0/output/run.json`.
+ `nt3_mlrMBO/experiments/E1/run_1_1_0/output/run.1.1.0.json`.
 
 
 ## User requirements ##
