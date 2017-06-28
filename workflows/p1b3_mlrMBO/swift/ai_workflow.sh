@@ -16,7 +16,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 export EXPID=$1
-export TURBINE_OUTPUT=${TURBINE_OUTPUT:-$EMEWS_PROJECT_ROOT/experiments/$EXPID}
+export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
+export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
