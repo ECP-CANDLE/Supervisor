@@ -21,12 +21,13 @@ string exp_id = argv("exp_id");
 
 string code_template =
 """
-import p2b1_runner
-import json, os
-import theano
-
+import os
 outdir = '%s'
-theano.config.base_compiledir = outdir
+os.environ['THEANO_FLAGS']="base_compiledir={}".format(outdir)
+
+import p2b1_runner
+import json
+import theano
 
 if not os.path.exists(outdir):
     os.makedirs(outdir)
