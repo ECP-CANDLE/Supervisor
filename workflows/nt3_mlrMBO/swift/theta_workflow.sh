@@ -59,7 +59,7 @@ fi
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=/lus/theta-fs0/projects/Candle_ECP/experiments/$EXPID
+export TURBINE_OUTPUT=${TURBINE_OUTPUT:-/lus/theta-fs0/projects/Candle_ECP/experiments/$EXPID}
 #export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 

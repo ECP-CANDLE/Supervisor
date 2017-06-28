@@ -56,7 +56,7 @@ fi
 
 export EXPID=$1
 #export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-export TURBINE_OUTPUT=/project/projectdirs/m2759/pbalapra/experiments/$EXPID
+export TURBINE_OUTPUT=${TURBINE_OUTPUT:-/project/projectdirs/m2759/pbalapra/experiments/$EXPID}
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
