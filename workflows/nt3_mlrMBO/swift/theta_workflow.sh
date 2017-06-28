@@ -23,8 +23,7 @@ export PROCS=${PROCS:-320}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-#export QUEUE="default"
-export QUEUE="R.candle_res"
+export QUEUE="default"
 export WALLTIME=${WALLTIME:-05:00:00}
 
 
