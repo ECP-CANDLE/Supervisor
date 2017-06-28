@@ -286,22 +286,68 @@ cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
 
 Launching the workflow:
 
-Edit
-`cori_workflow3.sh` setting the relevant variables as appropriate.  All easily
+1. Make a copy of `cori_workflow3.sh`
+2. Edit the copy setting the relevant variables there
+as appropriate.  All easily
 changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
 markers.  Note that these variables can be easily overwritten from the calling
 environment (use `export` in your shell). By default these are set up for a short-ish
 debugging runs and will need to be changed for a production run.
+3. `source cori_settings.sh`
+4. Run the workflow by running your workflow script, passing an experiment id.
 
 An example:
 
 ```
 cd Supervisor/workflows/nt3_mlrMBO/swift
+cp cori_workflow3.sh my_cori_workflow.sh
+# edit my my_cori_workflow.sh
 source cori_settings.sh
-./cori_workflow.sh T1
+./my_cori_workflow.sh T1
 ```
 where T1 is the experiment ID.
 
 ### Running on Theta ###
 
-TODO
+* Download, install etc. the user requirements listed at the top of this
+document.
+
+All the system requirements (see above) have been installed on Theta for except
+for the EQ/R swift extension.
+
+* Compile the EQ/R swift-t extension.
+```
+cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
+./bootstrap
+source ./theta_build_settings.sh
+./configure
+make install
+```
+
+Launching the workflow:
+
+1. Make a copy of `theta_workflow.sh`
+2. Edit the copy setting the relevant variables there
+as appropriate.  All easily
+changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
+markers.  Note that these variables can be easily overwritten from the calling
+environment (use `export` in your shell). By default these are set up for a short-ish
+debugging runs and will need to be changed for a production run.
+3. Run the workflow by running your workflow script, passing an experiment id.
+
+An example:
+
+```
+cd Supervisor/workflows/nt3_mlrMBO/swift
+cp theta_workflow.sh my_theta_workflow.sh
+# edit my theta_workflow.sh if necesasry
+./theta_workflow.sh T1
+```
+
+where T1 is the experiment ID.
+
+Note that Theta use the _ai_-version of the workflow. The benchmark is launched
+using Supervisor/workflows/nt3_mlrMBO/scripts/theta_run_model.sh. In there, the
+`PYTHONHOME` shell variable can be changed to specify a different python installation to
+run the model with. If you do change the python installation, the python
+system requirements mentioned above will need to be satisfied.
