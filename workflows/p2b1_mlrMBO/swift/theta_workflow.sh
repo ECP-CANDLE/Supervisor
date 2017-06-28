@@ -24,7 +24,7 @@ export PROCS=${PROCS:-10}
 export PPN=${PPN:-1}
 
 
-export QUEUE="default"
+export QUEUE=${QUEUE:-default}
 export WALLTIME=${WALLTIME:-02:00:00}
 
 # mlrMBO settings
