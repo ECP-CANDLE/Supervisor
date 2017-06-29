@@ -23,8 +23,7 @@ export PROCS=${PROCS:-320}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-#export QUEUE="default"
-export QUEUE="R.candle_res"
+export QUEUE=${QUEUE:-default}
 export WALLTIME=${WALLTIME:-05:00:00}
 
 
@@ -59,8 +58,8 @@ fi
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=/lus/theta-fs0/projects/Candle_ECP/experiments/$EXPID
-#export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
+export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"

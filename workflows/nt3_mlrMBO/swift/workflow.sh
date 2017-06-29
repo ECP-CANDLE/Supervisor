@@ -57,7 +57,8 @@ fi
 #export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
+export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
@@ -80,7 +81,7 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME -script_file=$SCRIPT_FILE"
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME -script_file=$SCRIPT_FILE -exp_id=$EXPID"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

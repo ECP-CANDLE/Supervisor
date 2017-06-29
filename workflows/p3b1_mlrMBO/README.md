@@ -39,17 +39,16 @@ What you need to install to run the workflow:
   (the directory containing this README).
 * p3b1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
-* P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz.
-`P3B1_data.tgz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
+* P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
+`P3B1_data.tar.gz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
 is the parent directory path of your Benchmark repository.  For example, from
-within `X/Benchmarks`. Note that the file must be named `P3B1_data.tgz.tar.gz` and remain in the
-`X/Benchmarks/Data/P3B1` after untarring.
+within `X/Benchmarks`:
 
   ```
   mkdir -p Data/P3B1
   cd Data/P3B1
-  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tgz -O P3B1_data.tgz.tar.gz
-  tar -xf P3B1_data.tgz.tar.gz
+  wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
+  tar -xf P3B1_data.tar.gz
   ```
 
 ## System requirements ##
@@ -272,22 +271,68 @@ cd Supervisor/workflows/p3b1_mlrMBO/ext/EQ-R/eqr
 
 Launching the workflow:
 
-Use the cori_* files in the `swift` directory to launch the workflow. Edit
-`cori_workflow3.sh` setting the relevant variables as appropriate.  All easily
- changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
+1. Make a copy of `cori_workflow3.sh`
+2. Edit the copy setting the relevant variables there
+as appropriate.  All easily
+changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
 markers.  Note that these variables can be easily overwritten from the calling
-environment (use `export` in your shell). By default these are set up for short
+environment (use `export` in your shell). By default these are set up for a short-ish
 debugging runs and will need to be changed for a production run.
+3. `source cori_settings.sh`
+4. Run the workflow by running your workflow script, passing an experiment id.
 
 An example:
 
 ```
 cd Supervisor/workflows/p3b1_mlrMBO/swift
+cp cori_workflow3.sh my_cori_workflow.sh
+# edit my my_cori_workflow.sh
 source cori_settings.sh
-./cori_workflow.sh T1
+./my_cori_workflow.sh T1
 ```
 where T1 is the experiment ID.
 
 ### Running on Theta ###
 
-TODO
+* Download, install etc. the user requirements listed at the top of this
+document.
+
+All the system requirements (see above) have been installed on Theta for except
+for the EQ/R swift extension.
+
+* Compile the EQ/R swift-t extension.
+```
+cd Supervisor/workflows/p3b1_mlrMBO/ext/EQ-R/eqr
+./bootstrap
+source ./theta_build_settings.sh
+./configure
+make install
+```
+
+Launching the workflow:
+
+1. Make a copy of `theta_workflow.sh`
+2. Edit the copy setting the relevant variables there
+as appropriate.  All easily
+changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
+markers.  Note that these variables can be easily overwritten from the calling
+environment (use `export` in your shell). By default these are set up for a short-ish
+debugging runs and will need to be changed for a production run.
+3. Run the workflow by running your workflow script, passing an experiment id.
+
+An example:
+
+```
+cd Supervisor/workflows/p3b1_mlrMBO/swift
+cp theta_workflow.sh my_theta_workflow.sh
+# edit my theta_workflow.sh if necesasry
+./theta_workflow.sh T1
+```
+
+where T1 is the experiment ID.
+
+Note that Theta use the _ai_-version of the workflow. The benchmark is launched
+using Supervisor/workflows/p3b1_mlrMBO/scripts/theta_run_model.sh. In there, the
+`PYTHONHOME` shell variable can be changed to specify a different python installation to
+run the model with. If you do change the python installation, the python
+system requirements mentioned above will need to be satisfied.

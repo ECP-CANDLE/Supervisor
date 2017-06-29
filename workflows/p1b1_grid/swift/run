@@ -18,7 +18,7 @@ export APP_HOME=$THIS
 
 PROJECT_ROOT=$APP_HOME/..
 
-export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$P1B1_DIR:$PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$P1B1_DIR:$PROJECT_ROOT/../common/python:$PYTHONPATH
 
 export EXPID=$1
 export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
@@ -29,13 +29,17 @@ export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
 # be ignored if MACHINE flag (see below) is not set
 export QUEUE=batch
 export WALLTIME=00:10:00
-export PPN=16
+export PPN=1
 export TURBINE_JOBNAME="${EXPID}_job"
+
+# Resident task workers and ranks
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 echo $PYTHONPATH
 
 ### set the desired number of processors
-PROCS=2
+PROCS=3
 ###
 
 # remove -l option for removing printing processors ranks

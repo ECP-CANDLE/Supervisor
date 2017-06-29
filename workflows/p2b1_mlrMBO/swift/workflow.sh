@@ -6,7 +6,7 @@ set -eu
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # USER SETTINGS START
@@ -56,7 +56,8 @@ fi
 #export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
+export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
@@ -80,7 +81,9 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 export KERAS_BACKEND=theano
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
+CMD_LINE_ARGS+="-exp_id=$EXPID -param_set_file=$PARAM_SET_FILE "
+
+echo $CMD_LINE_ARGS
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

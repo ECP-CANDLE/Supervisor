@@ -12,11 +12,15 @@ def loadSettings(settingsFilename):
         print("PWD is: '%s'" % os.getcwd())
         sys.exit(1)
     try:
-        params = settings['parameters']
+        epochs = settings['parameters']["epochs"]
+        batch_size = settings['parameters']["batch_size"]
+        N1 = settings['parameters']["N1"]
+        NE = settings['parameters']["NE"]        
+
     except KeyError as e:
         print("Settings file (%s) does not contain key: %s" % (settingsFilename, str(e)))
         sys.exit(1)
-    return(params)
+    return(epochs, batch_size, N1, NE)
 
 def expand(Vs, fr, to, soFar):
     soFarNew = []
@@ -40,16 +44,11 @@ if (len(sys.argv) < 3):
 settingsFilename = sys.argv[1]
 paramsFilename   = sys.argv[2]
 
-params = loadSettings(settingsFilename)
-values = {}
-for i in range(1, len(params)+1):
-    try:
-         As = params[str(i)]
-    except:
-         print('Did not find parameter %i in settings file'%i)
-         sys.exit(1)
-    values[i] = As
-results = expand(values, 1, len(params), [''])
+epochs, batch_size, N1, NE = loadSettings(settingsFilename)
+
+values = {1:epochs, 2: batch_size, 3: N1, 4: NE}
+print values
+results = expand(values, 1, len(values), [''])
 result = ':'.join(results)
 
 with open(paramsFilename, 'w') as the_file:

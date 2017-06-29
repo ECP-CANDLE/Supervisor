@@ -43,6 +43,7 @@ print (paramsFilename)
 epochs, batch_size, N1, NE, samples = loadSettings(settingsFilename)
 result=""
 
+# select '#samples' random numbers between the range provided in settings.json file
 for s in range(samples[0]):
     t_epoch= randint(epochs[0], epochs[1])
     t_batch_size= randint(batch_size[0], batch_size[1])
