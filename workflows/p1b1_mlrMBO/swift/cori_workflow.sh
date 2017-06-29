@@ -72,7 +72,7 @@ COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 export PYTHONPATH=$BENCHMARK_DIR:$COMMON_DIR:$EMEWS_PROJECT_ROOT/python
 export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning/
 
-export TURBINE_DIRECTIVE="#SBATCH --constraint=knl,quad,cache\n#SBATCH --license=SCRATCH"
+export TURBINE_DIRECTIVE="#SBATCH --constraint=knl,quad,cache\n#SBATCH --license=SCRATCH\n#SBATCH --account=m2759"
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
