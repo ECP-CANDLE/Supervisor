@@ -67,18 +67,30 @@ app (file out, file err) run_log_end(file shfile)
   o = propagate();
 }
 
+
+(string obj_result) get_results(string result_file) {
+  if (file_exists(result_file)) {
+    file line = input(result_file);
+    obj_result = trim(read(line));
+  } else {
+    obj_result = "NaN";
+  }
+}
+
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
   file out <"%s/out.txt" % outdir>;
   file err <"%s/err.txt" % outdir>;
 
+  //printf("%s", params);
   //string fname = "%s/params.json" % outdir =>
   //file params_file <fname> = write(params) =>
   (out,err) = run_model(model_script, params, outdir, iter_indiv_id) =>
-  file line = input("%s/result.txt" % outdir) =>
-  obj_result = trim(read(line));
+  string result_file = "%s/result.txt" % outdir;
+  obj_result = get_results(result_file);
   printf(obj_result);
 }
+
 
 (void v) loop(location ME, int ME_rank) {
 
