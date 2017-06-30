@@ -73,6 +73,7 @@ MODEL_CMD="python ${arg_array[@]}"
 set +e
 echo $MODEL_CMD
 $TIMEOUT_CMD python "${arg_array[@]}"
+sleep 60
 
 RES=$?
 if [ "$RES" -ne 0 ]; then
