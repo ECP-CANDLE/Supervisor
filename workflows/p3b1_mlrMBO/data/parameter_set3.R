@@ -7,7 +7,7 @@ param.set <- makeParamSet(
   makeDiscreteParam("activation", values = c("softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear")),
   makeDiscreteParam("optimizer", values = c("adam", "sgd", "rmsprop", "adagrad", "adadelta")),
   makeNumericParam("dropout", lower = 0, upper = 0.9),
-  makeNumericParam("learning_rate", lower = 0.00001, upper = 0.1),
+  makeNumericParam("learning_rate", lower = 0.00001, upper = 0.1)
   ## DEBUG PARAMETERS: DON'T USE THESE IN PRODUCTION RUN
   ## makeDiscreteParam("conv", values = c("32 20 16 32 10 1"))
 )
