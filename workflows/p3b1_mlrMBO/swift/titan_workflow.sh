@@ -16,13 +16,13 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=258
+export PROCS=${PROCS:-258}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=1
-export QUEUE=batch
-export WALLTIME=02:00:00
+export PPN=${PPN:-1}
+export QUEUE=${QUEUE:-default}
+export WALLTIME=${WALLTIME:-05:00:00}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
@@ -34,7 +34,7 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 DESIGN_SIZE=${DESIGN_SIZE:-300}
 PROPOSE_POINTS=${PROPOSE_POINTS:-300}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
-
+MODEL_NAME="p3b1"
 # pbalabra:
 # PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set1.R"
 
@@ -55,7 +55,8 @@ fi
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 export EXPID=$1
-export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
+export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
+export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
@@ -65,8 +66,6 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
-
-
 
 TCL=/sw/xk6/tcl_tk/8.5.8/sles11.1_gnu4.5.3
 export R=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R
