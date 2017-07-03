@@ -14,7 +14,8 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # See README.md for more information
 
 # The directory in the Benchmarks repo containing P2B1
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:"
+BENCHMARK_DIR+="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -78,7 +79,7 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 # EQ/R location
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
-export KERAS_BACKEND=theano
+#export KERAS_BACKEND=theano
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-exp_id=$EXPID -param_set_file=$PARAM_SET_FILE "
