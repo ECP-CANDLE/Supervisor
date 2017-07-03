@@ -59,6 +59,8 @@ $ export LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/
 $ swift-t -m cray -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH workflow.swift
 ----
 
+On Titan, do +module load autoconf+ to get Autoconf 2.69 .
+
 * http://swift-lang.github.io/swift-t/sites.html#cooley_candle[Cooley]
 +
 This uses the system-installed Python with ML libs at: +
