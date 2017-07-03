@@ -8,4 +8,4 @@ export PYTHONPATH="$THIS/..:$BENCHMARK_DIR:$COMMON_DIR"
 
 echo $PYTHONPATH | tr : '\n' | nl
 
-KERAS_BACKEND="theano" python $THIS/test.py
+python $THIS/test.py
