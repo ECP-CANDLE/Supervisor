@@ -88,8 +88,7 @@ CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 CMD_LINE_ARGS+="-exp_id=$EXPID "
 
 # P2B1 requires theano -- doesn't work with tensor flow
-KERAS_BACKEND=theano
-
+# KERAS_BACKEND=theano
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run

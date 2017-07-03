@@ -42,7 +42,7 @@ framework=$4
 exp_id=$5
 run_id=$6
 
-export KERAS_BACKEND=theano
+#export KERAS_BACKEND=theano
 BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot2/P2B1
 COMMON_DIR=$emews_root/../common/python
 export PYTHONPATH="$BENCHMARK_DIR:$COMMON_DIR"

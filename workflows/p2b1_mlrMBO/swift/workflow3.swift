@@ -23,11 +23,9 @@ string code_template =
 """
 import os
 outdir = '%s'
-os.environ['THEANO_FLAGS']="base_compiledir={}".format(outdir)
 
 import p2b1_runner
 import json
-import theano
 
 if not os.path.exists(outdir):
     os.makedirs(outdir)
@@ -132,9 +130,16 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (void o) log_start(string algorithm) {
     string ps = join(file_lines(input(param_set)), " ");
-    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
-    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
-    python_persist(code);
+    string t_log = "%s/turbine.log" % turbine_output;
+    if (file_exists(t_log)) {
+      string sys_env = join(file_lines(input(t_log)), ", ");
+      string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
+      python_persist(code);
+    } else {
+      string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, "");
+      python_persist(code);
+    }
+
     o = propagate();
 }
 
