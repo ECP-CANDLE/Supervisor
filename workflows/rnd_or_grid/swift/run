@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# Usage: ./run 
+#
+
+if [ "$#" -ne 3 ]; then
+  script_name=$(basename $0)
+  echo "Usage: ${script_name} EXPERIMENT_ID (run1_p1b1) BENCHMARKS_NAME (eg. p1b1) SEARCH_TYPE (eg. grid or random"
+  exit 1
+fi
+
+#### set this variable to add new benchmarks directory
+RUNNERS_DIR=../../../../Benchmarks/Pilot1/P1B1:../../../../Benchmarks/Pilot2/P2B1:../../../../Benchmarks/Pilot3/P3B1:../../../../Benchmarks/Pilot1/NT3:../../../../Benchmarks/Pilot1/P1B3
+###
+
+THIS=$( cd $( dirname $0 ); /bin/pwd )
+export APP_HOME=$THIS
+
+PROJECT_ROOT=$APP_HOME/..
+
+export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$RUNNERS_DIR:$PROJECT_ROOT/../common/python:$PYTHONPATH
+
+export EXPID=$1
+B_NAME=$2
+S_NAME=$3
+
+export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
+
+	# prefix=$PWD/../data/
+	# suffix="_settings.json"
+	# export SETTINGS_FILE=$prefix$BENCHMARK_NAME$suffix
+
+# TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
+# as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
+# be ignored if MACHINE flag (see below) is not set
+export QUEUE=batch
+export WALLTIME=00:10:00
+export PPN=1
+export TURBINE_JOBNAME="${EXPID}_job"
+
+### set the desired number of processors
+PROCS=3
+###
+
+# Resident task workers and ranks
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
+echo $PYTHONPATH
+
+# remove -l option for removing printing processors ranks
+# settings.json file has all the parameter combinations to be tested
+echo swift-t  -n $PROCS $APP_HOME/grid-sweep.swift $*
+swift-t  -l -n $PROCS $APP_HOME/rnd_or_grid.swift $* --benchmark_name=$B_NAME --search_type=$S_NAME
