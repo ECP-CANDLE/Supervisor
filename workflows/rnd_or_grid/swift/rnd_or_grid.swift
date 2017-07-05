@@ -52,7 +52,6 @@ parameters = split(parametersString, ":");
 foreach param in parameters
 {
 	string rName = turbine_output+"/result-"+param+".txt";
-	printf(rName);
     file resultFile<rName> = evaluateOne(param, benchmark);
     results[param] = string2float(read(resultFile));
 }
@@ -60,9 +59,5 @@ foreach param in parameters
 // Compute stats of this array of results
 // Write directly to a file with write
 file tmp = write(repr(results));
-
-// Find the name of a file with filename
-//trace("Temporary filename is: " + filename(tmp));
-
 computeStats(filename(tmp));
 

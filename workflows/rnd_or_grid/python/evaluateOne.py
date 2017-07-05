@@ -12,7 +12,6 @@ filename        = sys.argv[2]
 benchmarkName   = sys.argv[3]
 
 integs = [float(x) for x in parameterString.split(',')]
-print (integs)
 
 if (benchmarkName == "p1b1"):
 	import p1b1_runner

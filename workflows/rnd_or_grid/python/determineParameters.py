@@ -1,11 +1,11 @@
 import sys, json, os
 import random 
+import itertools
 
 # ===== Definitions =========================================================
 def expand(Vs, fr, to, soFar):
     soFarNew = []
     for s in soFar:
-        print Vs[fr]
         if (Vs[fr] == None):
              print ("ERROR: The order of json inputs and values must be preserved")
              sys.exit(1)
@@ -22,7 +22,8 @@ def expand(Vs, fr, to, soFar):
 def generate_random(values, n_samples, benchmarkName):
     # select '#samples' random numbers between the range provided in settings.json file
     result = ""
-    for s in range(samples[0]):
+    param_listed = []
+    for s in range(n_samples):
         if(benchmarkName=="p1b1"):
             # values = {1:epochs, 2: batch_size, 3: N1, 4: NE}
             t_epoch= random.randint(values[1][0], values[1][1])
@@ -61,9 +62,9 @@ def generate_random(values, n_samples, benchmarkName):
             print('ERROR: Tried all possible benchmarks, Invalid benchmark name or json file')
             sys.exit(1)
         # Populate the result string for writing sweep-parameters file
-        if(s < (samples[0]-1)):
-            result+=":"
-    return result
+        param_listed += [str(result)]
+        result=""
+    return (param_listed)
 
 # ===== Main program ========================================================
 if (len(sys.argv) < 3):
@@ -75,6 +76,7 @@ paramsFilename   = sys.argv[2]
 benchmarkName    = sys.argv[3]
 searchType       = sys.argv[4]
 
+## Read in the variables from json file
 #Trying to open the settings file
 print("Reading settings: %s" % settingsFilename)
 try:
@@ -85,7 +87,6 @@ except IOError as e:
     print("PWD is: '%s'" % os.getcwd())
     sys.exit(1)
 
-# Read in the variables from json file
 # Register new variables for any benchmark here
 #Common variables
 epochs = settings.get('parameters').get('epochs')
@@ -108,41 +109,47 @@ drop = settings.get('parameters').get('drop')
 # For random scheme determine number of samples
 samples = settings.get('samples', {}).get('num', None)
 
+## Done reading from file 
 
 # Make values for computing grid sweep parameters
 values = {}
 if(benchmarkName=="p1b1"):
     values = {1:epochs, 2: batch_size, 3: N1, 4: NE}
-    print values
 elif(benchmarkName=="p1b3"):
     values = {1:epochs, 2: batch_size, 3: test_cell_split, 4: drop}
-    print values
 elif(benchmarkName=="nt3"):
     values = {1:epochs, 2: batch_size, 3: classes}
-    print values
 elif(benchmarkName=="p2b1"):
     values = {1:epochs, 2: batch_size, 3: molecular_epochs, 4: weight_decay}
-    print values
 elif(benchmarkName=="p3b1"):
     values = {1:epochs, 2: batch_size, 3: shared_nnet_spec, 4: n_fold}
-    print values
 else:
     print('ERROR: Tried all possible benchmarks, Invalid benchmark name or json file')
     sys.exit(1)
 
+# this (result) is : seperated string with all params
 result = {}
+# Determine parameter space based of search type
 if(searchType == "grid"):
     results = expand(values, 1, len(values), [''])
-    result = ':'.join(results)
 elif(searchType =="random"):
     if(samples == None):
         print ("ERROR: Provide number of samples in json file")
         sys.exit(1)
-    result = generate_random(values, samples, benchmarkName) 
+    # result, results = generate_random(values, samples, benchmarkName) 
+    results = generate_random(values, samples[0], benchmarkName) 
 else:
     print ("ERROR: Invalid search type, specify either - grid or random")
     sys.exit(1)
 
+counter=0
+for a, b in itertools.combinations(results, 2):
+    if(a == b):
+        print ("Warning: skipping -identical parameters found", counter)
+        results.remove(a)
+
+#These are final : seperated parameters for evaluation
+result = ':'.join(results)
 
 with open(paramsFilename, 'w') as the_file:
     the_file.write(result)
