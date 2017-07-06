@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -eu
 
-# CORI WORKFLOW
+# TITAN WORKFLOW
 # Main entry point for P1B3 mlrMBO workflow
 
 # Autodetect this workflow directory
