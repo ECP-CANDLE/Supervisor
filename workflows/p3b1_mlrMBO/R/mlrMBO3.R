@@ -25,7 +25,8 @@ parallelMap2 <- function(fun, ...,
   else{
     dots <- list(...)
     string_params <- elements_of_lists_to_json(dots[[1L]])
-    print(paste0("parallelMap2 called with list_param: ",string_params))
+    # print(paste0("parallelMap2 called with list_param: ",string_params))
+    # print(paste0("parallelMap2 called with list of length: ", ???)
     OUT_put(string_params)
     string_results = IN_get()
 

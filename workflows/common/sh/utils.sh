@@ -35,10 +35,13 @@ EOF
   fi
 
   export EXPID=$1
-  if [ $EXPID = "-a" ]; then
+  if [ $EXPID = "-a" ]
+  then
     export TURBINE_OUTPUT_ROOT=$EMEWS_PROJECT_ROOT/experiments
-    export TURBINE_OUTPUT_FORMAT=X%Q
-    EXPID=SWIFT
+    # Creates a X + a unique integer padded to 3 digits: e.g., X023
+    export TURBINE_OUTPUT_FORMAT="X%Q"
+    EXPID="AUTO"
+    shift
   else
     export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
     check_directory_exists

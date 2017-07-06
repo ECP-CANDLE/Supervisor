@@ -1,7 +1,8 @@
 log_script() {
+  # usage: Provide shell script for inclusion in log
   SCRIPT_NAME=$(basename $0)
   mkdir -p $TURBINE_OUTPUT
-  LOG_NAME="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
+  LOG_NAME="${TURBINE_OUTPUT}/emews.log"
   echo "### VARIABLES ###" > $LOG_NAME
   set +u
   VARS=( "EMEWS_PROJECT_ROOT" "EXPID" "TURBINE_OUTPUT" \
@@ -24,7 +25,7 @@ log_script() {
 
   echo "" >> $LOG_NAME
   echo "## SCRIPT ###" >> $LOG_NAME
-  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+  cat $1 >> $LOG_NAME
 }
 
 check_directory_exists() {
