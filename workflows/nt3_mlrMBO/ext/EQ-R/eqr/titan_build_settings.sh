@@ -1,3 +1,5 @@
+module load gcc
+export PATH=$PATH:/ccs/home/wozniak/Public/sfw/swig-3.0.2/bin
 
 # TITAN BUILD SETTINGS
 
@@ -8,10 +10,11 @@ R_INSIDE=$R_HOME/library/RInside
 RCPP=$R_HOME/library/Rcpp
 
 #system-wide tcl
-TCL=/lustre/atlas2/csc249/proj-shared/sfw/tcl-8.6.2
+TCL=/ccs/home/wozniak/Public/sfw/tcl-8.6.2
 TCL_INCLUDE=$TCL/include
 TCL_LIB=$TCL/lib
 TCL_LIBRARY=tcl8.6
+export PATH=$PATH:/ccs/home/wozniak/Public/sfw/tcl-8.6.2/bin
 
 CPPFLAGS=""
 CPPFLAGS+="-I$TCL_INCLUDE "
