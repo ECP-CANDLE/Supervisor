@@ -21,6 +21,8 @@ file model_script = input(argv("script_file"));
 file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
 
+printf("TURBINE_OUTPUT: %s", turbine_output);
+
 string FRAMEWORK = "keras";
 
 
