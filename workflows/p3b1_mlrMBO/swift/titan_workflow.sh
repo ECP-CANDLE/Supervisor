@@ -44,8 +44,9 @@ MODEL_NAME="p3b1"
 # Source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
+script_name=$(basename $0)
+
 if [ "$#" -ne 1 ]; then
-  script_name=$(basename $0)
   echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
   exit 1
 fi
@@ -102,7 +103,7 @@ fi
 # for example, USER_VARS=("VAR_1" "VAR_2")
 USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
-log_script
+log_script $EMEWS_PROJECT_ROOT/swift/$script_name
 
 LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/cuda/lib64:/opt/gcc/4.9.3/snos/lib64:/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
 SWIFT=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin/swift-t
