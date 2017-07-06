@@ -1,3 +1,4 @@
+# Titan specific settings to build eqr
 module load gcc
 export PATH=$PATH:/ccs/home/wozniak/Public/sfw/swig-3.0.2/bin
 
