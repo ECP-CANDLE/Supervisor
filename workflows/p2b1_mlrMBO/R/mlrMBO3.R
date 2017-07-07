@@ -59,12 +59,13 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
 
 
   surr.rf = makeLearner("regr.randomForest", predict.type = "se")
-  ctrl = makeMBOControl(n.objectives = 1, propose.points = min(20, propose.points), 
-       	   			       	         impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+  ctrl = makeMBOControl(n.objectives = 1,  save.on.disk.at = c(1,2,3,4,5), 
+       	 			     propose.points = min(20, propose.points), 
+       	   			     impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
   ctrl = setMBOControlInfill(ctrl, crit=makeMBOInfillCritCB(), interleave.random.points=max(0,propose.points-20))
   ctrl = setMBOControlMultiPoint(ctrl, method = "cb")
   ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
-  ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
+  #ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
 
   # ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
