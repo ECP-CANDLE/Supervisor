@@ -2,9 +2,6 @@
 #! /usr/bin/env bash
 set -eu
 
-# CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
-
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
@@ -12,8 +9,9 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing P1B3
-BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
+# The directory in the Benchmarks repo containing NT3
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -28,12 +26,15 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 MACHINE=""
 
 # mlrMBO settings
-# How many to runs evaluate per iteration
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
@@ -81,7 +82,8 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME -script_file=$SCRIPT_FILE -exp_id=$EXPID"
+CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -model_name=$MODEL_NAME -exp_id=$EXPID "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

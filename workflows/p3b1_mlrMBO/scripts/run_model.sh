@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=7
+TIMEOUT_ARG_INDEX=8
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -41,12 +41,13 @@ cd $instance_directory
 framework=$4
 exp_id=$5
 run_id=$6
+benchmark_timeout=$7
 
 BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot3/P3B1
 COMMON_DIR=$emews_root/../common/python
 export PYTHONPATH="$BENCHMARK_DIR:$COMMON_DIR"
 
-arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework" "$exp_id" "$run_id")
+arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework" "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value

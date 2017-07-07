@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=8
+TIMEOUT_ARG_INDEX=9
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -41,6 +41,7 @@ model_name=$4
 framework=$5
 exp_id=$6
 run_id=$7
+benchmark_timeout=$8
 
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
@@ -60,7 +61,7 @@ PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
 
-arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id")
+arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is

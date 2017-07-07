@@ -78,12 +78,16 @@ if __name__ == '__main__':
     framework = sys.argv[3]
     exp_id = sys.argv[4]
     run_id = sys.argv[5]
+    benchmark_timeout = int(sys.argv[6])
+
     logger.debug("RUN INIT START")
+    
     hyper_parameter_map = runner_utils.init(param_string, instance_directory,
                                             framework, 'save_path')
     logger.debug("RUN INIT STOP")
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id
+    hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p3b1_runner']
     result = run(hyper_parameter_map)

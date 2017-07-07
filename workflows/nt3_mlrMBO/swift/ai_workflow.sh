@@ -26,12 +26,15 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 MACHINE=""
 
 # mlrMBO settings
-# How many to runs evaluate per iteration
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
@@ -83,6 +86,7 @@ MODEL_NAME="nt3"
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$SCRIPT_FILE -model_name=$MODEL_NAME "
 CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$LOG_SCRIPT_FILE "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

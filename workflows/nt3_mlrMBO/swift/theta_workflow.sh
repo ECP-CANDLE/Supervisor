@@ -1,9 +1,6 @@
 #! /usr/bin/env bash
 set -eu
 
-# CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
-
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
@@ -26,11 +23,12 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-default}
 export WALLTIME=${WALLTIME:-05:00:00}
 
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+
 
 # mlrMBO settings
-# How many to runs evaluate per iteration
-
-
 MAX_BUDGET=${MAX_BUDGET:-1000}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
@@ -91,7 +89,8 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/theta_run_model.sh "
 CMD_LINE_ARGS+="-model_name=$MODEL_NAME "
-CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/theta_run_logger.sh"
+CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/theta_run_logger.sh "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 TURBINE_DIR=/home/wozniak/Public/sfw/theta/swift-t-pyr/turbine/lib
 

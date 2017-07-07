@@ -61,10 +61,12 @@ if __name__ == '__main__':
     framework = sys.argv[4]
     exp_id = sys.argv[5]
     run_id = sys.argv[6]
+    benchmark_timeout = int(sys.argv[7])
     hyper_parameter_map = runner_utils.init(param_string, instance_directory, framework, 'save')
     hyper_parameter_map['model_name'] = model_name
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id
+    hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['nt3_tc1_runner']
     result = run(hyper_parameter_map)
