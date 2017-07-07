@@ -21,6 +21,7 @@ string model_name = argv("model_name");
 file model_script = input(argv("script_file"));
 file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 string FRAMEWORK = "keras";
 
@@ -31,7 +32,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 app (file out, file err) run_model (file shfile, string params_string, string instance, string run_id)
 {
-    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id @stdout=out @stderr=err;
+    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout @stdout=out @stderr=err;
 }
 
 

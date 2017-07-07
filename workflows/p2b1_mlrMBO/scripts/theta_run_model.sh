@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=7
+TIMEOUT_ARG_INDEX=8
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -39,6 +39,7 @@ cd $instance_directory
 framework=$4
 exp_id=$5
 run_id=$6
+benchmark_timeout=$7
 
 # export KERAS_BACKEND=theano
 #export THEANO_FLAGS="config.base_compiledir=$instance_directory"
@@ -63,7 +64,7 @@ PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
 
-arg_array=("$emews_root/python/p2b1_runner.py" "$parameter_string" "$instance_directory" "$framework"  "$exp_id" "$run_id")
+arg_array=("$emews_root/python/p2b1_runner.py" "$parameter_string" "$instance_directory" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is

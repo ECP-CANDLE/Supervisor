@@ -28,6 +28,8 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
+
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 MACHINE="slurm"
@@ -91,6 +93,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 CMD_LINE_ARGS+="-exp_id=$EXPID "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

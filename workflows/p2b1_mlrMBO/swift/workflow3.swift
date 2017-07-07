@@ -18,6 +18,7 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 string code_template =
 """
@@ -36,7 +37,7 @@ hyper_parameter_map['save_path'] = '{}/output'.format(outdir)
 hyper_parameter_map['instance_directory'] = outdir
 hyper_parameter_map['experiment_id'] = '%s'
 hyper_parameter_map['run_id'] = '%s'
-
+hyper_parameter_map['timeout'] = %d
 
 validation_loss = p2b1_runner.run(hyper_parameter_map)
 """;
@@ -73,7 +74,7 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (outdir, params, exp_id, iter_indiv_id);
+  string code = code_template % (outdir, params, exp_id, iter_indiv_id, benchmark_timeout);
   //make_dir(outdir) =>
   obj_result = python_persist(code, "str(validation_loss)");
   printf(obj_result);
