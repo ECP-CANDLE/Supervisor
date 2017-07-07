@@ -22,6 +22,7 @@ def init(param_string, instance_directory, framework, out_dir_key):
 
     hyper_parameter_map['framework'] = framework
     hyper_parameter_map[out_dir_key] = '{}/output'.format(instance_directory)
+    hyper_parameter_map['save'] = hyper_parameter_map[out_dir_key]
     hyper_parameter_map['instance_directory'] = instance_directory
 
     return hyper_parameter_map

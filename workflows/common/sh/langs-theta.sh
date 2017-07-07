@@ -1,9 +1,5 @@
-# LANGS THETA
-# Language settings for Theta (Python, R, etc.)
-# Assumes WORKFLOWS_ROOT is set
-# Assumes modules are loaded (cf. modules-cori.sh)
-
-# Python
+# LANGS Theta
+# Language settings for Theta (Swift, Python, R, Tcl, etc.)
 
 TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
 export R=/home/wozniak/Public/sfw/theta/R-3.4.0/lib64/R
@@ -13,4 +9,7 @@ COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
 PYTHONHOME=/home/wozniak/Public/sfw/theta/Python-2.7.12
 
-export PATH=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$TCL/bin:$PATH
+# STC=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc
+STC=/projects/Candle_ECP/swift/pyr/stc
+
+export PATH=$STC/bin:$TCL/bin:$PATH
