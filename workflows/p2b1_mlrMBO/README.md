@@ -102,7 +102,7 @@ both version 1 and 2.
   ```
   pip install --user opencv-python matplotlib pillow tqdm
   ```
-  Note that these may aleady be installed (e.g. on Cori).
+  Note that some or all of these may aleady be installed.
 
 See below for instructions for running on specific machines (e.g. Cori, Theta)
 
@@ -292,7 +292,13 @@ the `--config_file` command line argument. For example,
 document.
 
 All the system requirements (see above) have been installed on Cori except
-for the EQ/R swift extension.
+for the python opencv package and the EQ/R swift extension.
+
+* Install the python opencv package
+```
+module load deeplearning
+pip install --user opencv-python
+```
 
 * Compile the EQ/R swift-t extension.
 ```
