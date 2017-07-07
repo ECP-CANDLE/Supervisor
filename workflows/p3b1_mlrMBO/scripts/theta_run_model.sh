@@ -61,18 +61,29 @@ export PYTHONPATH
 arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework"  "$exp_id" "$run_id")
 MODEL_CMD="python ${arg_array[@]}"
 
+msg()
+{
+  echo "theta_run_model.sh: $*"
+}
+
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
-echo $MODEL_CMD
-$TIMEOUT_CMD python "${arg_array[@]}"
 
+# Format and report model parameters
+# as represented on Python command line:
+msg MODEL_CMD: $MODEL_CMD | \
+  tr -d "{}\""            | \
+  tr "," " "              | \
+  fmt -t -w 1
+echo
+$TIMEOUT_CMD $MODEL_CMD
 RES=$?
 if [ "$RES" -ne 0 ]; then
-	if [ "$RES" == 124 ]; then
-    echo "---> Timeout error in $MODEL_CMD"
+  if [ "$RES" == 124 ]; then
+    msg "---> Timeout error in MODEL_CMD"
   else
-	   echo "---> Error in $MODEL_CMD"
+    msg "---> Error in MODEL_CMD"
   fi
 fi
