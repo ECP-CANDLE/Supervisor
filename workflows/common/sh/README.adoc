@@ -1,4 +1,8 @@
 
+:toc:
+
+= Workflow shell scripts
+
 This is the location for common shell scripting tools for the CANDLE Supervisor Workflows.
 
 == Entry points
@@ -26,7 +30,7 @@ Deduplication (https://github.com/ECP-CANDLE/Supervisor/issues/20[#20]).  The cu
 . Source reusable settings.
 .. Write key environment variables once for each system.  E.g., https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/common/sh/langs-cori.sh[langs-cori.sh]
 .. Same for scheduler settings, module settings.
-. Create a new workflow_sh for each workflow.  This script will take the +site+ as an argument and source the appropriate settings files.
+. Create a new, site-generic workflow_sh for each workflow.  This script will take the +site+ as an argument and source the appropriate settings files.
 . Put application parameters in a separate file.  This can be Bash-formatted for compatibility now, but may become something else.
 . Install EQ/Py, EQ/R from Git and put in a common location, maintained by Wozniak.
 . Test scripts.  Each workflow directory will have a +test/+ subdirectory.  This will contain enough bootstrapping code so that it can run and do something small without user configuration.  This will build on the daily testing scripts that Brettin has started.
