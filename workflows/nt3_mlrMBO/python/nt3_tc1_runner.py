@@ -62,7 +62,7 @@ if __name__ == '__main__':
     exp_id = sys.argv[5]
     run_id = sys.argv[6]
     benchmark_timeout = int(sys.argv[7])
-    hyper_parameter_map = runner_utils.init(param_string, instance_directory, framework, 'save')
+    hyper_parameter_map = runner_utils.init(param_string, instance_directory, framework, 'output_dir')
     hyper_parameter_map['model_name'] = model_name
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id

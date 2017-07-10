@@ -81,9 +81,9 @@ if __name__ == '__main__':
     benchmark_timeout = int(sys.argv[6])
 
     logger.debug("RUN INIT START")
-    
+
     hyper_parameter_map = runner_utils.init(param_string, instance_directory,
-                                            framework, 'save_path')
+                                            framework, 'output_dir')
     logger.debug("RUN INIT STOP")
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id

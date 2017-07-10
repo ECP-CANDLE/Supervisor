@@ -33,7 +33,7 @@ if not os.path.exists(outdir):
 
 hyper_parameter_map = json.loads('%s')
 hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '{}/output'.format(outdir)
+hyper_parameter_map['output_dir'] = '{}/output'.format(outdir)
 hyper_parameter_map['instance_directory'] = outdir
 hyper_parameter_map['model_name'] = '%s'
 hyper_parameter_map['experiment_id'] = '%s'
