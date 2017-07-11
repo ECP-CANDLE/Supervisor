@@ -191,6 +191,49 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO f
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
 
+== Objective function guide
+
+In CANDLE, *objective functions* are the calls to the machine learning (ML) models.  They are functions that accept some parameter tuple describing how the model will be run, and return some value, such as a loss.  Typical CANDLE workflows optimize the return value in some parameter space using some model exploration algorithm (ME).
+
+This documents how to read existing objective functions and develop new ones.
+
+=== Swift/T leaf functions
+
+Objective functions are implemented as Swift/T leaf functions, which are http://swift-lang.github.io/swift-t/guide.html#leaf_functions[described here].  In short, leaf functions are opaque to Swift.  For the purposes of CANDLE, a leaf function is a command line program or a call to evaluate a string of Python code in-memory.  Normally, Swift/T is free to evaluate leaf functions anywhere in the system (load balancing) in any order (as long as all input data is ready).
+
+=== Command-line programs
+
+A typical command line invocation is here:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/3e53ec93ba5ad79c114a96287f2d280a8e93ad8a/workflows/p3b1_mlrMBO/swift/ai_workflow3.swift#L83[P3B1 mlrMBO: ai_workflow3.swift]
+----
+(string obj_result) obj(string params, string iter_indiv_id) {
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
+  file out <"%s/out.txt" % outdir>;
+  file err <"%s/err.txt" % outdir>;
+
+  (out,err) = run_model(model_script, params, outdir, iter_indiv_id) =>
+  string result_file = "%s/result.txt" % outdir;
+  obj_result = get_results(result_file);
+  printf(obj_result);
+}
+----
+
++obj()+ is an objective function that takes parameters and returns a string to Swift.  The parameters (+params+) are produced by the ME and are encoded as a JSON fragment.  You can simply print them out in Swift (via +printf()+) to see them.  A unique identifier +iter_indiv_id+ is also provided and used to create a unique output directory for +out.txt+ and +err.txt+.  The model is actually executed in +run_model()+, described below.  Then, its results are obtained by +get_results()+, and also logged to +stdout+ (via +printf()+).
+
+https://github.com/ECP-CANDLE/Supervisor/blob/3e53ec93ba5ad79c114a96287f2d280a8e93ad8a/workflows/p3b1_mlrMBO/swift/ai_workflow3.swift#L35[P3B1 mlrMBO: ai_workflow3.swift]
+----
+app (file out, file err) run_model (file shfile, string params_string, string instance, string run_id)
+{
+    "bash" shfile params_string emews_root instance FRAMEWORK exp_id run_id benchmark_timeout @stdout=out @stderr=err;
+}
+
+This is a Swift +app+ function.  Its body is a command line, populated with the input and output arguments.  Thus, it runs +bash+ on a given script with the parameters, as specified in +obj()+.  Some of the variables referenced in the body are Swift global variables.  The special syntax +@stdout+, +@stderr+ capture those streams respectively.
+
+=== In-memory Python functions
+
+
+
 == Works in progress
 
 === Oversample
