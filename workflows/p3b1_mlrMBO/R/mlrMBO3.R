@@ -7,6 +7,9 @@ if (emews_root == "") {
 wd <- getwd()
 setwd(r_root)
 
+turbine_output <- Sys.getenv("TURBINE_OUTPUT")
+
+
 source("mlrMBO_utils.R")
 
 # EQ/R based parallel map
@@ -58,9 +61,11 @@ simple.obj.fun = function(x){}
 
 main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
 
+  mlr.save.file <- paste0(turbine_output, "/mlr_run.RData")
+
   surr.rf = makeLearner("regr.randomForest", predict.type = "se")
-  ctrl = makeMBOControl(n.objectives = 1, save.on.disk.at = c(1,2,3,4,5), 
-       	 			     propose.points = min(20, propose.points), 
+  ctrl = makeMBOControl(n.objectives = 1, save.on.disk.at = c(1,2,3,4,5), save.file.path = mlr.save.file,
+       	 			     propose.points = min(20, propose.points),
        	   			     impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
   ctrl = setMBOControlInfill(ctrl, crit=makeMBOInfillCritCB(), interleave.random.points=max(0,propose.points-20))
   ctrl = setMBOControlMultiPoint(ctrl, method = "cb")
