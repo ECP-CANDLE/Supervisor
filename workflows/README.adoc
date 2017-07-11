@@ -227,6 +227,7 @@ app (file out, file err) run_model (file shfile, string params_string, string in
 {
     "bash" shfile params_string emews_root instance FRAMEWORK exp_id run_id benchmark_timeout @stdout=out @stderr=err;
 }
+----
 
 This is a Swift +app+ function.  Its body is a command line, populated with the input and output arguments.  Thus, it runs +bash+ on a given script with the parameters, as specified in +obj()+.  Some of the variables referenced in the body are Swift global variables.  The special syntax +@stdout+, +@stderr+ capture those streams respectively.
 
