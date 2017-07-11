@@ -26,7 +26,7 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run

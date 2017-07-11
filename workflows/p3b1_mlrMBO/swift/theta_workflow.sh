@@ -27,7 +27,7 @@ export WALLTIME=${WALLTIME:-02:00:00}
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration

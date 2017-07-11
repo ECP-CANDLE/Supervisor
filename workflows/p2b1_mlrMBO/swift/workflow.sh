@@ -32,7 +32,7 @@ export WALLTIME=${WALLTIME:-00:30:00}
 
 # Benchmark run timeout: a benchmark run will timeout
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run

@@ -24,10 +24,11 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-default}
 export WALLTIME=${WALLTIME:-05:00:00}
 
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
+
 # mlrMBO settings
-# How many to runs evaluate per iteration
-
-
 MAX_BUDGET=${MAX_BUDGET:-1200}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
@@ -88,7 +89,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh "
-CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/titan_run_logger.sh"
+CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/titan_run_logger.sh -benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
