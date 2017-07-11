@@ -1,4 +1,6 @@
 
+:toc:
+
 ////
 You can compile this locally with
 $ ../docs/adoc.sh README.adoc
