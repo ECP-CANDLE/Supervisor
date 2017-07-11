@@ -40,13 +40,13 @@ What you need to install to run the workflow:
 * p3b1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
 * P3B1 benchmark data - http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
-`P3B1_data.tar.gz` should be untarred into `X/Benchmarks/Data/P3B1` where 'X'
+`P3B1_data.tar.gz` should be untarred into `X/Benchmarks/Data/Pilot3` where 'X'
 is the parent directory path of your Benchmark repository.  For example, from
 within `X/Benchmarks`:
 
   ```
-  mkdir -p Data/P3B1
-  cd Data/P3B1
+  mkdir -p Data/Pilot3
+  cd Data/Pilot3
   wget  ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P3B1/P3B1_data.tar.gz
   tar -xf P3B1_data.tar.gz
   ```
@@ -125,7 +125,7 @@ a bash script which is in turn invoked using a swift app function. The bash scri
 `scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
 bash script.
 
-The latter of these is necessary on machines like Theta where it is not possible
+The _ai_-version of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
 
 The launch scripts in the `swift` directory are used to run the workflow.
@@ -150,6 +150,9 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 ```
+
+* `BENCHMARK_TIMEOUT` - the number of seconds after which benchmark run will
+timeout and return. The default of -1 means no timeout.
 
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.

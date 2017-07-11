@@ -128,7 +128,7 @@ a bash script which is in turn invoked using a swift app function.  The bash scr
 `scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
 bash script.
 
-The latter of these is necessary on machines like Theta where it is not possible
+The _ai_-version of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
 
 The launch scripts in the `swift` directory are used to run the workflow.
@@ -153,6 +153,9 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 ```
+
+* `BENCHMARK_TIMEOUT` - the number of seconds after which benchmark run will
+timeout and return. The default of -1 means no timeout.
 
 In addition, the following variable is used to determine which version of
 the workflow is run, by defining which swift is actually run.

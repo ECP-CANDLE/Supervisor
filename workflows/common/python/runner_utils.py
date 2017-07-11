@@ -26,6 +26,11 @@ def init(param_string, instance_directory, framework, out_dir_key):
 
     return hyper_parameter_map
 
+def create_output_dir(hyper_parameter_map):
+    output_dir = hyper_parameter_map['output_dir']
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
 def is_numeric(val):
     try:
         float(val)

@@ -42,20 +42,20 @@ What you need to install to run the workflow:
   ```
   ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
-  It should be downloaded into X/Benchmarks/Data/common and untarred,
+  It should be downloaded into X/Benchmarks/Data/Pilot2 and untarred,
   where X is the parent directory path of your Benchmark repository. Do not
   delete the tar archive after untarring it as the benchmark code checks for
   its existence. For example, from within `X/Benchmarks`
 
   ```
-  mkdir -p Data/common
-  cd Data/common
+  mkdir -p Data/Pilot2
+  cd Data/Pilot2
   wget ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   tar -xf 3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
   ```
 
   Additional data sets are available and will need to be downloaded and untarred
-  in Data/common if the _set\_sel_ benchmark argument is not set to `3k_Disordered`. The
+  in Data/Pilot2 if the _set\_sel_ benchmark argument is not set to `3k_Disordered`. The
   other data sets are:
 
   * 3k_Ordered' - 3k_run32_10us.35fs-DPPC.50-DOPC.10-CHOL.40.dir.tar.gz
@@ -147,16 +147,9 @@ python integration.
 2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
 a bash script which is in turn invoked using a swift app function.  The bash scripts
 `scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
-bash script. Note the bash script used to launch the p2b1 benchmark must
-export the following env var:
+bash script.
 
-```
-export THEANO_FLAGS="base_compiledir=$instance_directory"
-```
-
-This assigns each theano process its own directory in which to work.
-
-The latter of these is necessary on machines like Theta where it is not possible
+The _ai_-version of these is necessary on machines like Theta where it is not possible
 to compile swift with an appropriate python.
 
 The launch scripts in the `swift` directory are used to run the workflow.
@@ -181,6 +174,9 @@ int max_iterations = toint(argv("mi", "10"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 ```
+
+* `BENCHMARK_TIMEOUT` - the number of seconds after which benchmark run will
+timeout and return. The default of -1 means no timeout.
 
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
 as appropriate.

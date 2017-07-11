@@ -54,8 +54,12 @@ def run(hyper_parameter_map):
     logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
+    logger.debug("WRITE_OUTPUT DIR START")
+    runner_utils.create_output_dir(hyper_parameter_map)
+    logger.debug("WRITE_OUTPUT DIR STOP")
     logger.debug("DO_N_FOLD START")
-    avg_loss = pkg.do_n_fold(params)
+    fpath = pkg.load_data(params)
+    avg_loss = pkg.run(params, fpath)
     logger.debug("DO_N_FOLD STOP")
 
     if framework == 'keras':

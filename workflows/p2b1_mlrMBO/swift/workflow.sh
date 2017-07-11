@@ -30,7 +30,7 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
 
-# Benchmark run timeout: benchmark run will timeouT
+# Benchmark run timeout: a benchmark run will timeout
 # after the specified number of seconds. -1 is no timeout.
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
 
@@ -58,7 +58,7 @@ fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-#export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export TURBINE_LOG=0 TURBINE_DEBUG=- ADLB_DEBUG=0
 
 export EXPID=$1
 export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}

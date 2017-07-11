@@ -27,7 +27,10 @@ def run(hyper_parameter_map):
         params[k] = v
 
     runner_utils.write_params(params, hyper_parameter_map)
-    loss_history = pkg.run(params)
+    runner_utils.create_output_dir(hyper_parameter_map)
+
+    data = pkg.load_data(params)
+    loss_history = pkg.run(params, data)
 
     if framework == 'keras':
         # works around this error:
