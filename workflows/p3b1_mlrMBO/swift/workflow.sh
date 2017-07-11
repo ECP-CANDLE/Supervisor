@@ -49,8 +49,8 @@ PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
+script_name=$(basename $0)
 if [ "$#" -ne 1 ]; then
-  script_name=$(basename $0)
   echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
   exit 1
 fi
@@ -95,7 +95,7 @@ fi
 # for example, USER_VARS=("VAR_1" "VAR_2")
 USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
-log_script
+log_script $EMEWS_PROJECT_ROOT/swift/$script_name
 
 # echo's anything following this to standard out
 set -x
