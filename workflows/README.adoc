@@ -77,17 +77,13 @@ Demonstration of P1B1 on a regular grid parameter sweep.
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_grid for more details.
 
 [[AUEN_DEAP]]
-== AUEN_DEAP
+=== AUEN_DEAP
 
 This demo runs an AUEN/Theano evolutionary algorithm.
 
 See the https://github.com/CODARcode/SwiftExamples/tree/master/auen[README here].
 
 *Systems tested:* http://swift-lang.github.io/swift-t/sites.html#_beagle[Beagle]
-
-== Synthetic examples
-
-These do not actually use an ML call, but demonstrate relevant use of Swift
 
 === Simple Sweep Command Line
 
@@ -114,7 +110,7 @@ This is a Beagle parameter sweep over an older AUEN.
 
 * https://github.com/CODARcode/SwiftExamples/tree/master/auen
 
-== auen41_ff on Cooley
+=== auen41_ff on Cooley
 
 *Contacts:* Wozniak and Balaprakash +
 *Source:* +git@github.com:ECP-CANDLE/Supervisor.git+ http://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[+/workflows/auen41_ff+] +
@@ -154,21 +150,21 @@ $ less out-001/output.txt
 ----
 
 [[p1b1_hyperopt]]
-== p1b1_hyperopt
+=== p1b1_hyperopt
 
 The P1B1 hyperopt workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a hyperopt instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, hyperopt minimizes the validation loss.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_hyperopt for more details.
 
 [[p1b1_mlrMBO]]
-== p1b1_mlrMBO
+=== p1b1_mlrMBO
 
 The P1B1 mlrMBO workflow evaluates a modified version of the P1B1 benchmark autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1 code (p1b1_baseline.py) has been modified to expose a functional interface. The neural net remains the same. Currently, mlrMBO minimizes the validation loss.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_mlrMBO for more details.
 
 [[p1b3_mlrMBO]]
-== p1b3_mlrMBO
+=== p1b3_mlrMBO
 
 The P1B3 mlrMBO workflow evaluates the P1B3 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
@@ -179,7 +175,7 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b3_mlrMBO f
 *Systems tested:* http://www.nersc.gov/users/computational-systems/cori[Cori]
 
 [[p2b1_mlrMBO]]
-== p2b1_mlrMBO
+=== p2b1_mlrMBO
 
 The P2B1 mlrMBO workflow evaluates the P2B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
@@ -191,7 +187,7 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO f
 
 
 [[nt3_mlrMBO]]
-== nt3_mlrMBO
+=== nt3_mlrMBO
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
 
