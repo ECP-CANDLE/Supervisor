@@ -38,7 +38,7 @@ What you need to install to run the workflow:
   Clone and `cd` to `workflows/nt3_mlrMBO`
   (the directory containing this README).
 * NT3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
-  Clone and switch to the `frameworks` branch.
+  Clone and switch to the `release_0` branch.
 * NT3 benchmark data -
   ```
   ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/normal-tumor/nt_train2.csv
@@ -60,8 +60,7 @@ These may already be installed on your system.
 The CANDLE team has installed these on many popular supercomputers.
 
 * Python 2.7, R 3.4
-* Keras - https://keras.io. The frameworks branch of p3b1 should work with
-both version 1 and 2.
+* Keras - https://keras.io. 
 * Swift/T with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
 ** Installation guide:
    http://swift-lang.github.io/swift-t/guide.html#_installation

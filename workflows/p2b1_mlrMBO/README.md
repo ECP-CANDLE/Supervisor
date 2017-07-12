@@ -37,7 +37,7 @@ What you need to install to run the workflow:
   Clone and `cd` to `workflows/p2b1_mlrMBO`
   (the directory containing this README).
 * P2B1 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
-  Clone and switch to the `frameworks` branch.
+  Clone and switch to the `release_0` branch.
 * P2B1 benchmark data - the default data set is:
   ```
   ftp://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot2/3k_run10_10us.35fs-DPPC.10-DOPC.70-CHOL.20-f20.dir.tar.gz
@@ -70,8 +70,7 @@ These may already be installed on your system.
 The CANDLE team has installed these on many popular supercomputers.
 
 * Python 2.7, R 3.4
-* Keras - https://keras.io. The frameworks branch of p2b1 should work with
-both version 1 and 2.
+* Keras - https://keras.io.
 * Theano - P2B1 only works with Theano and will crash when running with TensorFlow
 * Swift/T with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
 ** Installation guide:
