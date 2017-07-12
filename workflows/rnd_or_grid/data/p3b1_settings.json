@@ -2,9 +2,7 @@
     "parameters":
           { 
           	"epochs": [1 , 2 ],
-            "batch_size": [20, 40],
-            "shared_nnet_spec": [1200, 1400],
-            "n_fold": [1, 2]
+            "batch_size": [20, 40]
           },
     "samples":
           {

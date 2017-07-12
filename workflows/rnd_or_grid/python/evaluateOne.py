@@ -62,8 +62,6 @@ elif (benchmarkName == "p3b1"):
 	hyper_parameter_map = {'epochs' : int(integs[0])}
 	hyper_parameter_map['framework'] = 'keras'
 	hyper_parameter_map['batch_size'] = int(integs[1])
-	hyper_parameter_map['shared_nnet_spec'] = int(integs[2]) 
-	hyper_parameter_map['n_fold'] = int(integs[3])
 	hyper_parameter_map['run_id'] = parameterString
 	# hyper_parameter_map['instance_directory'] = os.environ['TURBINE_OUTPUT'] 
 	hyper_parameter_map['save'] = os.environ['TURBINE_OUTPUT']+ "/output-"+str(os.getpid())

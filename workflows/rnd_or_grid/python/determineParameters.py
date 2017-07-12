@@ -52,12 +52,10 @@ def generate_random(values, n_samples, benchmarkName):
             t_wd= random.uniform(values[4][0], values[4][1])
             result+=str(t_epoch) + ',' + str(t_batch_size) + ',' + str(t_me) + ',' + str(t_wd) 
         elif(benchmarkName=="p3b1"):
-            # values = {1:epochs, 2: batch_size, 3: shared_nnet_spec, 4: n_fold}
+            # values = {1:epochs, 2: batch_size}//, 3: learning_rate, 4: n_fold}
             t_epoch= random.randint(values[1][0], values[1][1])
             t_batch_size= random.randint(values[2][0], values[2][1])
-            t_sns= random.randint(values[3][0], values[3][1])
-            t_nf= random.randint(values[4][0], values[4][1])
-            result+=str(t_epoch) + ',' + str(t_batch_size) + ',' + str(t_sns) + ',' + str(t_nf) 
+            result+=str(t_epoch) + ',' + str(t_batch_size)
         else:
             print('ERROR: Tried all possible benchmarks, Invalid benchmark name or json file')
             sys.exit(1)
@@ -100,8 +98,8 @@ classes = settings.get('parameters').get('classes')
 molecular_epochs = settings.get('parameters').get('molecular_epochs') 
 weight_decay = settings.get('parameters').get('weight_decay') 
 #P3B1
-shared_nnet_spec = settings.get('parameters').get('shared_nnet_spec') 
-n_fold = settings.get('parameters').get('n_fold') 
+# learning_rate = settings.get('parameters').get('learning_rate') 
+# n_fold = settings.get('parameters').get('n_fold') 
 #P1B3
 test_cell_split = settings.get('parameters').get('test_cell_split') 
 drop = settings.get('parameters').get('drop') 
@@ -122,7 +120,7 @@ elif(benchmarkName=="nt3"):
 elif(benchmarkName=="p2b1"):
     values = {1:epochs, 2: batch_size, 3: molecular_epochs, 4: weight_decay}
 elif(benchmarkName=="p3b1"):
-    values = {1:epochs, 2: batch_size, 3: shared_nnet_spec, 4: n_fold}
+    values = {1:epochs, 2: batch_size}
 else:
     print('ERROR: Tried all possible benchmarks, Invalid benchmark name or json file')
     sys.exit(1)

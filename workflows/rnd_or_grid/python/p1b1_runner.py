@@ -7,7 +7,6 @@ if not hasattr(sys, 'argv'):
 import json
 import os
 import p1b1
-import runner_utils
 
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
@@ -25,8 +24,6 @@ def run(hyper_parameter_map):
 
     # params is python dictionary
     params = pkg.initialize_parameters()
-    runner_utils.format_params(hyper_parameter_map)
-
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))

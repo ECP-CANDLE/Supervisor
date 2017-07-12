@@ -42,7 +42,8 @@ make_dir(turbine_output);
 // Get parameters
 benchmark = argv("benchmark_name");
 searchType = argv("search_type");
-settingsFilename = app_home+"/../data/"+benchmark+"_settings.json";
+inputFile = argv("input_file");
+settingsFilename = app_home+"/../data/"+inputFile;
 string sweepParamFile = turbine_output+"/sweep-parameters.txt";
 file parametersFile<sweepParamFile> = determineParameters(settingsFilename, benchmark, searchType);
 parametersString = read(parametersFile);

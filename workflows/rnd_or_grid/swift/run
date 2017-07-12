@@ -3,9 +3,12 @@
 # Usage: ./run 
 #
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 4 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (run1_p1b1) BENCHMARKS_NAME (eg. p1b1) SEARCH_TYPE (eg. grid or random"
+  echo "Usage: ${script_name} EXPERIMENT_ID (run1_p1b1) BENCHMARKS_NAME (eg. p1b1) SEARCH_TYPE (eg. grid or random) INPUT_JSON"
+  echo "Example: ./run p1b1_experiment1 p1b1 random p1b1_settings.json"
+  echo "-This creates a p1b1_experiment1 directory in ../experiments"
+  echo " uses random scheme for variables specified in ../data/p1b1_settings.json file"
   exit 1
 fi
 
@@ -23,6 +26,7 @@ export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$RUNNERS_DIR:$PROJECT_ROOT/..
 export EXPID=$1
 B_NAME=$2
 S_NAME=$3
+JSON_F=$4
 
 export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
 
@@ -51,4 +55,4 @@ echo $PYTHONPATH
 # remove -l option for removing printing processors ranks
 # settings.json file has all the parameter combinations to be tested
 echo swift-t  -n $PROCS $APP_HOME/grid-sweep.swift $*
-swift-t  -l -n $PROCS $APP_HOME/rnd_or_grid.swift $* --benchmark_name=$B_NAME --search_type=$S_NAME
+swift-t  -l -n $PROCS $APP_HOME/rnd_or_grid.swift $* --benchmark_name=$B_NAME --search_type=$S_NAME --input_file=$JSON_F
