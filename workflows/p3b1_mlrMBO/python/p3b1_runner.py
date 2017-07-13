@@ -9,6 +9,7 @@ import os
 import p3b1
 import runner_utils
 import socket
+import time
 
 node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
 print("node,pid: " + node_pid)
@@ -34,7 +35,7 @@ def run(hyper_parameter_map):
 
     logger = get_logger()
     framework = hyper_parameter_map['framework']
-    logger.debug("IMPORT START")
+    logger.debug("IMPORT START " + str(time.time()))
     if framework == 'keras':
         import p3b1_baseline_keras2
         pkg = p3b1_baseline_keras2
@@ -54,7 +55,7 @@ def run(hyper_parameter_map):
     logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
-    logger.debug("DO_N_FOLD START")
+    logger.debug("DO_N_FOLD START " + str(time.time()))
     avg_loss = pkg.do_n_fold(params)
     logger.debug("DO_N_FOLD STOP")
 
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     benchmark_timeout = int(sys.argv[6])
 
     logger.debug("RUN INIT START")
-    
+
     hyper_parameter_map = runner_utils.init(param_string, instance_directory,
                                             framework, 'save_path')
     logger.debug("RUN INIT STOP")
