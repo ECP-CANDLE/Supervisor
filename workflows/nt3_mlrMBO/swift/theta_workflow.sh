@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-# CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
+# THETA WORKFLOW
+# Main entry point for NT3 mlrMBO workflow
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
