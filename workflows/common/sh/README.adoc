@@ -21,6 +21,10 @@ The purpose of these scripts is:
 
 . Obtain application parameters and pass to the +swift-t+ command line.  These are currently specified in a special section of the workflow_sh.  These arguments are conventionally stored in a Bash variable +CMD_LINE_ARGS+, and passed to the +swift-t+ command; they are then available in the Swift script via +argv()+.
 
+////
+. [yellow]#&#9733;# Run swift-t!
+////
+
 . Record what happened.  This involves writing additional logs into the TURBINE_OUTPUT directory, particularly to capture settings and provenance that Swift/T cannot.
 
 === Future ideas
