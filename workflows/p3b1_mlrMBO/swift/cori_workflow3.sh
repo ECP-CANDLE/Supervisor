@@ -17,8 +17,7 @@ BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
-# The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-10}
+export PROCS=${PROCS:-32}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -40,8 +39,8 @@ MACHINE="slurm"
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
+DESIGN_SIZE=${DESIGN_SIZE:-30}
+PROPOSE_POINTS=${PROPOSE_POINTS:-30}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 
 

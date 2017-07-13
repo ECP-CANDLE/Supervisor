@@ -15,8 +15,7 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
-# The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-258}
+export PROCS=${PROCS:-32}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -29,11 +28,11 @@ export WALLTIME=${WALLTIME:-05:00:00}
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # mlrMBO settings
-MAX_BUDGET=${MAX_BUDGET:-1200}
+MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-3}
-DESIGN_SIZE=${DESIGN_SIZE:-300}
-PROPOSE_POINTS=${PROPOSE_POINTS:-300}
+MAX_ITERATIONS=${MAX_ITERATIONS:-4}
+DESIGN_SIZE=${DESIGN_SIZE:-30}
+PROPOSE_POINTS=${PROPOSE_POINTS:-30}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 MODEL_NAME="p3b1"
 # pbalabra:
