@@ -231,9 +231,11 @@ app (file out, file err) run_model (file shfile, string params_string, string in
 
 This is a Swift +app+ function.  Its body is a command line, populated with the input and output arguments.  Thus, it runs +bash+ on a given script with the parameters, as specified in +obj()+.  Some of the variables referenced in the body are Swift global variables.  The special syntax +@stdout+, +@stderr+ capture those streams respectively.
 
+While the model is actually implemented as Python code, a wrapper Bash shell script is actually invoked here (+shfile+ is https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/p3b1_mlrMBO/scripts/run_model.sh[scripts/run_model.sh]).  This is so +PYTHONPATH+ and other settings can be configured before invoking +python+.  Additional logging and debugging statements can easily be added to this shell script.  Remember that +stdout+ is captured by +out.txt+ (as described above).
+
 === In-memory Python functions
 
-
+These functions are simpler and more efficient than +app+ functions.  They run the Python-based model in an in-memory Python interpreter bundled with Swift/T.
 
 == Works in progress
 
