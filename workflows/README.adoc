@@ -1,0 +1,37 @@
+== The Workflows
+
+Each workflow evaluates its benchmark model (Pilot1/NT3 etc.) using hyperparameters
+provided by a https://mlr-org.github.io/mlrMBO[mlrMBO] instance.
+http://swift-lang.org/Swift-T/[Swift/T] is used to scalably distribute
+work (i.e. benchmark runs) across the system. The
+http://www.mcs.anl.gov/~emews/tutorial/[EMEWS] framework is used to
+integrate mlrMBO with Swift/T, passing the hyperparameters from mlrMBO
+to the Swift/T script and passing the validtion loss from each benchmark
+back to mlrMBO algorithm via the Swift script.
+
+[[nt3_mlrMBO]]
+=== nt3_mlrMBO
+
+The nt3 mlrMBO workflow evaluates the Pilot NT3  benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
+
+[[p2b1_mlrMBO]]
+=== p2b1_mlrMBO
+
+The P2B1 mlrMBO workflow evaluates the Pilot 2 P2B1 benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+
+[[p3b1_mlrMBO]]
+=== p3b1_mlrMBO
+
+The P3B1 mlrMBO workflow evaluates the Pilot 3 P3B1 benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
