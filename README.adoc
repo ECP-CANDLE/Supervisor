@@ -20,34 +20,28 @@ provided by a https://mlr-org.github.io/mlrMBO[mlrMBO] instance.
 http://swift-lang.org/Swift-T/[Swift/T] is used to scalably distribute
 work (i.e. benchmark runs) across the system. The
 http://www.mcs.anl.gov/~emews/tutorial/[EMEWS] framework is used to
-integrate mlrMBO with Swift/T, passing the hyperparameters from mlrMBO
-to the Swift/T script and passing the validtion loss from each benchmark
-back to mlrMBO algorithm via the Swift script.
+integrate mlrMBO with Swift, passing the hyperparameters from mlrMBO
+to Swift and passing the evaluated validation losses from each benchmark
+back to the mlrMBO algorithm. In all three cases below, mlrMBO minimizes the validation loss.
 
 [[nt3_mlrMBO]]
 === nt3_mlrMBO
 
-The nt3 mlrMBO workflow evaluates the Pilot NT3  benchmark
-using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss.
+The NT3 mlrMBO workflow evaluates the Pilot NT3  benchmark.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/nt3_mlrMBO for more details.
 
 [[p2b1_mlrMBO]]
 === p2b1_mlrMBO
 
-The P2B1 mlrMBO workflow evaluates the Pilot 2 P2B1 benchmark
-using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss.
+The P2B1 mlrMBO workflow evaluates the Pilot 2 P2B1 benchmark.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/p2b1_mlrMBO for more details.
 
 [[p3b1_mlrMBO]]
 === p3b1_mlrMBO
 
-The P3B1 mlrMBO workflow evaluates the Pilot 3 P3B1 benchmark
-using hyperparameters provided by a mlrMBO instance. mlrMBO
-minimizes the validation loss.
+The P3B1 mlrMBO workflow evaluates the Pilot 3 P3B1 benchmark.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/p3b1_mlrMBO for more details.
 
@@ -58,18 +52,18 @@ They are functions that accept some parameter tuple describing how the
 model will be run, and return some value, such as a loss.
 Typical CANDLE workflows optimize the return value in some parameter space
 using some model exploration algorithm (ME). The objective function can be
-launched via a Swift/T leaf function or as an in memory Python function.
+launched via a Swift leaf function, implemented as a command line call or as an in memory Python function.
 The Release 0 workflows have examples of both.
 
 This documents how to read existing objective functions and develop new ones.
 
-=== Swift/T leaf functions
+=== Swift leaf functions
 
-Objective functions are implemented as Swift/T leaf functions,
+Objective functions are implemented as Swift leaf functions,
 which are http://swift-lang.github.io/swift-t/guide.html#leaf_functions[described here].
 In short, leaf functions are opaque to Swift.  For the purposes of CANDLE, a leaf
-function is a command line program or a call to evaluate a string of Python
-code in-memory.  Normally, Swift/T is free to evaluate leaf functions
+function is a command line program, also referred to as an `app` invocation (AI), or a call to evaluate a string of Python
+code in-memory.  Normally, Swift is free to evaluate leaf functions
 anywhere in the system (load balancing) in any order (as long as all input data is ready).
 
 === Command-line programs
@@ -90,13 +84,13 @@ https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swi
 }
 ----
 
-+obj()+ is an objective function that takes parameters and returns a string to Swift.
-The parameters (+params+) are produced by the ME and are encoded as a JSON fragment.
- You can simply print them out in Swift (via +printf()+) to see them.
- A unique identifier +iter_indiv_id+ is also provided and used to create a unique
- output directory for +out.txt+ and +err.txt+.  The model is actually executed
- in +run_model()+, described below.  Then, its results are obtained by
- +get_results()+, and also logged to +stdout+ (via +printf()+).
+`obj()` is an objective function that takes parameters and returns a string to Swift.
+The parameters (`params`) are produced by the ME and are encoded as a JSON fragment.
+ You can simply print them out in Swift (via `printf()`) to see them.
+ A unique identifier `iter_indiv_id` is also provided and used to create a unique
+ output directory for `out.txt` and `err.txt`.  The model is actually executed
+ in `run_model()`, described below.  Then, its results are obtained by
+ `get_results()`, and also logged to `stdout` (via `printf()`).
 
 https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/ai_workflow3.swift[NT3 mlrMBO: ai_workflow3.swift]
 ----
@@ -106,11 +100,11 @@ app (file out, file err) run_model (file shfile, string params_string, string in
 }
 ----
 
-This is a Swift +app+ function.  Its body is a command line, populated with
-the input and output arguments.  Thus, it runs +bash+ on a given script
-with the parameters, as specified in +obj()+.  Some of the variables
+This is a Swift `app` function.  Its body is a command line, populated with
+the input and output arguments.  Thus, it runs `bash` on a given script
+with the parameters, as specified in `obj()`.  Some of the variables
 referenced in the body are Swift global variables.  The special syntax
-+@stdout+, +@stderr+ capture those streams respectively.
+`@stdout`, `@stderr` capture the stdout and stderr streams, respectively.
 
 The app function executes a bash script that in turn calls some python
 code which is used to launch the actual benchmark run. Each of the workflows
@@ -122,7 +116,7 @@ https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/p3b1_mlrMBO/py
 
 === In-memory Python functions
 
-Object functions are implemented as in-memory calls to python code that
+Object functions are also implemented as in-memory calls to python code that
 ultimately runs the benchmark. Swift's
 http://swift-lang.github.io/swift-t/guide.html#external_scripting[external scripting support]
 for calling Python is used to run the Python code that launches the benchmark.
@@ -150,18 +144,18 @@ validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
 """;
 ----
 
-code_template is string that contains a snippet of Python code. The code
-is a template where the template special characters %s and %d are replaced
+`code_template` is a string that contains a snippet of Python code. The code
+is a template where the template special characters `%s` and `%d` are replaced
 with values (e.g. the JSON formatted hyper parameters) supplied by
 the Swift script. The code itself
 peforms some Python imports, checks that the benchmark run's output
 directory exists and then loads the hyper parameters produced by mlrMBO.
 These parameters are in JSON format and when loaded become a Python
 dictionary. Further run specific parameters are then added to this dictionary.
-Lastly, the nt3_tc1_runner.run function is called, launching
+Lastly, the `nt3_tc1_runner.run` function is called, launching
 the benchmark run.
 
-The +obj()+ function that resolves the +code_template+ and runs it as an
+The `obj()` function that resolves the `code_template` and runs it as an
 in memory Python function:
 
 https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/workflow3.swift[NT3 mlrMBO: workflow3.swift]
@@ -178,5 +172,5 @@ https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swi
 The same arguments (JSON params, output directory, experiment id, etc.)
 that we saw in the command-line program example are present, but in this case
 rather than passing those to a bash script that executes the Python 'runner'
-code, in the case we call that 'runner' code (nt3_tc1_runner.py) directly
+code, we call that 'runner' code (nt3_tc1_runner.py) directly
 using Swift's in-memory Python functionality.
