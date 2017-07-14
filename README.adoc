@@ -1,1 +1,182 @@
-See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more information.
+= Supervisor Workflows Release 0
+
+Release 0 of the Supervisor project contains demonstration workflows
+for the benchmarks in the CANDLE Benchmarks
+https://github.com/ECP-CANDLE/Benchmarks/tree/release_0[Release 0] branch. The
+following Benchmarks are supported:
+
+* Pilot1/NT3
+* Pilot2/P2B1
+* Pilot3/P3B1
+
+Additional information about the Benchmarks themselves can be found on the Benchmarks
+Release 0
+https://github.com/ECP-CANDLE/Benchmarks/tree/release_0[site].
+
+== The Workflows
+
+Each workflow evaluates its benchmark model (Pilot1/NT3 etc.) using hyperparameters
+provided by a https://mlr-org.github.io/mlrMBO[mlrMBO] instance.
+http://swift-lang.org/Swift-T/[Swift/T] is used to scalably distribute
+work (i.e. benchmark runs) across the system. The
+http://www.mcs.anl.gov/~emews/tutorial/[EMEWS] framework is used to
+integrate mlrMBO with Swift/T, passing the hyperparameters from mlrMBO
+to the Swift/T script and passing the validtion loss from each benchmark
+back to mlrMBO algorithm via the Swift script.
+
+[[nt3_mlrMBO]]
+=== nt3_mlrMBO
+
+The nt3 mlrMBO workflow evaluates the Pilot NT3  benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
+
+[[p2b1_mlrMBO]]
+=== p2b1_mlrMBO
+
+The P2B1 mlrMBO workflow evaluates the Pilot 2 P2B1 benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+
+[[p3b1_mlrMBO]]
+=== p3b1_mlrMBO
+
+The P3B1 mlrMBO workflow evaluates the Pilot 3 P3B1 benchmark
+using hyperparameters provided by a mlrMBO instance. mlrMBO
+minimizes the validation loss.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+
+== Objective function guide
+
+In CANDLE, *objective functions* are the calls to the machine learning (ML) models.
+They are functions that accept some parameter tuple describing how the
+model will be run, and return some value, such as a loss.
+Typical CANDLE workflows optimize the return value in some parameter space
+using some model exploration algorithm (ME). The objective function can be
+launched via a Swift/T leaf function or as an in memory Python function.
+The Release 0 workflows have examples of both.
+
+This documents how to read existing objective functions and develop new ones.
+
+=== Swift/T leaf functions
+
+Objective functions are implemented as Swift/T leaf functions,
+which are http://swift-lang.github.io/swift-t/guide.html#leaf_functions[described here].
+In short, leaf functions are opaque to Swift.  For the purposes of CANDLE, a leaf
+function is a command line program or a call to evaluate a string of Python
+code in-memory.  Normally, Swift/T is free to evaluate leaf functions
+anywhere in the system (load balancing) in any order (as long as all input data is ready).
+
+=== Command-line programs
+
+A typical command line invocation is here:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/ai_workflow3.swift[NT3 mlrMBO: ai_workflow3.swift]
+----
+(string obj_result) obj(string params, string iter_indiv_id) {
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
+  file out <"%s/out.txt" % outdir>;
+  file err <"%s/err.txt" % outdir>;
+
+  (out,err) = run_model(model_script, params, outdir, iter_indiv_id) =>
+  string result_file = "%s/result.txt" % outdir;
+  obj_result = get_results(result_file);
+  printf(obj_result);
+}
+----
+
++obj()+ is an objective function that takes parameters and returns a string to Swift.
+The parameters (+params+) are produced by the ME and are encoded as a JSON fragment.
+ You can simply print them out in Swift (via +printf()+) to see them.
+ A unique identifier +iter_indiv_id+ is also provided and used to create a unique
+ output directory for +out.txt+ and +err.txt+.  The model is actually executed
+ in +run_model()+, described below.  Then, its results are obtained by
+ +get_results()+, and also logged to +stdout+ (via +printf()+).
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/ai_workflow3.swift[NT3 mlrMBO: ai_workflow3.swift]
+----
+app (file out, file err) run_model (file shfile, string params_string, string instance, string run_id)
+{
+    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout @stdout=out @stderr=err;
+}
+----
+
+This is a Swift +app+ function.  Its body is a command line, populated with
+the input and output arguments.  Thus, it runs +bash+ on a given script
+with the parameters, as specified in +obj()+.  Some of the variables
+referenced in the body are Swift global variables.  The special syntax
++@stdout+, +@stderr+ capture those streams respectively.
+
+The app function executes a bash script that in turn calls some python
+code which is used to launch the actual benchmark run. Each of the workflows
+has examples of this bash script and python 'runner' code. For example:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/p3b1_mlrMBO/scripts/theta_run_model.sh[P3B1 mlrMBO: theta_run_model.sh]
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/p3b1_mlrMBO/python/p3b1_runner.py[P3B1 mlrMBO: p3b1_runner.py]
+
+=== In-memory Python functions
+
+Object functions are implemented as in-memory calls to python code that
+ultimately runs the benchmark. Swift's
+http://swift-lang.github.io/swift-t/guide.html#external_scripting[external scripting support]
+for calling Python is used to run the Python code that launches the benchmark.
+
+A typical Python invocation is here:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/workflow3.swift[NT3 mlrMBO: workflow3.swift]
+----
+string code_template =
+"""
+import nt3_tc1_runner
+import json, os
+outdir = '%s'
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+hyper_parameter_map = json.loads('%s')
+hyper_parameter_map['framework'] = 'keras'
+hyper_parameter_map['output_dir'] = '{}/output'.format(outdir)
+hyper_parameter_map['instance_directory'] = outdir
+hyper_parameter_map['model_name'] = '%s'
+hyper_parameter_map['experiment_id'] = '%s'
+hyper_parameter_map['run_id'] = '%s'
+hyper_parameter_map['timeout'] = %d
+validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
+""";
+----
+
+code_template is string that contains a snippet of Python code. The code
+is a template where the template special characters %s and %d are replaced
+with values (e.g. the JSON formatted hyper parameters) supplied by
+the Swift script. The code itself
+peforms some Python imports, checks that the benchmark run's output
+directory exists and then loads the hyper parameters produced by mlrMBO.
+These parameters are in JSON format and when loaded become a Python
+dictionary. Further run specific parameters are then added to this dictionary.
+Lastly, the nt3_tc1_runner.run function is called, launching
+the benchmark run.
+
+The +obj()+ function that resolves the +code_template+ and runs it as an
+in memory Python function:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/release_0/workflows/nt3_mlrMBO/swift/workflow3.swift[NT3 mlrMBO: workflow3.swift]
+
+----
+(string obj_result) obj(string params, string iter_indiv_id) {
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
+  string code = code_template % (outdir, params, model_name, exp_id, iter_indiv_id, benchmark_timeout);
+  obj_result = python_persist(code, "str(validation_loss)");
+  printf(obj_result);
+}
+----
+
+The same arguments (JSON params, output directory, experiment id, etc.)
+that we saw in the command-line program example are present, but in this case
+rather than passing those to a bash script that executes the Python 'runner'
+code, in the case we call that 'runner' code (nt3_tc1_runner.py) directly
+using Swift's in-memory Python functionality.

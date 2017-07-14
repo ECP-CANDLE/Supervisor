@@ -1,8 +1,0 @@
-{
-  "epochs":3,
-  "framework": "keras",
-  "feature_subsample": 500,
-  "train_steps": 100,
-  "val_steps": 10,
-  "test_steps": 10
-}
