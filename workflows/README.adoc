@@ -16,7 +16,7 @@ The nt3 mlrMBO workflow evaluates the Pilot NT3  benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
 minimizes the validation loss.
 
-See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
+See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/nt3_mlrMBO for more details.
 
 [[p2b1_mlrMBO]]
 === p2b1_mlrMBO
@@ -25,7 +25,7 @@ The P2B1 mlrMBO workflow evaluates the Pilot 2 P2B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
 minimizes the validation loss.
 
-See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/p2b1_mlrMBO for more details.
 
 [[p3b1_mlrMBO]]
 === p3b1_mlrMBO
@@ -34,4 +34,4 @@ The P3B1 mlrMBO workflow evaluates the Pilot 3 P3B1 benchmark
 using hyperparameters provided by a mlrMBO instance. mlrMBO
 minimizes the validation loss.
 
-See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO for more details.
+See https://github.com/ECP-CANDLE/Supervisor/tree/release_0/workflows/p3b1_mlrMBO for more details.
