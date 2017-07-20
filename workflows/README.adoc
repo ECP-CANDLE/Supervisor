@@ -233,6 +233,8 @@ This is a Swift +app+ function.  Its body is a command line, populated with the 
 
 While the model is actually implemented as Python code, a wrapper Bash shell script is actually invoked here (+shfile+ is https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/p3b1_mlrMBO/scripts/run_model.sh[scripts/run_model.sh]).  This is so +PYTHONPATH+ and other settings can be configured before invoking +python+.  Additional logging and debugging statements can easily be added to this shell script.  Remember that +stdout+ is captured by +out.txt+ (as described above).
 
+More details about +app+ functions in Swift are http://swift-lang.github.io/swift-t/guide.html#app_functions[here].
+
 === In-memory Python functions
 
 These functions are simpler and more efficient than +app+ functions.  They run the Python-based model in an in-memory Python interpreter bundled with Swift/T.
