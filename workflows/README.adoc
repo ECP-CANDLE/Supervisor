@@ -219,7 +219,7 @@ https://github.com/ECP-CANDLE/Supervisor/blob/3e53ec93ba5ad79c114a96287f2d280a8e
 }
 ----
 
-+obj()+ is an objective function that takes parameters and returns a string to Swift.  The parameters (+params+) are produced by the ME and are encoded as a JSON fragment.  You can simply print them out in Swift (via +printf()+) to see them.  A unique identifier +iter_indiv_id+ is also provided and used to create a unique output directory for +out.txt+ and +err.txt+.  The model is actually executed in +run_model()+, described below.  Then, its results are obtained by +get_results()+, and also logged to +stdout+ (via +printf()+).
++obj()+ is an objective function that takes parameters and returns a string to Swift.  The input parameters (+params+) are produced by the ME and are encoded as a JSON fragment.  You can simply print them out in Swift (via +printf()+) to see them.  A unique identifier +iter_indiv_id+ is also provided and used to create a unique output directory for +out.txt+ and +err.txt+.  The model is actually executed in +run_model()+, described below.  Then, its results are obtained by +get_results()+, and also logged to +stdout+ (via +printf()+).
 
 https://github.com/ECP-CANDLE/Supervisor/blob/3e53ec93ba5ad79c114a96287f2d280a8e93ad8a/workflows/p3b1_mlrMBO/swift/ai_workflow3.swift#L35[P3B1 mlrMBO: ai_workflow3.swift]
 ----
