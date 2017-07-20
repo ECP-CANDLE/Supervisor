@@ -239,6 +239,40 @@ More details about +app+ functions in Swift are http://swift-lang.github.io/swif
 
 These functions are simpler and more efficient than +app+ functions.  They run the Python-based model in an in-memory Python interpreter bundled with Swift/T.
 
+A typical in-memory Python objective function is here:
+
+https://github.com/ECP-CANDLE/Supervisor/blob/3e53ec93ba5ad79c114a96287f2d280a8e93ad8a/workflows/p3b1_mlrMBO/swift/workflow3.swift#74[workflow3.swift]
+----
+(string obj_result) obj(string params, string iter_indiv_id) {
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
+  string code = code_template % (outdir, params, exp_id, iter_indiv_id, benchmark_timeout);
+  //make_dir(outdir) =>
+  obj_result = python_persist(code, "str(validation_loss)");
+  printf(obj_result);
+}
+----
+
+Note that this function implements the same interface as the previous example, and implements the same computation!  However, instead of launching a shell script that invokes the program python, we simply evaluate a string of Python code in a Python interpreter linked to Swift/T.
+
+The string of Python code is in variable +code+.  This string is constructed from a template defined above as:
+----
+string code_template =
+"""
+import p3b1_runner
+import json, os
+outdir = '%s'
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+hyper_parameter_map = json.loads('%s')
+...
+validation_loss = p3b1_runner.run(hyper_parameter_map)
+""";
+----
+
+Note the string conversion specifications (+%s+).  These are processed in Swift by the Python-inspired format operator +code_template % (...)+.  That allows us to paste the +params+ and other values into the string, before passing it to the Swift +python_persist()+ function.  Following the interface of +python_persist()+, the first code string is executed (with no return value), and the second code string returns a value to Swift.  Thus, the return value of the whole thing is +"str(validation_loss)"+, which is passed back to the ME.  (This function is called +python_persist()+ because the Python interpreter is not reset between calls, its state persists.)
+
+More details about Python functions in Swift are http://swift-lang.github.io/swift-t/guide.html#leaf_python[here].
+
 == Works in progress
 
 === Oversample
