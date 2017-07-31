@@ -53,9 +53,6 @@ script_name=$(basename $0)
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 get_expid $* # Sets EXPID
-export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
-export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
-check_directory_exists
 
 export TURBINE_JOBNAME="${EXPID}_job"
 
