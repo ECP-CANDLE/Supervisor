@@ -40,7 +40,6 @@ MODEL_NAME="p3b1"
 
 # USER SETTINGS END
 
-
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -75,7 +74,6 @@ USER_VARS=($CMD_LINE_ARGS)
 log_script $EMEWS_PROJECT_ROOT/swift/$script_name
 
 export PROJECT=CSC249ADOA01
-export TITAN=true
 
 set -x
 WORKFLOW_SWIFT=ai_workflow3.swift
