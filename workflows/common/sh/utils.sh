@@ -21,9 +21,9 @@ log_path()
 get_expid()
 # Get Experiment IDentifier
 # EXPID is the name of the new directory under experiments/
-# If the user provides -a, this script will ask Swift/T to
-#   autogenerate a unique EXPID under experiments,
-#   which will be reported as TURBINE_OUTPUT
+# If the user provides -a, this function will autogenerate
+#   a new EXPID under the experiments directory,
+#   which will be exported as TURBINE_OUTPUT
 {
   if [ "${#}" -ne 1 ]; then
     script_name=$(basename $0)
@@ -34,16 +34,24 @@ EOF
     exit 1
   fi
 
+  EXPERIMENTS=$EMEWS_PROJECT_ROOT/experiments
+
   export EXPID=$1
   if [ $EXPID = "-a" ]
   then
-    export TURBINE_OUTPUT_ROOT=$EMEWS_PROJECT_ROOT/experiments
-    # Creates a X + a unique integer padded to 3 digits: e.g., X023
-    export TURBINE_OUTPUT_FORMAT="X%Q"
-    EXPID="AUTO"
+    i=0
+    while true
+    do
+      EXPID=$( printf "X%03i" $i )
+      if [[ -d $EXPERIMENTS/$EXPID ]]
+      then
+        (( ++ i ))
+      else
+        break
+      fi
+    done
     shift
-  else
-    export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-    check_directory_exists
   fi
+  export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+  check_directory_exists
 }
