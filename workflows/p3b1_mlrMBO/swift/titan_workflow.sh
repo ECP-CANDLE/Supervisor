@@ -81,7 +81,8 @@ export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # EQ/R location
-EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
+# EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
+EQR=/lustre/atlas2/csc249/proj-shared/sfw/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh "
