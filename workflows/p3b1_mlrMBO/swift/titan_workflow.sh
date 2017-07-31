@@ -2,7 +2,7 @@
 set -eu
 
 # TITAN WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
+# Main entry point for P3B1 mlrMBO workflow
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
