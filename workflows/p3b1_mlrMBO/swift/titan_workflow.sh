@@ -56,22 +56,7 @@ get_expid $* # Sets EXPID
 
 export TURBINE_JOBNAME="${EXPID}_job"
 
-# if R cannot be found, then these will need to be
-# uncommented and set correctly.
-# export R_HOME=/path/to/R
-# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
-# export PYTHONHOME=
-
-TCL=/sw/xk6/tcl_tk/8.5.8/sles11.1_gnu4.5.3
-export R=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R
-export PY=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3
-export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
-COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
-PYTHONHOME=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3
-
-export PATH=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin/:$TCL/bin:$PATH
-#$PYTHONHOME/bin:$TCL/bin:$PATH
+source $WORKFLOWS_ROOT/common/sh/langs-titan.sh
 
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
