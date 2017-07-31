@@ -53,18 +53,22 @@ export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 get_site $* # Sets SITE
 shift
 get_expid $* # Sets EXPID
+shift
 
 export TURBINE_JOBNAME="${EXPID}_job"
 
-source_site langs titan
+source_site langs $SITE
 
-CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
-CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh "
-CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/titan_run_logger.sh"
-
-# set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
-# or empty for an immediate non-queued unscheduled run
-MACHINE="cray"
+CMD_LINE_ARGS=( $*
+                -pp=$PROPOSE_POINTS
+                -mi=$MAX_ITERATIONS
+                -mb=$MAX_BUDGET
+                -ds=$DESIGN_SIZE
+                -param_set_file=$PARAM_SET_FILE
+                -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh
+                -exp_id=$EXPID
+                -log_script=$WORKFLOWS_ROOT/common/sh/titan_run_logger.sh
+              )
 
 # Add any script variables that you want to log as
 # part of the experiment meta data to the USER_VARS array,
@@ -89,4 +93,4 @@ swift-t -m cray -n $PROCS\
        -e TURBINE_DEBUG=$TURBINE_DEBUG\
        -e ADLB_DEBUG=$ADLB_DEBUG \
        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-       $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
+       $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
