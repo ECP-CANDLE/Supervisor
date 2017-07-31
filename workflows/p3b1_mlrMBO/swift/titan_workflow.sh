@@ -66,10 +66,6 @@ CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/tita
 # or empty for an immediate non-queued unscheduled run
 MACHINE="cray"
 
-if [ -n "$MACHINE" ]; then
-  MACHINE="-m $MACHINE"
-fi
-
 # Add any script variables that you want to log as
 # part of the experiment meta data to the USER_VARS array,
 # for example, USER_VARS=("VAR_1" "VAR_2")
