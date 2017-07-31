@@ -58,14 +58,6 @@ export TURBINE_JOBNAME="${EXPID}_job"
 
 source $WORKFLOWS_ROOT/common/sh/langs-titan.sh
 
-# Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
-
-# EQ/R location
-# EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
-EQR=/lustre/atlas2/csc249/proj-shared/sfw/EQ-R
-
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh "
 CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/titan_run_logger.sh"
@@ -85,24 +77,21 @@ USER_VARS=($CMD_LINE_ARGS)
 # log variables and script to to TURBINE_OUTPUT directory
 log_script $EMEWS_PROJECT_ROOT/swift/$script_name
 
-LD_LIBRARY_PATH=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/lib:/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3/cuda/lib64:/opt/gcc/4.9.3/snos/lib64:/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R/lib
-SWIFT=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin/swift-t
 export PROJECT=CSC249ADOA01
 export TITAN=true
 
-# echo's anything following this to standard out
 set -x
 WORKFLOW_SWIFT=ai_workflow3.swift
-$SWIFT -m cray -n $PROCS\
+swift-t -m cray -n $PROCS\
        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
        -p -I $EQR -r $EQR \
        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-    -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-    -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-    -e PYTHONPATH=$PYTHONPATH \
-    -e PYTHONHOME=$PYTHONHOME \
-    -e TURBINE_LOG=$TURBINE_LOG \
-    -e TURBINE_DEBUG=$TURBINE_DEBUG\
-    -e ADLB_DEBUG=$ADLB_DEBUG \
-    -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
+       -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+       -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
+       -e PYTHONPATH=$PYTHONPATH \
+       -e PYTHONHOME=$PYTHONHOME \
+       -e TURBINE_LOG=$TURBINE_LOG \
+       -e TURBINE_DEBUG=$TURBINE_DEBUG\
+       -e ADLB_DEBUG=$ADLB_DEBUG \
+       -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+       $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
