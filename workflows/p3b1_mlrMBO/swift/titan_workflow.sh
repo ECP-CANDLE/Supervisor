@@ -6,6 +6,7 @@ set -eu
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
+WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 
 # USER SETTINGS START
 
@@ -42,20 +43,16 @@ MODEL_NAME="p3b1"
 
 
 # Source some utility functions used by EMEWS in this script
+source $WORKFLOWS_ROOT/common/sh/utils.sh
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 script_name=$(basename $0)
-
-if [ "$#" -ne 1 ]; then
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
-  exit 1
-fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
-export EXPID=$1
+get_expid $* # Sets EXPID
 export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
 export TURBINE_OUTPUT=$TURBINE_OUTPUT_ROOT/$EXPID
 check_directory_exists
