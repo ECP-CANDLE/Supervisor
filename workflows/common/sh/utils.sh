@@ -102,3 +102,81 @@ source_site()
 
   source $FILE
 }
+
+queue_wait()
+# Wait for given JOBID using queue tools for given SITE
+{
+  if (( ${#} != 2 ))
+  then
+    echo "usage: queue_wait SITE JOBID"
+    echo " where SITE is titan, cori, theta, etc."
+    echo " and   JOBID is the job number"
+    return 1
+  fi
+
+  SITE=$1
+  JOBID=$2
+
+  if [[ $SITE == "cori" ]]
+  then
+    queue_wait_slurm $JOBID
+  else
+    echo "queue_wait(): unknown site: $SITE"
+    return 1
+  fi
+}
+
+queue_wait_slurm()
+{
+  if (( ${#} != 1 ))
+  then
+    echo "usage: queue_wait JOBID"
+    return 1
+  fi
+
+  JOBID=$1
+
+  local DELAY=30
+  local DELAY_MAX=60
+
+  while (( 1 ))
+  do
+    date "+%Y/%m/%d %H:%M:%S"
+    if ! ( squeue | grep $JOBID )
+    then
+      break
+    fi
+    sleep $DELAY
+    (( ++ DELAY ))
+    if (( DELAY > DELAY_MAX ))
+    then
+      DELAY=$DELAY_MAX
+    fi
+  done
+}
+
+check_output()
+{
+  if (( ${#} != 5 ))
+  then
+    echo "usage: check_output TOKEN OUTPUT WORKFLOW SCRIPT JOBID"
+    return 1
+  fi
+
+  TOKEN=$1
+  OUTPUT=$2
+  WORKFLOW=$3
+  SCRIPT=$4
+  JOBID=$5
+
+  if grep "$TOKEN" $OUTPUT > /dev/null
+  then
+    # Success!
+    return 0
+  fi
+
+  # Else, report error message
+  echo "Could not find '$TOKEN'"
+  show OUTPUT WORKFLOW SCRIPT JOBID
+  return 1
+}
