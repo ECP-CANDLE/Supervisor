@@ -1,7 +1,13 @@
 
-/*
- * OBSOLETE: This is now workflow.swift + *_py.swift
- */
+/**
+   WORKFLOW.SWIFT
+
+   Main workflow loops for P3B1.
+   Must import objective function and logging functions on command line,
+   i.e., log_*.swift , obj_*.swift .
+
+   The key call structure is main()->start()->loop()
+*/
 
 import io;
 import sys;
@@ -24,65 +30,6 @@ int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
-
-string code_template =
-"""
-import p3b1_runner
-import json, os
-
-outdir = '%s'
-
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
-
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '{}/output'.format(outdir)
-hyper_parameter_map['instance_directory'] = outdir
-hyper_parameter_map['experiment_id'] = '%s'
-hyper_parameter_map['run_id'] = '%s'
-hyper_parameter_map['timeout'] = %d
-
-validation_loss = p3b1_runner.run(hyper_parameter_map)
-""";
-
-string code_log_start =
-"""
-import exp_logger
-
-parameter_map = {}
-parameter_map['pp'] = '%d'
-parameter_map['iterations'] = '%d'
-parameter_map['params'] = \"\"\"%s\"\"\"
-parameter_map['algorithm'] = '%s'
-parameter_map['experiment_id'] = '%s'
-sys_env = \"\"\"%s\"\"\"
-
-exp_logger.start(parameter_map, sys_env)
-""";
-
-string code_log_end =
-"""
-import exp_logger
-
-exp_logger.end('%s')
-""";
-
-// algorithm params format is a string representation
-// of a python dictionary. eqpy_hyperopt evals this
-// string to create the dictionary. This, unfortunately,
-string algo_params_template =
-"""
-max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
-""";
-
-(string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (outdir, params, exp_id, iter_indiv_id, benchmark_timeout);
-  //make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
-  printf(obj_result);
-}
 
 (void v) loop(location ME, int ME_rank) {
 
@@ -132,20 +79,6 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
   }
 }
 
-(void o) log_start(string algorithm) {
-    string ps = join(file_lines(input(param_set)), " ");
-    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
-    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
-    python_persist(code);
-    o = propagate();
-}
-
-(void o) log_end(){
-    string code = code_log_end % (exp_id);
-    python_persist(code);
-    o = propagate();
-}
-
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the R
@@ -182,12 +115,6 @@ app (void o) make_dir(string dirname) {
   "mkdir" "-p" dirname;
 }
 
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-//app (void o) run_prerequisites() {
-//
-//}
-
 main() {
 
   printf("WORKFLOW START: %0.3f", clock());
@@ -199,10 +126,8 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  //run_prerequisites() => {
   foreach ME_rank, i in ME_ranks {
     start(ME_rank) =>
     printf("End rank: %d", ME_rank);
   }
-//}
 }
