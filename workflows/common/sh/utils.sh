@@ -55,13 +55,13 @@ EOF
   export EXPID=$1
   if [ $EXPID = "-a" ]
   then
-    i=0
-    while true
+    local i=0
+    while (( 1 ))
     do
       EXPID=$( printf "X%03i" $i )
       if [[ -d $EXPERIMENTS/$EXPID ]]
       then
-        (( ++ i ))
+        i=$(( i + i*RANDOM/32767 + 1 ))
       else
         break
       fi
