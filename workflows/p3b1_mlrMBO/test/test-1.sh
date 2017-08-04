@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -eu
 
 if (( ${#} != 1 ))
 then
@@ -9,21 +10,28 @@ fi
 SITE=$1
 
 # Self-configure
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-echo $EMEWS_PROJECT_ROOT
-WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+THIS=$( cd $( dirname $0 ) && /bin/pwd )
+EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
+export EMEWS_PROJECT_ROOT
+WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
-SCRIPT=$( basename $0 .sh )
+
+# Select configurations
+CFG_SYS=$THIS/cfg-sys-1.sh
+CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 
 # Wait for job
 TURBINE_OUTPUT=$( cat turbine-directory.txt )
 JOBID=$( cat $TURBINE_OUTPUT/jobid.txt )
 queue_wait $SITE $JOBID
 
-# Check job
+# Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt
+WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
+SCRIPT=$( basename $0 .sh )
 check_output "val_loss: 16.1181" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+
+echo "$SCRIPT: SUCCESS"
