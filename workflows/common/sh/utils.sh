@@ -23,13 +23,8 @@ get_site()
 {
   if (( ${#} < 1 ))
   then
-    script_name=$(basename $0)
-    echo << EOF
-Usage: ${script_name} SITE EXPERIMENT_ID"
-where SITE is the computer name (titan, theta, cori) and
-      EXPERIMENT_ID will be the new directory under experiments
-EOF
-    exit 1
+    echo "could not find SITE argument!"
+    return 1
   fi
   export SITE=$1
 }
@@ -41,13 +36,10 @@ get_expid()
 #   a new EXPID under the experiments directory,
 #   which will be exported as TURBINE_OUTPUT
 {
-  if [ "${#}" -ne 1 ]; then
-    script_name=$(basename $0)
-    echo << EOF
-Usage: ${script_name} EXPERIMENT_ID"
-where EXPERIMENT_ID will be the new directory under experiments
-EOF
-    exit 1
+  if (( ${#} < 1 ))
+  then
+    echo "could not find EXPID argument!"
+    return 1
   fi
 
   EXPERIMENTS=$EMEWS_PROJECT_ROOT/experiments
@@ -70,6 +62,58 @@ EOF
   fi
   export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   check_directory_exists
+}
+
+get_cfg_sys()
+# Obtain the cfg_sys script file and source it
+{
+  if (( ${#} < 1 ))
+  then
+    echo "could not find cfg_sys argument!"
+    return 1
+  fi
+
+  local CFG_SYS=$1
+
+  if ! [[ -f $CFG_SYS ]]
+  then
+    echo "CFG_SYS does not exist!"
+    show CFG_SYS
+    return 1
+  fi
+
+  if ! source $CFG_SYS
+  then
+    echo "Error while sourcing CFG_SYS!"
+    show CFG_SYS
+    return 1
+  fi
+}
+
+get_cfg_prm()
+# Obtain the cfg_prm script file and source it
+{
+  if (( ${#} < 1 ))
+  then
+    echo "could not find cfg_prm argument!"
+    return 1
+  fi
+
+  local CFG_PRM=$1
+
+  if ! [[ -f $CFG_PRM ]]
+  then
+    echo "CFG_PRM does not exist!"
+    show CFG_PRM
+    return 1
+  fi
+
+  if ! source $CFG_PRM
+  then
+    echo "Error while sourcing CFG_PRM!"
+    show CFG_PRM
+    return 1
+  fi
 }
 
 source_site()
@@ -134,17 +178,28 @@ queue_wait_slurm()
     return 1
   fi
 
-  JOBID=$1
+  local JOBID=$1
 
-  local DELAY=30
-  local DELAY_MAX=60
+  local DELAY_MIN=30
+  local DELAY_MAX=600
+  local DELAY=$DELAY_MIN
+
+  local STATE="PD"
 
   while (( 1 ))
   do
     date "+%Y/%m/%d %H:%M:%S"
-    if ! ( squeue | grep $JOBID )
+    if ! ( squeue | grep "$JOBID.*$STATE" )
     then
-      break
+      if [[ $STATE == "PD" ]]
+      then
+        echo "Job $JOBID is not pending."
+        STATE="R"
+        DELAY=$DELAY_MIN
+      elif [[ $STATE == "R" ]]
+      then
+        break
+      fi
     fi
     sleep $DELAY
     (( ++ DELAY ))
@@ -153,6 +208,7 @@ queue_wait_slurm()
       DELAY=$DELAY_MAX
     fi
   done
+  echo "Job $JOBID is not running."
 }
 
 check_output()
@@ -163,11 +219,11 @@ check_output()
     return 1
   fi
 
-  TOKEN=$1
-  OUTPUT=$2
-  WORKFLOW=$3
-  SCRIPT=$4
-  JOBID=$5
+  local TOKEN=$1
+  local OUTPUT=$2
+  local WORKFLOW=$3
+  local SCRIPT=$4
+  local JOBID=$5
 
   if grep "$TOKEN" $OUTPUT > /dev/null
   then
