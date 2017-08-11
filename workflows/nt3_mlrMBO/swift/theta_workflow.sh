@@ -93,8 +93,6 @@ CMD_LINE_ARGS+="-model_name=$MODEL_NAME "
 CMD_LINE_ARGS+="-exp_id=$EXPID -log_script=$EMEWS_PROJECT_ROOT/../common/sh/theta_run_logger.sh "
 CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
-TURBINE_DIR=/home/wozniak/Public/sfw/theta/swift-t-pyr/turbine/lib
-
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
 MACHINE="theta"
@@ -113,7 +111,7 @@ log_script
 # echo's anything following this to standard out
 set -x
 WORKFLOW_SWIFT=ai_workflow3.swift
-swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR  -r $TURBINE_DIR \
+swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR   \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
     -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
