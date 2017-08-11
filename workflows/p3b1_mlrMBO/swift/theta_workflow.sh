@@ -25,6 +25,10 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-default}
 export WALLTIME=${WALLTIME:-02:00:00}
 
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
+
 # mlrMBO settings
 # How many to runs evaluate per iteration
 
@@ -74,6 +78,8 @@ CMD_LINE_ARGS=( $*
                 -param_set_file=$PARAM_SET_FILE
                 -script_file=$SCRIPT_FILE
                 -log_script=$LOG_SCRIPT
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
+
               )
 
 TURBINE_DIR=/home/wozniak/Public/sfw/theta/swift-t-pyr/turbine/lib

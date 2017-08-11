@@ -1,6 +1,7 @@
-# Titan specific settings to build eqr
 module load gcc
 export PATH=$PATH:/ccs/home/wozniak/Public/sfw/swig-3.0.2/bin
+
+# TITAN BUILD SETTINGS
 
 R_HOME=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R
 R_INCLUDE=$R_HOME/include
@@ -9,8 +10,9 @@ R_INSIDE=$R_HOME/library/RInside
 RCPP=$R_HOME/library/Rcpp
 
 #system-wide tcl
-TCL_INCLUDE=/ccs/home/wozniak/Public/sfw/tcl-8.6.2
-TCL_LIB=/ccs/home/wozniak/Public/sfw/tcl-8.6.2/lib
+TCL=/ccs/home/wozniak/Public/sfw/tcl-8.6.2
+TCL_INCLUDE=$TCL/include
+TCL_LIB=$TCL/lib
 TCL_LIBRARY=tcl8.6
 export PATH=$PATH:/ccs/home/wozniak/Public/sfw/tcl-8.6.2/bin
 

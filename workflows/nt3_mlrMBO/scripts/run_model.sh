@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=8
+TIMEOUT_ARG_INDEX=9
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -36,18 +36,24 @@ emews_root=$2
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 instance_directory=$3
+
+mkdir -p $instance_directory
+log_file=$instance_directory/run_model.log
+exec >> $log_file
+exec 2>&1
 cd $instance_directory
 
 model_name=$4
 framework=$5
 exp_id=$6
 run_id=$7
+benchmark_timeout=$8
 
 BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot1/NT3:$emews_root/../../../Benchmarks/Pilot1/TC1
 COMMON_DIR=$emews_root/../common/python
 export PYTHONPATH="$PYTHONPATH:$BENCHMARK_DIR:$COMMON_DIR"
 
-arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework" "$exp_id" "$run_id")
+arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework" "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value

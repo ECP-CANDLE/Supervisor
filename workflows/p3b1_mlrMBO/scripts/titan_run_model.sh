@@ -34,6 +34,11 @@ emews_root=$2
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 instance_directory=$3
+
+mkdir -p $instance_directory
+log_file=$instance_directory/run_model.log
+exec >> $log_file
+exec 2>&1
 cd $instance_directory
 
 framework=$4

@@ -11,8 +11,9 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
 # See README.md for more information
 
-# The directory in the Benchmarks repo containing P2B1
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
+# The directory in the Benchmarks repo containing P3B1
+BENCHMARK_DIR="$EMEWS_PROJECT_ROOT/../../../Benchmarks/common"
+BENCHMARK_DIR="$BENCHMARK_DIR:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1"
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -26,6 +27,10 @@ export PPN=${PPN:-1}
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
+
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
 
 # set machine to your scheduler type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -79,6 +84,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE -exp_id=$EXPID "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

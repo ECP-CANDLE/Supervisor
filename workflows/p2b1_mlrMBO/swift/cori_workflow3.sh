@@ -2,7 +2,7 @@
 set -eu
 
 # CORI WORKFLOW
-# Main entry point for P1B3 mlrMBO workflow
+# Main entry point for P2b1 mlrMBO workflow
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
@@ -27,6 +27,10 @@ export PPN=${PPN:-4}
 # See http://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:30:00}
+
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
@@ -86,6 +90,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 CMD_LINE_ARGS="$* -pp=$PROPOSE_POINTS -mi=$MAX_ITERATIONS -mb=$MAX_BUDGET -ds=$DESIGN_SIZE "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
 CMD_LINE_ARGS+="-exp_id=$EXPID "
+CMD_LINE_ARGS+="-benchmark_timeout=$BENCHMARK_TIMEOUT"
 
 # P2B1 requires theano -- doesn't work with tensor flow
 # KERAS_BACKEND=theano

@@ -1,4 +1,3 @@
-
 # LANGS Theta
 # Language settings for Theta (Swift, Python, R, Tcl, etc.)
 

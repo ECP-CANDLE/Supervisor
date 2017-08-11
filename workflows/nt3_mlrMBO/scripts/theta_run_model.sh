@@ -13,7 +13,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=8
+TIMEOUT_ARG_INDEX=9
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -35,18 +35,24 @@ emews_root=$2
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 instance_directory=$3
+
+mkdir -p $instance_directory
+log_file=$instance_directory/run_model.log
+exec >> $log_file
+exec 2>&1
 cd $instance_directory
 
 model_name=$4
 framework=$5
 exp_id=$6
 run_id=$7
+benchmark_timeout=$8
 
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
 export KMP_SETTINGS=1
 export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
-export OMP_NUM_THREADS=144
+export OMP_NUM_THREADS=128
 
 export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
 PYTHON="$PYTHONHOME/bin/python"
@@ -60,7 +66,7 @@ PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
 export PYTHONPATH
 
-arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id")
+arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is
