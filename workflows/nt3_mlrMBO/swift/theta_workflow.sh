@@ -75,7 +75,9 @@ COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
 PYTHONHOME=/home/wozniak/Public/sfw/theta/Python-2.7.12
 
-export PATH=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$TCL/bin:$PATH
+# export PATH=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$PATH
+export PATH=/projects/Candle_ECP/swift/2017-08-11/stc/bin:$PATH
+PATH=$TCL/bin:$PATH
 #$PYTHONHOME/bin:$TCL/bin:$PATH
 
 # Resident task workers and ranks
