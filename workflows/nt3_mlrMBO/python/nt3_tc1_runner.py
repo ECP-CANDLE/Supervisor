@@ -9,6 +9,27 @@ import os
 import numpy as np
 import importlib
 import runner_utils
+import socket
+
+node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
+print("node,pid: " + node_pid)
+
+logger = None
+
+def get_logger():
+    """ Set up logging """
+    global logger
+    if logger is not None:
+        return logger
+    import logging, sys
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    h = logging.StreamHandler(stream=sys.stdout)
+    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-9s %(message)s',
+                             datefmt='%Y/%m/%d %H:%M:%S')
+    h.setFormatter(fmtr)
+    logger.addHandler(h)
+    return logger
 
 def import_pkg(framework, model_name):
     if framework == 'keras':
@@ -25,6 +46,10 @@ def import_pkg(framework, model_name):
     return pkg
 
 def run(hyper_parameter_map):
+
+    logger = get_logger()
+    logger.debug("run()...")
+    
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
@@ -38,6 +63,7 @@ def run(hyper_parameter_map):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
 
+    print
     runner_utils.write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
@@ -55,6 +81,9 @@ def run(hyper_parameter_map):
     return val_loss[-1]
 
 if __name__ == '__main__':
+    print("RUNNER")
+    sys.stdout.flush()
+
     param_string = sys.argv[1]
     instance_directory = sys.argv[2]
     model_name = sys.argv[3]
@@ -69,5 +98,7 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['nt3_tc1_runner']
+    print("RUN()")
+    sys.stdout.flush()
     result = run(hyper_parameter_map)
     runner_utils.write_output(result, instance_directory)
