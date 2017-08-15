@@ -2,8 +2,10 @@
 set -eu
 
 # WORKFLOW
-# Main entry point for P3B1 mlrMBO workflow
+# Main entry point for NT3 mlrMBO workflow
 # See README.md for more information
+
+echo "WORKFLOW: NT3"
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
@@ -48,28 +50,7 @@ source_site sched   $SITE
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-# TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
-# export R=/home/wozniak/Public/sfw/theta/R-3.4.0/lib64/R
-# export PY=/home/wozniak/Public/sfw/theta/Python-2.7.12
-# export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
-# COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-# PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
-# PYTHONHOME=/home/wozniak/Public/sfw/theta/Python-2.7.12
-
-# # export PATH=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc/bin:$PATH
-# export PATH=/projects/Candle_ECP/swift/2017-08-11/stc/bin:$PATH
-# PATH=$TCL/bin:$PATH
-# #$PYTHONHOME/bin:$TCL/bin:$PATH
-
-# # Resident task workers and ranks
-# export TURBINE_RESIDENT_WORK_WORKERS=1
-# export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
-
-# # EQ/R location
-# EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
-
-CMD_LINE_ARGS=( $* # Extra user args
-                -pp=$PROPOSE_POINTS
+CMD_LINE_ARGS=( -pp=$PROPOSE_POINTS
                 -mi=$MAX_ITERATIONS
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -89,7 +70,6 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # echo's anything following this to standard out
-set -x
 WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR   \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
@@ -102,4 +82,4 @@ swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR   \
         -e TURBINE_DEBUG=$TURBINE_DEBUG\
         -e ADLB_DEBUG=$ADLB_DEBUG \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
