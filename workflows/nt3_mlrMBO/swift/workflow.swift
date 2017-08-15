@@ -127,22 +127,6 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
     }
 }
 
-// deletes the specified directory
-app (void o) rm_dir(string dirname) {
-  "rm" "-rf" dirname;
-}
-
-// call this to create any required directories
-app (void o) make_dir(string dirname) {
-  "mkdir" "-p" dirname;
-}
-
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-//app (void o) run_prerequisites() {
-//
-//}
-
 main() {
 
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
@@ -152,10 +136,8 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  //run_prerequisites() => {
   foreach ME_rank, i in ME_ranks {
     start(ME_rank) =>
     printf("End rank: %d", ME_rank);
   }
-//}
 }
