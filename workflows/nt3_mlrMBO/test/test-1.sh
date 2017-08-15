@@ -23,7 +23,7 @@ CFG_SYS=$THIS/cfg-sys-1.sh
 CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/theta_workflow.sh $SITE -a $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 
 # Wait for job
 TURBINE_OUTPUT=$( cat turbine-directory.txt )
