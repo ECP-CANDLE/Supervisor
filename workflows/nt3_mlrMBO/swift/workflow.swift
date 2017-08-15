@@ -12,63 +12,77 @@ string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int propose_points = toint(argv("pp", "3"));
-int max_iterations = toint(argv("it", "5"));
+int propose_points = toint(argv("pp", "10"));
+int max_budget = toint(argv("mb", "110"));
+int max_iterations = toint(argv("mi", "10"));
+int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
+file model_script = input(argv("script_file"));
+file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
-string code_template =
-"""
-import nt3_tc1_runner
-import json
+string FRAMEWORK = "keras";
 
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['instance_directory'] = '%s'
-hyper_parameter_map['model_name'] = '%s'
-hyper_parameter_map['experiment_id'] = '%s'
-hyper_parameter_map['run_id'] = '%s'
-
-validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
-""";
-
-string code_log_start =
-"""
-import exp_logger
-
-parameter_map = {}
-parameter_map['pp'] = '%d'
-parameter_map['iterations'] = '%d'
-parameter_map['params'] = \"\"\"%s\"\"\"
-parameter_map['algorithm'] = '%s'
-parameter_map['experiment_id'] = '%s'
-sys_env = \"\"\"%s\"\"\"
-
-exp_logger.start(parameter_map, sys_env)
-""";
-
-string code_log_end =
-"""
-import exp_logger
-
-exp_logger.end('%s')
-""";
-
-// algorithm params format is a string representation
-// of a python dictionary. eqpy_hyperopt evals this
-// string to create the dictionary. This, unfortunately,
 string algo_params_template =
 """
-pp = %d, it = %d, param.set.file='%s'
+max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
+app (void o) run_model (file shfile, string params_string, string instance, string run_id)
+{
+    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout;
+}
+
+
+app (file out, file err) run_log_start(file shfile, string ps, string sys_env, string algorithm)
+{
+    "bash" shfile "start" emews_root propose_points max_iterations ps algorithm exp_id sys_env @stdout=out @stderr=err;
+}
+
+app (file out, file err) run_log_end(file shfile)
+{
+    "bash" shfile "end" emews_root exp_id @stdout=out @stderr=err;
+}
+
+(void o) log_start(string algorithm) {
+    file out <"%s/log_start_out.txt" % turbine_output>;
+    file err <"%s/log_start_err.txt" % turbine_output>;
+
+    string ps = join(file_lines(input(param_set)), " ");
+    string t_log = "%s/turbine.log" % turbine_output;
+    if (file_exists(t_log)) {
+      string sys_env = join(file_lines(input(t_log)), ", ");
+      (out, err) = run_log_start(log_script, ps, sys_env, algorithm) =>
+      o = propagate();
+    } else {
+      (out, err) = run_log_start(log_script, ps, "", algorithm) =>
+      o = propagate();
+    }
+}
+
+(void o) log_end() {
+  file out <"%s/log_end_out.txt" % turbine_output>;
+  file err <"%s/log_end_err.txt" % turbine_output>;
+  (out, err) = run_log_end(log_script) =>
+  o = propagate();
+}
+
+(string obj_result) get_results(string result_file) {
+  if (file_exists(result_file)) {
+    file line = input(result_file);
+    obj_result = trim(read(line));
+  } else {
+    obj_result = "NaN";
+  }
+}
+
 (string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, outdir, model_name, exp_id, iter_indiv_id);
-  make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
+  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id) =>
+  run_model(model_script, params, outdir, iter_indiv_id) =>
+  string result_file = "%s/result.txt" % outdir =>
+  obj_result = get_results(result_file);
   printf(obj_result);
 }
 
@@ -120,20 +134,6 @@ pp = %d, it = %d, param.set.file='%s'
   }
 }
 
-(void o) log_start(string algorithm) {
-    string ps = join(file_lines(input(param_set)), " ");
-    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
-    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
-    python_persist(code);
-    o = propagate();
-}
-
-(void o) log_end(){
-    string code = code_log_end % (exp_id);
-    python_persist(code);
-    o = propagate();
-}
-
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the R
@@ -145,17 +145,17 @@ pp = %d, it = %d, param.set.file='%s'
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
     // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (propose_points,
-      max_iterations, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    log_start(algorithm);
+    string algo_params = algo_params_template % (max_budget, max_iterations,
+	design_size, propose_points, param_set);
+    string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
+    log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        EQR_delete_R(ME);
         log_end() =>
+        EQR_delete_R(ME);
         o = propagate();
     }
 }
