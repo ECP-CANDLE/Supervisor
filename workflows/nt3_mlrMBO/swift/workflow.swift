@@ -25,27 +25,6 @@ int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 string FRAMEWORK = "keras";
 
-string algo_params_template =
-"""
-max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
-""";
-
-app (void o) run_model (file shfile, string params_string, string instance, string run_id)
-{
-    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout;
-}
-
-
-app (file out, file err) run_log_start(file shfile, string ps, string sys_env, string algorithm)
-{
-    "bash" shfile "start" emews_root propose_points max_iterations ps algorithm exp_id sys_env @stdout=out @stderr=err;
-}
-
-app (file out, file err) run_log_end(file shfile)
-{
-    "bash" shfile "end" emews_root exp_id @stdout=out @stderr=err;
-}
-
 (void o) log_start(string algorithm) {
     file out <"%s/log_start_out.txt" % turbine_output>;
     file err <"%s/log_start_err.txt" % turbine_output>;
@@ -67,23 +46,6 @@ app (file out, file err) run_log_end(file shfile)
   file err <"%s/log_end_err.txt" % turbine_output>;
   (out, err) = run_log_end(log_script) =>
   o = propagate();
-}
-
-(string obj_result) get_results(string result_file) {
-  if (file_exists(result_file)) {
-    file line = input(result_file);
-    obj_result = trim(read(line));
-  } else {
-    obj_result = "NaN";
-  }
-}
-
-(string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id) =>
-  run_model(model_script, params, outdir, iter_indiv_id) =>
-  string result_file = "%s/result.txt" % outdir =>
-  obj_result = get_results(result_file);
-  printf(obj_result);
 }
 
 (void v) loop(location ME, int ME_rank) {

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -eu
 
-# WORKFLOW
+# NT3 WORKFLOW
 # Main entry point for NT3 mlrMBO workflow
 # See README.md for more information
 
@@ -70,8 +70,13 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # echo's anything following this to standard out
-WORKFLOW_SWIFT=ai_workflow3.swift
-swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR   \
+WORKFLOW_SWIFT=workflow.swift
+swift-t -n $PROCS \
+        $MACHINE  \
+        -p -I $EQR -r $EQR \
+        -I $EMEWS_PROJECT_ROOT/swift \
+        -i obj_$SWIFT_IMPL \
+        -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
