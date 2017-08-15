@@ -96,6 +96,11 @@ string FRAMEWORK = "keras";
   }
 }
 
+string algo_params_template =
+"""
+max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
+""";
+
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the R
@@ -107,8 +112,8 @@ string FRAMEWORK = "keras";
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
     // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (max_budget, max_iterations,
-	design_size, propose_points, param_set);
+    string algo_params = algo_params_template %
+      (max_budget, max_iterations, design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
