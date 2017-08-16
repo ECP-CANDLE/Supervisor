@@ -54,3 +54,13 @@ def write_params(params, hyper_parameter_map):
             if isinstance(v, basestring):
                 v = "'{}'".format(v)
             f_out.write("{}={}\n".format(k, v))
+
+def keras_clear_session(framework):
+    if framework == 'keras':
+        # works around this error:
+        # https://github.com/tensorflow/tensorflow/issues/3388
+        try:
+            from keras import backend as K
+            K.clear_session()
+        except AttributeError:      # theano does not have this function
+            pass
