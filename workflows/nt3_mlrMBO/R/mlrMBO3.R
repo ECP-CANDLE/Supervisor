@@ -59,12 +59,12 @@ simple.obj.fun = function(x){}
 main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
 
 
-  surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+  surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                       fix.factors.prediction = TRUE,
                       se.method = "bootstrap", se.boot = 2)
-  ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points, 
+  ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
        	 		impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
-  ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0), 
+  ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
                             	   opt.restarts = 1, opt.focussearch.points = 1000)
   ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
   ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
