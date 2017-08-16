@@ -86,11 +86,11 @@ string FRAMEWORK = "keras";
         string results[];
         foreach p, j in param_array
         {
-            printf(p);
+          // printf(p);
             results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j));
         }
         string res = join(results, ";");
-        printf(res);
+        // printf(res);
         EQR_put(ME, res) => c = true;
     }
   }
