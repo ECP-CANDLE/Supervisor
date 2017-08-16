@@ -25,7 +25,8 @@ parallelMap2 <- function(fun, ...,
   else{
     dots <- list(...)
     string_params <- elements_of_lists_to_json(dots[[1L]])
-    print(paste0("parallelMap2 called with list_param: ",string_params))
+    #     print(paste0("parallelMap2 called with list_param: ",string_params))
+    print(paste("parallelMap2 called with list size:", length(string_params)))
     OUT_put(string_params)
     string_results = IN_get()
 
@@ -69,7 +70,7 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
 
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
-  print(design)
+  #  print(paste("design:", design))
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
   return(res)
