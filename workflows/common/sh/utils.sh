@@ -164,6 +164,9 @@ queue_wait()
   if [[ $SITE == "cori" ]]
   then
     queue_wait_slurm $JOBID
+  elif [[ $SITE == "theta" ]]
+  then
+    queue_wait_cobalt $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1
@@ -174,7 +177,7 @@ queue_wait_slurm()
 {
   if (( ${#} != 1 ))
   then
-    echo "usage: queue_wait JOBID"
+    echo "usage: queue_wait_slurm JOBID"
     return 1
   fi
 
@@ -209,6 +212,17 @@ queue_wait_slurm()
     fi
   done
   echo "Job $JOBID is not running."
+}
+
+queue_wait_cobalt()
+{
+  if (( ${#} != 1 ))
+  then
+    echo "usage: queue_wait_cobalt JOBID"
+    return 1
+  fi
+
+  # Nothing: Swift already uses cqwait for Cobalt jobs!
 }
 
 check_output()
