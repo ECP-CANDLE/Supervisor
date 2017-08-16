@@ -20,6 +20,7 @@ app (void o) run_model (file shfile, string params_string, string instance, stri
     file line = input(result_file);
     obj_result = trim(read(line));
   } else {
+    // This should only happen on timeout
     printf("File not found: %s", result_file);
     obj_result = "NaN";
   }

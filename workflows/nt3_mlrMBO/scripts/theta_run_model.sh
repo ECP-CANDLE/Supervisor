@@ -74,16 +74,19 @@ MODEL_CMD="python ${arg_array[@]}"
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
-echo $MODEL_CMD
+# echo $MODEL_CMD
 
 $TIMEOUT_CMD python "${arg_array[@]}"
 
-
 RES=$?
 if [ "$RES" -ne 0 ]; then
-	if [ "$RES" == 124 ]; then
+  if [ "$RES" == 124 ]; then
     echo "---> Timeout error in $MODEL_CMD"
+    exit 0 # This will trigger a NaN (the result file does not exist)
   else
-	   echo "---> Error in $MODEL_CMD"
+    echo "---> Error in $MODEL_CMD"
+    exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
+
+exit 0 # Success
