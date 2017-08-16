@@ -18,9 +18,8 @@ SCRIPT_NAME=$(basename $0)
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# Set TURBINE_LOG=1 for Swift logging, TURBINE_LOG=0 to disable
+export TURBINE_LOG=0
 
 usage()
 {
@@ -84,7 +83,5 @@ swift-t -n $PROCS \
         -e PYTHONPATH=$PYTHONPATH \
         -e PYTHONHOME=$PYTHONHOME \
         -e TURBINE_LOG=$TURBINE_LOG \
-        -e TURBINE_DEBUG=$TURBINE_DEBUG\
-        -e ADLB_DEBUG=$ADLB_DEBUG \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
