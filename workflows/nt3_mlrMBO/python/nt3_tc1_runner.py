@@ -9,6 +9,9 @@ import os
 import numpy as np
 import importlib
 import runner_utils
+import log_tools
+
+logger = None
 
 def import_pkg(framework, model_name):
     if framework == 'keras':
@@ -25,6 +28,10 @@ def import_pkg(framework, model_name):
     return pkg
 
 def run(hyper_parameter_map):
+
+    global logger
+    logger = log_tools.get_logger(logger, __name__)
+
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
@@ -41,20 +48,18 @@ def run(hyper_parameter_map):
     runner_utils.write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
-    if framework == 'keras':
-        # works around this error:
-        # https://github.com/tensorflow/tensorflow/issues/3388
-        try:
-            from keras import backend as K
-            K.clear_session()
-        except AttributeError:      # theano does not have this function
-            pass
+    runner_utils.keras_clear_session(framework)
 
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
-    return val_loss[-1]
+    result = val_loss[-1]
+    print("result: ", result)
+    return result
 
 if __name__ == '__main__':
+    logger = log_tools.get_logger(logger, __name__)
+    logger.debug("RUN START")
+
     param_string = sys.argv[1]
     instance_directory = sys.argv[2]
     model_name = sys.argv[3]
@@ -71,3 +76,4 @@ if __name__ == '__main__':
     sys.argv = ['nt3_tc1_runner']
     result = run(hyper_parameter_map)
     runner_utils.write_output(result, instance_directory)
+    logger.debug("RUN STOP")
