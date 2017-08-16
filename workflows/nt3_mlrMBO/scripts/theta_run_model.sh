@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -eu
 
 # Check for an optional timeout threshold in seconds. If the duration of the
@@ -41,6 +40,8 @@ log_file=$instance_directory/run_model.log
 exec >> $log_file
 exec 2>&1
 cd $instance_directory
+
+echo "theta_run_model: PWD=$PWD"
 
 model_name=$4
 framework=$5
