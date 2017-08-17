@@ -39,5 +39,5 @@ param.set <- makeParamSet(
 
   makeNumericParam("drop", lower=0, upper=0.9),
 
-  makeIntegerParam("epochs", lower=100, upper=200),
+  makeIntegerParam("epochs", lower=100, upper=200)
 )

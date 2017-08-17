@@ -49,7 +49,7 @@ EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 # how many to evaluate concurrently
 MAX_CONCURRENT_EVALUATIONS=2
 MAX_ITERATIONS=3
-PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
+PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set_large.R"
 
 # TODO edit command line arguments, e.g. -nv etc., as appropriate
 # for your EQ/R based run. $* will pass all of this script's
