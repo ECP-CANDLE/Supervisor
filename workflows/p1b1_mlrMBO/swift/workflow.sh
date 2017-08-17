@@ -56,6 +56,7 @@ PARAM_SET_FILE="$EMEWS_PROJECT_ROOT/data/parameter_set.R"
 # command line arguments to the swift script
 CMD_LINE_ARGS="$* -pp=$MAX_CONCURRENT_EVALUATIONS -it=$MAX_ITERATIONS "
 CMD_LINE_ARGS+="-param_set_file=$PARAM_SET_FILE "
+CMD_LINE_ARGS+="-exp_id=$EXPID"
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
 
