@@ -3,6 +3,7 @@ import sys;
 import files;
 import location;
 import string;
+import unix;
 import EQR;
 import R;
 import assert;
@@ -16,6 +17,9 @@ int propose_points = toint(argv("pp", "3"));
 int max_iterations = toint(argv("it", "5"));
 string param_set = argv("param_set_file");
 string exp_id = argv("exp_id");
+
+printf("turbine_output: " + turbine_output);
+
 
 string code_template =
 """
@@ -118,8 +122,10 @@ pp = %d, it = %d, param.set.file='%s'
 
 (void o) log_start(string algorithm) {
     string ps = join(file_lines(input(param_set)), " ");
-    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
-    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
+    file turbine_log<turbine_output/"turbine.log"> = touch();
+    string sys_env = join(file_lines(turbine_log));
+    string code = code_log_start %
+      (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
     python_persist(code);
     o = propagate();
 }
