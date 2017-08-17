@@ -17,7 +17,7 @@ THIS=$( dirname $0 )
 # Rajeev
 $THIS/p1b1_mlrMBO/test/test-1.sh $SITE # Theta only
 
-$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # Cori, Titan only
-$THIS/nt3_mlrMBO/test/test-1.sh $SITE # Theta only
+$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # WORKS: Cori, Titan
+$THIS/nt3_mlrMBO/test/test-1.sh $SITE # WORKS: Theta only
 
 echo "test-all: SUCCESS"
