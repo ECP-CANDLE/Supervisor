@@ -1,7 +1,7 @@
 
 # LANGS Titan
 # Language settings for Titan (Swift, Python, R, Tcl, etc.)
-
+SWIFT_IMPL=app
 TCL=/sw/xk6/tcl_tk/8.5.8/sles11.1_gnu4.5.3
 export R=/sw/xk6/r/3.3.2/sles11.3_gnu4.9.3x/lib64/R
 export PY=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3
