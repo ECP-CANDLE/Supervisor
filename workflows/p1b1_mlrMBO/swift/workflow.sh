@@ -68,7 +68,7 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # echo's anything following this to standard out
-WORKFLOW_SWIFT=22_cp_workflow.swift
+WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         $MACHINE  \
         -p -I $EQR -r $EQR \
