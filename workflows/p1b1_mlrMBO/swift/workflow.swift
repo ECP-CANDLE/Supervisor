@@ -13,59 +13,39 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
+//int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("it", "5"));
+//int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
+string model_name = argv("model_name");
+file model_script = input(argv("script_file"));
+file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
-string code_template =
-"""
-import p1b1_runner
-import json
+string FRAMEWORK = "keras";
 
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['experiment_id'] = '%s'
-hyper_parameter_map['run_id'] = '%s'
+(void o) log_start(string algorithm) {
+    file out <"%s/log_start_out.txt" % turbine_output>;
+    file err <"%s/log_start_err.txt" % turbine_output>;
 
-validation_loss = p1b1_runner.run(hyper_parameter_map)
-""";
+    string ps = join(file_lines(input(param_set)), " ");
+    string t_log = "%s/turbine.log" % turbine_output;
+    if (file_exists(t_log)) {
+      string sys_env = join(file_lines(input(t_log)), ", ");
+      (out, err) = run_log_start(log_script, ps, sys_env, algorithm) =>
+      o = propagate();
+    } else {
+      (out, err) = run_log_start(log_script, ps, "", algorithm) =>
+      o = propagate();
+    }
+}
 
-string code_log_start =
-"""
-import exp_logger
-
-parameter_map = {}
-parameter_map['pp'] = '%d'
-parameter_map['iterations'] = '%d'
-parameter_map['params'] = \"\"\"%s\"\"\"
-parameter_map['algorithm'] = '%s'
-parameter_map['experiment_id'] = '%s'
-sys_env = \"\"\"%s\"\"\"
-
-exp_logger.start(parameter_map, sys_env)
-""";
-
-string code_log_end =
-"""
-import exp_logger
-
-exp_logger.end('%s')
-""";
-
-// algorithm params format is a key=value
-// comma separated string representation
-string algo_params_template =
-"""
-pp = %d, it = %d, param.set.file='%s'
-""";
-
-(string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, exp_id, iter_indiv_id);
-  make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
-  printf(obj_result);
+(void o) log_end() {
+  file out <"%s/log_end_out.txt" % turbine_output>;
+  file err <"%s/log_end_err.txt" % turbine_output>;
+  (out, err) = run_log_end(log_script) =>
+  o = propagate();
 }
 
 (void v) loop(location ME, int ME_rank) {
@@ -106,29 +86,20 @@ pp = %d, it = %d, param.set.file='%s'
         string results[];
         foreach p, j in param_array
         {
-            printf(p);
+          // printf(p);
             results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j));
         }
         string res = join(results, ";");
-        printf(res);
+        // printf(res);
         EQR_put(ME, res) => c = true;
     }
   }
 }
 
-(void o) log_start(string algorithm) {
-    string ps = join(file_lines(input(param_set)), " ");
-    string sys_env = join(file_lines(input("%s/turbine.log" % turbine_output)), ", ");
-    string code = code_log_start % (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
-    python_persist(code);
-    o = propagate();
-}
-
-(void o) log_end(){
-    string code = code_log_end % (exp_id);
-    python_persist(code);
-    o = propagate();
-}
+string algo_params_template =
+"""
+propose.points = %d, max.iterations = %d, param.set.file='%s'
+""";
 
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
@@ -141,36 +112,20 @@ pp = %d, it = %d, param.set.file='%s'
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
     // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (propose_points,
-      max_iterations, param_set);
+    string algo_params = algo_params_template %
+      (propose_points,max_iterations, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    log_start(algorithm);
+    log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        EQR_delete_R(ME);
         log_end() =>
+        EQR_delete_R(ME);
         o = propagate();
     }
 }
-
-// deletes the specified directory
-app (void o) rm_dir(string dirname) {
-  "rm" "-rf" dirname;
-}
-
-// call this to create any required directories
-app (void o) make_dir(string dirname) {
-  "mkdir" "-p" dirname;
-}
-
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-//app (void o) run_prerequisites() {
-//
-//}
 
 main() {
 
@@ -181,10 +136,9 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  //run_prerequisites() => {
   foreach ME_rank, i in ME_ranks {
     start(ME_rank) =>
     printf("End rank: %d", ME_rank);
   }
-//}
 }
+
