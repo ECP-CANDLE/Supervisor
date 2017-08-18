@@ -167,6 +167,9 @@ queue_wait()
   elif [[ $SITE == "theta" ]]
   then
     queue_wait_cobalt $JOBID
+  elif [[ $SITE == "titan" ]]
+  then
+    queue_wait_cobalt $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1
