@@ -76,7 +76,11 @@ MODEL_CMD="python ${arg_array[@]}"
 set +e
 # echo $MODEL_CMD
 
+echo "python starting"
+
 $TIMEOUT_CMD python "${arg_array[@]}"
+
+echo "python done."
 
 RES=$?
 if [ "$RES" -ne 0 ]; then
@@ -90,4 +94,3 @@ if [ "$RES" -ne 0 ]; then
 fi
 
 exit 0 # Success
-

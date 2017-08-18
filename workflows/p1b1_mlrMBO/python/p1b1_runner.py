@@ -9,6 +9,9 @@ import os
 import p1b1
 
 def run(hyper_parameter_map):
+
+    print("python: run()...")
+
     framework = hyper_parameter_map['framework']
     if framework is 'keras':
         import p1b1_baseline_keras2
@@ -43,4 +46,7 @@ def run(hyper_parameter_map):
 
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
+
+    print("python: run() done.")
+
     return val_loss[-1]
