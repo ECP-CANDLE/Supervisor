@@ -169,11 +169,13 @@ queue_wait()
     queue_wait_cobalt $JOBID
   elif [[ $SITE == "titan" ]]
   then
-    queue_wait_cobalt $JOBID
+    queue_wait_pbs $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1
   fi
+
+  echo "Job completed: $JOBID"
 }
 
 queue_wait_slurm()
@@ -227,6 +229,18 @@ queue_wait_cobalt()
 
   # Nothing: Swift already uses cqwait for Cobalt jobs!
 }
+
+queue_wait_pbs()
+{
+  if (( ${#} != 1 ))
+  then
+    echo "usage: queue_wait_pbs JOBID"
+    return 1
+  fi
+
+  # TODO
+}
+
 
 check_output()
 {
