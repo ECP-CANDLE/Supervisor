@@ -263,7 +263,7 @@ check_output()
   fi
 
   # Else, report error message
-  echo "Could not find '$TOKEN'"
+  echo "check_output(): Could not find '$TOKEN' in $OUTPUT"
   show OUTPUT WORKFLOW SCRIPT JOBID
   return 1
 }
