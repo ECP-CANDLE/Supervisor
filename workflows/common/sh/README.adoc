@@ -15,7 +15,7 @@ Each CANDLE workflow is invoked with a shell script, typically called +site_work
 
 The purpose of these scripts is:
 
-. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.
+. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.  *(#20)* This is now set by +link:utils.sh:get_expid()+.
 
 . Set key environment variables for Python, R, etc.  These include +PYTHONPATH+, +LD_LIBRARY_PATH+, etc.  *(#20)* These are now set for each site in +langs-site.sh+.
 
