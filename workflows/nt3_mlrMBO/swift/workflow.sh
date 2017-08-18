@@ -34,10 +34,10 @@ fi
 
 if ! {
   get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
+  get_expid   $2 # Sets EXPID and TURBINE_OUTPUT
   get_cfg_sys $3
   get_cfg_prm $4
- }
+}
 then
   usage
   exit 1
