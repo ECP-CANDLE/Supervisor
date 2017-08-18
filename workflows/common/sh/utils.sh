@@ -42,7 +42,7 @@ get_expid()
     return 1
   fi
 
-  EXPERIMENTS=$EMEWS_PROJECT_ROOT/experiments
+  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
 
   export EXPID=$1
   if [ $EXPID = "-a" ]
