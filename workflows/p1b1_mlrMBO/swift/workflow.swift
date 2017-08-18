@@ -98,7 +98,7 @@ string FRAMEWORK = "keras";
 
 string algo_params_template =
 """
-propose.points = %d, max.iterations = %d, param.set.file='%s'
+pp = %d, it = %d, param.set.file='%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -141,4 +141,3 @@ main() {
     printf("End rank: %d", ME_rank);
   }
 }
-
