@@ -14,18 +14,18 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-320}
+export PROCS=${PROCS:-8}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
 export QUEUE=${QUEUE:-default}
-export WALLTIME=${WALLTIME:-05:00:00}
+export WALLTIME=${WALLTIME:-04:50:00}
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-10600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-13600}
 
 
 # mlrMBO settings
@@ -33,7 +33,7 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-10600}
 # Total iterations
 MAX_ITERATIONS=${MAX_ITERATIONS:-2}
 #DESIGN_SIZE=${DESIGN_SIZE:-300}
-PROPOSE_POINTS=${PROPOSE_POINTS:-300}
+PROPOSE_POINTS=${PROPOSE_POINTS:-3}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/temp_parameter_set.R}
 MODEL_NAME="p1b1"
 
