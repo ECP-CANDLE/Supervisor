@@ -13,9 +13,9 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
-//int max_budget = toint(argv("mb", "110"));
+int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("it", "5"));
-//int design_size = toint(argv("ds", "10"));
+int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 file model_script = input(argv("script_file"));
@@ -98,7 +98,7 @@ string FRAMEWORK = "keras";
 
 string algo_params_template =
 """
-pp = %d, it = %d, param.set.file='%s'
+max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -113,7 +113,7 @@ pp = %d, it = %d, param.set.file='%s'
     // Retrieve arguments to this script here
 
     string algo_params = algo_params_template %
-      (propose_points,max_iterations, param_set);
+      (max_budget, max_iterations, design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
     log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>

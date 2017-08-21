@@ -18,24 +18,33 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
+  if (deparse(substitute(fun)) == "proposePointsByInfillOptimization"){
+    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
+       level = level, show.info = show.info))
+  }
+  else{
+    dots <- list(...)
+    string_params <- elements_of_lists_to_json(dots[[1L]])
+    #     print(paste0("parallelMap2 called with list_param: ",string_params))
+    print(paste("parallelMap2 called with list size:", length(string_params)))
+    OUT_put(string_params)
+    string_results = IN_get()
 
-  dots <- list(...)
-  string_params <- elements_of_lists_to_json(dots[[1L]])
-  print(paste0("parallelMap2 called with list_param: ",string_params))
-  OUT_put(string_params)
-  string_results = IN_get()
+    st = proc.time() - st
 
-  st = proc.time() - st
-
-  # Assumes results are in the form a;b;c
-  # Note: can also handle vector returns for each,
-  # i.e., a,b;c,d;e,f
-  res <- string_to_list_of_vectors(string_results)
-  # using dummy time
-  return(result_with_extras_if_exist(res,st[3]))
+    # Assumes results are in the form a;b;c
+    # Note: can also handle vector returns for each,
+    # i.e., a,b;c,d;e,f
+    res <- string_to_list_of_vectors(string_results)
+    # using dummy time
+    return(result_with_extras_if_exist(res,st[3]))
+  }
 }
 
 require(parallelMap)
+require(jsonlite)
+
+pm <- parallelMap
 
 unlockBinding("parallelMap", as.environment("package:parallelMap"))
 assignInNamespace("parallelMap", parallelMap2, ns="parallelMap", envir=as.environment("package:parallelMap"))
@@ -44,26 +53,27 @@ lockBinding("parallelMap", as.environment("package:parallelMap"))
 
 library(mlrMBO)
 
+# dummy objective function
 simple.obj.fun = function(x){}
 
-main_function <- function(pp = 2, it = 5){
-  #surr.rf = makeLearner("regr.randomForest", predict.type = "se")
-  ctrl = makeMBOControl(n.objectives = 1, propose.points = pp)
-  ctrl = setMBOControlTermination(ctrl, max.evals = pp)
-  ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
-  design = generateDesign(n = pp, par.set = getParamSet(obj.fun))
-  print(design)
-  configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
-  res = mbo(obj.fun, design = design, control = ctrl, show.info = TRUE)
-  #ctrl = makeMBOControl(propose.points = pp)
-  #ctrl = setMBOControlInfill(ctrl, crit = crit.ei)
-  #ctrl = setMBOControlMultiPoint(ctrl, method = "cl", cl.lie = min)
-  #ctrl = setMBOControlTermination(ctrl, iters = it)
-  #ctrl = setMBOControlTermination(ctrl, max.evals = 10)
-  #configureMlr(on.learner.warning = "quiet", show.learner.output = FALSE)
-  #res = mbo(obj.fun, control = ctrl, show.info = FALSE)
-  return(res)
+main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
 
+
+  surr.rf = makeLearner("regr.randomForest", predict.type = "se",
+                      fix.factors.prediction = TRUE,
+                      se.method = "bootstrap", se.boot = 2)
+  ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
+            impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+  ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
+                                 opt.restarts = 1, opt.focussearch.points = 1000)
+  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
+  ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
+
+  design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+  #  print(paste("design:", design))
+  configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
+  res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+  return(res)
 }
 
 # ask for parameters from queue
@@ -81,6 +91,7 @@ obj.fun = makeSingleObjectiveFunction(
   fn = simple.obj.fun,
   par.set = param.set
 )
+
 
 # remove this as its not an arg to the function
 l$param.set.file <- NULL
