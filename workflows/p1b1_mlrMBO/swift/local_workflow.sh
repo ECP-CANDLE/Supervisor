@@ -50,7 +50,9 @@ source_site sched   $SITE
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-CMD_LINE_ARGS=( -pp=$PROPOSE_POINTS
+CMD_LINE_ARGS=( -mb=$MAX_BUDGET
+                -ds=$DESIGN_SIZE
+                -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
                 -param_set_file=$PARAM_SET_FILE
                 -script_file=$EMEWS_PROJECT_ROOT/scripts/local_run_model.sh
