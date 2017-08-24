@@ -15,13 +15,21 @@ app (void o) run_model (file shfile, string params_string, string instance, stri
     "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout;
 }
 
+// Assuming we need to do the nan->NaN conversion (#24)
 (string obj_result) get_results(string result_file) {
+  string t; // temporary
   if (file_exists(result_file)) {
     file line = input(result_file);
-    obj_result = trim(read(line));
+    t = trim(read(line));
   } else {
     // This should only happen on timeout
     printf("File not found: %s", result_file);
+    t = "NaN";
+  }
+  if (t == "nan") {
+    printf("converting nan!");
     obj_result = "NaN";
+  } else {
+    obj_result = t;
   }
 }
