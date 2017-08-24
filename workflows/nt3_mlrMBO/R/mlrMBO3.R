@@ -100,6 +100,7 @@ obj.fun = makeSingleObjectiveFunction(
 l$param.set.file <- NULL
 
 final_res <- do.call(main_function,l)
+print("mlrMBO algorithm done!")
 OUT_put("DONE")
 
 turbine_output <- Sys.getenv("TURBINE_OUTPUT")
