@@ -143,7 +143,7 @@ source_site()
     echo "warning: no file: $FILE"
     return 0
   fi
-
+  echo sourcing $FILE
   source $FILE
 }
 

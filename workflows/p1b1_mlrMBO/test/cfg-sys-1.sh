@@ -8,12 +8,12 @@ export PROCS=${PROCS:-4}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-4}
+export PPN=${PPN:-1}
 
-export QUEUE=${QUEUE:-debug-flat-quad}
-export WALLTIME=${WALLTIME:-00:03:00}
+#export QUEUE=${QUEUE:-debug-flat-quad}
+export WALLTIME=${WALLTIME:-00:33:00}
 
-export PROJECT=Candle_ECP
+#export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
