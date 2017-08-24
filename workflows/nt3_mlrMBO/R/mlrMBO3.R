@@ -36,8 +36,8 @@ parallelMap2 <- function(fun, ...,
     res <- string_to_list_of_vectors(string_results)
     # using dummy time
     return(result_with_extras_if_exist(res,st[3]))
-  } 
-  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc. 
+  }
+  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc.
   else{
     return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
        level = level, show.info = show.info))
