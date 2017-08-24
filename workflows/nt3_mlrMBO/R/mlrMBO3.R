@@ -18,15 +18,13 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
-  if (deparse(substitute(fun)) == "proposePointsByInfillOptimization"){
-    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
-       level = level, show.info = show.info))
-  }
-  else{
+ #For wrapFun do this: initdesign
+  if (deparse(substitute(fun)) == "wrapFun"){
     dots <- list(...)
     string_params <- elements_of_lists_to_json(dots[[1L]])
-    #     print(paste0("parallelMap2 called with list_param: ",string_params))
-    print(paste("parallelMap2 called with list size:", length(string_params)))
+    # print(dots)
+    # print(paste0("parallelMap2 called with list_param: ",string_params))
+    # print(paste("parallelMap2 called with list size:", length(string_params)))
     OUT_put(string_params)
     string_results = IN_get()
 
@@ -38,6 +36,11 @@ parallelMap2 <- function(fun, ...,
     res <- string_to_list_of_vectors(string_results)
     # using dummy time
     return(result_with_extras_if_exist(res,st[3]))
+  } 
+  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc. 
+  else{
+    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
+       level = level, show.info = show.info))
   }
 }
 
