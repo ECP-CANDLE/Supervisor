@@ -18,6 +18,22 @@ log_path()
   eval echo \$$1 | tr : '\n' | nl
 }
 
+python_envs()
+# Expands to the 'swift-t -e' environment arguments for Python
+# Properly handles cases where PYTHONPATH or PYTHONHOME are unset
+{
+  RESULT=()
+  if [[ $PYTHONPATH != "" ]]
+  then
+    RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+  fi
+  if [[ $PYTHONHOME != "" ]]
+  then
+    RESULT+=( -e PYTHONHOME=$PYTHONHOME )
+  fi
+  echo ${RESULT[@]}
+}
+
 get_site()
 # Get site name (Titan, Theta, Cori, etc.)
 {
@@ -148,6 +164,28 @@ source_site()
 }
 
 queue_wait()
+# Autodetect TURBINE_OUTPUT and do a queue_wait_site()
+# Assumes MACHINE and SITE are globals
+{
+  if (( ${#} != 0 ))
+  then
+    echo "queue_wait(): Should have no arguments!"
+    return 1
+  fi
+
+  if [[ ${MACHINE:-} == "" ]]
+  then
+    # Local execution
+    return
+  fi
+
+  # Scheduled execution
+  TURBINE_OUTPUT=$( cat turbine-directory.txt )
+  JOBID=$( cat $TURBINE_OUTPUT/jobid.txt )
+  queue_wait $SITE $JOBID
+}
+
+queue_wait_site()
 # Wait for given JOBID using queue tools for given SITE
 {
   if (( ${#} != 2 ))
