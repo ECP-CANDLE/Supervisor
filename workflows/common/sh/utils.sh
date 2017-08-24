@@ -173,16 +173,20 @@ queue_wait()
     return 1
   fi
 
+  source_site sched $SITE
+
   if [[ ${MACHINE:-} == "" ]]
   then
     # Local execution
+    TURBINE_OUTPUT=$PWD
+    JOBID=NONE
     return
   fi
 
   # Scheduled execution
   TURBINE_OUTPUT=$( cat turbine-directory.txt )
   JOBID=$( cat $TURBINE_OUTPUT/jobid.txt )
-  queue_wait $SITE $JOBID
+  queue_wait_site $SITE $JOBID
 }
 
 queue_wait_site()
