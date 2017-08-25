@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# NT3 TEST 1
+# P1B1 TEST 1
 
 if (( ${#} != 1 ))
 then

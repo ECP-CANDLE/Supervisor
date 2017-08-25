@@ -12,7 +12,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=9
+TIMEOUT_ARG_INDEX=10
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -49,20 +49,14 @@ exp_id=$6
 run_id=$7
 benchmark_timeout=$8
 
-
-export PYTHONHOME="/usr/bin/"
-PYTHON="$PYTHONHOME/bin/python2.7"
-export LD_LIBRARY_PATH="$PYTHONHOME/lib"
-export PATH="$PYTHONHOME/bin:$PATH"
-
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot1/P1B1
-COMMON_DIR=$emews_root/../common/python
-PYTHONPATH="$PYTHONHOME/lib/python2.7:"
-PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
-PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
-export PYTHONPATH
+# get the site and source lang-app-{SITE} from workflow/common/sh folder
+WORKFLOWS_ROOT=$emews_root/..
+SITE=$9
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+source_site langs-app $SITE
 
 arg_array=("$emews_root/python/p1b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+echo ${arg_array[@]}
 MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is
