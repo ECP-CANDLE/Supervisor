@@ -22,6 +22,7 @@ file model_script = input(argv("script_file"));
 file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string site = argv("site");
 
 string FRAMEWORK = "keras";
 
@@ -33,10 +34,10 @@ string FRAMEWORK = "keras";
     string t_log = "%s/turbine.log" % turbine_output;
     if (file_exists(t_log)) {
       string sys_env = join(file_lines(input(t_log)), ", ");
-      (out, err) = run_log_start(log_script, ps, sys_env, algorithm) =>
+      (out, err) = run_log_start(log_script, ps, sys_env, algorithm, site) =>
       o = propagate();
     } else {
-      (out, err) = run_log_start(log_script, ps, "", algorithm) =>
+      (out, err) = run_log_start(log_script, ps, "", algorithm, site) =>
       o = propagate();
     }
 }
@@ -44,7 +45,7 @@ string FRAMEWORK = "keras";
 (void o) log_end() {
   file out <"%s/log_end_out.txt" % turbine_output>;
   file err <"%s/log_end_err.txt" % turbine_output>;
-  (out, err) = run_log_end(log_script) =>
+  (out, err) = run_log_end(log_script, site) =>
   o = propagate();
 }
 
@@ -87,7 +88,7 @@ string FRAMEWORK = "keras";
         foreach p, j in param_array
         {
           // printf(p);
-            results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j));
+            results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j), site);
         }
         string res = join(results, ";");
         // printf(res);
