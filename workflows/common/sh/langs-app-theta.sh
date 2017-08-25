@@ -9,8 +9,8 @@ PYTHON="$PYTHONHOME/bin/python"
 export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"
 
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot1/P1B1
-COMMON_DIR=$emews_root/../common/python
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH="$PYTHONHOME/lib/python2.7:"
 PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
 PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
