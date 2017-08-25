@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/bin/bash -l
 set -eu
 
 # NT3 WORKFLOW
@@ -11,7 +11,7 @@ echo "WORKFLOW: NT3"
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot3/P3B1
+BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot1/NT3
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script

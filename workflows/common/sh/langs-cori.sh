@@ -18,6 +18,8 @@ export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R
 
 # Swift/T
 export PATH=/global/homes/w/wozniak/Public/sfw/compute/swift-t-r/stc/bin:$PATH
+# On Cori, we have a good Swift/T Python embedded interpreter
+SWIFT_IMPL="py"
 
 # EMEWS Queues for R
 EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
