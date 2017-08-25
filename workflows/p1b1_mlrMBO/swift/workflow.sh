@@ -47,7 +47,7 @@ fi
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
-echo "Done here"
+
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
 CMD_LINE_ARGS=( -mb=$MAX_BUDGET
