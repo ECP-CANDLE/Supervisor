@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/bin/bash -l
 set -eu
 
 # NT3 WORKFLOW
