@@ -15,8 +15,8 @@ SITE=$1
 THIS=$( dirname $0 )
 
                                        # Status (? means unknown):
-$THIS/p1b1_mlrMBO/test/test-1.sh $SITE # Theta(RJ?)   Titan(RJ)  Cori(JW?)
-$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # Theta(?)     Titan(JW)  Cori(JW)
+$THIS/p1b1_mlrMBO/test/test-1.sh $SITE # Theta(RJ?)   Titan(RJ)  Cori(JW NOPE)
+$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # Theta(?)     Titan(JW)  Cori(JW 8/25)
 $THIS/nt3_mlrMBO/test/test-1.sh  $SITE # Theta(JW,PB) Titan(RJ?) Cori(JW)
 
 echo "test-all: SUCCESS"
