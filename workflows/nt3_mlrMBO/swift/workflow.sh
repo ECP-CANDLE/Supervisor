@@ -47,8 +47,9 @@ source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
-STR_RUN_MODEL=$SITE"_run_model.sh"
-STR_RUN_LOGGER=$SITE"_run_logger.sh"
+#Set PYTHONPATH for BENCHMARK related stuff
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/NT3:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/TC1
+PYTHONPATH+=":$BENCHMARK_DIR:"
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -57,11 +58,12 @@ CMD_LINE_ARGS=( -pp=$PROPOSE_POINTS
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
                 -param_set_file=$PARAM_SET_FILE
-                -script_file=$EMEWS_PROJECT_ROOT/scripts/$STR_RUN_MODEL
+                -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
-                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/$STR_RUN_LOGGER
+                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -site=$SITE
               )
 
 # Add any script variables that you want to log as
