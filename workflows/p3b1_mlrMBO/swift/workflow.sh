@@ -1,11 +1,13 @@
 #! /usr/bin/env bash
 set -eu
 
-# WORKFLOW
+# P3B1 WORKFLOW
 # Main entry point for P3B1 mlrMBO workflow
 # See README.md for more information
 
-# Autodetect the workflow directories
+echo "WORKFLOW: P3B1"
+
+# Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
@@ -15,6 +17,8 @@ SCRIPT_NAME=$(basename $0)
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+
+echo ${EMEWS_PROJECT_ROOT}
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
@@ -31,8 +35,6 @@ then
   exit 1
 fi
 
-echo $*
-
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
@@ -44,55 +46,45 @@ then
   exit 1
 fi
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
-
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
-# The Swift Implementation type: "app" or "py"
-# Selects the *.swift files to include
-# If "app", use app functions
-# If "py", use in-memory Python functions
-SWIFT_IMPL="py"
+#Set PYTHONPATH for BENCHMARK related stuff
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
+PYTHONPATH+=":$BENCHMARK_DIR:"
 
-SCRIPTS_TITAN=""
-if [[ ${SITE} == "titan" ]]
-then
-  SCRIPTS_TITAN=(
-    -script_file=$EMEWS_PROJECT_ROOT/scripts/titan_run_model.sh
-    -log_script=$WORKFLOWS_ROOT/common/sh/titan_run_logger.sh
-  )
-  # TODO:
-  SWIFT_IMPL="app"
-fi
+export TURBINE_JOBNAME="JOB:${EXPID}"
 
-CMD_LINE_ARGS=( $* # Extra user args
-                -exp_id=$EXPID
-                -pp=$PROPOSE_POINTS
-                -mi=$MAX_ITERATIONS
-                -mb=$MAX_BUDGET
+CMD_LINE_ARGS=( -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
+                -pp=$PROPOSE_POINTS
+                -it=$MAX_ITERATIONS
                 -param_set_file=$PARAM_SET_FILE
-                ${SCRIPTS_TITAN[@]}
+                -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                -model_name=$MODEL_NAME
+                -exp_id=$EXPID
+                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -site=$SITE
               )
 
 # Add any script variables that you want to log as
 # part of the experiment meta data to the USER_VARS array,
-# for example, USER_VARS=("VAR_1" "VAR_2")
-USER_VARS=($CMD_LINE_ARGS)
+# for example, USER_VARS=($CMD_LINE_ARGS "VAR_1" "VAR_2")
+USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
-log_script $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME
+log_script
 
-set -x
+# echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
-swift-t -p $MACHINE \
+swift-t -n $PROCS \
+        $MACHINE  \
+        -p -I $EQR -r $EQR \
         -I $EMEWS_PROJECT_ROOT/swift \
-        -i log_$SWIFT_IMPL \
         -i obj_$SWIFT_IMPL \
-        -n $PROCS \
+        -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -I $EQR -r $EQR \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
@@ -103,3 +95,4 @@ swift-t -p $MACHINE \
         -e ADLB_DEBUG=$ADLB_DEBUG \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
+

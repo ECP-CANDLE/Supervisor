@@ -7,9 +7,6 @@ if (emews_root == "") {
 wd <- getwd()
 setwd(r_root)
 
-turbine_output <- Sys.getenv("TURBINE_OUTPUT")
-
-
 source("mlrMBO_utils.R")
 
 # EQ/R based parallel map
@@ -21,15 +18,14 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
-  if (deparse(substitute(fun)) == "proposePointsByInfillOptimization"){
-    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
-       level = level, show.info = show.info))
-  }
-  else{
+
+  #For wrapFun do this: initdesign
+  if (deparse(substitute(fun)) == "wrapFun"){
     dots <- list(...)
     string_params <- elements_of_lists_to_json(dots[[1L]])
+    # print(dots)
     # print(paste0("parallelMap2 called with list_param: ",string_params))
-    # print(paste0("parallelMap2 called with list of length: ", ???)
+    # print(paste("parallelMap2 called with list size:", length(string_params)))
     OUT_put(string_params)
     string_results = IN_get()
 
@@ -41,6 +37,11 @@ parallelMap2 <- function(fun, ...,
     res <- string_to_list_of_vectors(string_results)
     # using dummy time
     return(result_with_extras_if_exist(res,st[3]))
+  } 
+  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc. 
+  else{
+    return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
+       level = level, show.info = show.info))
   }
 }
 
@@ -61,21 +62,22 @@ simple.obj.fun = function(x){}
 
 main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
 
-  mlr.save.file <- paste0(turbine_output, "/mlr_run.RData")
 
-  surr.rf = makeLearner("regr.randomForest", predict.type = "se")
-  ctrl = makeMBOControl(n.objectives = 1, save.on.disk.at = c(1,2,3,4,5), save.file.path = mlr.save.file,
-       	 			     propose.points = min(20, propose.points),
-       	   			     impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
-  ctrl = setMBOControlInfill(ctrl, crit=makeMBOInfillCritCB(), interleave.random.points=max(0,propose.points-20))
-  ctrl = setMBOControlMultiPoint(ctrl, method = "cb")
+  surr.rf = makeLearner("regr.randomForest", predict.type = "se",
+                      fix.factors.prediction = TRUE,
+                      se.method = "bootstrap", se.boot = 2, se.ntree = 10)
+  ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
+            impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+  ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
+                                 opt.restarts = 1, opt.focussearch.points = 1000)
   ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
-  #ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
+  ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
 
-  # ctrl = setMBOControlInfill(ctrl, crit =makeMBOInfillCritCB(), opt.focussearch.points = 500)
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+  #  print(paste("design:", design))
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+
   return(res)
 }
 
