@@ -6,10 +6,8 @@ COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
 PYTHONHOME=$PY
 
+EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
 
-
-
-EQR=/home/jain/CANDLE/Supervisor/workflows/p1b1_mlrMBO/ext/EQ-R
 SWIFT_IMPL="app"
 
 # Log settings to output
