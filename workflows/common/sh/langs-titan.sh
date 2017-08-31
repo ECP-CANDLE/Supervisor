@@ -24,3 +24,5 @@ EQR=/lustre/atlas2/csc249/proj-shared/sfw/EQ-R
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
+log_path PYTHONPATH
