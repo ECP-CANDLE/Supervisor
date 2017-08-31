@@ -52,7 +52,7 @@ string FRAMEWORK = "keras";
 
 (void v) loop(location ME, int ME_rank) {
 
-    for (boolean b = true, int i = start_iteration;
+  for (boolean b = true, int i = start_iteration;
        b;
        b=c, i = i + 1)
   {
@@ -83,7 +83,6 @@ string FRAMEWORK = "keras";
     }
     else
     {
-
         string param_array[] = split(params, ";");
         string results[];
         foreach p, j in param_array
