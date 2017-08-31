@@ -39,7 +39,8 @@ python_envs()
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
   # Cannot use echo due to "-e" in RESULT
-  printf "${RESULT[@]}\n"
+  R=${RESULT[@]} # Suppress word splitting
+  printf -- "%s\n" $R
 }
 
 get_site()
