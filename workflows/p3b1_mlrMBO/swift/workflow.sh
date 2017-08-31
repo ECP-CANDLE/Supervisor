@@ -9,9 +9,9 @@ echo "WORKFLOW: P3B1"
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot3/P3B1
+export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot3/P3B1
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
