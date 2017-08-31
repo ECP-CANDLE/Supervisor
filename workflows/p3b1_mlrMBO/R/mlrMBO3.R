@@ -60,7 +60,7 @@ library(mlrMBO)
 # dummy objective function
 simple.obj.fun = function(x){}
 
-main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
+main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10, start.iteration=1){
 
 
   surr.rf = makeLearner("regr.randomForest", predict.type = "se",
