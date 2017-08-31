@@ -16,7 +16,7 @@
   wait (run_model(model_script, params, outdir, iter_indiv_id, site))
   {
     obj_result = get_results(result_file);
-      }
+  }
   printf("result(%s): %s", iter_indiv_id, obj_result);
 }
 
