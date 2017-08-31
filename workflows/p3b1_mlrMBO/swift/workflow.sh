@@ -83,7 +83,7 @@ log_script
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $EMEWS_PROJECT_ROOT/swift \
+        -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
         -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
