@@ -37,6 +37,15 @@ instance_directory=$3
 
 mkdir -p $instance_directory
 log_file=$instance_directory/run_model.log
+
+# Safety check on restarts: Do not modify an existing run_model.log
+if [ -f $log_file ]
+then
+  echo "Log file already exists: $log_file"
+  echo "Aborting!"
+  exit 1
+fi
+
 exec >> $log_file
 exec 2>&1
 cd $instance_directory
