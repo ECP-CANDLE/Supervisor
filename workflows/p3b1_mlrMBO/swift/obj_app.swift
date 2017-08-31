@@ -1,6 +1,8 @@
 
 // OBJ APP
 
+DEPRECATED!
+
 // (string obj_result) obj(string params, string iter_indiv_id) {
 //   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id) =>
 //   run_model(model_script, params, outdir, iter_indiv_id) =>
