@@ -18,12 +18,6 @@ SCRIPT_NAME=$(basename $0)
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
-echo ${EMEWS_PROJECT_ROOT}
-
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
-
 usage()
 {
   echo "P3B1: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
