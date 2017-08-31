@@ -2,6 +2,13 @@
 # SH UTILS
 # Misc. Bash shell functionality
 
+abort()
+# Shut it down
+{
+  echo "abort:" ${*}
+  exit 1
+}
+
 show()
 # Report variable names with their values
 {
@@ -51,6 +58,8 @@ get_expid()
 # If the user provides -a, this function will autogenerate
 #   a new EXPID under the experiments directory,
 #   which will be exported as TURBINE_OUTPUT
+# If EXP_SUFFIX is set in the environment, the resulting
+#   EXPID will have that suffix.
 {
   if (( ${#} < 1 ))
   then
@@ -61,12 +70,14 @@ get_expid()
   EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
 
   export EXPID=$1
+
   if [ $EXPID = "-a" ]
   then
     local i=0
+    # Exponential search for free number
     while (( 1 ))
     do
-      EXPID=$( printf "X%03i" $i )
+      EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
       if [[ -d $EXPERIMENTS/$EXPID ]]
       then
         i=$(( i + i*RANDOM/32767 + 1 ))
@@ -76,6 +87,7 @@ get_expid()
     done
     shift
   fi
+
   export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   check_directory_exists
 }

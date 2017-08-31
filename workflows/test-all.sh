@@ -17,9 +17,9 @@ THIS=$( dirname $0 )
 # Status:
 # Initial indicate who is working on it
 # ? means unknown
-# P1B1 Theta(RJ?)   Titan(RJ)  Cori(JW NOPE)
-# P3B1 Theta(?)     Titan(JW)  Cori(JW 8/25)
-# NT3  Theta(JW,PB) Titan(RJ?) Cori(JW 8/25)
+# P1B1 Theta(RJ?)   Titan(RJ)    Cori(JW NOPE)
+# P3B1 Theta(?)     Titan(JW,RJ) Cori(JW 8/25)
+# NT3  Theta(JW,PB) Titan(RJ?)   Cori(JW 8/25)
 
 $THIS/p1b1_mlrMBO/test/test-1.sh $SITE
 $THIS/p3b1_mlrMBO/test/test-1.sh $SITE

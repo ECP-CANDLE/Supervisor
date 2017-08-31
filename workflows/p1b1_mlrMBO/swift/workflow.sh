@@ -48,6 +48,10 @@ source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
+#Set PYTHONPATH for BENCHMARK related stuff
+BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
+PYTHONPATH+=":$BENCHMARK_DIR:"
+
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
 CMD_LINE_ARGS=( -mb=$MAX_BUDGET

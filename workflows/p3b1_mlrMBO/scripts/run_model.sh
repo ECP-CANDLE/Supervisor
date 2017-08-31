@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -eu
 
 # Check for an optional timeout threshold in seconds. If the duration of the
@@ -13,7 +12,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=8
+TIMEOUT_ARG_INDEX=10
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -25,9 +24,8 @@ if [ -n "$TIMEOUT" ]; then
   TIMEOUT_CMD="timeout $TIMEOUT"
 fi
 
-# param_string is the string containing the model parameters for a run.
-parameter_string="$1"
-echo $parameter_string
+
+parameter_string=$1
 
 # Set emews_root to the root directory of the project (i.e. the directory
 # that contains the scripts, swift, etc. directories and files)
@@ -39,34 +37,61 @@ instance_directory=$3
 
 mkdir -p $instance_directory
 log_file=$instance_directory/run_model.log
+
+# Safety check on restarts: Do not modify an existing run_model.log
+if [ -f $log_file ]
+then
+  echo "Log file already exists: $log_file"
+  echo "Aborting!"
+  exit 1
+fi
+
 exec >> $log_file
 exec 2>&1
 cd $instance_directory
 
+echo "run_model: PWD=$PWD"
+
+#model_name=$4
 framework=$4
 exp_id=$5
 run_id=$6
 benchmark_timeout=$7
 
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot3/P3B1
-COMMON_DIR=$emews_root/../common/python
-export PYTHONPATH="$BENCHMARK_DIR:$COMMON_DIR"
+# get the site and source lang-app-{SITE} from workflow/common/sh folder
+WORKFLOWS_ROOT=$emews_root/..
+SITE=$8
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+source_site langs-app $SITE
 
-arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework" "$exp_id" "$run_id" "$benchmark_timeout")
+
+#arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+
+arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+echo ${arg_array[@]}
 MODEL_CMD="python ${arg_array[@]}"
+
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
-echo $MODEL_CMD
+# echo $MODEL_CMD
+
+echo "python starting"
+
 $TIMEOUT_CMD python "${arg_array[@]}"
-# $? is the exit status of the most recently executed command (i.e the
-# line above)
+
+echo "python done."
+
 RES=$?
 if [ "$RES" -ne 0 ]; then
-	if [ "$RES" == 124 ]; then
+  if [ "$RES" == 124 ]; then
     echo "---> Timeout error in $MODEL_CMD"
+    exit 0 # This will trigger a NaN (the result file does not exist)
   else
-	   echo "---> Error in $MODEL_CMD"
+    echo "---> Error in $MODEL_CMD"
+    exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
+
+exit 0 # Success

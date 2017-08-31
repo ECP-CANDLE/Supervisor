@@ -32,6 +32,6 @@ queue_wait
 OUTPUT=$TURBINE_OUTPUT/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 SCRIPT=$( basename $0 .sh )
-check_output "val_loss: 16.1181" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"

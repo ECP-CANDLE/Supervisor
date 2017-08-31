@@ -14,9 +14,9 @@ string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int propose_points = toint(argv("pp", "10"));
+int propose_points = toint(argv("pp", "3"));
 int max_budget = toint(argv("mb", "110"));
-int max_iterations = toint(argv("mi", "10"));
+int max_iterations = toint(argv("mi", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
@@ -24,8 +24,32 @@ file model_script = input(argv("script_file"));
 file log_script = input(argv("log_script"));
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string site = argv("site");
 
 string FRAMEWORK = "keras";
+
+(void o) log_start(string algorithm) {
+    file out <"%s/log_start_out.txt" % turbine_output>;
+    file err <"%s/log_start_err.txt" % turbine_output>;
+
+    string ps = join(file_lines(input(param_set)), " ");
+    string t_log = "%s/turbine.log" % turbine_output;
+    if (file_exists(t_log)) {
+      string sys_env = join(file_lines(input(t_log)), ", ");
+      (out, err) = run_log_start(log_script, ps, sys_env, algorithm, site) =>
+      o = propagate();
+    } else {
+      (out, err) = run_log_start(log_script, ps, "", algorithm, site) =>
+      o = propagate();
+    }
+}
+
+(void o) log_end() {
+  file out <"%s/log_end_out.txt" % turbine_output>;
+  file err <"%s/log_end_err.txt" % turbine_output>;
+  (out, err) = run_log_end(log_script, site) =>
+  o = propagate();
+}
 
 (void v) loop(location ME, int ME_rank) {
 
@@ -65,12 +89,12 @@ string FRAMEWORK = "keras";
         string results[];
         foreach p, j in param_array
         {
-            // The results directories are labeled with i=iteration, t=task
-            results[j] = obj(p, "i%03i-t%03i" % (i,j));
+          // printf(p);
+            results[j] = obj(p, "i%03i-t%03i" % (i,j), site);
+          // results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j), site);
         }
         string res = join(results, ";");
         // printf(res);
-        res => printf("All results received.");
         EQR_put(ME, res) => c = true;
     }
   }
