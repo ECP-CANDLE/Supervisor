@@ -90,7 +90,7 @@ log_script
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
-        $MACHINE  \
+        ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $EMEWS_PROJECT_ROOT/swift \
         -i obj_$SWIFT_IMPL \
