@@ -30,11 +30,11 @@ python_envs()
 # Properly handles cases where PYTHONPATH or PYTHONHOME are unset
 {
   RESULT=()
-  if [[ $PYTHONPATH != "" ]]
+  if [[ ${PYTHONPATH:-} != "" ]]
   then
     RESULT+=( -e PYTHONPATH=$PYTHONPATH )
   fi
-  if [[ $PYTHONHOME != "" ]]
+  if [[ ${PYTHONHOME:-} != "" ]]
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
