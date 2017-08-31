@@ -38,7 +38,8 @@ python_envs()
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
-  echo ${RESULT[@]}
+  # Cannot use echo due to "-e" in RESULT
+  printf "${RESULT[@]}\n"
 }
 
 get_site()
