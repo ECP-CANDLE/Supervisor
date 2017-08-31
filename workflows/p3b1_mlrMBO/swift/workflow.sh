@@ -40,6 +40,9 @@ then
   exit 1
 fi
 
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
@@ -48,10 +51,6 @@ if [[ ${EQR:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
 fi
-
-#Set PYTHONPATH for BENCHMARK related stuff
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
-PYTHONPATH+=":$BENCHMARK_DIR:"
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
