@@ -56,9 +56,15 @@ PYTHONPATH+=":$BENCHMARK_DIR:"
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
+# START ITERATION HACK
+# Uncomment the non-empty START and set the number to use a start iteration
+START=""
+# START=-start=1
+
 CMD_LINE_ARGS=( -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
+                $START
                 -it=$MAX_ITERATIONS
                 -param_set_file=$PARAM_SET_FILE
                 -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
