@@ -14,6 +14,7 @@ string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
 int max_budget = toint(argv("mb", "110"));
+int start_iteration = toint(argv("start", "1"));
 int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
@@ -51,7 +52,7 @@ string FRAMEWORK = "keras";
 
 (void v) loop(location ME, int ME_rank) {
 
-    for (boolean b = true, int i = 1;
+    for (boolean b = true, int i = start_iteration;
        b;
        b=c, i = i + 1)
   {
@@ -99,7 +100,7 @@ string FRAMEWORK = "keras";
 
 string algo_params_template =
 """
-max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
+max.budget = %d, start.iteration = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -114,7 +115,8 @@ max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.s
     // Retrieve arguments to this script here
 
     string algo_params = algo_params_template %
-      (max_budget, max_iterations, design_size, propose_points, param_set);
+      (max_budget, start_iteration, max_iterations,
+       design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
