@@ -28,11 +28,11 @@ string site = argv("site");
 string FRAMEWORK = "keras";
 
 (void o) log_start(string algorithm) {
-    file out <"%s/log_start_out.txt" % turbine_output>;
-    file err <"%s/log_start_err.txt" % turbine_output>;
+    file out<turbine_output/"log_start_out.txt">;
+    file err<turbine_output/"log_start_err.txt">;
 
     string ps = join(file_lines(input(param_set)), " ");
-    string t_log = "%s/turbine.log" % turbine_output;
+    string t_log = turbine_output/"turbine.log";
     if (file_exists(t_log)) {
       string sys_env = join(file_lines(input(t_log)), ", ");
       (out, err) = run_log_start(log_script, ps, sys_env, algorithm, site) =>
