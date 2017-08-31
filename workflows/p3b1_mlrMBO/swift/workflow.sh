@@ -82,7 +82,6 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # echo's anything following this to standard out
-WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -92,12 +91,8 @@ swift-t -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-        -e PYTHONPATH=$PYTHONPATH \
-        -e PYTHONHOME=$PYTHONHOME \
-        -e TURBINE_LOG=$TURBINE_LOG \
-        -e TURBINE_DEBUG=$TURBINE_DEBUG\
-        -e ADLB_DEBUG=$ADLB_DEBUG \
+        -e BENCHMARKS_ROOT \
+        -e EMEWS_PROJECT_ROOT \
+        $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
-
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
