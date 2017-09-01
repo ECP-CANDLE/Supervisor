@@ -30,7 +30,7 @@ printf("restart %s", restart);
 
 if (restart_file != "DISABLED") {
   assert(restart_number != "1",
-         "If you are restarting, you must increment restart_number!"));
+         "If you are restarting, you must increment restart_number!");
 }
 
 string FRAMEWORK = "keras";
