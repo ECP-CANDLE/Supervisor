@@ -37,8 +37,8 @@ parallelMap2 <- function(fun, ...,
     res <- string_to_list_of_vectors(string_results)
     # using dummy time
     return(result_with_extras_if_exist(res,st[3]))
-  } 
-  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc. 
+  }
+  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc.
   else{
     return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
        level = level, show.info = show.info))
@@ -60,7 +60,72 @@ library(mlrMBO)
 # dummy objective function
 simple.obj.fun = function(x){}
 
-main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10, start.iteration=1){
+# PRASANNA OBJECTIVE FUNCTION START
+fun = function(x) {
+  res = 0
+  print(paste(x,sep=",",collapse=";"))
+  r = x$batch_size
+  i = x$drop
+  res<-r*i
+  #if (runif(1) > 1.1)
+  #  res <- NaN
+  #print(res)
+  return(res)
+}
+objfun = makeSingleObjectiveFunction(
+  name = "mixed_integer",
+  fn = fun,
+  par.set = makeParamSet(
+    makeDiscreteParam("batch_size", values = c(16, 32, 64, 128, 256, 512)),
+    makeIntegerParam("epochs", lower = 10, upper = 30),
+    makeDiscreteParam("activation", values = c("softmax","elu","softplus","softsign",
+                                               "relu", "tanh","sigmoid","hard_sigmoid",
+                                               "linear" )),
+    makeDiscreteParam("dense", values = c("500 100 50", "1000 500 100 50",
+                                          "2000 1000 500 100 50")),
+    makeDiscreteParam("optimizer", values = c("adam", "sgd", "rmsprop","adagrad",
+                                              "adadelta","adamax","nadam")),
+    makeNumericParam("drop", lower = 0, upper = 0.5),
+    makeDiscreteParam("conv", values = c("50 50 50 50 50 1", "25 25 25 25 25 1",
+                                         "10 10 1 5 5 1", "32 20 16 32 10 1"))
+  ),
+  has.simple.signature = FALSE,
+  minimize = TRUE
+)
+# PRASANNA OBJECTIVE FUNCTION END
+
+main_function <- function(max.budget = 110, max.iterations = 10,
+                          design.size=10, propose.points=10,
+                          restart="DISABLED") {
+chkpntResults<-NULL
+if (file.exists(restart)) {
+  print(paste("Loading restart:", restart))
+  nk<-100
+  dummydf<-generateDesign(n = nk, par.set = getParamSet(objfun))
+  pids <- names(dummydf)
+  dummydf<-cbind("y"=1.0,dummydf)
+
+  #rename first column and reorder
+  res<-read.csv(restart)
+  cnames<-names(res)
+  cnames[1]<-"y"
+  names(res)<-cnames
+  print("ok1")
+  print(names(res))
+  print("d")
+  print(names(dummydf))
+  res<-subset(res, select=names(dummydf))
+  print("ok2")
+  res<-rbind(dummydf,res)
+  res<-res[-c(1:nk),] # remove the dummy
+  rownames(res)<-NULL
+  chkpntResults<-res
+} else if (restart == "DISABLED") {
+  print("Not a restart.")
+} else {
+  print(paste0("Restart file not found: '", restart,"'"))
+  quit()
+}
 
 
   surr.rf = makeLearner("regr.randomForest", predict.type = "se",
@@ -70,13 +135,26 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
             impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
   ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
                                  opt.restarts = 1, opt.focussearch.points = 1000)
-  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
-  ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
+  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
 
-  design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+  if (is.null(chkpntResults)){
+  #      design = generateDesign(n = 60, par.set = getParamSet(objfun))
+     # design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+
+     print("assigning from dummy")
+    design = generateDesign(n = 60, par.set = getParamSet(objfun))
+  } else {
+     # Generate design from restarts
+     print("assigning from restart")
+     design = chkpntResults
+  }
+  #   print(design)
+
+
+  # FROM BEFORE RESTARTS: design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
   #  print(paste("design:", design))
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
-  res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+  res = mbo(objfun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
 
   return(res)
 }
@@ -86,17 +164,19 @@ OUT_put("Params")
 # accepts arguments to main_function, e.g., "pp = 2, it = 5"
 res <- IN_get()
 
+print(paste0("Params from Swift:", res))
+
 l <- eval(parse(text = paste0("list(",res,")")))
-source(l$param.set.file)
+# print(l)
+# source(l$param.set.file)
 
 # dummy objective function, only par.set is used
 # and param.set is sourced from param.set.file
-obj.fun = makeSingleObjectiveFunction(
-  name = "hyperparameter search",
-  fn = simple.obj.fun,
-  par.set = param.set
-)
-
+# obj.fun = makeSingleObjectiveFunction(
+#   name = "hyperparameter search",
+#   fn = simple.obj.fun,
+#   par.set = param.set
+# )
 
 # remove this as its not an arg to the function
 l$param.set.file <- NULL
