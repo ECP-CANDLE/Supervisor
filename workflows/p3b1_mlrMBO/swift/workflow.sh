@@ -59,10 +59,17 @@ export TURBINE_JOBNAME="JOB:${EXPID}"
 START=""
 # START=-start=1
 
-RESTART_ARG=""
-if [[ ${RESTART:-} != "" ]]
+
+RESTART_F_ARG=""
+if [[ ${RESTART_FILE:-} != "" ]]
 then
-  RESTART_ARG="--restart=$RESTART"
+  RESTART_F_ARG="--restart_file=$RESTART_FILE"
+fi
+
+RESTART_N_ARG=""
+if [[ ${RESTART_NUMBER:-} != "" ]]
+then
+  RESTART_N_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
 CMD_LINE_ARGS=( -mb=$MAX_BUDGET
@@ -77,7 +84,8 @@ CMD_LINE_ARGS=( -mb=$MAX_BUDGET
                 -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
-                $RESTART_ARG
+                $RESTART_F_ARG
+                $RESTART_N_ARG
               )
 
 # Add any script variables that you want to log as

@@ -26,7 +26,6 @@ string restart_file = argv("restart_file", "DISABLED");
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
-printf("restart %s", restart);
 
 if (restart_file != "DISABLED") {
   assert(restart_number != "1",
@@ -89,7 +88,7 @@ max.iterations = %d,
 design.size=%d,
 propose.points=%d,
 param.set.file='%s',
-restart = '%s'
+restart_file = '%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -105,7 +104,7 @@ restart = '%s'
 
     string algo_params = algo_params_template %
       (max_budget, start_iteration, max_iterations,
-       design_size, propose_points, param_set, restart);
+       design_size, propose_points, param_set, restart_file);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>
