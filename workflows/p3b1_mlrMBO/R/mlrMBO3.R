@@ -70,8 +70,7 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
             impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
   ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
                                  opt.restarts = 1, opt.focussearch.points = 1000)
-  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
-  ctrl = setMBOControlTermination(ctrl, iters = max.iterations)
+  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
 
   design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
   #  print(paste("design:", design))
