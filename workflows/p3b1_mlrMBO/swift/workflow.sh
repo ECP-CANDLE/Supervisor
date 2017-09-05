@@ -54,38 +54,31 @@ fi
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-# START ITERATION HACK
-# Uncomment the non-empty START and set the number to use a start iteration
-START=""
-# START=-start=1
-
-
-RESTART_F_ARG=""
+RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
 then
-  RESTART_F_ARG="--restart_file=$RESTART_FILE"
+  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
 fi
 
-RESTART_N_ARG=""
+RESTART_NUMBER_ARG=""
 if [[ ${RESTART_NUMBER:-} != "" ]]
 then
-  RESTART_N_ARG="--restart_number=$RESTART_NUMBER"
+  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
-CMD_LINE_ARGS=( -mb=$MAX_BUDGET
+CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
+                -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
-                $START
                 -it=$MAX_ITERATIONS
-                -param_set_file=$PARAM_SET_FILE
-                -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
-                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
+                -log_runner=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
-                $RESTART_F_ARG
-                $RESTART_N_ARG
+                $RESTART_FILE_ARG
+                $RESTART_NUMBER_ARG
               )
 
 # Add any script variables that you want to log as

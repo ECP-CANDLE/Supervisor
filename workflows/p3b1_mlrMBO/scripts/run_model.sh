@@ -1,29 +1,16 @@
 #!/bin/bash
 set -eu
 
-# Check for an optional timeout threshold in seconds. If the duration of the
-# model run as executed below, takes longer that this threshhold
-# then the run will be aborted. Note that the "timeout" command
-# must be supported by executing OS.
+# P3B1 RUN MODEL SH
 
-# The timeout argument is optional. By default the "run_model" swift
-# app fuction sends 3 arguments, and no timeout value is set. If there
-# is a 4th (the TIMEOUT_ARG_INDEX) argument, we use that as the timeout value.
 
-# !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
-# CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=10
-TIMEOUT=""
-if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
-then
-	TIMEOUT=${!TIMEOUT_ARG_INDEX}
-fi
+# TIMEOUTS
 
-TIMEOUT_CMD=""
-if [ -n "$TIMEOUT" ]; then
-  TIMEOUT_CMD="timeout $TIMEOUT"
-fi
-
+# The timeout feature is optional. If the given timeout is negative,
+# there is no timeout, otherwise the timeout program is used.  If the
+# duration of the model run as executed below, takes longer that this
+# threshhold then the run will be aborted. Note that the "timeout"
+# command must be supported by executing OS.
 
 parameter_string=$1
 
@@ -52,22 +39,36 @@ cd $instance_directory
 
 echo "run_model: PWD=$PWD"
 
-#model_name=$4
-framework=$4
-exp_id=$5
-run_id=$6
-benchmark_timeout=$7
+model_name=$4
+framework=$5
+exp_id=$6
+run_id=$7
+benchmark_timeout=$8
 
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
 WORKFLOWS_ROOT=$emews_root/..
-SITE=$8
+SITE=$9
+
+TIMEOUT=$10
+if (( $TIMEOUT >= 0 ))
+then
+  TIMEOUT_CMD="timeout $TIMEOUT"
+else
+  TIMEOUT_CMD=""
+fi
+
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
-
 #arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
 
-arg_array=("$emews_root/python/p3b1_runner.py" "$parameter_string" "$instance_directory" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+arg_array=( "$emews_root/python/p3b1_runner.py"
+            "$parameter_string"
+            "$instance_directory"
+            "$model_name"
+            "$framework"
+            "$exp_id" "$run_id"
+            "$benchmark_timeout")
 echo ${arg_array[@]}
 MODEL_CMD="python ${arg_array[@]}"
 
@@ -77,7 +78,7 @@ MODEL_CMD="python ${arg_array[@]}"
 set +e
 # echo $MODEL_CMD
 
-echo "python starting"
+echo "running python with arguments: ${arg_array[@]}"
 
 $TIMEOUT_CMD python "${arg_array[@]}"
 

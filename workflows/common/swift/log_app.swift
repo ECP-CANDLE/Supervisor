@@ -9,10 +9,10 @@
     string t_log = turbine_output/"turbine.log";
     if (file_exists(t_log)) {
       string sys_env = join(file_lines(input(t_log)), ", ");
-      (out, err) = run_log_start(log_script, ps, sys_env, algorithm, site) =>
+      (out, err) = run_log_start(log_runner, ps, sys_env, algorithm, site) =>
       o = propagate();
     } else {
-      (out, err) = run_log_start(log_script, ps, "", algorithm, site) =>
+      (out, err) = run_log_start(log_runner, ps, "", algorithm, site) =>
       o = propagate();
     }
 }
@@ -20,7 +20,7 @@
 (void o) log_end() {
   file out <"%s/log_end_out.txt" % turbine_output>;
   file err <"%s/log_end_err.txt" % turbine_output>;
-  (out, err) = run_log_end(log_script, site) =>
+  (out, err) = run_log_end(log_runner, site) =>
   o = propagate();
 }
 

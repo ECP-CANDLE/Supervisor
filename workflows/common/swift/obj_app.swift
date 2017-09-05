@@ -11,18 +11,22 @@
 
 (string obj_result) obj(string params, string iter_indiv_id, string site) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  printf("run model: %s", outdir);
+  printf("running model shell script in: %s", outdir);
   string result_file = outdir/"result.txt";
-  wait (run_model(model_script, params, outdir, iter_indiv_id, site))
+  wait (run_model(model_sh, params, outdir, iter_indiv_id, site))
   {
     obj_result = get_results(result_file);
   }
   printf("result(%s): %s", iter_indiv_id, obj_result);
 }
 
-app (void o) run_model (file shfile, string params_string, string instance, string run_id, string site)
+app (void o) run_model (string model_sh, string params_string,
+                        string instance, string run_id, string site)
 {
-    "bash" shfile params_string emews_root instance model_name FRAMEWORK exp_id run_id benchmark_timeout site;
+  //                      1           2         3         4
+    "bash" model_sh params_string emews_root instance model_name
+      //       5        6     7             8         9    10
+       FRAMEWORK exp_id run_id benchmark_timeout site "-1";
 }
 
 (string obj_result) get_results(string result_file) {

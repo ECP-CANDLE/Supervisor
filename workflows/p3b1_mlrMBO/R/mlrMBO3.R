@@ -1,3 +1,6 @@
+
+# mlrMBO EMEWS Algorithm Wrapper
+
 emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
 if (emews_root == "") {
   r_root <- getwd()
@@ -60,9 +63,12 @@ library(mlrMBO)
 # dummy objective function
 simple.obj.fun = function(x){}
 
-main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10, start.iteration=1){
-  
-  
+main_function <- function(max.budget = 110,
+                          max.iterations = 10,
+                          design.size=10,
+                          propose.points=10,
+                          restart.file) {
+
   surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                         fix.factors.prediction = TRUE,
                         se.method = "bootstrap", se.boot = 2, se.ntree = 10)
@@ -73,24 +79,37 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
 
   chkpntResults<-NULL
-  restartFile<-"restart.csv"
-  if (file.exists(restartFile)) {
+  # TODO: Make this an argument
+  restartFile<-restart.file # "restart.csv"
+  if (file.exists(restart.file)) {
+    print(paste("Loading restart:", restart.file))
+
     nk<-100
-    dummydf<-generateDesign(n = nk, par.set = getParamSet(obj.fun))
+    dummydf<-generateDesign(n = nk, par.set = getParamSet(objfun))
     pids <- names(dummydf)
     dummydf<-cbind("y"=1.0,dummydf)
-    
-    #rename first column and reorder 
-    res<-read.csv(restartFile)
+
+    #rename first column and reorder
+    res<-read.csv(restart.file)
     cnames<-names(res)
     cnames[1]<-"y"
     names(res)<-cnames
-    #TODO: check for same R file for restart
+    print("ok1")
+    print(names(res))
+    print("d")
+    print(names(dummydf))
     res<-subset(res, select=names(dummydf))
+    print("ok2")
     res<-rbind(dummydf,res)
     res<-res[-c(1:nk),] # remove the dummy
     rownames(res)<-NULL
     chkpntResults<-res
+  } else if (restart.file == "DISABLED") {
+    print("Not a restart.")
+  } else {
+    print(paste0("Restart file not found: '", restart.file, "'"))
+    print("Aborting!")
+    quit()
   }
 
   if (is.null(chkpntResults)){
@@ -101,16 +120,18 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   #  print(paste("design:", design))
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
-  
+
   return(res)
 }
 
 # ask for parameters from queue
 OUT_put("Params")
-# accepts arguments to main_function, e.g., "pp = 2, it = 5"
-res <- IN_get()
+# accepts arguments to main_function,
+# e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
+message <- IN_get()
+print(paste("Received params message: ", message))
 
-l <- eval(parse(text = paste0("list(",res,")")))
+l <- eval(parse(text = paste0("list(",message,")")))
 source(l$param.set.file)
 
 # dummy objective function, only par.set is used
@@ -121,8 +142,7 @@ obj.fun = makeSingleObjectiveFunction(
   par.set = param.set
 )
 
-
-# remove this as its not an arg to the function
+# Remove param set file: It is not an argument to the objective function
 l$param.set.file <- NULL
 
 final_res <- do.call(main_function,l)

@@ -18,14 +18,15 @@ int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-file model_script = input(argv("script_file"));
-file log_script = input(argv("log_script"));
+string model_sh = argv("model_sh");
+file log_runner = input(argv("log_runner"));
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
+printf("model_sh: %s", model_sh);
 
 if (restart_file != "DISABLED") {
   assert(restart_number != "1",
@@ -81,14 +82,16 @@ string FRAMEWORK = "keras";
   }
 }
 
+// These must agree with the arguments to the objective function in mlrMBO.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
 string algo_params_template =
 """
+param.set.file='%s',
 max.budget = %d,
 max.iterations = %d,
 design.size=%d,
 propose.points=%d,
-param.set.file='%s',
-restart_file = '%s'
+restart.file = '%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -103,8 +106,8 @@ restart_file = '%s'
     // Retrieve arguments to this script here
 
     string algo_params = algo_params_template %
-      (max_budget, start_iteration, max_iterations,
-       design_size, propose_points, param_set, restart_file);
+      (param_set, max_budget, max_iterations,
+       design_size, propose_points, restart_file);
     string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
     log_start(algorithm) =>
     EQR_init_script(ME, algorithm) =>

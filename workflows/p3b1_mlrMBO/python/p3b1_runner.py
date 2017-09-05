@@ -1,3 +1,6 @@
+
+# P3B1 RUNNER
+
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
 # so we need to create a synthetic argv.
 import sys
@@ -74,18 +77,36 @@ if __name__ == '__main__':
     logger = get_logger()
     logger.debug("RUN START")
 
-    param_string = sys.argv[1]
-    instance_directory = sys.argv[2]
-    framework = sys.argv[3]
-    exp_id = sys.argv[4]
-    run_id = sys.argv[5]
-    benchmark_timeout = int(sys.argv[6])
+    # param_string, # = sys.argv[1]
+    # instance_directory = sys.argv[2]
+    # model_name =
+    # framework = sys.argv[3]
+    # exp_id = sys.argv[4]
+    # run_id = sys.argv[5]
+    # benchmark_timeout = int(sys.argv[6])
+
+    print("argv: ", sys.argv)
+
+    ( _ ,
+      param_string,
+      instance_directory,
+      model_name,
+      framework,
+      exp_id,
+      run_id,
+      benchmark_timeout) = sys.argv
+
+    print("model_name: " + model_name)
+
+    benchmark_timeout = int(benchmark_timeout)
+
 
     logger.debug("RUN INIT START")
 
     hyper_parameter_map = runner_utils.init(param_string, instance_directory,
                                             framework, 'save_path')
     logger.debug("RUN INIT STOP")
+    hyper_parameter_map['model_name'] = model_name
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id
     hyper_parameter_map['timeout'] = benchmark_timeout
