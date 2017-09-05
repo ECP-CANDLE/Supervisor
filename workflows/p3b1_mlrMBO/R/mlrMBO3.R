@@ -18,7 +18,7 @@ parallelMap2 <- function(fun, ...,
                          level = NA_character_,
                          show.info = NA){
   st = proc.time()
-  
+
   #For wrapFun do this: initdesign
   if (deparse(substitute(fun)) == "wrapFun"){
     dots <- list(...)
@@ -28,17 +28,17 @@ parallelMap2 <- function(fun, ...,
     # print(paste("parallelMap2 called with list size:", length(string_params)))
     OUT_put(string_params)
     string_results = IN_get()
-    
+
     st = proc.time() - st
-    
+
     # Assumes results are in the form a;b;c
     # Note: can also handle vector returns for each,
     # i.e., a,b;c,d;e,f
     res <- string_to_list_of_vectors(string_results)
     # using dummy time
     return(result_with_extras_if_exist(res,st[3]))
-  } 
-  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc. 
+  }
+  # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc.
   else{
     return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
               level = level, show.info = show.info))
@@ -71,7 +71,7 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
   ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
                              opt.restarts = 1, opt.focussearch.points = 1000)
   ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
-  
+
   chkpntResults<-NULL
   restartFile<-"restart.csv"
   if (file.exists(restartFile)) {
@@ -92,7 +92,7 @@ main_function <- function(max.budget = 110, max.iterations = 10, design.size=10,
     rownames(res)<-NULL
     chkpntResults<-res
   }
-  
+
   if (is.null(chkpntResults)){
     design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
   } else {
