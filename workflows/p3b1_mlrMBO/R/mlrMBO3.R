@@ -85,7 +85,7 @@ main_function <- function(max.budget = 110,
     print(paste("Loading restart:", restart.file))
 
     nk<-100
-    dummydf<-generateDesign(n = nk, par.set = getParamSet(objfun))
+    dummydf<-generateDesign(n = nk, par.set = getParamSet(obj.fun))
     pids <- names(dummydf)
     dummydf<-cbind("y"=1.0,dummydf)
 
