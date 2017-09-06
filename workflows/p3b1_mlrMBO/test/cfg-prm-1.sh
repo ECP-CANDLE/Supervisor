@@ -1,7 +1,6 @@
 
 # CFG PRM 1
 # Configuration of parameters: 1
-# Original settings from monolithic workflow shell script
 
 # mlrMBO settings
 # How many to runs evaluate per iteration
