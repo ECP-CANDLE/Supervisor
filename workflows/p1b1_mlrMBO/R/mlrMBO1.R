@@ -51,7 +51,7 @@ require(jsonlite)
 pm <- parallelMap
 
 unlockBinding("parallelMap", as.environment("package:parallelMap"))
-assignInNamespace("parallelMap", parallelMap2, ns="parallelMap", envir=as.environment("package:parallelMap"))
+assignInNamespace("parallelMap", parallelMap2, n=s"parallelMap", envir=as.environment("package:parallelMap"))
 assign("parallelMap", parallelMap2, as.environment("package:parallelMap"))
 lockBinding("parallelMap", as.environment("package:parallelMap"))
 
@@ -63,9 +63,11 @@ simple.obj.fun = function(x){}
 main_function <- function(max.budget = 110, max.iterations = 10, design.size=10, propose.points=10){
 
 
-  surr.rf = makeLearner("regr.randomForest", predict.type = "se",
+  surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+                      ntree = 500, #1000, 3000
+                      mtry = 6, #8, 10
                       fix.factors.prediction = TRUE,
-                      se.method = "bootstrap", se.boot = 2, se.ntree = 10)
+                      se.method = "bootstrap", se.boot = 50, se.ntree = 100)
   ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
             impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
   ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
