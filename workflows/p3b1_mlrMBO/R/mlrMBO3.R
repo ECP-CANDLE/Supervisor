@@ -124,15 +124,26 @@ main_function <- function(max.budget = 110,
   return(res)
 }
 
-# ask for parameters from queue
+# Ask for parameters from Swift over queue
 OUT_put("Params")
-# accepts arguments to main_function,
-# e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
-message <- IN_get()
-print(paste("Received params message: ", message))
 
-l <- eval(parse(text = paste0("list(",message,")")))
-source(l$param.set.file)
+# Receive parameters message from Swift over queue
+# This is a string of R code containing arguments to main_function(),
+# e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
+msg <- IN_get()
+print(paste("Received params msg: ", msg))
+
+# Edit the R code to make a list constructor expression
+code = paste0("list(",msg,")")
+
+# Parse the R code, obtaining a list of unevaluated expressions
+# which are parameter=value , ...
+expressions <- eval(parse(text=code))
+
+# Process the param set file and remove it from the list of expressions:
+#  it is not an argument to the objective function
+source(expressions$param.set.file)
+expressions$param.set.file <- NULL
 
 # dummy objective function, only par.set is used
 # and param.set is sourced from param.set.file
@@ -142,10 +153,7 @@ obj.fun = makeSingleObjectiveFunction(
   par.set = param.set
 )
 
-# Remove param set file: It is not an argument to the objective function
-l$param.set.file <- NULL
-
-final_res <- do.call(main_function,l)
+final_res <- do.call(main_function, expressions)
 OUT_put("DONE")
 
 turbine_output <- Sys.getenv("TURBINE_OUTPUT")
