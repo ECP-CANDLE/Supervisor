@@ -80,7 +80,7 @@ main_function <- function(max.budget = 110,
 
   chkpntResults<-NULL
   # TODO: Make this an argument
-  restartFile<-restart.file # "restart.csv"
+  restartFile<-restart.file 
   if (file.exists(restart.file)) {
     print(paste("Loading restart:", restart.file))
 
@@ -92,14 +92,12 @@ main_function <- function(max.budget = 110,
     #rename first column and reorder
     res<-read.csv(restart.file)
     cnames<-names(res)
-    cnames[1]<-"y"
     names(res)<-cnames
-    print("ok1")
-    print(names(res))
-    print("d")
-    print(names(dummydf))
+    # print(names(res))
+    # print(names(dummydf))
+    #Check if names are different, print difference and quit
+
     res<-subset(res, select=names(dummydf))
-    print("ok2")
     res<-rbind(dummydf,res)
     res<-res[-c(1:nk),] # remove the dummy
     rownames(res)<-NULL

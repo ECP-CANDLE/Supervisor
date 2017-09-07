@@ -11,9 +11,6 @@ fi
 
 SITE=$1
 
-export RESTART_FILE="/home/jain/Supervisor/workflows/p3b1_mlrMBO/test/restart-12.csv"
-export RESTART_NUMBER=4
-
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
 EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
@@ -21,12 +18,16 @@ export EMEWS_PROJECT_ROOT
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
+#Two variables for restarting from existing results, will be removed with more development for automatic setup
+export RESTART_FILE=$EMEWS_PROJECT_ROOT/test/restart-12.csv
+export RESTART_NUMBER=2
+
 # Select configurations
 CFG_SYS=$THIS/cfg-sys-1.sh
-CFG_PRM=$THIS/cfg-prm-1.sh
+CFG_PRM=$THIS/cfg-prm-restart.sh
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE /home/jain/Supervisor/workflows/p3b1_mlrMBO/experiment/X079 $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 
 # Wait for job
 queue_wait

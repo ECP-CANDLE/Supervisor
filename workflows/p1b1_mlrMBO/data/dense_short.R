@@ -9,13 +9,13 @@ param.set <- makeParamSet(
   makeDiscreteParam("model", values=c("ae", "vae")),
 
   # latent_dim impacts ae more than vae
-  makeDiscreteParam("latent_dim", values=c(2, 8, 32, 128, 512)),
+  makeDiscreteParam("latent_dim", values=c(2, 8, 32)),
 
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
 
   # large batch_size only makes sense when warmup_lr is on
-  makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024)),
+  makeDiscreteParam("batch_size", values=c(32, 64, 128)),
 
   # use consecutive 978-neuron layers to facilitate residual connections
   makeDiscreteParam("dense", values=c("1800 600",
@@ -27,17 +27,17 @@ param.set <- makeParamSet(
 
   makeDiscreteParam("residual", values=c(1, 0)),
 
-  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
+  # makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
 
-  makeDiscreteParam("optimizer", values=c("adam", "sgd", "rmsprop")),
+  makeDiscreteParam("optimizer", values=c("adam", "sgd"),
 
-  makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
+  # makeNumericParam("learning_rate", value= //lower=0.00001, upper=0.1),
 
   makeDiscreteParam("reduce_lr", values=c(1, 0)),
 
-  makeDiscreteParam("warmup_lr", values=c(1, 0)),
+  # makeDiscreteParam("warmup_lr", values=c(1, 0)),
 
-  makeNumericParam("drop", lower=0, upper=0.9),
+  makeNumericParam("drop", values=c(0)),
 
   makeIntegerParam("epochs", lower=100, upper=200)
 )
