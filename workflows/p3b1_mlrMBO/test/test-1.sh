@@ -26,7 +26,7 @@ CFG_SYS=$THIS/cfg-sys-1.sh
 CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE /home/jain/Supervisor/workflows/p3b1_mlrMBO/experiment/X079 $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 
 # Wait for job
 queue_wait
