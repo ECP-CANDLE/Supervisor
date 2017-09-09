@@ -25,7 +25,7 @@ app (void o) run_model (string model_sh, string params_string,
 {
   //                      1           2         3         4
     "bash" model_sh params_string emews_root instance model_name
-      //       5        6     7             8         9    10
+  //       5        6     7             8         9    10
        FRAMEWORK exp_id run_id benchmark_timeout site "-1";
 }
 
