@@ -19,7 +19,6 @@ int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 string model_sh = argv("model_sh");
-file log_runner = input(argv("log_runner"));
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
@@ -108,14 +107,12 @@ restart.file = '%s'
     string algo_params = algo_params_template %
       (param_set, max_budget, max_iterations,
        design_size, propose_points, restart_file);
-    string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
-    log_start(algorithm) =>
+    string algorithm = emews_root/"R/mlrMBO3.R";
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        log_end() =>
         EQR_delete_R(ME);
         o = propagate();
     }

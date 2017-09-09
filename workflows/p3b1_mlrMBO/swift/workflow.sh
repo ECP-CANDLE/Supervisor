@@ -74,7 +74,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
-                -log_runner=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 $RESTART_FILE_ARG
@@ -93,7 +92,6 @@ swift-t -n $PROCS \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
-        -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
