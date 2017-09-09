@@ -1,3 +1,9 @@
+
+/*
+ * WORKFLOW.SWIFT
+ * for P3B1 mlrMBO
+ */
+
 import io;
 import sys;
 import files;
@@ -95,15 +101,10 @@ restart.file = '%s'
 
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
-    // TODO: Edit algo_params to include those required by the R
-    // algorithm.
-    // algo_params are the parameters used to initialize the
-    // R algorithm. We pass these as a comma separated string.
-    // By default we are passing a random seed. String parameters
-    // should be passed with a \"%s\" format string.
-    // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
-    // Retrieve arguments to this script here
 
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
     string algo_params = algo_params_template %
       (param_set, max_budget, max_iterations,
        design_size, propose_points, restart_file);
@@ -132,3 +133,7 @@ main() {
     printf("End rank: %d", ME_rank);
   }
 }
+
+// Local Variables:
+// c-basic-offset: 4
+// End:
