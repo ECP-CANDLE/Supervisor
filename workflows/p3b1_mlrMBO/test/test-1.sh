@@ -11,8 +11,8 @@ fi
 
 SITE=$1
 
-export RESTART_FILE="/home/jain/Supervisor/workflows/p3b1_mlrMBO/test/restart-12.csv"
-export RESTART_NUMBER=4
+# export RESTART_FILE="/home/jain/Supervisor/workflows/p3b1_mlrMBO/test/restart-12.csv"
+# export RESTART_NUMBER=4
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
