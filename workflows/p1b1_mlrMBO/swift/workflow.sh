@@ -44,27 +44,45 @@ then
   exit 1
 fi
 
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
-#Set PYTHONPATH for BENCHMARK related stuff
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
-PYTHONPATH+=":$BENCHMARK_DIR:"
+
+if [[ ${EQR:-} == "" ]]
+then
+  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
+fi
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-CMD_LINE_ARGS=( -mb=$MAX_BUDGET
+RESTART_FILE_ARG=""
+if [[ ${RESTART_FILE:-} != "" ]]
+then
+  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
+fi
+
+RESTART_NUMBER_ARG=""
+if [[ ${RESTART_NUMBER:-} != "" ]]
+then
+  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
+fi
+
+CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
+                -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -param_set_file=$PARAM_SET_FILE
-                -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
-                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                $RESTART_FILE_ARG
+                $RESTART_NUMBER_ARG
               )
 
 # Add any script variables that you want to log as
@@ -77,20 +95,15 @@ log_script
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
-        $MACHINE  \
+        ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $EMEWS_PROJECT_ROOT/swift \
+        -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
-        -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-        -e PYTHONPATH=$PYTHONPATH \
-        -e PYTHONHOME=$PYTHONHOME \
-        -e TURBINE_LOG=$TURBINE_LOG \
-        -e TURBINE_DEBUG=$TURBINE_DEBUG\
-        -e ADLB_DEBUG=$ADLB_DEBUG \
+        -e BENCHMARKS_ROOT \
+        -e EMEWS_PROJECT_ROOT \
+        $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
-
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}

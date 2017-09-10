@@ -9,25 +9,41 @@ import os
 import numpy as np
 import importlib
 import runner_utils
+import socket
+import time
 
-def import_pkg(framework, model_name):
-    if framework == 'keras':
-        module_name = "{}_baseline_keras2".format(model_name)
-        pkg = importlib.import_module(module_name)
-    # elif framework is 'mxnet':
-    #     import nt3_baseline_mxnet
-    #     pkg = nt3_baseline_keras_baseline_mxnet
-    # elif framework is 'neon':
-    #     import nt3_baseline_neon
-    #     pkg = nt3_baseline_neon
-    else:
-        raise ValueError("Invalid framework: {}".format(framework))
-    return pkg
+node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
+print("node,pid: " + node_pid)
+
+logger = None
+
+def get_logger():
+    """ Set up logging """
+    global logger
+    if logger is not None:
+        return logger
+    import logging, sys
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    h = logging.StreamHandler(stream=sys.stdout)
+    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-9s %(message)s',
+                             datefmt='%Y/%m/%d %H:%M:%S')
+    h.setFormatter(fmtr)
+    logger.addHandler(h)
+    return logger
 
 def run(hyper_parameter_map):
+
+    logger = get_logger()
+
     framework = hyper_parameter_map['framework']
-    model_name = hyper_parameter_map['model_name']
-    pkg = import_pkg(framework, model_name)
+    logger.debug("IMPORT START " + str(time.time()))
+    if framework == 'keras':
+        import p1b1_baseline_keras2
+        pkg = p1b1_baseline_keras2
+    else:
+        raise ValueError("Unsupported framework: {}".format(framework))
+    logger.debug("IMPORT STOP")
 
     runner_utils.format_params(hyper_parameter_map)
 
@@ -38,7 +54,10 @@ def run(hyper_parameter_map):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
 
+    logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
+    logger.debug("WRITE_PARAMS STOP")
+
     history = pkg.run(params)
 
     if framework == 'keras':
@@ -55,14 +74,25 @@ def run(hyper_parameter_map):
     return val_loss[-1]
 
 if __name__ == '__main__':
-    param_string = sys.argv[1]
-    instance_directory = sys.argv[2]
-    model_name = sys.argv[3]
-    framework = sys.argv[4]
-    exp_id = sys.argv[5]
-    run_id = sys.argv[6]
-    benchmark_timeout = int(sys.argv[7])
-    hyper_parameter_map = runner_utils.init(param_string, instance_directory, framework, 'save')
+
+    logger = get_logger()
+    print("argv: ", sys.argv)
+
+    ( _ ,
+      param_string,
+      instance_directory,
+      model_name,
+      framework,
+      exp_id,
+      run_id,
+      benchmark_timeout) = sys.argv
+
+    print("model_name: " + model_name)
+
+    benchmark_timeout = int(benchmark_timeout)
+
+    logger.debug("RUN INIT START")
+    hyper_parameter_map = runner_utils.init(param_string, instance_directory, framework, 'save_path')
     hyper_parameter_map['model_name'] = model_name
     hyper_parameter_map['experiment_id'] = exp_id
     hyper_parameter_map['run_id'] = run_id
@@ -70,5 +100,7 @@ if __name__ == '__main__':
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p1b1_runner']
     result = run(hyper_parameter_map)
+    logger.debug("WRITE OUTPUT START")
     runner_utils.write_output(result, instance_directory)
-
+    logger.debug("WRITE OUTPUT STOP")
+    logger.debug("RUN STOP")

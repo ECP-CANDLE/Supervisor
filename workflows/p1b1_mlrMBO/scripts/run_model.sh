@@ -52,6 +52,15 @@ benchmark_timeout=$8
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
 WORKFLOWS_ROOT=$emews_root/..
 SITE=$9
+
+TIMEOUT=$10
+if (( $TIMEOUT >= 0 ))
+then
+  TIMEOUT_CMD="timeout $TIMEOUT"
+else
+  TIMEOUT_CMD=""
+fi
+
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
