@@ -67,16 +67,52 @@ main_function <- function(max.budget = 110,
                           max.iterations = 10,
                           design.size=10,
                           propose.points=10,
-                          restart.file) {
+                          restart.file, 
+                          learner1.name) {
 
-  surr.rf = makeLearner("regr.randomForest", predict.type = "se",
-                        fix.factors.prediction = TRUE,
-                        se.method = "bootstrap", se.boot = 2, se.ntree = 10)
-  ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
-                        impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
-  ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
-                             opt.restarts = 1, opt.focussearch.points = 1000)
-  ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
+  if (learner1.name == "km"){
+    print("Using Kriging.")
+    surr.rf = makeLearner("regr.km", predict.type = "se") #covtype = "matern3_2", control = list(trace = FALSE)) 
+
+  #TODO: Avoid error: 
+  # [mbo] 3: latent_dim=2; batch_size=35; learning_rate=0.0762; epochs=8 : y = 0.203 : 29.6 secs : infill_cb
+  # Error in chol.default(R) : 
+  #   the leading minor of order 29 is not positive definite
+# The issue is mentioned here: https://github.com/mlr-org/mlrMBO/issues/80
+  # y = MyTrainingData$MyTarget
+  # Nuggets = 1e-8*var(y)
+  # setHyperPars(learner = surr.rf, nugget=Nuggets)
+
+    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
+                            impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1)
+    
+    # y = MyTrainingData$MyTarget
+    # Nuggets = 1e-8*var(y)
+    # setHyperPars(learner = surr.rf, nugget=Nuggets)
+
+    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
+                               opt.restarts = 1, opt.focussearch.points = 1000)
+    ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
+
+  }
+  else if (learner1.name == "randomForest"){
+    print("Using randomForest")
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+                          fix.factors.prediction = TRUE,
+                          mtry = 6,
+                          se.method = "bootstrap", se.boot = 50, se.ntree = 100)
+    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
+                          impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
+                               opt.restarts = 1, opt.focussearch.points = 1000)
+    ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
+
+  }
+  else{
+    stop("Invalid learner set use randomForest or km.")
+    quit()
+  }
+
 
   chkpntResults<-NULL
   # TODO: Make this an argument
@@ -118,7 +154,6 @@ main_function <- function(max.budget = 110,
   #  print(paste("design:", design))
   configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
   res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
-
   return(res)
 }
 

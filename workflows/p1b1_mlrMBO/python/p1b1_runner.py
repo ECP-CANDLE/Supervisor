@@ -71,6 +71,9 @@ def run(hyper_parameter_map):
 
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
+    #TODO: Set negative mod of val corr as objective for mlrMBO - it should take care of both autoencoder and variational autoencoders optimization
+    #r2_loss = history.history['r2_loss']
+    #print r2_loss
     return val_loss[-1]
 
 if __name__ == '__main__':

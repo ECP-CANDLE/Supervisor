@@ -16,7 +16,8 @@ SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+
+#source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
@@ -71,6 +72,12 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
+LEARNER1_NAME_ARG=""
+if [[ ${LEARNER1_NAME:-} != "" ]]
+then
+  LEARNER1_NAME_ARG="--learner1_name=$LEARNER1_NAME"
+fi
+
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -83,6 +90,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -site=$SITE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
+                $LEARNER1_NAME_ARG
               )
 
 # Add any script variables that you want to log as

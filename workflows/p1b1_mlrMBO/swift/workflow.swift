@@ -28,6 +28,8 @@ string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
+string learner1_name = argv("learner1_name", "randomForest");
+
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
@@ -96,7 +98,8 @@ max.budget = %d,
 max.iterations = %d,
 design.size=%d,
 propose.points=%d,
-restart.file = '%s'
+restart.file = '%s',
+learner1.name = '%s'
 """;
 
 (void o) start(int ME_rank) {
@@ -107,7 +110,7 @@ restart.file = '%s'
     // of variable=value assignments.
     string algo_params = algo_params_template %
       (param_set, max_budget, max_iterations,
-       design_size, propose_points, restart_file);
+       design_size, propose_points, restart_file, learner1_name);
     string algorithm = emews_root/"R/mlrMBO1.R";
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>

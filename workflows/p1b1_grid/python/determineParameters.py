@@ -16,11 +16,13 @@ def loadSettings(settingsFilename):
         batch_size = settings['parameters']["batch_size"]
         N1 = settings['parameters']["N1"]
         NE = settings['parameters']["NE"]        
+        latent_dim = settings['parameters']["latent_dim"]        
+        learning_rate = settings['parameters']["learning_rate"]      
 
     except KeyError as e:
         print("Settings file (%s) does not contain key: %s" % (settingsFilename, str(e)))
         sys.exit(1)
-    return(epochs, batch_size, N1, NE)
+    return(epochs, batch_size, N1, NE, latent_dim, learning_rate)
 
 def expand(Vs, fr, to, soFar):
     soFarNew = []
@@ -44,9 +46,9 @@ if (len(sys.argv) < 3):
 settingsFilename = sys.argv[1]
 paramsFilename   = sys.argv[2]
 
-epochs, batch_size, N1, NE = loadSettings(settingsFilename)
+epochs, batch_size, N1, NE, latent_dim, learning_rate = loadSettings(settingsFilename)
 
-values = {1:epochs, 2: batch_size, 3: N1, 4: NE}
+values = {1:epochs, 2: batch_size, 3: N1, 4: NE, 5: latent_dim, 6: learning_rate}
 print values
 results = expand(values, 1, len(values), [''])
 result = ':'.join(results)
