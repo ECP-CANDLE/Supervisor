@@ -1,16 +1,5 @@
 #!/bin/bash
 #
-# Usage: ./run 
-#
-
-# if [ "$#" -ne 1 ]; then
-#   script_name=$(basename $0)
-#   echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
-#   exit 1
-# fi
-
-
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
 export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
@@ -24,26 +13,6 @@ then
   usage
   exit 1
 fi
-
-
-#### set this variable to your P1B1 benchmark directory (frameworks branch)
-P1B1_DIR=../../../../Benchmarks/Pilot1/P1B1
-###
-
-# Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
-
-THIS=$( cd $( dirname $0 ); /bin/pwd )
-export APP_HOME=$THIS
-
-PROJECT_ROOT=$APP_HOME/..
-
-export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$P1B1_DIR:$PROJECT_ROOT/../common/python:$PYTHONPATH
-
-export EXPID=$1
-export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
-
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
@@ -65,30 +34,58 @@ then
   exit 1
 fi
 
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
+export TURBINE_JOBNAME="JOB:${EXPID}"
 
-
-
-
-# TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
-# as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
-# be ignored if MACHINE flag (see below) is not set
-export QUEUE=batch
-export WALLTIME=00:10:00
-export PPN=16
-export TURBINE_JOBNAME="${EXPID}_job"
-
-echo $PYTHONPATH
-
-### set the desired number of processors
-PROCS=8
-###
+CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
+                -mb=$MAX_BUDGET
+                -ds=$DESIGN_SIZE
+                -pp=$PROPOSE_POINTS
+                -it=$MAX_ITERATIONS
+                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                -model_name=$MODEL_NAME
+                -exp_id=$EXPID
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -site=$SITE
+		-settings=$EMEWS_PROJECT_ROOT/data/settings.json
+                $RESTART_FILE_ARG
+                $RESTART_NUMBER_ARG
+                $LEARNER1_NAME_ARG
+              )
 
 # remove -l option for removing printing processors ranks
 # settings.json file has all the parameter combinations to be tested
-echo swift-t  -n $PROCS $APP_HOME/random-sweep.swift $*
-swift-t  -l -n $PROCS $APP_HOME/random-sweep.swift $* --settings=$PWD/../data/settings.json 
+
+#echo swift-t -l  -n $PROCS $EMEWS_PROJECT_ROOT/random-sweep.swift $*
+#swift-t  -l -n $PROCS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json 
+
+
+
+# Add any script variables that you want to log as
+# part of the experiment meta data to the USER_VARS array,
+# for example, USER_VARS=($CMD_LINE_ARGS "VAR_1" "VAR_2")
+USER_VARS=( $CMD_LINE_ARGS )
+# log variables and script to to TURBINE_OUTPUT directory
+log_script
+
+# echo's anything following this to standard out
+
+swift-t -n $PROCS \
+        ${MACHINE:-} \
+        -I $WORKFLOWS_ROOT/common/swift \
+        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
+        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+        -e BENCHMARKS_ROOT \
+        -e EMEWS_PROJECT_ROOT \
+        $( python_envs ) \
+        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        $EMEWS_PROJECT_ROOT/swift/random-sweep.swift ${CMD_LINE_ARGS[@]}
+
+

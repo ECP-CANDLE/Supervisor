@@ -8,21 +8,21 @@ import sys;
 app (file f)
 determineParameters(string settingsFilename)
 {
-  (getenv("APP_HOME")+"/determineParameters.sh") settingsFilename f;
+  (getenv("EMEwS_ROOT_DIR")+"/swift/determineParameters.sh") settingsFilename f;
 }
 
 // This is where the p1b1 runner is called
 app (file f)
 evaluateOne(string params)
 {
-  (getenv("APP_HOME")+"/evaluateOne.sh") params f;
+  (getenv("EMEWS_PROJECT_ROOT")+"/swift/evaluateOne.sh") params f;
 }
 
 // call this to read all the resultsFiles and compute stats
 app ()
 computeStats(string resultsFile)
 {
-  (getenv("APP_HOME")+"/computeStats.sh") resultsFile;
+  (getenv("EMEWS_PROJECT_ROOT")+"/swift/computeStats.sh") resultsFile;
 }
 
 // call this to create any required directories
@@ -65,4 +65,3 @@ file tmp = write(repr(results));
 //trace("Temporary filename is: " + filename(tmp));
 
 computeStats(filename(tmp));
-

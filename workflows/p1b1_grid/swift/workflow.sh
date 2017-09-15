@@ -35,14 +35,14 @@ export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 THIS=$( cd $( dirname $0 ); /bin/pwd )
-export APP_HOME=$THIS
+export EMEWS_PROJECT_ROOT=$THIS
 
-PROJECT_ROOT=$APP_HOME/..
+PROJECT_ROOT=$EMEWS_PROJECT_ROOT/..
 
 export PYTHONPATH=$PYTHONPATH:$PROJECT_ROOT/python:$P1B1_DIR:$PROJECT_ROOT/../common/python:$PYTHONPATH
 
 export EXPID=$1
-export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
+export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/../experiments/$EXPID
 
 
 # Autodetect this workflow directory
@@ -90,5 +90,5 @@ PROCS=8
 
 # remove -l option for removing printing processors ranks
 # settings.json file has all the parameter combinations to be tested
-echo swift-t  -n $PROCS $APP_HOME/grid-sweep.swift $*
-swift-t  -l -n $PROCS $APP_HOME/grid-sweep.swift $* --settings=$PWD/../data/settings.json 
+echo swift-t  -n $PROCS $EMEWS_PROJECT_ROOT/grid-sweep.swift $*
+swift-t  -l -n $PROCS $EMEWS_PROJECT_ROOT/grid-sweep.swift $* --settings=$PWD/../data/settings.json 

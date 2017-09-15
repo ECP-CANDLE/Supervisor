@@ -1,3 +1,3 @@
 #!/bin/bash
-echo $APP_HOME
-python $APP_HOME/../python/determineParameters.py $1 $2
+echo $EMEWS_PROJECT_ROOT
+python $EMEWS_PROJECT_ROOT/python/determineParameters.py $1 $2

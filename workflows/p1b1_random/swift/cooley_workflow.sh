@@ -14,13 +14,13 @@ P1B1_DIR=../../../../Benchmarks/Pilot1/P1B1
 ###
 
 THIS=$( cd $( dirname $0 ); /bin/pwd )
-export APP_HOME=$THIS
+export EMEWS_PROJECT_ROOT=$THIS
 
-PROJECT_ROOT=$APP_HOME/..
+PROJECT_ROOT=$EMEWS_PROJECT_ROOT/..
 
 
 export EXPID=$1
-export TURBINE_OUTPUT=$APP_HOME/../experiments/$EXPID
+export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/../experiments/$EXPID
 
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
@@ -49,9 +49,9 @@ PP+=$PROJECT_ROOT/python
 # PYTHONHOME
 PH=/soft/analytics/conda/env/Candle_ML
 
-#ENVS="-e APP_HOME=$APP_HOME -e PROJECT_ROOT=$PROJECT_ROOT -e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e TURBINE_OUTPUT=$TURBINE_OUTPUT"
+#ENVS="-e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT -e PROJECT_ROOT=$PROJECT_ROOT -e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e TURBINE_OUTPUT=$TURBINE_OUTPUT"
 
-ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e PROJECT_ROOT=$PROJECT_ROOT -e APP_HOME=$APP_HOME -e TURBINE_OUTPUT=$TURBINE_OUTPUT"
+ENVS="-e PYTHONHOME=$PH -e PYTHONPATH=$PP -e TURBINE_RESIDENT_WORK_WORKERS=1 -e RESIDENT_WORK_RANKS=$(( PROCS - 2 )) -e PROJECT_ROOT=$PROJECT_ROOT -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT -e TURBINE_OUTPUT=$TURBINE_OUTPUT"
 
 export MODE=cluster
 ### set the desired number of processors
@@ -74,6 +74,6 @@ fi
 # settings.json file has all the parameter combinations to be tested
 set -x
 export TURBINE_LOG=1
-echo swift-t  -l -n $PROCS $MACHINE -p $ENVS $APP_HOME/random-sweep.swift $* --settings=$PWD/../data/settings.json
-swift-t  -l -n $PROCS $MACHINE -p $ENVS $APP_HOME/random-sweep.swift $* --settings=$PWD/../data/settings.json
+echo swift-t  -l -n $PROCS $MACHINE -p $ENVS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json
+swift-t  -l -n $PROCS $MACHINE -p $ENVS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json
 

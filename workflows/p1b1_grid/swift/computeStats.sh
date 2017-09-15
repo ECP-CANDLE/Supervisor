@@ -1,2 +1,2 @@
 #!/bin/bash
-python $APP_HOME/../python/computeStats.py $1
+python $EMEWS_PROJECT_ROOT/python/computeStats.py $1
