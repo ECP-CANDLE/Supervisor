@@ -8,21 +8,21 @@ import sys;
 app (file f)
 determineParameters(string settingsFilename)
 {
-  (getenv("EMEwS_ROOT_DIR")+"/swift/determineParameters.sh") settingsFilename f;
+  (emews_root+"/swift/determineParameters.sh") settingsFilename f;
 }
 
 // This is where the p1b1 runner is called
 app (file f)
 evaluateOne(string params)
 {
-  (getenv("EMEWS_PROJECT_ROOT")+"/swift/evaluateOne.sh") params f;
+  (emews_root+"/swift/evaluateOne.sh") params f;
 }
 
 // call this to read all the resultsFiles and compute stats
 app ()
 computeStats(string resultsFile)
 {
-  (getenv("EMEWS_PROJECT_ROOT")+"/swift/computeStats.sh") resultsFile;
+  (emews_root+"/swift/computeStats.sh") resultsFile;
 }
 
 // call this to create any required directories
@@ -36,6 +36,8 @@ printf("PYTHONHOME: %s", getenv("PYTHONHOME"));
 
 // ===== The program proper ==============================================
 string turbine_output = getenv("TURBINE_OUTPUT");
+string emews_root = getenv("EMEWS_PROJECT_ROOT");
+
 float results[string];
 
 //make the experiments dir
