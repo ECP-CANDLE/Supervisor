@@ -52,7 +52,6 @@ source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
-
 if [[ ${EQR:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
@@ -93,9 +92,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 $LEARNER1_NAME_ARG
               )
 
-# Add any script variables that you want to log as
-# part of the experiment meta data to the USER_VARS array,
-# for example, USER_VARS=($CMD_LINE_ARGS "VAR_1" "VAR_2")
 USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
