@@ -96,6 +96,9 @@ USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
+# Store these scripts as provenance
+cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
