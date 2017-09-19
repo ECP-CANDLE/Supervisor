@@ -77,10 +77,11 @@ set +e
 echo "python starting"
 
 $TIMEOUT_CMD python "${arg_array[@]}"
+# Get exit code from timeout/Python
+RES=$?
 
 echo "python done."
 
-RES=$?
 if [ "$RES" -ne 0 ]; then
   if [ "$RES" == 124 ]; then
     echo "---> Timeout error in $MODEL_CMD"
