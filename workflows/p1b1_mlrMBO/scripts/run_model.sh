@@ -88,7 +88,7 @@ if [ "$RES" -ne 0 ]; then
     exit 0 # This will trigger a NaN (the result file does not exist)
   else
     echo "---> Error in $MODEL_CMD"
-    exit 1 # Unknown error in Python: abort the workflow
+  #  exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
 
