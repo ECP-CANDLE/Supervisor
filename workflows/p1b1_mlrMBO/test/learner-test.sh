@@ -31,8 +31,11 @@ queue_wait
 
 # Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 SCRIPT=$( basename $0 .sh )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
+#Store scripts to provenance
+#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $EMEWS_PROJECT_ROOT/R/mlrMBO1.R $TURBINE_OUTPUT
+WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 echo "$SCRIPT: SUCCESS"
