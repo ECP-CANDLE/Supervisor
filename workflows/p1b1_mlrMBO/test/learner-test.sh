@@ -19,8 +19,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-CFG_SYS=$THIS/cfg-sys-learner.sh
-CFG_PRM=$THIS/cfg-prm-learner.sh
+export CFG_SYS=$THIS/cfg-sys-learner.sh
+export CFG_PRM=$THIS/cfg-prm-learner.sh
 export LEARNER1_NAME=km
 
 # Submit job
@@ -34,8 +34,5 @@ OUTPUT=$TURBINE_OUTPUT/output.txt
 SCRIPT=$( basename $0 .sh )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
-#Store scripts to provenance
-#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $EMEWS_PROJECT_ROOT/R/mlrMBO1.R $TURBINE_OUTPUT
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 echo "$SCRIPT: SUCCESS"

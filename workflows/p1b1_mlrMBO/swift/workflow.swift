@@ -27,6 +27,7 @@ string model_name = argv("model_name");
 string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
 string restart_file = argv("restart_file", "DISABLED");
 string learner1_name = argv("learner1_name", "randomForest");
 
@@ -79,8 +80,7 @@ string FRAMEWORK = "keras";
         string results[];
         foreach p, j in param_array
         {
-          // printf(p);
-            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site);
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
         }
         string res = join(results, ";");
         // printf(res);

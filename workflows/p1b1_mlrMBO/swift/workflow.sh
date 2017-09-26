@@ -86,6 +86,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -obj_param=$OBJ_PARAM
                 -site=$SITE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
@@ -96,8 +97,9 @@ USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
-# Store these scripts as provenance
-cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+#Store scripts to provenance
+#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $EMEWS_PROJECT_ROOT/R/mlrMBO1.R $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift

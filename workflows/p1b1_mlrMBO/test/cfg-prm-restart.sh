@@ -12,3 +12,5 @@ DESIGN_SIZE=${DESIGN_SIZE:-8}
 PROPOSE_POINTS=${PROPOSE_POINTS:-3}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 MODEL_NAME="p1b1"
+#val_loss (default) and val_corr supported
+OBJ_PARAM="val_loss"

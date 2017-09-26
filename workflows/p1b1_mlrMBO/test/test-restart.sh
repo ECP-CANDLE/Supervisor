@@ -23,8 +23,8 @@ export RESTART_FILE=$EMEWS_PROJECT_ROOT/test/restart-test-p1b1.csv
 export RESTART_NUMBER=2
 
 # Select configurations
-CFG_SYS=$THIS/cfg-sys-1.sh
-CFG_PRM=$THIS/cfg-prm-restart.sh
+export CFG_SYS=$THIS/cfg-sys-1.sh
+export CFG_PRM=$THIS/cfg-prm-restart.sh
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
@@ -37,9 +37,5 @@ OUTPUT=$TURBINE_OUTPUT/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 SCRIPT=$( basename $0 .sh )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
-
-#Store scripts to provenance
-#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $EMEWS_PROJECT_ROOT/R/mlrMBO1.R $TURBINE_OUTPUT
 
 echo "$SCRIPT: SUCCESS"

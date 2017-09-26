@@ -32,7 +32,7 @@ def get_logger():
     logger.addHandler(h)
     return logger
 
-def run(hyper_parameter_map):
+def run(hyper_parameter_map, obj_param):
 
     logger = get_logger()
 
@@ -70,11 +70,17 @@ def run(hyper_parameter_map):
             pass
 
     # use the last validation_loss as the value to minimize
-    val_loss = history.history['val_loss']
-    #TODO: Set negative mod of val corr as objective for mlrMBO - it should take care of both autoencoder and variational autoencoders optimization
-    #r2_loss = history.history['r2_loss']
-    #print r2_loss
-    return val_loss[-1]
+    print obj_param, "jfaldfja"
+    if(obj_param == "val_loss"):
+        obj = history.history['val_loss']
+        last_val = obj[-1]
+    elif(obj_param == "val_corr"):
+        obj = history.history['val_corr']
+        last_val = -obj[-1] # Note -ve of val_corr is used for optimization
+    else:
+        raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+
+    return last_val
 
 if __name__ == '__main__':
 
@@ -82,15 +88,18 @@ if __name__ == '__main__':
     print("argv: ", sys.argv)
 
     ( _ ,
-      param_string,
+      param_string, 
       instance_directory,
       model_name,
       framework,
       exp_id,
       run_id,
-      benchmark_timeout) = sys.argv
+      benchmark_timeout,
+      obj_param
+    ) = sys.argv
 
     print("model_name: " + model_name)
+    print("R objective function: " + obj_param)
 
     benchmark_timeout = int(benchmark_timeout)
 
@@ -102,7 +111,7 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p1b1_runner']
-    result = run(hyper_parameter_map)
+    result = run(hyper_parameter_map, obj_param)
     logger.debug("WRITE OUTPUT START")
     runner_utils.write_output(result, instance_directory)
     logger.debug("WRITE OUTPUT STOP")
