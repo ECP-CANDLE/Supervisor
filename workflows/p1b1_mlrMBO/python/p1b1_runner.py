@@ -70,7 +70,6 @@ def run(hyper_parameter_map, obj_param):
             pass
 
     # use the last validation_loss as the value to minimize
-    print obj_param, "jfaldfja"
     if(obj_param == "val_loss"):
         obj = history.history['val_loss']
         last_val = obj[-1]
