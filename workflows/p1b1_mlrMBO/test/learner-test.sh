@@ -23,6 +23,9 @@ export CFG_SYS=$THIS/cfg-sys-learner.sh
 export CFG_PRM=$THIS/cfg-prm-learner.sh
 
 export LEARNER1_NAME=km
+#val_loss (default) and val_corr supported
+export OBJ_PARAM="val_loss"
+
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM

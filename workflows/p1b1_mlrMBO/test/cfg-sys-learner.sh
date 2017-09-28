@@ -11,7 +11,7 @@ export PROCS=${PROCS:-26}
 export PPN=${PPN:-1}
 
 #export QUEUE=${QUEUE:-debug-flat-quad}
-export WALLTIME=${WALLTIME:-01:33:00}
+export WALLTIME=${WALLTIME:-02:00:00}
 
 #export PROJECT=Candle_ECP
 

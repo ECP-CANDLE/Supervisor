@@ -78,7 +78,7 @@ then
 fi
 
 OBJ_PARAM_ARG=""
-if [[ ${OBJ_PARAM_ARG:-} != "" ]]
+if [[ ${OBJ_PARAM:-} != "" ]]
 then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi

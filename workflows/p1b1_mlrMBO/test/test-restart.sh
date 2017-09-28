@@ -26,6 +26,8 @@ export RESTART_NUMBER=2
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-restart.sh
 
+export OBJ_PARAM="val_loss"
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 

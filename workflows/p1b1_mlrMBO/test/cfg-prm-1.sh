@@ -10,6 +10,4 @@ MAX_BUDGET=${MAX_BUDGET:-180}
 DESIGN_SIZE=${DESIGN_SIZE:-6}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
 MODEL_NAME="p1b1"
-#val_loss (default) and val_corr supported
-OBJ_PARAM="val_loss"
 

@@ -22,6 +22,10 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+#val_loss (default) and val_corr supported
+export OBJ_PARAM="val_loss"
+
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
 
