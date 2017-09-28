@@ -160,7 +160,7 @@ main_function <- function(max.budget = 110,
   init_res<-as.data.frame(res$opt.path)
   min.index<-which(init_res$y==min(init_res$y))[1]
   
-  par.set = getParamSet(objfun)
+  par.set = getParamSet(obj.fun)
   pars = par.set$pars
   lens = getParamLengths(par.set)
   k = sum(lens)
@@ -191,8 +191,8 @@ main_function <- function(max.budget = 110,
   )
 
   ctrl = setMBOControlTermination(ctrl, max.evals = 4*propose.points)
-  design = generateDesign(n = propose.points, par.set = getParamSet(objfun))
-  res = mbo(objfun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+  design = generateDesign(n = propose.points, par.set = getParamSet(obj.fun))
+  res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
   final_res<-as.data.frame(res$opt.path)
   result<-rbind(init_res,final_res)
   return(result)
