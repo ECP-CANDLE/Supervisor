@@ -21,6 +21,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # Select configurations
 export CFG_SYS=$THIS/cfg-sys-learner.sh
 export CFG_PRM=$THIS/cfg-prm-learner.sh
+
 export LEARNER1_NAME=km
 
 # Submit job
@@ -32,7 +33,7 @@ queue_wait
 # Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt
 SCRIPT=$( basename $0 .sh )
+WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 echo "$SCRIPT: SUCCESS"

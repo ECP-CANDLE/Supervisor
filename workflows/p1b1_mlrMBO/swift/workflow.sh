@@ -77,6 +77,12 @@ then
   LEARNER1_NAME_ARG="--learner1_name=$LEARNER1_NAME"
 fi
 
+OBJ_PARAM_ARG=""
+if [[ ${OBJ_PARAM_ARG:-} != "" ]]
+then
+  OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
+fi
+
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -86,11 +92,11 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -obj_param=$OBJ_PARAM
                 -site=$SITE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $LEARNER1_NAME_ARG
+		$OBJ_PARAM_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
