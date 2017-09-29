@@ -11,6 +11,7 @@ import importlib
 import runner_utils
 import socket
 import time
+import math
 
 node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
 print("node,pid: " + node_pid)
@@ -70,15 +71,22 @@ def run(hyper_parameter_map, obj_param):
             pass
 
     # use the last validation_loss as the value to minimize
+    obj_corr = history.history['val_corr']
+    obj_loss = history.history['val_loss']
     if(obj_param == "val_loss"):
-        obj = history.history['val_loss']
-        last_val = obj[-1]
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 0
+        else:
+            last_val = obj_loss[-1]
     elif(obj_param == "val_corr"):
-        obj = history.history['val_corr']
-        last_val = -abs(obj[-1]) # Note -ve of val_corr is used for optimization
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 0
+        else:
+            last_val = -obj_corr[-1] #Note negative sign
     else:
         raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
 
+    print last_val
     return last_val
 
 if __name__ == '__main__':
