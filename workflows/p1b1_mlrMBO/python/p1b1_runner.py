@@ -75,7 +75,7 @@ def run(hyper_parameter_map, obj_param):
         last_val = obj[-1]
     elif(obj_param == "val_corr"):
         obj = history.history['val_corr']
-        last_val = -obj[-1] # Note -ve of val_corr is used for optimization
+        last_val = -abs(obj[-1]) # Note -ve of val_corr is used for optimization
     else:
         raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
 
