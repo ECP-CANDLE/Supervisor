@@ -86,7 +86,6 @@ def run(hyper_parameter_map, obj_param):
     else:
         raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
 
-    print last_val
     return last_val
 
 if __name__ == '__main__':
