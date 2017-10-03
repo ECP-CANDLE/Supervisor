@@ -7,12 +7,15 @@ class State:
     training = None
 
 state = State()
-    
+
 def configure(seed, size, training):
     global state
     state.seed = seed
     state.size = size
     state.training = training
+    print("permute: configure(seed=%i, size=%i, training=%i)" %
+                             (seed,    size,    training))
+    return "OK"
 
 def get():
     global state
