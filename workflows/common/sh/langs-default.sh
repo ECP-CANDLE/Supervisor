@@ -3,7 +3,7 @@
 
 # Assumes everything is in your paths, except the project Python code
 
-export PYTHONPATH=${EMEWS_PROJECT_ROOT}:${PYTHONPATH:-}
+export PYTHONPATH=${EMEWS_PROJECT_ROOT}/python:${PYTHONPATH:-}
 
 SWIFT_IMPL=app
 
