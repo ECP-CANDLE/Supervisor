@@ -1,7 +1,11 @@
 
 import permute
 
-permute.configure(seed=10101, size=10, training=8)
+size = 10
+validation = 2
+permute.configure(seed=10101, size=size, training=size-validation)
 
 for i in range(0,9):
-   print permute.get()
+   training = permute.get()
+   validation = permute.validation(size, training)
+   print str(training) + " " + str(validation)
