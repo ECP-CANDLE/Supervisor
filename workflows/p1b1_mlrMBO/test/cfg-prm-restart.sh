@@ -1,4 +1,4 @@
-# CFG PRM 1
+# CFG PRM RESTART
 # Configuration of parameters: 1
 
 # mlrMBO settings

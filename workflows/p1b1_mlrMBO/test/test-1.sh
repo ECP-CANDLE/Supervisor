@@ -22,6 +22,9 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+# Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
+export R_FILE=mlrMBO1.R
+
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
 

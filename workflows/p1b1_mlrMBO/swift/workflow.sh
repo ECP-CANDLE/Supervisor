@@ -71,10 +71,10 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
-LEARNER1_NAME_ARG=""
-if [[ ${LEARNER1_NAME:-} != "" ]]
+R_FILE_ARG=""
+if [[ ${R_FILE:-} != "" ]]
 then
-  LEARNER1_NAME_ARG="--learner1_name=$LEARNER1_NAME"
+  R_FILE_ARG="--r_file=$R_FILE"
 fi
 
 OBJ_PARAM_ARG=""
@@ -95,7 +95,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -site=$SITE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
-                $LEARNER1_NAME_ARG
+                $R_FILE_ARG
 		$OBJ_PARAM_ARG
               )
 
@@ -105,7 +105,7 @@ log_script
 
 #Store scripts to provenance
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $EMEWS_PROJECT_ROOT/R/mlrMBO1.R $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift

@@ -26,6 +26,9 @@ export RESTART_NUMBER=2
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-restart.sh
 
+# Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
+export R_FILE=mlrMBO1.R
+
 export OBJ_PARAM="val_loss"
 
 # Submit job

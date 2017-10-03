@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# P1B1 TEST 1
+# P1B1 TEST LEARNER
 
 if (( ${#} != 1 ))
 then
@@ -22,7 +22,8 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-learner.sh
 export CFG_PRM=$THIS/cfg-prm-learner.sh
 
-export LEARNER1_NAME=km
+export R_FILE=mlrMBO_km.R
+
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
 
