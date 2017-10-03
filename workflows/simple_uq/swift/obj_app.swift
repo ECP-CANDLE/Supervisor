@@ -1,5 +1,5 @@
 
-app (file o) task(string set)
+app (file o) task(int index)
 {
-  "python" "swift/obj_func.py" set o ;
+  "python" "swift/obj_func.py" index o ;
 }

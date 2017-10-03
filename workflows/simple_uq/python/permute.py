@@ -47,4 +47,5 @@ def get_tv():
     global state
     t = get()
     v = validation(state.size, t)
-    return str([t, v])
+    # return str([t, v])
+    return t,v
