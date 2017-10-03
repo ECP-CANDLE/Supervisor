@@ -1,3 +1,6 @@
+
+# TODO: Rename to langs-jain.sh
+
 export PY=/usr/lib/python2.7/
 # export PATH=$PATH
 export LD_LIBRARY_PATH=/home/jain/install/mpich-3.2/lib:/home/jain/install/jasper/lib:/home/jain/install/netcdf/lib:/home/jain/install/hdf5/lib:/home/jain/install/stc/lib:/home/jain/install/turbine/lib/:/home/jain/install/lb/lib:/home/jain/install/cutils/lib
