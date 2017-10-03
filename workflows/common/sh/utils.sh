@@ -34,7 +34,7 @@ python_envs()
   then
     RESULT+=( -e PYTHONPATH=$PYTHONPATH )
   fi
-  if [[ $PYTHONHOME != "" ]]
+  if [[ ${PYTHONHOME:-} != "" ]]
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
