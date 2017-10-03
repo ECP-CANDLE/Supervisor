@@ -54,6 +54,20 @@ get_site()
   export SITE=$1
 }
 
+check_experiment() {
+  if [[ -d $TURBINE_OUTPUT ]]; then
+    while true; do
+      read -p "Experiment directory exists. Continue? (Y/n) " yn
+      yn=${yn:-y}
+      case $yn in
+          [Yy""]* ) break;;
+          [Nn]* ) exit; break;;
+          * ) echo "Please answer yes or no.";;
+      esac
+    done
+  fi
+}
+
 get_expid()
 # Get Experiment IDentifier
 # EXPID is the name of the new directory under experiments/
@@ -91,7 +105,7 @@ get_expid()
   fi
 
   export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
-  check_directory_exists
+  check_experiment
 }
 
 get_cfg_sys()

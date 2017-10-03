@@ -1,4 +1,4 @@
 
 # CFG SYS 1
 
-PROCS=2
+PROCS=3

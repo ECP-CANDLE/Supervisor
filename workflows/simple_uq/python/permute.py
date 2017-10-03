@@ -41,3 +41,10 @@ def validation(size, training):
         if i not in training:
             result.append(i)
     return result
+
+def get_tv():
+    """ Get training and validation """
+    global state
+    t = get()
+    v = validation(state.size, t)
+    return str([t, v])

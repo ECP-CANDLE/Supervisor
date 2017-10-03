@@ -60,7 +60,7 @@ CMD_LINE_ARGS=(
 WORKFLOW_SWIFT=
 swift-t -n $PROCS \
         $MACHINE  \
-        -p \
+        -p -l -o workflow.tic -U $EMEWS_PROJECT_ROOT/swift/obj_app.swift \
         -I $EMEWS_PROJECT_ROOT/swift \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
