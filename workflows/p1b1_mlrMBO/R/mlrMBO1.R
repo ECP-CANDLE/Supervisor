@@ -132,7 +132,6 @@
   # e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
   msg <- IN_get()
   print(paste("Received params1 msg: ", msg))
-  print("I'm here.")
 
   # Edit the R code to make a list constructor expression
   code = paste0("list(",msg,")")
@@ -140,7 +139,6 @@
   # Parse the R code, obtaining a list of unevaluated expressions
   # which are parameter=value , ...
   expressions <- eval(parse(text=code))
-  print("I'm here2.")
 
   # Process the param set file and remove it from the list of expressions:
   #  it is not an argument to the objective function
