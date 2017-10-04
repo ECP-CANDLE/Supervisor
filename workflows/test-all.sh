@@ -25,4 +25,8 @@ $THIS/p1b1_mlrMBO/test/test-1.sh $SITE
 $THIS/p3b1_mlrMBO/test/test-1.sh $SITE
 $THIS/nt3_mlrMBO/test/test-1.sh  $SITE
 
+# $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
+$THIS/p1b1_grid/test/test-1.sh  $SITE
+$THIS/p1b1_random/test/test-1.sh  $SITE
+
 echo "test-all: SUCCESS"
