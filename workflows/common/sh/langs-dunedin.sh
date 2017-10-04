@@ -19,7 +19,7 @@ export PYTHONHOME=""
 export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
 
 # Swift/T
-export PATH=$HOME/sfw/swift-t/stc/bin:$PATH
+export PATH=$HOME/Public/sfw/swift-t/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
@@ -32,9 +32,10 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 LD_LIBRARY_PATH+=$R_HOME/lib
 
+# Cf. utils.sh ...
+which_check python
+which_check swift-t
 # Log settings to output
-which python swift-t
-# Cf. utils.sh
 show     PYTHONHOME
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
