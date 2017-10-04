@@ -18,6 +18,21 @@ log_path()
   eval echo \$$1 | tr : '\n' | nl
 }
 
+which_check()
+{
+  if [[ ${#} != 1 ]]
+  then
+    echo "Provide a PROGRAM!"
+    exit 1
+  fi
+  PROGRAM=$1
+  if ! which $PROGRAM
+  then
+    echo "Could not find $PROGRAM"
+    exit 1
+  fi
+}
+
 python_envs()
 # Expands to the 'swift-t -e' environment arguments for Python
 # Properly handles cases where PYTHONPATH or PYTHONHOME are unset
