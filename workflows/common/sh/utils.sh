@@ -14,7 +14,7 @@ show()
 {
   for v in $*
   do
-    eval echo $v=\$$v
+    eval "echo $v=\${$v:-}"
   done
 }
 
