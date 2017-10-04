@@ -103,15 +103,10 @@ USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
-<<<<<<< HEAD
-=======
 #Store scripts to provenance
-#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
+# copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
 cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
-# echo's anything following this to standard out
->>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f
-WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -120,18 +115,8 @@ swift-t -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-<<<<<<< HEAD
-        -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-        $( python_envs ) \
-        -e TURBINE_LOG=$TURBINE_LOG \
-        -e TURBINE_DEBUG=$TURBINE_DEBUG\
-        -e ADLB_DEBUG=$ADLB_DEBUG \
-        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
-=======
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
->>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f

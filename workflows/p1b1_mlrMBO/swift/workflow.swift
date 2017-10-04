@@ -108,24 +108,14 @@ restart.file = '%s'
     // R algorithm. We pass these as R code: a comma separated string
     // of variable=value assignments.
     string algo_params = algo_params_template %
-<<<<<<< HEAD
-      (max_budget, max_iterations, design_size, propose_points, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    // log_start(algorithm) =>
-=======
-      (param_set, max_budget, max_iterations,
-       design_size, propose_points, restart_file);
+        (param_set, max_budget, max_iterations, design_size,
+         propose_points, restart_file);
     string algorithm = emews_root/"R/"+r_file;
->>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-<<<<<<< HEAD
-        //  log_end() =>
-=======
->>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f
         EQR_delete_R(ME);
         o = propagate();
     }
