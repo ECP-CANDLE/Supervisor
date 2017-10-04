@@ -1,5 +1,5 @@
 import sys, json, os
-from random import randint
+from random import randint, uniform
 
 # ===== Definitions =========================================================
 
@@ -17,6 +17,9 @@ def loadSettings(settingsFilename):
         batch_size = settings['parameters']["batch_size"]
         N1 = settings['parameters']["N1"]
         NE = settings['parameters']["NE"]        
+        latent_dim = settings['parameters']["latent_dim"]        
+        learning_rate = settings['parameters']["learning_rate"]        
+
 
     except KeyError as e:
         print("Settings file (%s) does not contain key: %s" % (settingsFilename, str(e)))
@@ -26,7 +29,7 @@ def loadSettings(settingsFilename):
     except KeyError as e:
         print("Settings file (%s) does not contain key: %s" % (settingsFilename, str(e)))
         sys.exit(1)
-    return(epochs, batch_size, N1, NE, samples)
+    return(epochs, batch_size, N1, NE, latent_dim, learning_rate, samples)
 
 # ===== Main program ========================================================
 
@@ -40,7 +43,7 @@ paramsFilename   = sys.argv[2]
 print (settingsFilename)
 print (paramsFilename)
 
-epochs, batch_size, N1, NE, samples = loadSettings(settingsFilename)
+epochs, batch_size, N1, NE, latent_dim, learning_rate, samples = loadSettings(settingsFilename)
 result=""
 
 # select '#samples' random numbers between the range provided in settings.json file
@@ -49,7 +52,9 @@ for s in range(samples[0]):
     t_batch_size= randint(batch_size[0], batch_size[1])
     t_N1= randint(N1[0], N1[1])
     t_NE= randint(NE[0], NE[1])
-    result+=str(t_epoch) + ',' + str(t_batch_size) + ',' + str(t_N1) + ',' + str(t_NE) 
+    t_ld= randint(latent_dim[0], latent_dim[1])
+    t_lr= uniform(learning_rate[0], learning_rate[1])
+    result+=str(t_epoch) + ',' + str(t_batch_size) + ',' + str(t_N1) + ',' + str(t_NE) + ',' + str(t_ld)+ ',' + str(t_lr) 
     if(s < (samples[0]-1)):
         result+=":"
 

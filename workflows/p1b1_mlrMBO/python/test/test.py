@@ -9,7 +9,7 @@ def main():
     hyper_parameter_map['timeout'] = 3600
     hyper_parameter_map['save'] = './p1b1_output'
 
-    p1b1_runner.run(hyper_parameter_map)
+    p1b1_runner.run(hyper_parameter_map, "val_corr")
 
 if __name__ == '__main__':
     main()

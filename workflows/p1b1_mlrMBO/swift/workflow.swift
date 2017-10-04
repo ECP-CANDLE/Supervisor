@@ -27,7 +27,10 @@ string model_name = argv("model_name");
 string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
 string restart_file = argv("restart_file", "DISABLED");
+string r_file = argv("r_file", "mlrMBO1.R");
+
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
@@ -77,8 +80,7 @@ string FRAMEWORK = "keras";
         string results[];
         foreach p, j in param_array
         {
-          // printf(p);
-            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site);
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
         }
         string res = join(results, ";");
         // printf(res);
@@ -108,7 +110,7 @@ restart.file = '%s'
     string algo_params = algo_params_template %
       (param_set, max_budget, max_iterations,
        design_size, propose_points, restart_file);
-    string algorithm = emews_root/"R/mlrMBO1.R";
+    string algorithm = emews_root/"R/"+r_file;
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>

@@ -11,6 +11,7 @@ import importlib
 import runner_utils
 import socket
 import time
+import math
 
 node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
 print("node,pid: " + node_pid)
@@ -32,7 +33,7 @@ def get_logger():
     logger.addHandler(h)
     return logger
 
-def run(hyper_parameter_map):
+def run(hyper_parameter_map, obj_param):
 
     logger = get_logger()
 
@@ -70,8 +71,22 @@ def run(hyper_parameter_map):
             pass
 
     # use the last validation_loss as the value to minimize
-    val_loss = history.history['val_loss']
-    return val_loss[-1]
+    obj_corr = history.history['val_corr']
+    obj_loss = history.history['val_loss']
+    if(obj_param == "val_loss"):
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 0
+        else:
+            last_val = obj_loss[-1]
+    elif(obj_param == "val_corr"):
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 0
+        else:
+            last_val = -obj_corr[-1] #Note negative sign
+    else:
+        raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+
+    return last_val
 
 if __name__ == '__main__':
 
@@ -79,15 +94,18 @@ if __name__ == '__main__':
     print("argv: ", sys.argv)
 
     ( _ ,
-      param_string,
+      param_string, 
       instance_directory,
       model_name,
       framework,
       exp_id,
       run_id,
-      benchmark_timeout) = sys.argv
+      benchmark_timeout,
+      obj_param
+    ) = sys.argv
 
     print("model_name: " + model_name)
+    print("R objective function: " + obj_param)
 
     benchmark_timeout = int(benchmark_timeout)
 
@@ -99,7 +117,7 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p1b1_runner']
-    result = run(hyper_parameter_map)
+    result = run(hyper_parameter_map, obj_param)
     logger.debug("WRITE OUTPUT START")
     runner_utils.write_output(result, instance_directory)
     logger.debug("WRITE OUTPUT STOP")

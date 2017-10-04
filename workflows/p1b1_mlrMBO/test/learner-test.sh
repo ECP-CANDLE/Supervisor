@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# P1B1 TEST 1
+# P1B1 TEST LEARNER
 
 if (( ${#} != 1 ))
 then
@@ -19,11 +19,10 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-1.sh
-export CFG_PRM=$THIS/cfg-prm-1.sh
+export CFG_SYS=$THIS/cfg-sys-learner.sh
+export CFG_PRM=$THIS/cfg-prm-learner.sh
 
-# Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
-export R_FILE=mlrMBO1.R
+export R_FILE=mlrMBO_km.R
 
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
@@ -37,10 +36,8 @@ queue_wait
 
 # Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
-
-
 SCRIPT=$( basename $0 .sh )
+WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
