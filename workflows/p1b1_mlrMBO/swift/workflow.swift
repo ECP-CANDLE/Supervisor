@@ -1,3 +1,9 @@
+
+/*
+ * WORKFLOW.SWIFT
+ * for P1B1 mlrMBO
+ */
+
 import io;
 import sys;
 import files;
@@ -18,40 +24,28 @@ int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-file model_script = input(argv("script_file"));
-file log_script = input(argv("log_script"));
+string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
+string restart_file = argv("restart_file", "DISABLED");
+string r_file = argv("r_file", "mlrMBO1.R");
+
+string restart_number = argv("restart_number", "1");
 string site = argv("site");
+
+printf("model_sh: %s", model_sh);
+
+if (restart_file != "DISABLED") {
+  assert(restart_number != "1",
+         "If you are restarting, you must increment restart_number!");
+}
 
 string FRAMEWORK = "keras";
 
-(void o) log_start(string algorithm) {
-    file out <"%s/log_start_out.txt" % turbine_output>;
-    file err <"%s/log_start_err.txt" % turbine_output>;
-
-    string ps = join(file_lines(input(param_set)), " ");
-    string t_log = "%s/turbine.log" % turbine_output;
-    if (file_exists(t_log)) {
-      string sys_env = join(file_lines(input(t_log)), ", ");
-      (out, err) = run_log_start(log_script, ps, sys_env, algorithm, site) =>
-      o = propagate();
-    } else {
-      (out, err) = run_log_start(log_script, ps, "", algorithm, site) =>
-      o = propagate();
-    }
-}
-
-(void o) log_end() {
-  file out <"%s/log_end_out.txt" % turbine_output>;
-  file err <"%s/log_end_err.txt" % turbine_output>;
-  (out, err) = run_log_end(log_script, site) =>
-  o = propagate();
-}
-
 (void v) loop(location ME, int ME_rank) {
 
-    for (boolean b = true, int i = 1;
+  for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
   {
@@ -82,13 +76,11 @@ string FRAMEWORK = "keras";
     }
     else
     {
-
         string param_array[] = split(params, ";");
         string results[];
         foreach p, j in param_array
         {
-          // printf(p);
-            results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j), site);
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
         }
         string res = join(results, ";");
         // printf(res);
@@ -97,32 +89,43 @@ string FRAMEWORK = "keras";
   }
 }
 
+// These must agree with the arguments to the objective function in mlrMBO.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
 string algo_params_template =
 """
-max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
+param.set.file='%s',
+max.budget = %d,
+max.iterations = %d,
+design.size=%d,
+propose.points=%d,
+restart.file = '%s'
 """;
 
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
-    // TODO: Edit algo_params to include those required by the R
-    // algorithm.
-    // algo_params are the parameters used to initialize the
-    // R algorithm. We pass these as a comma separated string.
-    // By default we are passing a random seed. String parameters
-    // should be passed with a \"%s\" format string.
-    // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
-    // Retrieve arguments to this script here
 
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
     string algo_params = algo_params_template %
+<<<<<<< HEAD
       (max_budget, max_iterations, design_size, propose_points, param_set);
     string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
     // log_start(algorithm) =>
+=======
+      (param_set, max_budget, max_iterations,
+       design_size, propose_points, restart_file);
+    string algorithm = emews_root/"R/"+r_file;
+>>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
+<<<<<<< HEAD
         //  log_end() =>
+=======
+>>>>>>> ebecba5ef5c239ea16eceda57913b44fbcd8f91f
         EQR_delete_R(ME);
         o = propagate();
     }
@@ -142,3 +145,7 @@ main() {
     printf("End rank: %d", ME_rank);
   }
 }
+
+// Local Variables:
+// c-basic-offset: 4
+// End:

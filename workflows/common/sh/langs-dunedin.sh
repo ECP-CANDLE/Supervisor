@@ -1,21 +1,13 @@
 
 # LANGS DUNEDIN
 # Language settings for Dunedin
-# Assumes WORKFLOWS_ROOT is set
+# Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 
-# # Python
-# COMMON_DIR=$WORKFLOWS_ROOT/common/python
-# export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
-# PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
-# PYTHONPATH+=$BENCHMARK_DIR:
-# PYTHONPATH+=$BENCHMARKS_ROOT/common:
-# PYTHONPATH+=$COMMON_DIR
-# export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning
+# Python
+export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
+PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
-export PYTHONPATH=""
-export PYTHONHOME=""
-
-# # R
+# R
 export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
 
 # Swift/T

@@ -14,7 +14,7 @@ echo RUN MODEL $*
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=9
+TIMEOUT_ARG_INDEX=10
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -50,9 +50,11 @@ exp_id=$6
 run_id=$7
 benchmark_timeout=$8
 
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot1/NT3:$emews_root/../../../Benchmarks/Pilot1/TC1
-COMMON_DIR=$emews_root/../common/python
-export PYTHONPATH="$PYTHONPATH:$BENCHMARK_DIR:$COMMON_DIR"
+# get the site and source lang-app-{SITE} from workflow/common/sh folder
+WORKFLOWS_ROOT=$emews_root/..
+SITE=$9
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+source_site langs-app $SITE
 
 arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework" "$exp_id" "$run_id" "$benchmark_timeout")
 MODEL_CMD="python ${arg_array[@]}"

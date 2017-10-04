@@ -12,7 +12,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=10
+TIMEOUT_ARG_INDEX=11
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -52,10 +52,21 @@ benchmark_timeout=$8
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
 WORKFLOWS_ROOT=$emews_root/..
 SITE=$9
+
+TIMEOUT=${10}
+if (( $TIMEOUT >= 0 ))
+then
+  TIMEOUT_CMD="timeout $TIMEOUT"
+else
+  TIMEOUT_CMD=""
+fi
+
+obj_param=${11}
+
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
-arg_array=("$emews_root/python/p1b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+arg_array=("$emews_root/python/p1b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout" "$obj_param")
 echo ${arg_array[@]}
 MODEL_CMD="python ${arg_array[@]}"
 
@@ -68,17 +79,18 @@ set +e
 echo "python starting"
 
 $TIMEOUT_CMD python "${arg_array[@]}"
+# Get exit code from timeout/Python
+RES=$?
 
 echo "python done."
 
-RES=$?
 if [ "$RES" -ne 0 ]; then
   if [ "$RES" == 124 ]; then
     echo "---> Timeout error in $MODEL_CMD"
     exit 0 # This will trigger a NaN (the result file does not exist)
   else
     echo "---> Error in $MODEL_CMD"
-    exit 1 # Unknown error in Python: abort the workflow
+  #  exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
 

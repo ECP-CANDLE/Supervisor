@@ -2,6 +2,13 @@
 # SH UTILS
 # Misc. Bash shell functionality
 
+abort()
+# Shut it down
+{
+  echo "abort:" ${*}
+  exit 1
+}
+
 show()
 # Report variable names with their values
 {
@@ -38,15 +45,17 @@ python_envs()
 # Properly handles cases where PYTHONPATH or PYTHONHOME are unset
 {
   RESULT=()
-  if [[ $PYTHONPATH != "" ]]
+  if [[ ${PYTHONPATH:-} != "" ]]
   then
     RESULT+=( -e PYTHONPATH=$PYTHONPATH )
   fi
-  if [[ $PYTHONHOME != "" ]]
+  if [[ ${PYTHONHOME:-} != "" ]]
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
-  echo ${RESULT[@]}
+  # Cannot use echo due to "-e" in RESULT
+  R=${RESULT[@]} # Suppress word splitting
+  printf -- "%s\n" $R
 }
 
 get_site()
@@ -66,6 +75,8 @@ get_expid()
 # If the user provides -a, this function will autogenerate
 #   a new EXPID under the experiments directory,
 #   which will be exported as TURBINE_OUTPUT
+# If EXP_SUFFIX is set in the environment, the resulting
+#   EXPID will have that suffix.
 {
   if (( ${#} < 1 ))
   then
@@ -76,12 +87,14 @@ get_expid()
   EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
 
   export EXPID=$1
+
   if [ $EXPID = "-a" ]
   then
     local i=0
+    # Exponential search for free number
     while (( 1 ))
     do
-      EXPID=$( printf "X%03i" $i )
+      EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
       if [[ -d $EXPERIMENTS/$EXPID ]]
       then
         i=$(( i + i*RANDOM/32767 + 1 ))
@@ -91,6 +104,7 @@ get_expid()
     done
     shift
   fi
+
   export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   check_directory_exists
 }
@@ -323,4 +337,49 @@ check_output()
   echo "check_output(): Could not find '$TOKEN' in $OUTPUT"
   show OUTPUT WORKFLOW SCRIPT JOBID
   return 1
+}
+
+
+log_script() {
+  SCRIPT_NAME=$(basename $0)
+  mkdir -p $TURBINE_OUTPUT
+  LOG_NAME="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
+  echo "### VARIABLES ###" > $LOG_NAME
+  set +u
+  VARS=( "EMEWS_PROJECT_ROOT" "EXPID" "TURBINE_OUTPUT" \
+    "PROCS" "QUEUE" "WALLTIME" "PPN" "TURBINE_JOBNAME" \
+    "PYTHONPATH" "R_HOME" "LD_LIBRARY_PATH" "DYLD_LIBRARY_PATH" \
+    "TURBINE_RESIDENT_WORK_WORKERS" "RESIDENT_WORK_RANKS" "EQPY" \
+    "EQR" "CMD_LINE_ARGS" "MACHINE")
+  for i in "${VARS[@]}"
+  do
+      v=\$$i
+      echo "$i=`eval echo $v`" >> $LOG_NAME
+  done
+
+  for i in "${USER_VARS[@]}"
+  do
+      v=\$$i
+      echo "$i=`eval echo $v`" >> $LOG_NAME
+  done
+  set -u
+
+  echo "" >> $LOG_NAME
+  echo "## SCRIPT ###" >> $LOG_NAME
+  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+}
+
+check_directory_exists() {
+  if [[ -d $TURBINE_OUTPUT ]]; then
+    while true; do
+      read -p "Experiment directory exists. Continue? (Y/n) " yn
+      yn=${yn:-y}
+      case $yn in
+          [Yy""]* ) break;;
+          [Nn]* ) exit; break;;
+          * ) echo "Please answer yes or no.";;
+      esac
+    done
+  fi
+
 }

@@ -1,3 +1,9 @@
+
+/*
+ * WORKFLOW.SWIFT
+ * for NT3 mlrMBO
+ */
+
 import io;
 import sys;
 import files;
@@ -8,28 +14,38 @@ import R;
 import assert;
 import python;
 
-printf("SWIFT WORKFLOW START");
-
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int propose_points = toint(argv("pp", "10"));
+int propose_points = toint(argv("pp", "3"));
 int max_budget = toint(argv("mb", "110"));
-int max_iterations = toint(argv("mi", "10"));
+int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-file model_script = input(argv("script_file"));
-file log_script = input(argv("log_script"));
+string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
+string restart_file = argv("restart_file", "DISABLED");
+string r_file = argv("r_file", "mlrMBO3.R");
+
+string restart_number = argv("restart_number", "1");
+string site = argv("site");
+
+printf("model_sh: %s", model_sh);
+
+if (restart_file != "DISABLED") {
+  assert(restart_number != "1",
+         "If you are restarting, you must increment restart_number!");
+}
 
 string FRAMEWORK = "keras";
 
 (void v) loop(location ME, int ME_rank) {
 
-    for (boolean b = true, int i = 1;
+  for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
   {
@@ -60,48 +76,46 @@ string FRAMEWORK = "keras";
     }
     else
     {
-
         string param_array[] = split(params, ";");
         string results[];
         foreach p, j in param_array
         {
-            // The results directories are labeled with i=iteration, t=task
-            results[j] = obj(p, "i%03i-t%03i" % (i,j));
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
         }
         string res = join(results, ";");
         // printf(res);
-        res => printf("All results received.");
         EQR_put(ME, res) => c = true;
     }
   }
 }
 
+// These must agree with the arguments to the objective function in mlrMBO.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
 string algo_params_template =
 """
-max.budget = %d, max.iterations = %d, design.size=%d, propose.points=%d, param.set.file='%s'
+param.set.file='%s',
+max.budget = %d,
+max.iterations = %d,
+design.size=%d,
+propose.points=%d,
+restart.file = '%s'
 """;
 
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
-    // TODO: Edit algo_params to include those required by the R
-    // algorithm.
-    // algo_params are the parameters used to initialize the
-    // R algorithm. We pass these as a comma separated string.
-    // By default we are passing a random seed. String parameters
-    // should be passed with a \"%s\" format string.
-    // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
-    // Retrieve arguments to this script here
 
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
     string algo_params = algo_params_template %
-      (max_budget, max_iterations, design_size, propose_points, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO3.R");
-    log_start(algorithm) =>
+      (param_set, max_budget, max_iterations,
+       design_size, propose_points, restart_file);
+    string algorithm = emews_root/"R/"+r_file;
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
-        log_end() =>
         EQR_delete_R(ME);
         o = propagate();
     }
@@ -121,3 +135,7 @@ main() {
     printf("End rank: %d", ME_rank);
   }
 }
+
+// Local Variables:
+// c-basic-offset: 4
+// End:

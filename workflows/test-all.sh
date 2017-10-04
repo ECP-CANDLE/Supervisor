@@ -14,9 +14,19 @@ SITE=$1
 
 THIS=$( dirname $0 )
 
-                                       # Status (? means unknown):
-$THIS/p1b1_mlrMBO/test/test-1.sh $SITE # Theta(RJ?)   Titan(RJ)  Cori(JW NOPE)
-$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # Theta(?)     Titan(JW)  Cori(JW 8/25)
-$THIS/nt3_mlrMBO/test/test-1.sh  $SITE # Theta(JW,PB) Titan(RJ?) Cori(JW)
+# Status:
+# Initial indicate who is working on it
+# ? means unknown
+# P1B1 Theta(RJ?)   Titan(RJ)    Cori(JW NOPE)
+# P3B1 Theta(?)     Titan(JW,RJ) Cori(JW 8/25)
+# NT3  Theta(JW,PB) Titan(RJ?)   Cori(JW 8/25)
+
+$THIS/p1b1_mlrMBO/test/test-1.sh $SITE
+$THIS/p3b1_mlrMBO/test/test-1.sh $SITE
+$THIS/nt3_mlrMBO/test/test-1.sh  $SITE
+
+# $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
+$THIS/p1b1_grid/test/test-1.sh  $SITE
+$THIS/p1b1_random/test/test-1.sh  $SITE
 
 echo "test-all: SUCCESS"

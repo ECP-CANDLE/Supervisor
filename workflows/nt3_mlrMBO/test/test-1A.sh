@@ -19,8 +19,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-CFG_SYS=$THIS/cfg-sys-1A.sh
-CFG_PRM=$THIS/cfg-prm-1A.sh
+export CFG_SYS=$THIS/cfg-sys-1A.sh
+export CFG_PRM=$THIS/cfg-prm-1A.sh
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
