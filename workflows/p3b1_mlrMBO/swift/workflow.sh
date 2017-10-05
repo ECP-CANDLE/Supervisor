@@ -2,7 +2,7 @@
 set -eu
 
 # P3B1 WORKFLOW
-# Main entry point for P3B1 mlrMBO workflow
+# Main entry point for P1B1 mlrMBO workflow
 # See README.md for more information
 
 echo "WORKFLOW: P3B1"
@@ -16,11 +16,16 @@ SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
+
+#source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
+
+# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
+# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
+export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
-  echo "P3B1: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
+  echo "P1B1: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
 }
 
 if (( ${#} != 4 ))
@@ -40,6 +45,9 @@ then
   exit 1
 fi
 
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
@@ -49,45 +57,63 @@ then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
 fi
 
-#Set PYTHONPATH for BENCHMARK related stuff
-BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot3/P3B1
-PYTHONPATH+=":$BENCHMARK_DIR:"
-
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-# START ITERATION HACK
-# Uncomment the non-empty START and set the number to use a start iteration
-START=""
-# START=-start=1
+RESTART_FILE_ARG=""
+if [[ ${RESTART_FILE:-} != "" ]]
+then
+  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
+fi
 
-CMD_LINE_ARGS=( -mb=$MAX_BUDGET
+RESTART_NUMBER_ARG=""
+if [[ ${RESTART_NUMBER:-} != "" ]]
+then
+  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
+fi
+
+R_FILE_ARG=""
+if [[ ${R_FILE:-} != "" ]]
+then
+  R_FILE_ARG="--r_file=$R_FILE"
+fi
+
+OBJ_PARAM_ARG=""
+if [[ ${OBJ_PARAM:-} != "" ]]
+then
+  OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
+fi
+
+CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
+                -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
-                $START
                 -it=$MAX_ITERATIONS
-                -param_set_file=$PARAM_SET_FILE
-                -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
-                -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                $RESTART_FILE_ARG
+                $RESTART_NUMBER_ARG
+                $R_FILE_ARG
+    $OBJ_PARAM_ARG
               )
 
-# Add any script variables that you want to log as
-# part of the experiment meta data to the USER_VARS array,
-# for example, USER_VARS=($CMD_LINE_ARGS "VAR_1" "VAR_2")
 USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
-set -x
+
+#Store scripts to provenance
+#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+
 # echo's anything following this to standard out
+WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $EMEWS_PROJECT_ROOT/swift \
+        -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
-        -i log_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \

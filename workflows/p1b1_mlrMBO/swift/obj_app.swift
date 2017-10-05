@@ -9,6 +9,8 @@
 //   printf(obj_result);
 // }
 
+OBSOLETE // TODO: Remove this file
+
 (string obj_result) obj(string params, string iter_indiv_id, string site) {
   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
   printf("run model: %s", outdir);

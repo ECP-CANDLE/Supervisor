@@ -14,13 +14,16 @@ filename        = sys.argv[2]
 print ("filename is " + filename)
 print (socket.gethostname())
 
-integs = [int(x) for x in parameterString.split(',')]
-print (integs)
+#List of hyperparameters - edit this to add or remove a parameter
+epochs, batch_size, d1, d2, ld, lr = parameterString.split(',')
 
-hyper_parameter_map = {'epochs' : integs[0]}
+hyper_parameter_map = {'epochs' : int(epochs)}
 hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['batch_size'] = integs[1]
-hyper_parameter_map['dense'] = [integs[2], integs[3]] 
+hyper_parameter_map['batch_size'] = int(batch_size)
+hyper_parameter_map['dense'] = [int(d1), int(d2)] 
+hyper_parameter_map['latent_dim'] = int(ld)
+hyper_parameter_map['learning_rate'] = float(lr)
+
 hyper_parameter_map['run_id'] = parameterString
 # hyper_parameter_map['instance_directory'] = os.environ['TURBINE_OUTPUT'] 
 hyper_parameter_map['save'] = os.environ['TURBINE_OUTPUT']+ "/output-"+os.environ['PMI_RANK']

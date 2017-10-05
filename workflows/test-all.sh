@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 # TEST ALL
-# Just run this with the site: cori, titan, theta
+# Just run this with the site: cori, titan, or theta
 
 if (( ${#} != 1 ))
 then
@@ -14,9 +14,19 @@ SITE=$1
 
 THIS=$( dirname $0 )
 
-# Rajeev
-$THIS/p1b1_mlrMBO/test/test-1.sh $SITE # Theta((RJ*)) Titan((RJ))
-$THIS/p3b1_mlrMBO/test/test-1.sh $SITE # WORKS: Cori(JW), Titan(JW, RJ)
-$THIS/nt3_mlrMBO/test/test-1.sh  $SITE # WORKS: Theta(JW,PB) Titan(RJ)
+# Status:
+# Initial indicate who is working on it
+# ? means unknown
+# P1B1 Theta(RJ?)   Titan(RJ)    Cori(JW NOPE)
+# P3B1 Theta(?)     Titan(JW,RJ) Cori(JW 8/25)
+# NT3  Theta(JW,PB) Titan(RJ?)   Cori(JW 8/25)
+
+$THIS/p1b1_mlrMBO/test/test-1.sh $SITE
+$THIS/p3b1_mlrMBO/test/test-1.sh $SITE
+$THIS/nt3_mlrMBO/test/test-1.sh  $SITE
+
+# $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
+$THIS/p1b1_grid/test/test-1.sh  $SITE
+$THIS/p1b1_random/test/test-1.sh  $SITE
 
 echo "test-all: SUCCESS"
