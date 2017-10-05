@@ -1,3 +1,6 @@
+
+# MODULES CORI
+
 module load java
-module load deeplearning
+module load python
 module swap PrgEnv-intel PrgEnv-gnu

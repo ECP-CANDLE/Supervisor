@@ -1,3 +1,9 @@
+
+/*
+ * WORKFLOW.SWIFT
+ * for P1B1 mlrMBO
+ */
+
 import io;
 import sys;
 import files;
@@ -14,67 +20,35 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
+int max_budget = toint(argv("mb", "110"));
 int max_iterations = toint(argv("it", "5"));
+int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
+string model_name = argv("model_name");
+string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string obj_param = argv("obj_param", "val_loss");
+string restart_file = argv("restart_file", "DISABLED");
+string r_file = argv("r_file", "mlrMBO1.R");
 
 printf("turbine_output: " + turbine_output);
 
+string restart_number = argv("restart_number", "1");
+string site = argv("site");
 
-string code_template =
-"""
-import p1b1_runner
-import json
+printf("model_sh: %s", model_sh);
 
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '%s/output'
-hyper_parameter_map['experiment_id'] = '%s'
-hyper_parameter_map['run_id'] = '%s'
-
-validation_loss = p1b1_runner.run(hyper_parameter_map)
-""";
-
-string code_log_start =
-"""
-import exp_logger
-
-parameter_map = {}
-parameter_map['pp'] = '%d'
-parameter_map['iterations'] = '%d'
-parameter_map['params'] = \"\"\"%s\"\"\"
-parameter_map['algorithm'] = '%s'
-parameter_map['experiment_id'] = '%s'
-sys_env = \"\"\"%s\"\"\"
-
-exp_logger.start(parameter_map, sys_env)
-""";
-
-string code_log_end =
-"""
-import exp_logger
-
-exp_logger.end('%s')
-""";
-
-// algorithm params format is a key=value
-// comma separated string representation
-string algo_params_template =
-"""
-pp = %d, it = %d, param.set.file='%s'
-""";
-
-(string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (params, outdir, exp_id, iter_indiv_id);
-  make_dir(outdir) =>
-  obj_result = python_persist(code, "str(validation_loss)");
-  printf(obj_result);
+if (restart_file != "DISABLED") {
+  assert(restart_number != "1",
+         "If you are restarting, you must increment restart_number!");
 }
+
+string FRAMEWORK = "keras";
 
 (void v) loop(location ME, int ME_rank) {
 
-    for (boolean b = true, int i = 1;
+  for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
   {
@@ -105,78 +79,50 @@ pp = %d, it = %d, param.set.file='%s'
     }
     else
     {
-
         string param_array[] = split(params, ";");
         string results[];
         foreach p, j in param_array
         {
-            printf(p);
-            results[j] = obj(p, "%i_%i_%i" % (ME_rank,i,j));
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
         }
         string res = join(results, ";");
-        printf(res);
+        // printf(res);
         EQR_put(ME, res) => c = true;
     }
   }
 }
 
-(void o) log_start(string algorithm) {
-    string ps = join(file_lines(input(param_set)), " ");
-    file turbine_log<turbine_output/"turbine.log"> = touch();
-    string sys_env = join(file_lines(turbine_log));
-    string code = code_log_start %
-      (propose_points, max_iterations, ps, algorithm, exp_id, sys_env);
-    python_persist(code);
-    o = propagate();
-}
-
-(void o) log_end(){
-    string code = code_log_end % (exp_id);
-    python_persist(code);
-    o = propagate();
-}
+// These must agree with the arguments to the objective function in mlrMBO.R,
+// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
+string algo_params_template =
+"""
+param.set.file='%s',
+max.budget = %d,
+max.iterations = %d,
+design.size=%d,
+propose.points=%d,
+restart.file = '%s'
+""";
 
 (void o) start(int ME_rank) {
     location ME = locationFromRank(ME_rank);
-    // TODO: Edit algo_params to include those required by the R
-    // algorithm.
-    // algo_params are the parameters used to initialize the
-    // R algorithm. We pass these as a comma separated string.
-    // By default we are passing a random seed. String parameters
-    // should be passed with a \"%s\" format string.
-    // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
-    // Retrieve arguments to this script here
 
-    string algo_params = algo_params_template % (propose_points,
-      max_iterations, param_set);
-    string algorithm = strcat(emews_root,"/R/mlrMBO1.R");
-    log_start(algorithm);
+    // algo_params is the string of parameters used to initialize the
+    // R algorithm. We pass these as R code: a comma separated string
+    // of variable=value assignments.
+    string algo_params = algo_params_template %
+        (param_set, max_budget, max_iterations, design_size,
+         propose_points, restart_file);
+    string algorithm = emews_root/"R/"+r_file;
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
     loop(ME, ME_rank) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
-        log_end() =>
         o = propagate();
     }
 }
-
-// deletes the specified directory
-app (void o) rm_dir(string dirname) {
-  "rm" "-rf" dirname;
-}
-
-// call this to create any required directories
-app (void o) make_dir(string dirname) {
-  "mkdir" "-p" dirname;
-}
-
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-//app (void o) run_prerequisites() {
-//
-//}
 
 main() {
 
@@ -187,10 +133,12 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  //run_prerequisites() => {
   foreach ME_rank, i in ME_ranks {
     start(ME_rank) =>
     printf("End rank: %d", ME_rank);
   }
-//}
 }
+
+// Local Variables:
+// c-basic-offset: 4
+// End:

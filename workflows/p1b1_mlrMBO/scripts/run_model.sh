@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -eu
 
 # Check for an optional timeout threshold in seconds. If the duration of the
@@ -13,7 +12,7 @@ set -eu
 
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
-TIMEOUT_ARG_INDEX=9
+TIMEOUT_ARG_INDEX=11
 TIMEOUT=""
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
@@ -42,47 +41,57 @@ exec >> $log_file
 exec 2>&1
 cd $instance_directory
 
+echo "run_model: PWD=$PWD"
+
 model_name=$4
 framework=$5
 exp_id=$6
 run_id=$7
 benchmark_timeout=$8
 
-# Theta / Tensorflow env vars
-export KMP_BLOCKTIME=30
-export KMP_SETTINGS=1
-export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
-export OMP_NUM_THREADS=128
+# get the site and source lang-app-{SITE} from workflow/common/sh folder
+WORKFLOWS_ROOT=$emews_root/..
+SITE=$9
 
-export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
-PYTHON="$PYTHONHOME/bin/python"
-export LD_LIBRARY_PATH="$PYTHONHOME/lib"
-export PATH="$PYTHONHOME/bin:$PATH"
+TIMEOUT=${10}
+if (( $TIMEOUT >= 0 ))
+then
+  TIMEOUT_CMD="timeout $TIMEOUT"
+else
+  TIMEOUT_CMD=""
+fi
 
-BENCHMARK_DIR=$emews_root/../../../Benchmarks/common:$emews_root/../../../Benchmarks/Pilot1/NT3:$emews_root/../../../Benchmarks/Pilot1/TC1
-COMMON_DIR=$emews_root/../common/python
-PYTHONPATH="$PYTHONHOME/lib/python2.7:"
-PYTHONPATH+="$BENCHMARK_DIR:$COMMON_DIR:"
-PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
-export PYTHONPATH
+obj_param=${11}
 
-arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout")
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+source_site langs-app $SITE
+
+arg_array=("$emews_root/python/p1b1_runner.py" "$parameter_string" "$instance_directory" "$model_name" "$framework"  "$exp_id" "$run_id" "$benchmark_timeout" "$obj_param")
+echo ${arg_array[@]}
 MODEL_CMD="python ${arg_array[@]}"
 
 # Turn bash error checking off. This is
 # required to properly handle the model execution return value
 # the optional timeout.
 set +e
-echo $MODEL_CMD
+# echo $MODEL_CMD
+
+echo "python starting"
 
 $TIMEOUT_CMD python "${arg_array[@]}"
-
-
+# Get exit code from timeout/Python
 RES=$?
+
+echo "python done."
+
 if [ "$RES" -ne 0 ]; then
-	if [ "$RES" == 124 ]; then
+  if [ "$RES" == 124 ]; then
     echo "---> Timeout error in $MODEL_CMD"
+    exit 0 # This will trigger a NaN (the result file does not exist)
   else
-	   echo "---> Error in $MODEL_CMD"
+    echo "---> Error in $MODEL_CMD"
+  #  exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
+
+exit 0 # Success

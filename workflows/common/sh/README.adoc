@@ -5,6 +5,8 @@
 
 This is the location for common shell scripting tools for the CANDLE Supervisor Workflows.
 
+New developments with https://github.com/ECP-CANDLE/Supervisor/issues/20[Issue #20] are marke with *(#20)*.
+
 == Entry points
 
 Each CANDLE workflow is invoked with a shell script, typically called +site_workflow.sh+, where the +site+ is +theta+, +titan+, etc.  In this document we will call this the workflow_sh script.
@@ -13,11 +15,21 @@ Each CANDLE workflow is invoked with a shell script, typically called +site_work
 
 The purpose of these scripts is:
 
-. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.
+. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.  *(#20)* This is now set by +link:utils.sh:get_expid()+.
 
-. Set key environment variables for Python, R, etc.  These include +PYTHONPATH+, +LD_LIBRARY_PATH+, etc.
+. Set key environment variables for Python, R, etc.  These include +PYTHONPATH+, +LD_LIBRARY_PATH+, etc.  *(#20)* These are now set for each site in +langs-site.sh+.
 
-. Set key environment variables and Swift/T options for the system scheduler.  These include +PROCS+, +WALLTIME+, +QUEUE+, +PROJECT+, etc.
+. Set key environment variables and Swift/T options for the system scheduler.  These include +PROCS+, +WALLTIME+, +QUEUE+, +PROJECT+, etc.  *(#20)* These are now set for each site in +sched-site.sh+.
+
+. Loading modules.  *(#20)* These are now set for each site in +modules-site.sh+.
+
+. Determining which Swift functions to load.  Swift/T may or may not be configured to use its efficient in-memory Python interpreter for the Benchmarks (because of challenges compiling against the site-provided Python plus deep learning stack).  A shell variable called +SWIFT_IMPL+ denotes the Swift function implementation for the benchmarks.  The value is one of:
++
++"py"+:: We are using in-memory functions (based on +python_persist()+)
++
++"app"+:: We are using Swift +app+ functions (that invoke +python+ as an external program)
++
+The https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows#objective-function-guide[objective functions] are in +obj_SWIFT_IMPL.swift+.  Logging functions are in +log_SWIFT_IMPL.swift+.  The script is selected via the use of the +swift-t -i FILE+ feature, which includes +FILE+ before the rest of the Swift workflow.
 
 . Obtain application parameters and pass to the +swift-t+ command line.  These are currently specified in a special section of the workflow_sh.  These arguments are conventionally stored in a Bash variable +CMD_LINE_ARGS+, and passed to the +swift-t+ command; they are then available in the Swift script via +argv()+.
 
