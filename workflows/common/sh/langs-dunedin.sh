@@ -24,6 +24,8 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 LD_LIBRARY_PATH+=$R_HOME/lib
 
+show LD_LIBRARY_PATH
+
 # For test output processing:
 LOCAL=1
 CRAY=0
