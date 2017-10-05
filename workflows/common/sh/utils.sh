@@ -322,8 +322,39 @@ queue_wait_pbs()
     echo "usage: queue_wait_pbs JOBID"
     return 1
   fi
+ 
+  local JOBID=$1
 
-  # TODO
+  local DELAY_MIN=30
+  local DELAY_MAX=600
+  local DELAY=$DELAY_MIN
+
+  local STATE="PD"
+
+  while (( 1 ))
+  do
+    date "+%Y/%m/%d %H:%M:%S"
+    if ! ( qstat | grep "$JOBID.*$STATE" )
+    then
+      if [[ $STATE == "PD" ]]
+      then
+        echo "Job $JOBID is not pending."
+        STATE="R"
+        DELAY=$DELAY_MIN
+      elif [[ $STATE == "R" ]]
+      then
+        break
+      fi
+    fi
+    sleep $DELAY
+    (( ++ DELAY ))
+    if (( DELAY > DELAY_MAX ))
+    then
+      DELAY=$DELAY_MAX
+    fi
+  done
+  echo "Job $JOBID is not running." 
+
 }
 
 
