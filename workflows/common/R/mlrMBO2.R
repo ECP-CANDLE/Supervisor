@@ -5,7 +5,7 @@ emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
 if (emews_root == "") {
   r_root <- getwd()
 } else {
-  r_root <- paste0(emews_root, "/R")
+  r_root <- paste0(emews_root, "/../common/R")
 }
 wd <- getwd()
 setwd(r_root)

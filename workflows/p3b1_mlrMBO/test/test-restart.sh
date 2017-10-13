@@ -23,8 +23,8 @@ export RESTART_FILE=$EMEWS_PROJECT_ROOT/test/restart-12.csv
 export RESTART_NUMBER=2
 
 # Select configurations
-CFG_SYS=$THIS/cfg-sys-1.sh
-CFG_PRM=$THIS/cfg-prm-restart.sh
+export CFG_SYS=$THIS/cfg-sys-1.sh
+export CFG_PRM=$THIS/cfg-prm-restart.sh
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM

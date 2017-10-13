@@ -26,8 +26,8 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 # LD_LIBRARY_PATH+=$R_HOME/lib
 
 # For test output processing:
-LOCAL=1
-CRAY=0
+export LOCAL=1
+export CRAY=0
 
 # Log settings to output
 which python swift-t

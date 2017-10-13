@@ -110,7 +110,7 @@ restart.file = '%s'
     string algo_params = algo_params_template %
       (param_set, max_budget, max_iterations,
        design_size, propose_points, restart_file);
-    string algorithm = emews_root/"R/"+r_file;
+    string algorithm = emews_root+"/../common/R/"+r_file;
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
