@@ -117,10 +117,11 @@ get_expid()
       fi
     done
     shift
-  fi
-
-  export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
-  check_experiment
+    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    check_experiment
+  else
+    export TURBINE_OUTPUT=$EXPID
+  fi 
 }
 
 get_cfg_sys()
