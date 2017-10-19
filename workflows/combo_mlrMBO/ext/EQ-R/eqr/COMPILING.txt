@@ -1,0 +1,43 @@
+COMPILING THE EQR EXTENSION
+
+* Manual Compile
+
+1. cp settings.template.sh settings.sh
+2. Edit settings.sh to match your setup
+3. source settings.sh
+4. ./bootstrap
+5. ./configure --prefix=$PWD/..
+
+Additional configure settings that might be necessary are:
+
+* --enable-mac-bsd-sed : For Mac users
+* --with-tcl-version=8.5``: If you are using Tcl 8.5
+
+5. make install
+
+* If configure halts with
+
+checking for g++... g++
+checking whether the C++ compiler works... no
+configure: error: in ext/EQ-R/eqr':
+configure: error: C++ compiler cannot create executables
+See `config.log' for more details
+
+That usually means that LDFLAGS in points to a non-existent library
+or directory.
+
+* Running autotools from within the eqr template
+
+The created build.sh file runs bootstrap, configure, etc. You should
+only need to run / edit this file.
+
+* If configure halts with
+
+checking for g++... g++
+checking whether the C++ compiler works... no
+configure: error: in /ext/EQ-R/eqr':
+configure: error: C++ compiler cannot create executables
+See `config.log' for more details
+
+That usually means that LDFLAGS in build.sh points to a non-existent library
+or directory. If the compile fails then try the manual compile.
