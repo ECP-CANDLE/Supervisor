@@ -72,10 +72,12 @@ then
 fi
 
 R_FILE_ARG=""
-if [[ ${R_FILE:-} != "" ]]
+if [[ ${R_FILE:-} == "" ]]
 then
-  R_FILE_ARG="--r_file=$R_FILE"
+  $R_FILE = "mlrMBO1.R"
 fi
+
+R_FILE_ARG="--r_file=$R_FILE"
 
 OBJ_PARAM_ARG=""
 if [[ ${OBJ_PARAM:-} != "" ]]
@@ -105,7 +107,7 @@ log_script
 
 #Store scripts to provenance
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
