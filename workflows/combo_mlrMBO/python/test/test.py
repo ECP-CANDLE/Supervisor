@@ -4,7 +4,9 @@ import combo_runner, os
 def main():
 
     hyper_parameter_map = {'epochs' : 1}
+    hyper_parameter_map['cell_features']='mirna'
     hyper_parameter_map['dense'] = [1000, 1000, 1000, 1000, 1000]
+    hyper_parameter_map['dense_feature_layers'] = [1000]
     hyper_parameter_map['framework'] = 'keras'
     hyper_parameter_map['model_name'] = 'combo'
     hyper_parameter_map['timeout'] = 3600

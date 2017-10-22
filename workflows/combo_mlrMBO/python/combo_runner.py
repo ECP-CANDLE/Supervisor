@@ -48,29 +48,49 @@ def run(hyper_parameter_map, obj_param):
 
     runner_utils.format_params(hyper_parameter_map)
 
+
     # params is python dictionary
     params = pkg.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
+        if(k=="dense"):
+            v = [int(i) for i in v]
+        if(k=="dense_feature_layers"):
+            v = [int(i) for i in v]
+        if(k=="cell_features"):
+            cp_str = v
+            v = list()
+            v.append(cp_str)
         params[k] = v
 
     logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
 
+    #format the hyperparameters for benchmark python
+    cp_str = hyper_parameter_map['cell_features']
+    hyper_parameter_map['cell_features']=list()
+    hyper_parameter_map['cell_features'].append(cp_str)
+
+    #format the hyperparameters for benchmark python  
+    if (len(hyper_parameter_map['dense']) > 0):
+        hyper_parameter_map['dense'] = [int(i) for i in hyper_parameter_map['dense']]
+    if (len(hyper_parameter_map['dense_feature_layers']) > 0):
+        hyper_parameter_map['dense_feature_layers'] = [int(i) for i in hyper_parameter_map['dense_feature_layers']]
+     
     history = pkg.run(params)
 
     if framework == 'keras':
-        # works around this error:
-        # https://github.com/tensorflow/tensorflow/issues/3388
-        try:
-            from keras import backend as K
-            K.clear_session()
-        except AttributeError:      # theano does not have this function
-            pass
+         # works around this error:
+         # https://github.com/tensorflow/tensorflow/issues/3388
+         try:
+             from keras import backend as K
+             K.clear_session()
+         except AttributeError:      # theano does not have this function
+             pass
 
-    # use the last validation_loss as the value to minimize
+     # use the last validation_loss as the value to minimize
     obj_loss = history.history['val_loss']
     if(obj_param == "val_loss"):
         if(math.isnan(obj_loss[-1])):
@@ -111,6 +131,7 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p1b1_runner']
+
     result = run(hyper_parameter_map, obj_param)
     logger.debug("WRITE OUTPUT START")
     runner_utils.write_output(result, instance_directory)
