@@ -56,11 +56,11 @@ def run(hyper_parameter_map, obj_param):
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         if(k=="dense"):
             if(type(v) != list):
-	           v=v.split(" ")
+                v=v.split(" ")
             v = [int(i) for i in v]
         if(k=="dense_feature_layers"):
             if(type(v) != list):
-               v=v.split(" ")
+                v=v.split(" ")
             v = [int(i) for i in v]
         if(k=="cell_features"):
             cp_str = v
