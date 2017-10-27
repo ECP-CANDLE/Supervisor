@@ -9,7 +9,7 @@ def main():
     hyper_parameter_map['dense_feature_layers'] = [1000]
     hyper_parameter_map['framework'] = 'keras'
     hyper_parameter_map['model_name'] = 'combo'
-    hyper_parameter_map['timeout'] = 3600
+    hyper_parameter_map['timeout'] = 50
     hyper_parameter_map['save'] = './combo_output'
     hyper_parameter_map['batch_size'] = 256
     hyper_parameter_map['use_landmark_genes'] = True

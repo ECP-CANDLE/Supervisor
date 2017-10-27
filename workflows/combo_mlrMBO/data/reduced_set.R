@@ -7,7 +7,7 @@
 
 param.set <- makeParamSet(
   
-  makeDiscreteParam("cell_features", values=c("mirna", "proteome", "expression", "all")),
+  makeDiscreteParam("cell_features", values=c("mirna", "expression")),
 
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
