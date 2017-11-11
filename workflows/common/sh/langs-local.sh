@@ -16,7 +16,7 @@ export PATH=$SWIFT_T/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
-EQR=$EMEWS_PROJECT_ROOT/ext/EQ-R
+EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))

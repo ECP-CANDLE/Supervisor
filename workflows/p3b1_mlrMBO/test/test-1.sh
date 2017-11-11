@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -e
 
 # P3B1 TEST 1
 
