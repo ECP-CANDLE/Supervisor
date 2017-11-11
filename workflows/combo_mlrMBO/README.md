@@ -65,15 +65,13 @@ The workflow project consists of the following directories.
 ```
 combo_mlrMBO/
   data/
-  ext/EQ-R
   python/
   test/
   swift/
 ```
 
  * `data` - model input etc. data, such as the hyperopt space description.
- * `etc` - additional code used by EMEWS
- * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
+ * `../common/ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
  * `python/combo_runner.py` - python code called by the swift script to run combo.
  * `python/test/test.py` - python code for testing the combo_runner.
  * `swift/workflow.swift` - the swift workflow scrip
@@ -83,9 +81,16 @@ combo_mlrMBO/
 
  ## Running the Workflow ##
 
- The launch scripts in the `swift` directory can be used to run the workflow.
- Copy the `workflow.sh` and edit it as appropriate. The swift script takes
- 4 arguments, each of which is set in the launch script.
+ The launch scripts in the `test` directory can be used to run the workflow.
+ Copy the `cfg-prm.sh` 'cfg-sys.sh' and 'test-1.sh' and edit it as appropriate. 
+ The test script takes 2 or 3 arguments, each of which is set in the launch script.
+
+ ./test-1.sh titan OPTIONAL: <run directory>
+ Eg.  ./test-1.sh titan /lustre/scratch/csc249/combo_runs/test-run1/
+
+ If run directory is not specified new folder in experiments folder is created.
+
+ 'cfg-prm.sh' contains the following variables:
 
  * MAX_CONCURRENT_EVALUATIONS - the number of evaluations (i.e combo runs) to
  perform each iteration.
@@ -94,6 +99,8 @@ combo_mlrMBO/
  initial set of "design" runs.
  * PARAM_SET_FILE - the path of the file that defines mlrMBO's hyperparameter space (e.g. EMEWS_PROJECT_ROOT/data/parameter_set.R).
  * DATA_DIRECTORY - the directory containing the test and training data and other essential files
+ * PROPOSE_POINTS - number of points in each subsequent iteration
+ * DESIGN_SIZE - initial number of runs required
 
  Also see the TODOs in the launch script for additional variables to set.
 
@@ -191,11 +198,11 @@ For more information see, the mbo and MBOSingleObjResult in the mlrMBO
 documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
 
 
-## Running on Theta ##
+## Running on Theta/Titan/Cori/Local etc ##
 
-* Launching the workflow
+* Launching the workflow on theta
 
-Edit cfg-sys/prm.sh file for setting the relevant variables.
+Edit cfg-sys and cfg-prm.sh file for setting the relevant variables.
 
 ```
 cd combo_mlrMBO/test

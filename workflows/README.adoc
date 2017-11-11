@@ -23,7 +23,7 @@ This is a matrix of workflow capabilities and CANDLE benchmarks.
 |====
 | Workflow  | Synth^1^ | AUEN | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B1[P1B1] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B2[P1B2] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot1/P1B3[P1B3] | https://github.com/ECP-CANDLE/Benchmarks/tree/master/Pilot2/P2B1[P2B1] | NT3
 | Invoke^2^ | | <<py-keras.swift>> | | | | |
-| Random^3^ | | | | | | |
+| Random^3^ | | | <<p1b1_random>> | | | |
 | Grid^4^
 | <<SimpleSweepCommandLine,SimpleSweepCLI>>  +
   <<SimpleSweepPython>> | | <<p1b1_grid>> | | | |
@@ -75,6 +75,14 @@ http://github.com/CODARcode/SwiftExamples[CODARCode/SwiftExamples] SimpleSweepPy
 Demonstration of P1B1 on a regular grid parameter sweep.
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_grid for more details.
+
+
+[[p1b1_random]]
+=== p1b1_random
+
+Demonstration of P1B1 on random parameter sweep.
+
+See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p1b1_random for more details.
 
 [[AUEN_DEAP]]
 === AUEN_DEAP
@@ -186,7 +194,7 @@ See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/p2b1_mlrMBO f
 *Systems tested:* http://www.nersc.gov/users/computational-systems/cori[Cori]
 
 
-[[nt3_mlrMBO]]
+[[nt3_xmlrMBO]]
 === nt3_mlrMBO
 
 See https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows/nt3_mlrMBO for more details.
