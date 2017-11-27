@@ -79,7 +79,7 @@
                           propose.points = propose.points,
                           impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
     ctrl = setMBOControlInfill(ctrl, 
-                               crit = makeMBOInfillCritEI(),
+                               crit = makeMBOInfillCritCB(),
                                opt.restarts = 1, 
                                opt.focussearch.points = 1000)
     ctrl = setMBOControlTermination(ctrl, 
