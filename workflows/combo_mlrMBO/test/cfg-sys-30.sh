@@ -10,8 +10,9 @@ export PROCS=${PROCS:-32}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-export QUEUE=${QUEUE:-regular}
-export WALLTIME=${WALLTIME:-3:00:00}
+# default specified in common/sh/<platform>-sched.sh file
+#export QUEUE=${QUEUE:-regular}
+export WALLTIME=${WALLTIME:-2:00:00}
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeouT
