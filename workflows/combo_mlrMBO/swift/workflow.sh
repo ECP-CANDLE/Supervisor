@@ -74,7 +74,7 @@ fi
 R_FILE_ARG=""
 if [[ ${R_FILE:-} == "" ]]
 then
-  $R_FILE = "mlrMBO1.R"
+  R_FILE="mlrMBO1.R"
 fi
 
 R_FILE_ARG="--r_file=$R_FILE"
