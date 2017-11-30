@@ -78,7 +78,6 @@ log_script
 cp $CFG_SYS $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
-WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
