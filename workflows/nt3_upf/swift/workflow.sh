@@ -21,10 +21,10 @@ export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 usage()
 {
-  echo "NT3 UNROLLED: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
+  echo "NT3 UNROLLED: usage: workflow.sh SITE EXPID CFG_SYS UPF"
 }
 
-if (( ${#} != 3 ))
+if (( ${#} != 4 ))
 then
   usage
   exit 1
@@ -34,6 +34,7 @@ if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
+  UPF=$4
  }
 then
   usage
@@ -66,6 +67,7 @@ CMD_LINE_ARGS=( -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 $OBJ_PARAM_ARG
+                -f=$UPF
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
