@@ -52,8 +52,8 @@ fi
 
 mkdir -p $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
-exec >> $log_file
-exec 2>&1
+# exec >> $LOG_FILE
+# exec 2>&1
 cd $INSTANCE_DIRECTORY
 
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
@@ -61,7 +61,7 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
-arg_array=( "$WORKFLOWS_ROOT/python/model_runner.py"
+arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
             "$FRAMEWORK"
@@ -70,6 +70,7 @@ arg_array=( "$WORKFLOWS_ROOT/python/model_runner.py"
 MODEL_CMD="python ${arg_array[@]}"
 echo MODEL_CMD: $MODEL_CMD
 if ! $TIMEOUT_CMD python "${arg_array[@]}"
+then
    # $? is the exit status of the most recently executed command
    # (i.e the line above)
    CODE=$?

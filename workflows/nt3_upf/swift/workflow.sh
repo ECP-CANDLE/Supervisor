@@ -3,7 +3,7 @@ set -eu
 
 # NT3 UNROLLED WORKFLOW
 
-export MODEL_NAME="NT3"
+export MODEL_NAME="nt3"
 
 echo "NT3 UNROLLED"
 
