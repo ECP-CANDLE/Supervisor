@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# NT3 TEST 1
+# NT3 TEST TB (will use unrolled parameter file (UPF))
 
 if (( ${#} != 1 ))
 then
