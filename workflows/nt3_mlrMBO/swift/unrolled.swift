@@ -14,7 +14,7 @@ import assert;
 import python;
 
 assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
-file upf = input(argv(“f”));
+file upf = input(argv("f"));
 string upf_lines[] = file_lines(upf);
 
 string results[];
