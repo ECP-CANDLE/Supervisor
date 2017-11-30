@@ -3,6 +3,8 @@ set -eu
 
 # NT3 UNROLLED WORKFLOW
 
+MODEL_NAME="NT3"
+
 echo "NT3 UNROLLED"
 
 # Autodetect this workflow directory
@@ -22,7 +24,7 @@ usage()
   echo "NT3 UNROLLED: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 3 ))
 then
   usage
   exit 1
@@ -32,7 +34,6 @@ if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
-  get_cfg_prm $4
  }
 then
   usage
@@ -71,9 +72,8 @@ USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
-#Store scripts to provenance
-#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+# Copy settings to TURBINE_OUTPUT for provenance
+cp $CFG_SYS $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift
@@ -87,4 +87,4 @@ swift-t -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        $EMEWS_PROJECT_ROOT/swift/unrolled.swift ${CMD_LINE_ARGS[@]}
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
