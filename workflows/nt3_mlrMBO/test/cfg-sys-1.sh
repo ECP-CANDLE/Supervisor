@@ -12,7 +12,7 @@ export PROCS=${PROCS:-32}
 export PPN=${PPN:-1}
 
 #export QUEUE=${QUEUE:-batch}
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-00:30:00}
 
 #export PROJECT=Candle_ECP
 #export PROJECT=CSC249ADOA01
