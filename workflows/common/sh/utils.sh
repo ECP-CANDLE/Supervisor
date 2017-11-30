@@ -91,6 +91,7 @@ get_expid()
 #   which will be exported as TURBINE_OUTPUT
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
+# EXPID is exported into the environment
 {
   if (( ${#} < 1 ))
   then
@@ -180,6 +181,7 @@ get_cfg_prm()
 source_site()
 # Source a settings file for a specific SITE (titan, cori, theta)
 # Succeeds with warning message if file is not found
+# SITE is exported in the environment
 {
   if (( ${#} != 2 ))
   then
@@ -190,7 +192,7 @@ source_site()
   fi
 
   TOKEN=$1
-  SITE=$2
+  export SITE=$2
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
   then

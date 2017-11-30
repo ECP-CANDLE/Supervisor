@@ -3,7 +3,7 @@ set -eu
 
 # NT3 UNROLLED WORKFLOW
 
-MODEL_NAME="NT3"
+export MODEL_NAME="NT3"
 
 echo "NT3 UNROLLED"
 
@@ -61,13 +61,13 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-CMD_LINE_ARGS=( -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
-                -model_name=$MODEL_NAME
-                -exp_id=$EXPID
-                -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -site=$SITE
-                $OBJ_PARAM_ARG
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export BENCHMARK_TIMEOUT
+
+CMD_LINE_ARGS=( -expid=$EXPID
+                -benchmark_timeout=600
                 -f=$UPF
+                --obj_param=${OBJ_PARAM:-}
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -77,7 +77,6 @@ log_script
 # Copy settings to TURBINE_OUTPUT for provenance
 cp $CFG_SYS $TURBINE_OUTPUT
 
-# echo's anything following this to standard out
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \

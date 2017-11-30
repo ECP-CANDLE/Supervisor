@@ -14,7 +14,8 @@ export PPN=${PPN:-1}
 #export QUEUE=${QUEUE:-batch}
 
 # Good for Cori:
-export QUEUE=${QUEUE:-debug}
+# export QUEUE=${QUEUE:-debug}
+export QUEUE=debug
 
 export WALLTIME=${WALLTIME:-00:30:00}
 
