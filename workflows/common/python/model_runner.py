@@ -2,6 +2,7 @@
 # MODEL RUNNER PY
 
 # Currently only supports NT3_TC1
+# See __main__ section for usage
 
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
 # so we need to create a synthetic argv.
@@ -61,11 +62,13 @@ def run(hyper_parameter_map):
     print("result: ", result)
     return result
 
+# Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
     logger = log_tools.get_logger(logger, __name__)
     logger.debug("RUN START")
 
-    ( param_string,
+    ( _, # The Python program name (unused)
+      param_string,
       instance_directory,
       framework,
       runid,
@@ -76,7 +79,7 @@ if __name__ == '__main__':
                                             framework, 'save')
     hyper_parameter_map['model_name']    = os.getenv("MODEL_NAME")
     hyper_parameter_map['experiment_id'] = os.getenv("EXPID")
-    hyper_parameter_map['run_id'] = run_id
+    hyper_parameter_map['run_id']  = runid
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['nt3_tc1_runner']

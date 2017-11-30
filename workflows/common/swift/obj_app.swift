@@ -10,6 +10,9 @@
 // }
 
 (string obj_result) obj(string params, string iter_indiv_id, string obj_param) {
+  string model_sh       = getenv("MODEL_SH");
+  string turbine_output = getenv("TURBINE_OUTPUT");
+
   string outdir = "%s/run/%s" % (turbine_output, iter_indiv_id);
   // printf("running model shell script in: %s", outdir);
   string result_file = outdir/"result.txt";
