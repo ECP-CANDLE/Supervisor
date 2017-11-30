@@ -125,7 +125,8 @@ get_expid()
 }
 
 get_cfg_sys()
-# Obtain the cfg_sys script file and source it
+# Obtain the CFG_SYS script file from the command line and source it
+# Also sets CFG_SYS as a global variable
 {
   if (( ${#} < 1 ))
   then
@@ -133,7 +134,7 @@ get_cfg_sys()
     return 1
   fi
 
-  local CFG_SYS=$1
+  CFG_SYS=$1
 
   if ! [[ -f $CFG_SYS ]]
   then
