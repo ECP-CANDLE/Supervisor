@@ -121,7 +121,7 @@ get_expid()
     check_experiment
   else
     export TURBINE_OUTPUT=$EXPID
-  fi 
+  fi
 }
 
 get_cfg_sys()
