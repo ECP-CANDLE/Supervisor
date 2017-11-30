@@ -17,4 +17,4 @@ export EMEWS_PROJECT_ROOT
 
 CFG_SYS=$THIS/cfg-sys-1.sh
 
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt
