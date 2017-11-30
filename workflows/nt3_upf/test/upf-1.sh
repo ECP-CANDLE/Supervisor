@@ -10,11 +10,11 @@ fi
 SITE=$1
 
 # Self-configure
-THIS=$( dirname $0 )
-EMEWS_PROJECT_ROOT=$( cd $THIS/..    ; /bin/pwd )
-WORKFLOWS_ROOT=$(     cd $THIS/../.. ; /bin/pwd )
+THIS=$(               cd $( dirname $0 ) ; /bin/pwd )
+EMEWS_PROJECT_ROOT=$( cd $THIS/..        ; /bin/pwd )
+WORKFLOWS_ROOT=$(     cd $THIS/../..     ; /bin/pwd )
 export EMEWS_PROJECT_ROOT
 
 CFG_SYS=$THIS/cfg-sys-1.sh
 
-$PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS
