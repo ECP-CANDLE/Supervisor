@@ -83,6 +83,9 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['nt3_tc1_runner']
+
+    # Call to Benchmark!
     result = run(hyper_parameter_map)
+
     runner_utils.write_output(result, instance_directory)
     logger.debug("RUN STOP")
