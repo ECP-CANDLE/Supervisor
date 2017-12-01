@@ -3,8 +3,6 @@ set -eu
 
 # NT3 UNROLLED WORKFLOW
 
-export MODEL_NAME="nt3"
-
 echo "NT3 UNROLLED"
 
 # Autodetect this workflow directory
