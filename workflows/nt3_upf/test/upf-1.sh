@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+# TEST UPF 1
+
 if (( ${#} != 1 ))
 then
   echo "usage: test SITE"
