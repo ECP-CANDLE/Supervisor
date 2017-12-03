@@ -11,7 +11,7 @@ export PROCS=${PROCS:-32}
 export PPN=${PPN:-1}
 
 #export QUEUE=${QUEUE:-regular}
-export WALLTIME=${WALLTIME:-2:00:00}
+export WALLTIME=${WALLTIME:-6:00:00}
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeouT
