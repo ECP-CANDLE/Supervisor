@@ -23,13 +23,13 @@ cd Data/Pilot1
 
 * Combo benchmark data -
   ```
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/descriptors.2D-NSC.5dose.filtered.txt
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/GSE32474_U133Plus2_GCRMA_gene_median.txt
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/ComboDrugGrowth.txt
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/NCI60_CELLNAME_to_Combo.txt
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/lincs1000.tsv
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/type_18_300_train.csv
-  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Combo/type_18_300_train.csv
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/descriptors.2D-NSC.5dose.filtered.txt
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/GSE32474_U133Plus2_GCRMA_gene_median.txt
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/ComboDrugGrowth.txt
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/NCI60_CELLNAME_to_Combo.txt
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/lincs1000.tsv
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/type_18_300_train.csv
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/type_18_300_train.csv
   ```
   `All the above files` should be copied into X/Benchmarks/Data/Pilot1,
   where X is the parent directory path of your Benchmark repository.  For example, from within `X/Benchmarks`
