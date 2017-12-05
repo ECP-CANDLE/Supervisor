@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-32}
+export PROCS=${PROCS:-102}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -12,7 +12,7 @@ export PPN=${PPN:-1}
 
 # default specified in common/sh/<platform>-sched.sh file
 #export QUEUE=${QUEUE:-regular}
-export WALLTIME=${WALLTIME:-2:00:00}
+export WALLTIME=${WALLTIME:-4:00:00}
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeouT
