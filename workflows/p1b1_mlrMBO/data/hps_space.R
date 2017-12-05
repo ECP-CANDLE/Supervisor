@@ -11,7 +11,7 @@ param.set <- makeParamSet(
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
   # large batch_size only makes sense when warmup_lr is on
-  makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024)),
+  makeDiscreteParam("batch_size", values = c(16, 32, 64, 128, 256, 512)),
   # use consecutive 978-neuron layers to facilitate residual connections
   makeDiscreteParam("dense", values=c("1500 500",
                                       "978 978",
@@ -26,7 +26,7 @@ param.set <- makeParamSet(
   makeLogicalParam("reduce_lr"),
   makeLogicalParam("warmup_lr"),  
   makeNumericParam("drop", lower=0, upper=0.9),
-  makeIntegerParam("epochs", lower=100, upper=200),
+  makeIntegerParam("epochs", lower=100, upper=500),
   makeNumericParam("clipnorm", lower = 1e-04, upper = 1e01),
   makeNumericParam("clipvalue", lower = 1e-04, upper = 1e01),
   makeNumericParam("decay", lower = 0, upper = 1e01),

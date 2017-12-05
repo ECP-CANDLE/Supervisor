@@ -27,7 +27,7 @@ param.set <- makeParamSet(
   makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
   makeLogicalParam("reduce_lr"),
   makeLogicalParam("warmup_lr"),
-  makeIntegerParam("epochs", lower=5, upper=10),
+  makeIntegerParam("epochs", lower=100, upper=500),
   makeNumericParam("clipnorm", lower = 1e-04, upper = 1e01),
   makeNumericParam("clipvalue", lower = 1e-04, upper = 1e01),
   makeNumericParam("decay", lower = 0, upper = 1e01),
