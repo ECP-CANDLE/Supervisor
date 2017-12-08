@@ -31,5 +31,11 @@
     "type": "ordered",
     "values": [32, 64, 128, 256, 512, 1024],
     "sigma": 1
+  },
+
+  {
+    "name": "e",
+    "type": "constant",
+    "value": 3
   }
 ]

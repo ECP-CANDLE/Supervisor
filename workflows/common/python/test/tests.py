@@ -12,7 +12,7 @@ class TestParameters(unittest.TestCase):
             self.params[p.name] = p
 
     def testSize(self):
-        self.assertEqual(5, len(self.params))
+        self.assertEqual(6, len(self.params))
 
     def testInt(self):
         p = self.params['epochs']
@@ -101,6 +101,13 @@ class TestParameters(unittest.TestCase):
 
             m = p.mutate(v, mu=0, indpb=1.0)
             self.assertTrue(v is not m)
-            
+
+    def testConstant(self):
+        p = self.params['e']
+        self.assertEqual(3, p.value)
+
+        self.assertEqual(p.value, p.randomDraw())
+        self.assertEqual(p.value, p.mutate(100, mu=0, indpb=1.0))
+
 if __name__ == '__main__':
     unittest.main()

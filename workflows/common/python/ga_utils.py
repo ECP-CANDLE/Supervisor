@@ -1,6 +1,18 @@
 from __future__ import print_function
 import random, json, sys
 
+class ConstantParameter(object):
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def randomDraw(self):
+        return self.value
+
+    def mutate(self, x, mu, indpb):
+        return self.value
+
 class NumericParameter(object):
 
     def __init__(self, name, lower, upper, sigma):
@@ -132,6 +144,9 @@ def create_parameters(param_file):
             vs = item['values']
             sigma = item['sigma']
             params.append(OrderedParameter(name, vs, sigma))
+        elif t == 'constant':
+            vs = item['value']
+            params.append(ConstantParameter(name, vs))
 
     return params
 
