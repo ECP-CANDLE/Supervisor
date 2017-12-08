@@ -4,6 +4,7 @@ import numpy as np
 import time
 import math
 import csv
+import json
 
 from deap import base
 from deap import creator
@@ -18,11 +19,21 @@ ga_params = None
 def obj_func(x):
     return 0
 
-def create_list_of_lists_string(list_of_lists, super_delim=";", sub_delim=","):
-    # super list elements separated by ;
+# {"batch_size":512,"epochs":51,"activation":"softsign",
+#"dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
+#"learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
+def create_list_of_json_strings(list_of_lists, super_delim=";"):
+    # create string of ; separated jsonified maps
     res = []
-    for x in list_of_lists:
-        res.append(sub_delim.join(str(n) for n in x))
+    global ga_params
+    for l in list_of_lists:
+        jmap = {}
+        for i,p in enumerate(ga_params):
+            jmap[p.name] = l[i]
+
+        jstring = json.dumps(jmap)
+        res.append(jstring)
+
     return (super_delim.join(res))
 
 def create_fitnesses(params_string):
@@ -40,9 +51,9 @@ def queue_map(obj_func, pops):
     # [[a,b,c,d],[e,f,g,h],...]
     if not pops:
         return []
-    eqpy.OUT_put(create_list_of_lists_string(pops))
+    eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
-    split_result = result.split(',')
+    split_result = result.split(';')
     return [(float(x),) for x in split_result]
 
 def make_random_params():
@@ -65,34 +76,6 @@ def make_random_params():
 #         logx = max(mi, min(mx, logx))
 #         x = math.pow(10, logx)
 #     return x
-
-def do_custom_mutate(tmp_list, params_list, constraint, indpb):
-    repeat = True
-    count = 0
-
-    while repeat:
-        for i, idx in constraint.get_indices():
-            row = df_params[idx]
-
-            mi = row['lo_val']
-            mx = row['hi_val']
-            sigma = row['sigma']
-            if row['p_type'] == 'int':
-                f = mutGaussian_int
-            elif row['p_type']== 'float':
-                f = mutGaussian_float
-            else:
-                f = mutGaussian_log
-
-            params_list[idx] = f(tmp_list[idx], mu=0, sigma=sigma, mi=mi, mx=mx, indpb=indpb)
-
-        repeat = not constraint.check_constraint(params_list)
-        count += 1
-        if count > 2000 and repeat:
-            break
-    constraint.reset()
-    return not repeat
-
 
 # Returns a tuple of one individual
 def custom_mutate(individual, indpb):
@@ -177,4 +160,4 @@ def run():
 
     eqpy.OUT_put("DONE")
     # return the final population
-    eqpy.OUT_put("{0}\n{1}\n{2}".format(create_list_of_lists_string(pop), ';'.join(fitnesses), log))
+    eqpy.OUT_put("{0}\n{1}\n{2}".format(create_list_of_json_strings(pop), ';'.join(fitnesses), log))

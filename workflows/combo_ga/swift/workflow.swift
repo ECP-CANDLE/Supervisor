@@ -19,30 +19,28 @@ string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
-int propose_points = toint(argv("pp", "3"));
-int max_budget = toint(argv("mb", "110"));
-int max_iterations = toint(argv("it", "5"));
-int design_size = toint(argv("ds", "10"));
-string param_set = argv("param_set_file");
+
+string strategy = argv("strategy");
+string ga_params_file = argv("ga_params");
+float mut_prob = string2float(argv("mutation_prob", "0.2"));
+;
 string model_name = argv("model_name");
 string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string obj_param = argv("obj_param", "val_loss");
-string restart_file = argv("restart_file", "DISABLED");
-string r_file = argv("r_file", "mlrMBO1.R");
 
 printf("turbine_output: " + turbine_output);
-
-string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
 printf("model_sh: %s", model_sh);
 
-if (restart_file != "DISABLED") {
-  assert(restart_number != "1",
-         "If you are restarting, you must increment restart_number!");
-}
+//string restart_number = argv("restart_number", "1");
+//string restart_file = argv("restart_file", "DISABLED");
+//if (restart_file != "DISABLED") {
+//  assert(restart_number != "1",
+//         "If you are restarting, you must increment restart_number!");
+//}
 
 string FRAMEWORK = "keras";
 
@@ -52,12 +50,12 @@ string FRAMEWORK = "keras";
        b;
        b=c, i = i + 1)
   {
-    string params =  EQR_get(ME);
+    string params =  EQPy_get(ME);
     boolean c;
 
     if (params == "DONE")
     {
-      string finals =  EQR_get(ME);
+      string finals =  EQPy_put(ME);
       // TODO if appropriate
       // split finals string and join with "\\n"
       // e.g. finals is a ";" separated string and we want each
@@ -69,13 +67,15 @@ string FRAMEWORK = "keras";
       v = make_void() =>
       c = false;
     }
-    else if (params == "EQR_ABORT")
+    else if (params == "EQPY_ABORT")
     {
-      printf("EQR aborted: see output for R error") =>
-      string why = EQR_get(ME);
-      printf("%s", why) =>
-      v = propagate() =>
-      c = false;
+        printf("EQPy Aborted");
+        string why = EQPy_get(ME);
+        // TODO handle the abort if necessary
+        // e.g. write intermediate results ...
+        printf("%s", why) =>
+        v = propagate() =>
+        c = false;
     }
     else
     {
@@ -87,39 +87,21 @@ string FRAMEWORK = "keras";
         }
         string res = join(results, ";");
         // printf(res);
-        EQR_put(ME, res) => c = true;
+        EQPy_put(ME, res) => c = true;
     }
   }
 }
 
-// These must agree with the arguments to the objective function in mlrMBO.R,
-// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
-string algo_params_template =
-"""
-param.set.file='%s',
-max.budget = %d,
-max.iterations = %d,
-design.size=%d,
-propose.points=%d,
-restart.file = '%s'
-""";
-
-(void o) start(int ME_rank) {
-    location ME = locationFromRank(ME_rank);
-
-    // algo_params is the string of parameters used to initialize the
-    // R algorithm. We pass these as R code: a comma separated string
-    // of variable=value assignments.
-    string algo_params = algo_params_template %
-        (param_set, max_budget, max_iterations, design_size,
-         propose_points, restart_file);
-    string algorithm = emews_root+"/../common/R/"+r_file;
-    EQR_init_script(ME, algorithm) =>
-    EQR_get(ME) =>
-    EQR_put(ME, algo_params) =>
-    loop(ME, ME_rank) => {
-        EQR_stop(ME) =>
-        EQR_delete_R(ME);
+(void o) start (int ME_rank, int iters, int pop, int trials, int seed) {
+  location ME = locationFromRank(ME_rank);
+  // (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file)
+  algo_params = "%d,%d,%d,'%s',%f, '%s','%s'" %
+    (iters, pop, seed, strategy, mut_prob, ga_params_file);
+    EQPy_init_package(ME,"deap_ga") =>
+    EQPy_get(ME) =>
+    EQPy_put(ME, algo_params) =>
+      loop(ME, ME_rank, trials) => {
+        EQPy_stop(ME);
         o = propagate();
     }
 }
@@ -127,6 +109,16 @@ restart.file = '%s'
 main() {
 
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
+
+  int random_seed = toint(argv("seed", "0"));
+  int num_iter = toint(argv("ni","100")); // -ni=100
+  int num_variations = toint(argv("nv", "5"));
+  int num_pop = toint(argv("np","100")); // -np=100;
+
+  printf("NI: %i # num_iter", num_iter);
+  printf("NV: %i # num_variations", num_variations);
+  printf("NP: %i # num_pop", num_pop);
+  printf("MUTPB: %f # mut_prob", mut_prob);
 
   int ME_ranks[];
   foreach r_rank, i in r_ranks{

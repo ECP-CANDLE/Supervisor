@@ -14,7 +14,7 @@ then
 	echo "Automatically assigning run directory in ../experiments folder"
 	RUN_DIR="-a"
 else
-	echo "Usage test SITE RUN_DIR(optional)"	
+	echo "Usage test SITE RUN_DIR(optional)"
 	exit 1
 fi
 
@@ -32,9 +32,6 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
-# Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
-export R_FILE=mlrMBO1.R
-
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
 
@@ -43,15 +40,15 @@ export OBJ_PARAM="val_loss"
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
 
 # Wait for job
-queue_wait
+# queue_wait
 
-cp $0 $TURBINE_OUTPUT
-# Check job output
-OUTPUT=$TURBINE_OUTPUT/output.txt
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
-
-
-SCRIPT=$( basename $0 .sh )
-check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
-
-echo "$SCRIPT: SUCCESS"
+# cp $0 $TURBINE_OUTPUT
+# # Check job output
+# OUTPUT=$TURBINE_OUTPUT/output.txt
+# WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
+#
+#
+# SCRIPT=$( basename $0 .sh )
+# check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+#
+# echo "$SCRIPT: SUCCESS"

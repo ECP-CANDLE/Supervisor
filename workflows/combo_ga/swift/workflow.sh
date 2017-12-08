@@ -45,39 +45,32 @@ then
   exit 1
 fi
 
+if [[ ${EQPY:-} == "" ]]
+then
+  abort "The location of EQ/Py is not set: this will not work!"
+fi
+
+
 # Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY
 
 source_site modules $SITE
 source_site langs   $SITE
 source_site sched   $SITE
 
-if [[ ${EQR:-} == "" ]]
-then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
-fi
-
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-RESTART_FILE_ARG=""
-if [[ ${RESTART_FILE:-} != "" ]]
-then
-  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
-fi
-
-RESTART_NUMBER_ARG=""
-if [[ ${RESTART_NUMBER:-} != "" ]]
-then
-  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
-fi
-
-R_FILE_ARG=""
-if [[ ${R_FILE:-} == "" ]]
-then
-  R_FILE="mlrMBO1.R"
-fi
-
-R_FILE_ARG="--r_file=$R_FILE"
+# RESTART_FILE_ARG=""
+# if [[ ${RESTART_FILE:-} != "" ]]
+# then
+#   RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
+# fi
+#
+# RESTART_NUMBER_ARG=""
+# if [[ ${RESTART_NUMBER:-} != "" ]]
+# then
+#   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
+# fi
 
 OBJ_PARAM_ARG=""
 if [[ ${OBJ_PARAM:-} != "" ]]
@@ -85,20 +78,17 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
-                -mb=$MAX_BUDGET
-                -ds=$DESIGN_SIZE
-                -pp=$PROPOSE_POINTS
-                -it=$MAX_ITERATIONS
+CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
+                -seed=$SEED
+                -ni=$NUM_ITERATIONS
+                -nv=$NUM_VARIATIONS
+                -np=$POPULATION_SIZE
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
-                $RESTART_FILE_ARG
-                $RESTART_NUMBER_ARG
-                $R_FILE_ARG
-		$OBJ_PARAM_ARG
+                $OBJ_PARAM_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -113,7 +103,7 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
-        -p -I $EQR -r $EQR \
+        -p -I $EQPY -r $EQPY \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \

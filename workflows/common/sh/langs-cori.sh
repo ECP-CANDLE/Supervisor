@@ -23,6 +23,9 @@ SWIFT_IMPL="app"
 
 # EMEWS Queues for R
 EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+
+EQPY=$WORKFLOWS_ROOT/common/ext/EQ-Py
+
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
