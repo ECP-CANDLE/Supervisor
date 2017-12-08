@@ -1,6 +1,5 @@
-
+  set.seed(12345)
   # mlrMBO EMEWS Algorithm Wrapper
-
   emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
   if (emews_root == "") {
     r_root <- getwd()
