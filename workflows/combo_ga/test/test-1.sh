@@ -32,6 +32,8 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+export GA_FILE=deap_ga.py
+
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
 

@@ -89,7 +89,7 @@ def custom_mutate(individual, indpb):
     # constraint was satisfied
 
     global ga_params
-    for i, param in ga_params:
+    for i, param in enumerate(ga_params):
         individual[i] = param.mutate(individual[i], mu=0, indpb=indpb)
 
     return individual,
@@ -115,8 +115,8 @@ def run():
     global ga_params
     ga_params = ga_utils.create_parameters(ga_params_file)
 
-    creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-    creator.create("Individual", list, fitness=creator.FitnessMax)
+    creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+    creator.create("Individual", list, fitness=creator.FitnessMin)
     toolbox = base.Toolbox()
     toolbox.register("individual", tools.initIterate, creator.Individual,
                      make_random_params)
@@ -141,10 +141,10 @@ def run():
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
-    if strategy is 'simple':
+    if strategy == 'simple':
         pop, log = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=mutpb, ngen=num_iter - 1,
                                    stats=stats, halloffame=hof, verbose=True)
-    elif strategy is 'mu_plus_lambda':
+    elif strategy == 'mu_plus_lambda':
         mu = int(math.floor(float(num_pop) * 0.5))
         lam = int(math.floor(float(num_pop) * 0.5))
         if mu + lam < num_pop:

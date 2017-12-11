@@ -1,12 +1,10 @@
 [
   {
     "name": "epochs",
-    "type": "int",
-    "lower": 100,
-    "upper": 500,
-    "sigma": 10
+    "type": "constant",
+    "value":1
   },
-
+  
   {
     "name": "clipnorm",
     "type": "float",

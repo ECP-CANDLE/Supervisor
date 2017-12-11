@@ -1,7 +1,6 @@
 
 /*
  * WORKFLOW.SWIFT
- * for P1B1 mlrMBO
  */
 
 import io;
@@ -10,7 +9,7 @@ import files;
 import location;
 import string;
 import unix;
-import EQR;
+import EQPy;
 import R;
 import assert;
 import python;
@@ -23,7 +22,7 @@ string r_ranks[] = split(resident_work_ranks,",");
 string strategy = argv("strategy");
 string ga_params_file = argv("ga_params");
 float mut_prob = string2float(argv("mutation_prob", "0.2"));
-;
+
 string model_name = argv("model_name");
 string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
@@ -35,7 +34,8 @@ string site = argv("site");
 
 printf("model_sh: %s", model_sh);
 
-//string restart_number = argv("restart_number", "1");
+string restart_number = argv("restart_number", "1");
+
 //string restart_file = argv("restart_file", "DISABLED");
 //if (restart_file != "DISABLED") {
 //  assert(restart_number != "1",
@@ -55,14 +55,15 @@ string FRAMEWORK = "keras";
 
     if (params == "DONE")
     {
-      string finals =  EQPy_put(ME);
+      string finals =  EQPy_get(ME);
       // TODO if appropriate
       // split finals string and join with "\\n"
       // e.g. finals is a ";" separated string and we want each
       // element on its own line:
       // multi_line_finals = join(split(finals, ";"), "\\n");
-      string fname = "%s/final_res.Rds" % (turbine_output);
-      printf("See results in %s", fname) =>
+      string fname = "%s/final_result_%i" % (turbine_output, ME_rank);
+      file results_file <fname> = write(finals) =>
+      printf("Writing final result to %s", fname) =>
       // printf("Results: %s", finals) =>
       v = make_void() =>
       c = false;
@@ -95,12 +96,12 @@ string FRAMEWORK = "keras";
 (void o) start (int ME_rank, int iters, int pop, int trials, int seed) {
   location ME = locationFromRank(ME_rank);
   // (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file)
-  algo_params = "%d,%d,%d,'%s',%f, '%s','%s'" %
+  algo_params = "%d,%d,%d,'%s',%f, '%s'" %
     (iters, pop, seed, strategy, mut_prob, ga_params_file);
     EQPy_init_package(ME,"deap_ga") =>
     EQPy_get(ME) =>
     EQPy_put(ME, algo_params) =>
-      loop(ME, ME_rank, trials) => {
+      loop(ME, ME_rank) => {
         EQPy_stop(ME);
         o = propagate();
     }
@@ -126,7 +127,7 @@ main() {
   }
 
   foreach ME_rank, i in ME_ranks {
-    start(ME_rank) =>
+    start(ME_rank, num_iter, num_pop, num_variations, random_seed) =>
     printf("End rank: %d", ME_rank);
   }
 }

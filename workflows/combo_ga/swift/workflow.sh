@@ -45,18 +45,17 @@ then
   exit 1
 fi
 
+source_site modules $SITE
+source_site langs   $SITE
+source_site sched   $SITE
+
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY:$HOME/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+
 if [[ ${EQPY:-} == "" ]]
 then
   abort "The location of EQ/Py is not set: this will not work!"
 fi
-
-
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY
-
-source_site modules $SITE
-source_site langs   $SITE
-source_site sched   $SITE
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -83,6 +82,7 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -ni=$NUM_ITERATIONS
                 -nv=$NUM_VARIATIONS
                 -np=$POPULATION_SIZE
+                -strategy=$GA_STRATEGY
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
@@ -96,8 +96,8 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 #Store scripts to provenance
-#copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+#copy the configuration files to TURBINE_OUTPUT
+cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # echo's anything following this to standard out
 WORKFLOW_SWIFT=workflow.swift

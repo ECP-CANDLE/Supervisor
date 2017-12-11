@@ -10,8 +10,8 @@ export PROCS=${PROCS:-4}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-#export QUEUE=${QUEUE:-debug-flat-quad}
-export WALLTIME=${WALLTIME:-00:30:00}
+export QUEUE=${QUEUE:-regular}
+export WALLTIME=${WALLTIME:-01:30:00}
 
 #export PROJECT=Candle_ECP
 
