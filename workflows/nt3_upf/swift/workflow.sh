@@ -83,6 +83,10 @@ swift-t -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
+        -e MODEL_SH \
+        -e SITE \
+        -e BENCHMARK_TIMEOUT \
+        -e MODEL_NAME \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
