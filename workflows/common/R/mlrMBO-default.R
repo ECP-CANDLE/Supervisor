@@ -77,7 +77,8 @@
                           #se.method = "bootstrap", se.boot = 50, se.ntree = 100)
     ctrl = makeMBOControl(n.objectives = 1, 
                           propose.points = propose.points,
-                          impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+			  impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax,
+			  trafo.y.fun = makeMBOTrafoFunction('log', log))
     ctrl = setMBOControlInfill(ctrl, 
                                crit = makeMBOInfillCritCB(),
                                opt.restarts = 1, 

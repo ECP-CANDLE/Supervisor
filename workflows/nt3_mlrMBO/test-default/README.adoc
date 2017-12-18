@@ -1,0 +1,4 @@
+
+== Test 1
+
+This is supposed to be the shortest test that runs a complete workflow.

@@ -1,5 +1,7 @@
   set.seed(12345)
+
   # mlrMBO EMEWS Algorithm Wrapper
+
   emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
   if (emews_root == "") {
     r_root <- getwd()
@@ -70,13 +72,14 @@
 
     print("Using randomForest")
     surr.rf = makeLearner("regr.randomForest", 
-                          predict.type = "se", 
-                          fix.factors.prediction = TRUE)
-                          #mtry = 6,
-                          #se.method = "bootstrap", se.boot = 50, se.ntree = 100)
+                      predict.type = "se", 
+                      fix.factors.prediction = TRUE,
+                      se.method = "bootstrap", 
+                      se.boot = 2)
     ctrl = makeMBOControl(n.objectives = 1, 
                           propose.points = propose.points,
-                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
+			  impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax,
+			  trafo.y.fun = makeMBOTrafoFunction('log', log))
     ctrl = setMBOControlInfill(ctrl, 
                                crit = makeMBOInfillCritCB(),
                                opt.restarts = 1, 
@@ -118,9 +121,10 @@
     }
 
     if (is.null(chkpntResults)){
-      design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
+        design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
+    	design = head(design, n = propose.points)
     } else {
-      design = chkpntResults
+      	design = chkpntResults
     }
     #  print(paste("design:", design))
     configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
