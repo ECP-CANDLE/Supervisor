@@ -5,7 +5,7 @@
 # We are more interested in vae results
 param.set <- makeParamSet(
   # we optimize for ae and vae separately
-  makeDiscreteParam("model", values=c("ae", "vae")),
+  makeDiscreteParam("model", values=c("ae")),
   # latent_dim impacts ae more than vae
   makeDiscreteParam("latent_dim", values=c(2, 8, 32, 128, 512)),
   # use a subset of 978 landmark features only to speed up training
@@ -37,3 +37,4 @@ param.set <- makeParamSet(
   makeNumericParam("beta_1", lower = 1e-04, upper = 1e01),
   makeNumericParam("beta_2", lower = 1e-04, upper = 1e01)
 )
+

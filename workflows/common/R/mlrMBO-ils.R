@@ -1,5 +1,7 @@
   set.seed(12345)
-  # mlrMBO EMEWS Algorithm Wrapper
+  
+  #mlrMBO EMEWS Algorithm Wrapper
+
   emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
   if (emews_root == "") {
     r_root <- getwd()
@@ -58,6 +60,7 @@
   lockBinding("parallelMap", as.environment("package:parallelMap"))
 
   library(mlrMBO)
+  library(randomForest)
 
   # dummy objective function
   simple.obj.fun = function(x){}
@@ -69,21 +72,33 @@
                             restart.file) {
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", 
-                          predict.type = "se", 
-                          fix.factors.prediction = TRUE)
-                          #mtry = 6,
-                          #se.method = "bootstrap", se.boot = 50, se.ntree = 100)
-    ctrl = makeMBOControl(n.objectives = 1, 
-                          propose.points = propose.points,
-                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+                          fix.factors.prediction = TRUE,
+                          mtry = 6,
+                          se.method = "bootstrap", se.boot = 50, se.ntree = 100)
+    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
+                          impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
+    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
+                               opt.restarts = 1, opt.focussearch.points = 1000)
+    ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)#, iters = max.iterations)
+
+
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+                          fix.factors.prediction = TRUE,
+                          se.method = "bootstrap", 
+                          se.boot = 2, 
+                          ntree=500, 
+                          mtry=8) 
+    ctrl = makeMBOControl(n.objectives = 1,
+    	   	          propose.points = propose.points, 
+                          trafo.y.fun = makeMBOTrafoFunction('log', log),
+                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax) 
+    ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     ctrl = setMBOControlInfill(ctrl, 
-                               crit = makeMBOInfillCritCB(),
+                               crit = makeMBOInfillCritEI(se.threshold = 0.0),
                                opt.restarts = 1, 
                                opt.focussearch.points = 1000)
-    ctrl = setMBOControlTermination(ctrl, 
-                                    max.evals = max.budget, 
-                                    iters = max.iterations)
+
 
     chkpntResults<-NULL
     # TODO: Make this an argument
@@ -119,14 +134,112 @@
 
     if (is.null(chkpntResults)){
       design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
+      design = head(design, n = propose.points)
     } else {
       design = chkpntResults
     }
-    #  print(paste("design:", design))
-    configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
+
+  itr <- 0
+  max_itr <- round(max.budget/propose.points)
+
+  configureMlr(show.info = FALSE, show.learner.output = TRUE, on.learner.warning = "quiet")
+  time <-(proc.time() - ptm)
+  res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+  itr_res<-as.data.frame(res$opt.path)
+  itr_res<-cbind(itr_res, stime = as.numeric(time[3]))
+  all_res <-itr_res
+  itr <- itr + 1
+  par.set = getParamSet(obj.fun)
+  par.set0<-par.set
+
+
+  #iterative phase starts
+  while (nrow(all_res) < max.budget){
+    time <-(proc.time() - ptm)
+    print(sprintf("nevals = %03d; itr = %03d; time = %5.5f;", nrow(all_res), itr, as.numeric(time[3])))
+    min.index<-which(itr_res$y==min(itr_res$y))
+    
+    par.set.t = par.set0
+    pars = par.set.t$pars
+    lens = getParamLengths(par.set.t)
+    k = sum(lens)
+    pids = getParamIds(par.set.t, repeated = TRUE, with.nr = TRUE)
+    
+    snames = c("y", pids)
+    reqDF = subset(itr_res, select = snames, drop =TRUE)
+    bestDF <- reqDF[min.index,]
+    print("reqDF")
+    print(nrow(reqDF))
+    print(summary(reqDF))
+    
+    train.model <- randomForest(y ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
+    var.imp <- importance(train.model, type = 1)
+    var.imp[which(var.imp[,1] < 0),1]<-0
+    index <- sort(abs(var.imp[,1]),
+                  decreasing = TRUE,
+                  index.return = TRUE)$ix
+    
+    inputs <- rownames(var.imp)[index]
+    scores <- var.imp[index,1]
+    remove.index <- which(scores >= 0.9*max(scores))
+    print(scores)
+    rnames <- inputs[remove.index]
+    print('removing:')
+    print(rnames)
+
+    
+    par.set1<-par.set0
+    pnames<-names(par.set$pars)
+    print(par.set1)
+    for (index in c(1:k)){
+      p = pnames[index]
+      type = par.set$pars[[index]]$type
+      if(type == "discrete"){
+      	if (p %in% rnames){
+           val  = subset(bestDF, select = p)
+           cval = as.vector(unlist(val))
+	   print(p)
+	   print(cval)
+           par.set1$pars[[index]]<-makeDiscreteParam(p, values=c(cval))
+        }
+      }
+    }
+    print('problem:')
+    print(par.set1)
+
+    #redefine objecitive function with par.set1
+    obj.fun = makeSingleObjectiveFunction(
+    name = "hyperparameter search",
+    fn = simple.obj.fun,
+    par.set = par.set1
+    )
+
+    #ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
+    design = generateDesign(n = propose.points, par.set = par.set1)
+
+    temp<-rbind(design,reqDF[,-1])
+    design <- head(temp, n = propose.points)
+    yvals <- predict(train.model,design)
+    
+    USE_MODEL <- TRUE
+    if(USE_MODEL){
+      design <- cbind(y=yvals, design)
+      ctrl = setMBOControlTermination(ctrl, max.evals = 2*propose.points)
+    } else {
+      ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
+    }
+
     res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
-    return(res)
+    itr_res<-as.data.frame(res$opt.path)
+    itr_res<-tail(itr_res, n = propose.points)
+   
+    par.set0<-par.set1
+    itr <- itr + 1
+    all_res <- rbind(all_res, itr_res)
   }
+
+  return(all_res)
+}
 
   # Ask for parameters from Swift over queue
   OUT_put("Params")
@@ -170,3 +283,4 @@
   setwd(wd)
   OUT_put("Look at final_res.Rds for final results.")
   print("algorithm done.")
+
