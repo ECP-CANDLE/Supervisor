@@ -33,7 +33,7 @@ def import_pkg(framework, model_name):
         raise ValueError("Invalid framework: {}".format(framework))
     return pkg
 
-def run(hyper_parameter_map):
+def run(hyper_parameter_map, obj_param):
 
     global logger
     logger = log_tools.get_logger(logger, __name__)
@@ -49,9 +49,24 @@ def run(hyper_parameter_map):
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
+        if(k=="dense"):
+            if(type(v) != list):
+                v=v.split(" ")
+            v = [int(i) for i in v]
+        if(k=="dense_feature_layers"):
+            if(type(v) != list):
+                v=v.split(" ")
+            v = [int(i) for i in v]
+        if(k=="cell_features"):
+            cp_str = v
+            v = list()
+            v.append(cp_str)
         params[k] = v
-
+    
+    logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
+    logger.debug("WRITE_PARAMS STOP")
+ 
     history = pkg.run(params)
 
     runner_utils.keras_clear_session(framework)
@@ -72,6 +87,7 @@ if __name__ == '__main__':
       instance_directory,
       framework,
       runid,
+      obj_param,
       benchmark_timeout ) = sys.argv
 
     hyper_parameter_map = runner_utils.init(param_string,
@@ -85,7 +101,7 @@ if __name__ == '__main__':
     sys.argv = ['nt3_tc1_runner']
 
     # Call to Benchmark!
-    result = run(hyper_parameter_map)
+    result = run(hyper_parameter_map, obj_param)
 
     runner_utils.write_output(result, instance_directory)
     logger.debug("RUN STOP")

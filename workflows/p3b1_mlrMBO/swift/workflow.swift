@@ -24,7 +24,6 @@ int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
 string model_name = argv("model_name");
-string model_sh = argv("model_sh");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string obj_param = argv("obj_param", "val_loss");
@@ -33,8 +32,6 @@ string r_file = argv("r_file", "mlrMBO3.R");
 
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
-
-printf("model_sh: %s", model_sh);
 
 if (restart_file != "DISABLED") {
   assert(restart_number != "1",
@@ -80,7 +77,7 @@ string FRAMEWORK = "keras";
         string results[];
         foreach p, j in param_array
         {
-            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), site, obj_param);
+            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), obj_param);
         }
         string res = join(results, ";");
         // printf(res);
