@@ -24,7 +24,7 @@ done
 shift $(( OPTIND - 1 ))
 set -x
 
-if [ ${#} != 3 ]
+if [ ${#} != 4 ]
 then
   usage
   exit 1
@@ -39,6 +39,12 @@ echo $PARAMS
 shift
 
 RUNID=$1
+shift
+
+# loss or corr
+OBJ_PARAM="$1"
+echo $OBJ_PARAM
+
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
@@ -66,6 +72,7 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$INSTANCE_DIRECTORY"
             "$FRAMEWORK"
             "$RUNID"
+            "$OBJ_PARAM"
             "$BENCHMARK_TIMEOUT")
 MODEL_CMD="python ${arg_array[@]}"
 echo MODEL_CMD: $MODEL_CMD

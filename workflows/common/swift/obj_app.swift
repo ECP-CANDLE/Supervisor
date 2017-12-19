@@ -16,7 +16,7 @@
   string outdir = "%s/run/%s" % (turbine_output, iter_indiv_id);
   // printf("running model shell script in: %s", outdir);
   string result_file = outdir/"result.txt";
-  wait (run_model(model_sh, params, iter_indiv_id))
+  wait (run_model(model_sh, params, iter_indiv_id, obj_param))
   {
     obj_result = get_results(result_file);
   }
@@ -24,10 +24,10 @@
 }
 
 app (void o) run_model (string model_sh, string params,
-                        string runid)
+                        string runid, string obj_param)
 {
-  //                      1       2       3
-      "bash" model_sh FRAMEWORK params   runid ;
+  //                      1       2       3        4 
+      "bash" model_sh FRAMEWORK params   runid  obj_param;
 }
 
 (string obj_result) get_results(string result_file) {
