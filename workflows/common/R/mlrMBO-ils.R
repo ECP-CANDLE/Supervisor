@@ -71,6 +71,8 @@
                             propose.points=10,
                             restart.file) {
 
+    ptm <- proc.time()
+
     print("Using randomForest")
     surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
                           fix.factors.prediction = TRUE,
