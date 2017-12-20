@@ -174,7 +174,7 @@
     print(nrow(reqDF))
     print(summary(reqDF))
     
-    train.model <- randomForest(y ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
+    train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
     var.imp[which(var.imp[,1] < 0),1]<-0
     index <- sort(abs(var.imp[,1]),
@@ -196,7 +196,7 @@
     for (index in c(1:k)){
       p = pnames[index]
       type = par.set$pars[[index]]$type
-      if(type == "discrete"){
+      if(type == "discrete" & max(scores) > 0){
       	if (p %in% rnames){
            val  = subset(bestDF, select = p)
            cval = as.vector(unlist(val))
@@ -219,12 +219,15 @@
     #ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     design = generateDesign(n = propose.points, par.set = par.set1)
 
+    print(names(design))
+    print(names(reqDF[,-1]))
     temp<-rbind(design,reqDF[,-1])
     design <- head(temp, n = propose.points)
-    yvals <- predict(train.model,design)
+    
     
     USE_MODEL <- TRUE
     if(USE_MODEL){
+      yvals <- predict(train.model,design)
       design <- cbind(y=yvals, design)
       ctrl = setMBOControlTermination(ctrl, max.evals = 2*propose.points)
     } else {

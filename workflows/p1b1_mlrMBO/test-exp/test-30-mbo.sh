@@ -33,7 +33,7 @@ export CFG_SYS=$THIS/cfg-sys-30.sh
 export CFG_PRM=$THIS/cfg-prm-30.sh
 
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
-export R_FILE=mlrMBO-default.R
+export R_FILE=mlrMBO-mbo.R
 
 #val_loss (default) and val_corr supported
 export OBJ_PARAM="val_loss"
