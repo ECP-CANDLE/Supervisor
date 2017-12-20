@@ -1,3 +1,8 @@
+
+/*
+ * OBSOLETE: This is now workflow.swift + *_py.swift
+ */
+
 import io;
 import sys;
 import files;

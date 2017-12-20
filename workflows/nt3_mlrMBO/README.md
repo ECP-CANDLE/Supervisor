@@ -80,7 +80,7 @@ both version 1 and 2.
   * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html)
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
 * Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
-** TL;DR: On Cori, type `ext/EQ-R/eqr/cori_build.sh`
+** TL;DR: On Cori, type `Supervisor/workflows/common/ext/EQ-R/eqr/cori_build.sh`
 * Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
 See below for instructions for running on specific machines (e.g. Cori, Theta)
@@ -92,44 +92,22 @@ The workflow project consists of the following directories.
 ```
 nt3_mlrMBO/
   data/
-  ext/EQ-R
-  etc/
   scripts/
-  R/
   python/
   swift/
 ```
 
  * `data` - model input etc. data, such as the mlrMBO space description (e.g parameter_set3.R)
  * `etc` - additional code used by EMEWS
- * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
- * `R/mlrMBO3.R` - the mlrMBO R code
- * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
- * `python/nt3_runner.py` - python code called by the swift script to run P3B1.
+ * `../common/ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
+ * `../common/R/mlrMBO3.R` - the mlrMBO R code
+ * `../common/R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
+ * `python/nt3_runner.py` - python code called by the swift script to run NT3.
  * `python/test/test.py` - python code for testing the p3b1_runner.
- * `swift/workflow3.swift` - the swift workflow script
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
- * `swift/cori_workflow3.sh` - launch script customized for the Cori supercomputer
- * `swift/cori_settings.sh` - settings for running on the Cori supercomputer
- * `swift/ai_workflow.sh` - launch script for running the app invocation ("ai") workflow (see below).
- * `swift/ai_workflow3.swift` - app invocation version (see below) of the swift workflow
- * `swift/theta_workflow.sh` - launch script for running on theta. This uses the app invocation workflow.
- * `scripts/theta_run_model.sh` - theta-specific bash script used to launch nt3_runner.py
  * `scripts/run_model.sh` - generic bash script used to to launch nt3_runner.py
 
 ## Running the Workflow ##
-
-There are two different versions of the workflow.
-
-1. The first runs the benchmark code directly from within swift using swift's
-python integration.
-2. The second, the _ai_-version, runs the benchmark code by invoking the python interpreter using
-a bash script which is in turn invoked using a swift app function.  The bash scripts
-`scripts/theta_run_model.sh` and `scripts/run_model.sh` are an example of the
-bash script.
-
-The latter of these is necessary on machines like Theta where it is not possible
-to compile swift with an appropriate python.
 
 The launch scripts in the `swift` directory are used to run the workflow.
 Backup the workflow launch script and edit it as appropriate. Typically,
@@ -144,7 +122,7 @@ you should only need to edit the values between `# USER SETTINGS START` and
 * `PARAM_SET_FILE` - the file that defines the hyperparameter space used by R.
 
 The latter 5 of these are passed directly to the swift script and retrieved
-using the swift `argv()` builtin.
+using the swift `argv()` builtin. These variables can be set in test/cfg-sys.sh file.
 
 ```
 int propose_points = toint(argv("pp", "10"));
@@ -157,13 +135,12 @@ string param_set = argv("param_set_file");
 In addition, the following variable is used to determine which version of
 the workflow is run, by defining which swift is actually run.
 
-* `SWIFT_FILE` - the swift workflow file to run
-   * Set to `$EMEWS_PROJECT_ROOT\swift\workflow3.swift` to run the benchmarks via swift's integrated python.
-   * Set to `$EMEWS_PROJECT_ROOT\swift\ai_workflow3.swift` to run the benchmarks via a swift
-   app function.
+* `SWIFT_FILE` - the swift workflow file to run is set in workflow.sh file
+   * Set to `$EMEWS_PROJECT_ROOT\swift\workflow.swift` to run the benchmarks via swift's integrated python.
+
 
 If running on an HPC machine, set `PROCS`, `PPN`, `QUEUE`, `WALLTIME` and `MACHINE`
-as appropriate.
+as appropriate in the cfg-sys.sh file found in the test directory.
 
 Lastly, see the TODOs in the launch script for any additional variables to set.
 
@@ -185,11 +162,18 @@ different workflows. See for example `Supervisor/workflows/common/sh/run_logger.
 
 ### Running the *workflow script* ###
 
-The workflow is executed by running the launch script and passing it an
-'experiment id', i.e., `swift/workflow.sh <EXPID>` where `EXPID` is the
-experiment ID (provide any token you want). The workflow
- output, various swift related files, and the `final_res.Rds` file will be written
- into a `nt3_mlrMBO/experiments/X` directory where X is the experiment id. A copy
+ The launch scripts in the `test` directory can be used to run the workflow.
+ Copy the `cfg-prm.sh` 'cfg-sys.sh' and 'test-1.sh' and edit it as appropriate. 
+ The test script takes 2 or 3 arguments, each of which is set in the launch script.
+
+ ./test-1.sh titan OPTIONAL: <run directory>
+ Ex. 1: 
+./test-1.sh titan /lustre/scratch/csc249/combo_runs/test-run1/
+ Ex. 2:
+ ./test-1.sh titan
+ 
+ The workflow output, various swift related files, and the `final_res.Rds` file will be written
+ into a `nt3_mlrMBO/experiments/X` directory where X is the experiment id (for Ex. 2). A copy
  of the launch script that was used to launch the workflow will also be written
  to this directory.
 
@@ -280,7 +264,7 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/common/ext/EQ-R/eqr
 ./cori_build.sh
 ```
 
@@ -317,7 +301,7 @@ for the EQ/R swift extension.
 
 * Compile the EQ/R swift-t extension.
 ```
-cd Supervisor/workflows/nt3_mlrMBO/ext/EQ-R/eqr
+cd Supervisor/workflows/common/ext/EQ-R/eqr
 ./bootstrap
 source ./theta_build_settings.sh
 ./configure
@@ -326,28 +310,16 @@ make install
 
 Launching the workflow:
 
-1. Make a copy of `theta_workflow.sh`
-2. Edit the copy setting the relevant variables there
-as appropriate.  All easily
-changed settings are delineated by the `USER SETTINGS START` and `USER SETTINGS END`
-markers.  Note that these variables can be easily overwritten from the calling
-environment (use `export` in your shell). By default these are set up for a short-ish
-debugging runs and will need to be changed for a production run.
-3. Run the workflow by running your workflow script, passing an experiment id.
+1. Make a copy of the test directory 
+2. Edit the cfg-prm.sh, cfg-sys.sh and test-1.sh to specify the parameters required for the run.
+3. Run the workflow by launching the test script with appropriate arguments.
 
 An example:
 
 ```
-cd Supervisor/workflows/nt3_mlrMBO/swift
-cp theta_workflow.sh my_theta_workflow.sh
-# edit my theta_workflow.sh if necesasry
-./theta_workflow.sh T1
+cd Supervisor/workflows/nt3_mlrMBO/
+cp test my_big_run
+# edit my fg-prm.sh, cfg-sys.sh and test-1.sh if necesasry
+./test-1.sh titan 
 ```
-
-where T1 is the experiment ID.
-
-Note that Theta use the _ai_-version of the workflow. The benchmark is launched
-using Supervisor/workflows/nt3_mlrMBO/scripts/theta_run_model.sh. In there, the
-`PYTHONHOME` shell variable can be changed to specify a different python installation to
-run the model with. If you do change the python installation, the python
-system requirements mentioned above will need to be satisfied.
+The directory for runs can be optionally provided as the 3rd argument of the command './test-1.sh titan'
