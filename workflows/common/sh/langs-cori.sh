@@ -5,19 +5,21 @@
 # Assumes modules are loaded (cf. modules-cori.sh)
 
 # Python
-COMMON_DIR=$WORKFLOWS_ROOT/common/python
+PYTHON=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning
+export PATH=$PYTHON/bin:$PATH
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
 PYTHONPATH+=$BENCHMARK_DIR:
 PYTHONPATH+=$BENCHMARKS_ROOT/common:
+COMMON_DIR=$WORKFLOWS_ROOT/common/python
 PYTHONPATH+=$COMMON_DIR
-export PYTHONHOME=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning
+export PYTHONHOME=$PYTHON
 
 # R
 export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R
 
 # Swift/T
-export PATH=/global/homes/w/wozniak/Public/sfw/compute/swift-t-r/stc/bin:$PATH
+export PATH=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2017-12-19/stc/bin:$PATH
 # On Cori, we have a good Swift/T Python embedded interpreter
 SWIFT_IMPL="app"
 
