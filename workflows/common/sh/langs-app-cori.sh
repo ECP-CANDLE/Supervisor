@@ -1,3 +1,7 @@
+
+# LANGS APP CORI
+# Language settings for Cori app functions (Python, R, etc.)
+
 # Uncomment this if want to run with tensorflow loaded from:
 # module load tensorflow/intel-head. See 
 # http://www.nersc.gov/users/data-analytics/data-analytics-2/deep-learning/using-tensorflow-at-nersc/
