@@ -16,9 +16,9 @@
 # export KMP_BLOCKTIME=30
 # export KMP_SETTINGS=1
 # export KMP_AFFINITY="granularity=fine,verbose,compact,1,0"
-# export OMP_NUM_THREADS=136
+# export OMP_NUM_THREADS=68
 # export NUM_INTER_THREADS=1
-# export NUM_INTRA_THREADS=136
+# export NUM_INTRA_THREADS=68
 
 # 
 # export PYTHONHOME="/usr/common/software/tensorflow/intel-tensorflow/head"
