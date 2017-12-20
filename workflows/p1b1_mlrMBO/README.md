@@ -1,8 +1,8 @@
 # P1B1 mlrMBO Workflow #
 
 The P1B1 mlrMBO workflow evaluates a modified version of the P1B1 benchmark
-autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1
-code (p1b1_baseline.py) has been modified to expose a functional interface.
+autoencoder and variational autoencoder using hyperparameters provided by a mlrMBO instance. The P1B1
+code (p1b1_baseline_keras2.py) has been modified to expose a functional interface.
 The neural net remains the same. Currently, mlrMBO minimizes the validation
 loss. EMEWS R queues are used to:
 1. pass the hyperparameters to evaluate from the running mlrMBO algorithm to the swift script to launch a p1b1 run, and to
@@ -17,7 +17,23 @@ parameter evaluations.
 * Python 2.7
 * P1B1 Autoencoder - git@github.com:ECP-CANDLE/Benchmarks.git. Clone and switch
 to the supervisor branch.
-* P1B1 Data - `http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.train.csv` and `http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.test.csv`. Download these into some suitable directory (e.g. `workflows/p1b1_mlrMBO/data`)
+* P1B1 benchmark data -
+  ```
+  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.dev.train.csv
+  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.dev.test.csv
+  http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/lincs1000.tsv
+  ```
+  `nt_train2.csv` and `nt_test2.csv` should be copied into X/Benchmarks/Data/Pilot1,
+  where X is the parent directory path of your Benchmark repository.  For example, from within `X/Benchmarks`
+
+  ```
+  mkdir -p Data/Pilot1
+  cd Data/Pilot1
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.dev.train.csv
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/P1B1.dev.test.csv
+  wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/P1B1/lincs1000.tsv
+
+  ```
 * Keras - https://keras.io. The supervisor branch of P1B1 should work with
 both version 1 and 2.
 * Swift-t with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
@@ -35,7 +51,7 @@ both version 1 and 2.
   * parallelMap : (https://cran.r-project.org/web/packages/parallelMap/index.html)
   * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html) 
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
-* Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
+* Compiled EQ/R, instructions in `Supervisor/workflows/common/ext/EQ-R/eqr/COMPILING.txt`
 
 Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
@@ -46,23 +62,20 @@ The workflow project consists of the following directories.
 ```
 p1b1_mlrMBO/
   data/
-  ext/EQ-R
-  etc/
-  R/
   python/
+  test/
   swift/
 ```
 
  * `data` - model input etc. data, such as the hyperopt space description.
- * `etc` - additional code used by EMEWS
- * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
- * `R/mlrMBO.R` - the mlrMBO R code
- * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
+ * `../commom/ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
+ * `../common/R/mlrMBO.R` - the mlrMBO R code
+ * `../common/R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
  * `python/p1b1_runner.py` - python code called by the swift script to run p1b1.
  * `python/test/test.py` - python code for testing the p1b1_runner.
  * `swift/workflow.swift` - the swift workflow scrip
  * `swift/workflow.sh` - generic launch script to set the appropriate enviroment variables etc. and then launch the swift workflow script
- * `swift/cooley_workflow.sh` - launch script customized for the Cooley supercomputer
+ * `test` - run the shell script with site name - local/theta/titan/cori or other supported supercomputers 
 
 
  ## Running the Workflow ##
@@ -178,60 +191,13 @@ For more information see, the mbo and MBOSingleObjResult in the mlrMBO
 documentation: https://cran.r-project.org/web/packages/mlrMBO/mlrMBO.pdf
 
 
-## Running on Cooley ##
-
-Prerequisites:
-
-* Install the required R packages. (They are already installed on Cooley.) When R displays the list of mirrors to chose from, use an HTTP mirror!
-  Not one of the initially listed HTTPS mirrors, they are not accessible.
-  ```
-  soft add +gcc-4.8.1
-  export PATH=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/bin:$PATH
-  R -f install-mlrMBO.R
-  ```
-
-* Compile the EQ/R swift-t extension (see ext/EQ-R/eqr/COMPILING.txt for details):
-```
-./build-cooley.sh
-```
-
-Details:
-  ```
-  soft add +gcc-4.8.1
-  export PATH=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/bin:$PATH
-  cd pl1b1_mlrMBO/ext/EQ-R/eqr
-  cp settings.template.sh settings.sh
-  ```
-  In settings.sh, set the R and tcl related variables as follows:
-
-  ```
-  R_INCLUDE=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/include
-  R_LIB=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/lib
-  R_INSIDE=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/library/RInside
-  RCPP=/home/wozniak/Public/sfw/x86_64/R-3.2.3-gcc-4.8.1/lib64/R/library/Rcpp
-
-  TCL_INCLUDE=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/include
-  TCL_LIB=/home/wozniak/Public/sfw/x86_64/tcl-8.6.6-global-gcc-4.8.1/lib
-  TCL_LIBRARY=tcl8.6
-  ```
-
-  ```
-  soft add +autotools
-  ./bootstrap
-  source settings.sh
-  ./configure
-  make install
-  ```
-* Cooley uses this python: `/soft/analytics/conda/env/Candle_ML/lib/python2.7/` with
-keras etc. already installed, so nothing needs to be done there.
+## Running on Theta ##
 
 * Launching the workflow
 
-Edit cooley_workflow.sh, setting the relevant variables (see above) as appropriate.
+Edit cfg-sys/prm.sh file for setting the relevant variables.
 
 ```
-export PATH=/home/wozniak/Public/sfw/x86_64/login/swift-t-conda-r/stc/bin:$PATH
-cd p1b1_mlrMBO/swift
-./cooley_workflow T1
+cd p1b1_mlrMBO/test
+./test-1.sh theta
 ```
-where T1 is the experiment id.

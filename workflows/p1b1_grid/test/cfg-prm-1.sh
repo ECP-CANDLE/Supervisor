@@ -1,0 +1,16 @@
+# NOT NEEDED FOR GRID SEARCH
+# See data/settings.json file
+# TODO: Use this file to specify custom settings.json
+# CFG PRM 1
+
+# mlrMBO settings
+
+# Total iterations
+PROPOSE_POINTS=${PROPOSE_POINTS:-3}
+MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-3}
+MAX_ITERATIONS=${MAX_ITERATIONS:-2}
+MAX_BUDGET=${MAX_BUDGET:-1800}
+DESIGN_SIZE=${DESIGN_SIZE:-2}
+PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set.R}
+MODEL_NAME="p1b1"
+

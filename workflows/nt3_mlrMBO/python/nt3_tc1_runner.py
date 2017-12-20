@@ -9,27 +9,8 @@ import os
 import numpy as np
 import importlib
 import runner_utils
-import socket
-
-node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
-print("node,pid: " + node_pid)
-
+import log_tools
 logger = None
-
-def get_logger():
-    """ Set up logging """
-    global logger
-    if logger is not None:
-        return logger
-    import logging, sys
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    h = logging.StreamHandler(stream=sys.stdout)
-    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-9s %(message)s',
-                             datefmt='%Y/%m/%d %H:%M:%S')
-    h.setFormatter(fmtr)
-    logger.addHandler(h)
-    return logger
 
 def import_pkg(framework, model_name):
     if framework == 'keras':
@@ -67,18 +48,13 @@ def run(hyper_parameter_map):
     runner_utils.write_params(params, hyper_parameter_map)
     history = pkg.run(params)
 
-    if framework == 'keras':
-        # works around this error:
-        # https://github.com/tensorflow/tensorflow/issues/3388
-        try:
-            from keras import backend as K
-            K.clear_session()
-        except AttributeError:      # theano does not have this function
-            pass
+    runner_utils.keras_clear_session(framework)
 
     # use the last validation_loss as the value to minimize
     val_loss = history.history['val_loss']
-    return val_loss[-1]
+    result = val_loss[-1]
+    print("result: ", result)
+    return result
 
 if __name__ == '__main__':
     print("RUNNER")
@@ -102,3 +78,4 @@ if __name__ == '__main__':
     sys.stdout.flush()
     result = run(hyper_parameter_map)
     runner_utils.write_output(result, instance_directory)
+    logger.debug("RUN STOP")
