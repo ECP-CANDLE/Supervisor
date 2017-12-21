@@ -8,7 +8,7 @@
 
 # STC=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc
 # STC=/projects/Candle_ECP/swift/pyr/stc
-STC=/projects/Candle_ECP/swift/2017-08-11/stc
+STC=/projects/Candle_ECP/swift/2017-12-20/stc
 
 export TCL=/projects/Candle_ECP/swift/deps/tcl-8.6.6
 export PY=/projects/Candle_ECP/swift/deps/Python-2.7.12
