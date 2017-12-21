@@ -1,6 +1,8 @@
 
 == Transcript
 
+Edit +example.sh+ to select a +TURBINE_LAUNCH_OPTIONS+.  Then:
+
 ----
 $ ./example.sh 
 TURBINE-THETA SCRIPT
@@ -16,7 +18,7 @@ JOB_ID=161050
 $ 
 ----
 
-# Wait for job completion
+Wait for job completion.  Then:
 
 ----
 $ grep "aprun\|CODE:" $( cat turbine-directory.txt )/output.txt
@@ -25,14 +27,14 @@ $ grep "aprun\|CODE:" $( cat turbine-directory.txt )/output.txt
 will produce
 
 ----
-+ aprun -n 2 -N 1 -d 2 -e LD_LIBRARY_PATH=... .../tclsh8.6 .../swift-t-hello.ctG.tic
-CODE: 0
++ aprun -n 2 -N 1 FAIL ME -e LD_LIBRARY_PATH=... .../tclsh8.6 .../swift-t-hello.EmD.tic
+aprun: file FAIL not found
+aprun: Exiting due to errors. Application aborted
 ----
 
 or
 
 ----
-+ aprun -n 2 -N 1 FAIL ME -e LD_LIBRARY_PATH=... .../tclsh8.6 .../swift-t-hello.EmD.tic
-aprun: file FAIL not found
-aprun: Exiting due to errors. Application aborted
++ aprun -n 2 -N 1 -d 2 -e LD_LIBRARY_PATH=... .../tclsh8.6 .../swift-t-hello.ctG.tic
+CODE: 0
 ----
