@@ -78,6 +78,7 @@ then
 fi
 
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
+                -init_params=$INIT_PARAMS_FILE
                 -seed=$SEED
                 -ni=$NUM_ITERATIONS
                 -nv=$NUM_VARIATIONS
