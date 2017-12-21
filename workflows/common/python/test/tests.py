@@ -1,5 +1,6 @@
 import unittest
 import ga_utils
+import deap_ga
 import random
 
 class TestParameters(unittest.TestCase):
@@ -108,6 +109,35 @@ class TestParameters(unittest.TestCase):
 
         self.assertEqual(p.value, p.randomDraw())
         self.assertEqual(p.value, p.mutate(100, mu=0, indpb=1.0))
+
+class TestInitParamsParsing(unittest.TestCase):
+
+    def testParsing(self):
+         deap_ga.ga_params = ga_utils.create_parameters("./test/ga_params.json")
+         pop = []
+         for i in range(2):
+             pop.append(deap_ga.make_random_params())
+
+         deap_ga.update_init_pop(pop, "./test/params.csv")
+         # "activation","residual","batch_size","e","epochs","clipnorm"
+         # "relu",TRUE,32,3,"200",1.343
+         # "tanh",FALSE,16,4,"100",324.3
+         # ga params and pop order is:
+         # epochs,clipnorm,activation,residual,batch_size,e
+         expected = [
+             [200,1.343,"relu",True,32,3],
+             [100,324.3,"tanh",False,16,4]
+         ]
+         for i,exp in enumerate(expected):
+             for j, item in enumerate(exp):
+                 self.assertEqual(item, pop[i][j])
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

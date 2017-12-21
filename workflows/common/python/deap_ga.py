@@ -68,6 +68,25 @@ def make_random_params():
 
     return draws
 
+def parse_init_params(params_file):
+    init_params = []
+    with open(params_file) as f_in:
+        reader = csv.reader(f_in)
+        header = next(reader)
+        for row in reader:
+            init_params.append(dict(zip(header,row)))
+    return init_params
+
+def update_init_pop(pop, params_file):
+    global ga_params
+    init_params = parse_init_params(params_file)
+    if len(pop) != len(init_params):
+        raise ValueError("Population size and number of initial params are not equal")
+
+    for i, indiv in enumerate(pop):
+        for j, param in enumerate(ga_params):
+            indiv[j] = param.parse(init_params[i][param.name])
+
 # keep as reference for log type
 # def mutGaussian_log(x, mu, sigma, mi, mx, indpb):
 #     if random.random() < indpb:
@@ -105,12 +124,13 @@ def run():
     :param seed: random seed
     :param strategy: one of 'simple', 'mu_plus_lambda'
     :param ga parameters file name: ga parameters file name (e.g., "ga_params.json")
+    :param param_file: name of file containing initial parameters
     """
     eqpy.OUT_put("Params")
     params = eqpy.IN_get()
 
     # parse params
-    (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file) = eval('{}'.format(params))
+    (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file, param_file) = eval('{}'.format(params))
     random.seed(seed)
     global ga_params
     ga_params = ga_utils.create_parameters(ga_params_file)
@@ -130,7 +150,8 @@ def run():
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_pop)
-    #update_init_pop(pop, best_set, mutate_indpb)
+    if init_param_file != "":
+        update_init_pop(pop, param_file)
 
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)

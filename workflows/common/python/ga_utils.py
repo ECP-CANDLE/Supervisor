@@ -1,6 +1,13 @@
 from __future__ import print_function
 import random, json, sys
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 class ConstantParameter(object):
 
     def __init__(self, name, value):
@@ -12,6 +19,13 @@ class ConstantParameter(object):
 
     def mutate(self, x, mu, indpb):
         return self.value
+
+    def parse(self, s):
+        if is_number(s):
+            if "." in s:
+                return float(s)
+            return int(s)
+        return s
 
 class NumericParameter(object):
 
@@ -25,18 +39,21 @@ class NumericParameter(object):
         x = self.uni_rand_func(self.lower, self.upper)
         return x
 
+
 class IntParameter(NumericParameter):
 
     def __init__(self, name, lower, upper, sigma):
         super(IntParameter, self).__init__(name, lower, upper, sigma)
         self.uni_rand_func = random.randint
 
-
     def mutate(self, x, mu, indpb):
         if random.random() <= indpb:
             x += random.gauss(mu, self.sigma)
             x = int(max(self.lower, min(self.upper, round(x))))
         return x
+
+    def parse(self, s):
+        return int(s)
 
 class FloatParameter(NumericParameter):
 
@@ -49,6 +66,9 @@ class FloatParameter(NumericParameter):
             x += random.gauss(mu, self.sigma)
             x = max(self.lower, min(self.upper, x))
         return x
+
+    def parse(self, s):
+        return float(s)
 
 #import logging
 #logging.basicConfig()
@@ -73,12 +93,20 @@ class CategoricalParameter:
             x = a
         return x
 
+    def parse(self, s):
+        if is_number(s):
+            if "." in s:
+                return float(s)
+            return int(s)
+        return s
+
 class OrderedParameter:
 
     def __init__(self, name, categories, sigma):
         self.name = name
         self.categories = categories
         self.sigma = sigma
+
 
     def randomDraw(self):
         i = random.randint(0, len(self.categories) - 1)
@@ -100,6 +128,13 @@ class OrderedParameter:
             x = self.categories[n]
         return x
 
+    def parse(self, s):
+        if is_number(s):
+            if "." in s:
+                return float(s)
+            return int(s)
+        return s
+
 class LogicalParameter:
 
     def __init__(self, name):
@@ -112,6 +147,12 @@ class LogicalParameter:
         if random.random() <= indpb:
             x = not x
         return x
+
+    def parse(self, s):
+        if s.lower() == "true":
+            return True
+        else:
+            return False
 
 def create_parameters(param_file):
     with open(param_file) as json_file:
