@@ -174,6 +174,7 @@
     print(nrow(reqDF))
     print(summary(reqDF))
     
+    print("itr-rf")
     train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
     var.imp[which(var.imp[,1] < 0),1]<-0
@@ -219,6 +220,7 @@
     #ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     design = generateDesign(n = propose.points, par.set = par.set1)
 
+    print("bug msg:")
     print(names(design))
     print(names(reqDF[,-1]))
     temp<-rbind(design,reqDF[,-1])
@@ -228,18 +230,25 @@
     USE_MODEL <- TRUE
     if(USE_MODEL){
       yvals <- predict(train.model,design)
-      design <- cbind(y=yvals, design)
+      design <- cbind(y=abs(yvals), design)
       ctrl = setMBOControlTermination(ctrl, max.evals = 2*propose.points)
     } else {
       ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     }
-
+    print("mbo-itr")
+    print(yvals)
+    
+    print(summary(yvals))
     res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
     itr_res<-as.data.frame(res$opt.path)
+    itr_res<-cbind(itr_res, stime = as.numeric(time[3]))
     itr_res<-tail(itr_res, n = propose.points)
    
     par.set0<-par.set1
     itr <- itr + 1
+    print("bug msg:")
+    print(names(all_res))
+    print(names(itr_res))
     all_res <- rbind(all_res, itr_res)
   }
 
