@@ -2,8 +2,8 @@
 # module load tensorflow/intel-head. See 
 # http://www.nersc.gov/users/data-analytics/data-analytics-2/deep-learning/using-tensorflow-at-nersc/
  
-# module swap craype-haswell craype-mic-knl
-# module load tensorflow/intel-head 
+module swap craype-haswell craype-mic-knl
+module load tensorflow/intel-head 
 # # module load tensorflow/intel-head sets these:
 # #setenv		 KMP_BLOCKTIME 1 
 # #setenv		 KMP_SETTINGS 1 
@@ -20,14 +20,14 @@
 # export NUM_INTER_THREADS=1
 # export NUM_INTRA_THREADS=68
 
-# 
-# export PYTHONHOME="/usr/common/software/tensorflow/intel-tensorflow/head"
-# PYTHON="$PYTHONHOME/bin/python"
-# export LD_LIBRARY_PATH="$PYTHONHOME/lib"
-# export PATH="$PYTHONHOME/bin:$PATH"
-# 
-# COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-# PYTHONPATH+=":$PYTHONHOME/lib/python2.7:"
-# PYTHONPATH+=":$COMMON_DIR:"
-# PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
-# export PYTHONPATH
+ 
+export PYTHONHOME="/usr/common/software/tensorflow/intel-tensorflow/head"
+PYTHON="$PYTHONHOME/bin/python"
+export LD_LIBRARY_PATH="$PYTHONHOME/lib"
+export PATH="$PYTHONHOME/bin:$PATH"
+ 
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+PYTHONPATH+=":$PYTHONHOME/lib/python2.7:"
+PYTHONPATH+=":$COMMON_DIR:"
+PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
+export PYTHONPATH
