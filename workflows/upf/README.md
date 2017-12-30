@@ -2,8 +2,8 @@
 
 This benchmark evaluates ensembles of "Benchmark" available here: `git@github.com:ECP-CANDLE/Benchmarks.git` for a given set of parameters.
 
-## To run the model:- ##
-:
+## Running ##
+
 1. cd into the *~/Supervisor/workflows/upf/test* directory
 2. Specify the MODEL_NAME in *upf-1.sh* file, hyperparameters in *upf-1.txt*
 3. Specify the #procs, queue etc. in *cfg-sys-1.sh* file
@@ -23,15 +23,14 @@ What you need to install to run the workflow:
 * NT3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
 * benchmark data -
-  ```
  See the individual benchmarks README for obtaining the initial data
-  ```
-
 
 ## Calling sequence ##
 
 Function calls :-
-* upf-1.sh -> swift/workflow.sh -> swift/workflow.swift -> common/swift/obj_app.swift -> common/sh/model.sh -> common/python/model_runner.py -> 'calls the benchmark'
+* upf-1.sh -> swift/workflow.sh -> swift/workflow.swift -> 
+common/swift/obj_app.swift -> common/sh/model.sh -> 
+common/python/model_runner.py -> 'calls the benchmark'
 
 Scheduling scripts :-
 * upf-1.sh -> cfg-sys-1.sh -> common/sh/<machine_name> - module, scheduling, langs .sh files
