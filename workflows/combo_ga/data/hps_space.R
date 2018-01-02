@@ -38,6 +38,3 @@ param.set <- makeParamSet(
   makeNumericParam("beta_1", lower = 1e-04, upper = 1e01),
   makeNumericParam("beta_2", lower = 1e-04, upper = 1e01)
 )
-
-
-
