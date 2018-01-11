@@ -54,7 +54,8 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
-    return [(float(x),) for x in split_result]
+    return [(float(x),) if not math.isnan(float(x)) else (float(99999999),) for x in split_result]
+    #return [(float(x),) for x in split_result]
 
 def make_random_params():
     """
@@ -150,7 +151,7 @@ def run():
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_pop)
-    if init_param_file != "":
+    if param_file != "":
         update_init_pop(pop, param_file)
 
     hof = tools.HallOfFame(1)
