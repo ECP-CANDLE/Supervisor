@@ -54,6 +54,7 @@ def queue_map(obj_func, pops):
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(';')
+    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
     return [(float(x),) if not math.isnan(float(x)) else (float(99999999),) for x in split_result]
     #return [(float(x),) for x in split_result]
 
@@ -156,10 +157,10 @@ def run():
 
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
-    stats.register("avg", np.mean)
-    stats.register("std", np.std)
-    stats.register("min", np.min)
-    stats.register("max", np.max)
+    stats.register("avg", ga_utils.mean)
+    stats.register("std", ga_utils.std)
+    stats.register("min", ga_utils.min)
+    stats.register("max", ga_utils.max)
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
