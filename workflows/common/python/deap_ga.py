@@ -5,6 +5,8 @@ import math
 import csv
 import json
 
+import numpy as np
+
 from deap import base
 from deap import creator
 from deap import tools
@@ -156,10 +158,10 @@ def run():
 
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
-    stats.register("avg", ga_utils.mean)
-    stats.register("std", ga_utils.std)
-    stats.register("min", ga_utils.min)
-    stats.register("max", ga_utils.max)
+    stats.register("avg", np.mean)
+    stats.register("std", np.std)
+    stats.register("min", np.min)
+    stats.register("max", np.max)
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
