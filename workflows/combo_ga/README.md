@@ -40,7 +40,7 @@ cd Data/Pilot1
 * Keras - https://keras.io. The supervisor branch of Combo should work with
 both version 1 and 2.
 * Swift-t with Python 2.7 and R enabled - http://swift-lang.org/Swift-T/
-* Required R packages:
+* Required R packages: (DO WE STILL NEED THIS? -Justin)
   * All required R packages can be installed from within R with:
   ```
   install.packages(c("<package name 1>", "<package name 2", ...),

@@ -1,11 +1,12 @@
 import threading
 import random
-import numpy as np
 import time
 import math
 import csv
 import json
 import time
+
+import numpy as np
 
 from deap import base
 from deap import creator
