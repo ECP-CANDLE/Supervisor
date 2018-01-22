@@ -5,6 +5,7 @@ import time
 import math
 import csv
 import json
+import time
 
 from deap import base
 from deap import creator
@@ -119,6 +120,9 @@ def cxUniform(ind1, ind2, indpb):
     c1, c2 = tools.cxUniform(ind1, ind2, indpb)
     return (c1, c2)
 
+def timestamp(scores):
+    return time.time()
+
 def run():
     """
     :param num_iter: number of generations
@@ -157,13 +161,15 @@ def run():
 
     hof = tools.HallOfFame(1)
     stats = tools.Statistics(lambda ind: ind.fitness.values)
-    stats.register("avg", ga_utils.mean)
-    stats.register("std", ga_utils.std)
-    stats.register("min", ga_utils.min)
-    stats.register("max", ga_utils.max)
+    stats.register("avg", np.mean)
+    stats.register("std", np.std)
+    stats.register("min", np.min)
+    stats.register("max", np.max)
+    stats.register("ts", timestamp)
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
+    start_time = time.time()
     if strategy == 'simple':
         pop, log = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=mutpb, ngen=num_iter - 1,
                                    stats=stats, halloffame=hof, verbose=True)
@@ -179,8 +185,11 @@ def run():
     else:
         raise NameError('invalid strategy: {}'.format(strategy))
 
+    end_time = time.time()
+
     fitnesses = [str(p.fitness.values[0]) for p in pop]
 
     eqpy.OUT_put("DONE")
     # return the final population
-    eqpy.OUT_put("{0}\n{1}\n{2}".format(create_list_of_json_strings(pop), ';'.join(fitnesses), log))
+    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}".format(create_list_of_json_strings(pop), ';'.join(fitnesses),
+        start_time, log, end_time))

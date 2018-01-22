@@ -2,26 +2,6 @@ from __future__ import print_function
 
 import random, json, sys, math
 
-# used to distiguish  ga_utils.min etc. from builtin function min
-import __builtin__
-
-def mean(vals):
-    if len(vals) == 0:
-        return 0
-
-    return sum(vals) / len(vals)
-
-def std(vals):
-    m = mean(vals)
-    t = [((x - m) ** 2) for x in vals]
-    return math.sqrt(mean(t))
-
-def min(vals):
-    return __builtin__.min(vals)
-
-def max(vals):
-    return __builtin__.max(vals)
-
 def is_number(s):
     try:
         float(s)
@@ -70,7 +50,7 @@ class IntParameter(NumericParameter):
     def mutate(self, x, mu, indpb):
         if random.random() <= indpb:
             x += random.gauss(mu, self.sigma)
-            x = int(__builtin__.max(self.lower, __builtin__.min(self.upper, round(x))))
+            x = int(max(self.lower, min(self.upper, round(x))))
         return x
 
     def parse(self, s):
@@ -85,7 +65,7 @@ class FloatParameter(NumericParameter):
     def mutate(self, x, mu, indpb):
         if random.random() <= indpb:
             x += random.gauss(mu, self.sigma)
-            x = __builtin__.max(self.lower, __builtin__.min(self.upper, x))
+            x = max(self.lower, min(self.upper, x))
         return x
 
     def parse(self, s):
@@ -136,7 +116,7 @@ class OrderedParameter:
     def drawIndex(self, i):
         n = random.randint(1, self.sigma)
         n = i + (n if random.random() < 0.5 else -n)
-        n = __builtin__.max(0, __builtin__.min(len(self.categories) - 1, n))
+        n = max(0, min(len(self.categories) - 1, n))
         return n
 
     def mutate(self, x, mu, indpb):
