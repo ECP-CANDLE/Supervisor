@@ -29,8 +29,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-30.sh
-export CFG_PRM=$THIS/cfg-prm-30.sh
+export CFG_SYS=$THIS/cfg-sys-1000.sh
+export CFG_PRM=$THIS/cfg-prm-1000.sh
 
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
 export R_FILE=mlrMBO-rs.R
