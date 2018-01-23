@@ -30,7 +30,7 @@ def run(hyper_parameter_map):
 
     logger = get_logger()
     logger.debug("run()...")
-    
+
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
@@ -43,23 +43,16 @@ def run(hyper_parameter_map):
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
         params[k] = v
-
-<<<<<<< HEAD
-    print
-    runner_utils.write_params(params, hyper_parameter_map)
-    history = pkg.run(params)
-=======
-    try:
-        runner_utils.write_params(params, hyper_parameter_map)
-        history = pkg.run(params)
-        runner_utils.keras_clear_session(framework)
-        # use the last validation_loss as the value to minimize
-        val_loss = history.history['val_loss']
-        result = val_loss[-1]
-    except:
-        print('benchmark failed')
-        result = 1.797693e+308
->>>>>>> search
+        try:
+            runner_utils.write_params(params, hyper_parameter_map)
+            history = pkg.run(params)
+            runner_utils.keras_clear_session(framework)
+            # use the last validation_loss as the value to minimize
+            val_loss = history.history['val_loss']
+            result = val_loss[-1]
+        except:
+            print('benchmark failed')
+            result = 1.797693e+308
 
     print("result: ", result)
     return result
