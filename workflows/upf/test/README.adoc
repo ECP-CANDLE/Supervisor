@@ -1,6 +1,8 @@
 
 == Infer case
 
+This requires the infer.py in Benchmarks branch issue-8
+
 . Identify your output directories
 . Make an infer UPF:
 +
