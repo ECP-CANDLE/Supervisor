@@ -94,6 +94,8 @@ if __name__ == '__main__':
                                             instance_directory,
                                             framework, 'save')
     hyper_parameter_map['model_name']    = os.getenv("MODEL_NAME")
+    if hyper_parameter_map['model_name'] == None:
+        raise Exception("No MODEL_NAME was in the environment!")
     hyper_parameter_map['experiment_id'] = os.getenv("EXPID")
     hyper_parameter_map['run_id']  = runid
     hyper_parameter_map['timeout'] = benchmark_timeout
