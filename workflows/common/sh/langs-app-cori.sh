@@ -17,7 +17,7 @@ module load tensorflow/intel-head
 # #setenv		 OMP_NUM_THREADS 16 
 
 # Cori / Tensorflow env vars
-# These values are as recommended in 
+# These values are as recommended in
 # http://www.nersc.gov/users/data-analytics/data-analytics-2/deep-learning/using-tensorflow-at-nersc/
 export KMP_BLOCKTIME=1
 export KMP_SETTINGS=1
