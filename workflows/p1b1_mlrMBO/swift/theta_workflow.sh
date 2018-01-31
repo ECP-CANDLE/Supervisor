@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 set -eu
 
+# THETA WORKFLOW
+# Main entry point for NT3 mlrMBO workflow
+
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 
@@ -14,14 +17,15 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-320}
+export PROCS=${PROCS:-4}
+WORKERS=$(( PROCS - 2 ))
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
 export QUEUE=${QUEUE:-default}
-export WALLTIME=${WALLTIME:-05:00:00}
+export WALLTIME=${WALLTIME:-00:04:00}
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
@@ -51,7 +55,7 @@ fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 export EXPID=$1
 export TURBINE_OUTPUT_ROOT=${TURBINE_OUTPUT_ROOT:-$EMEWS_PROJECT_ROOT/experiments}
@@ -115,12 +119,12 @@ WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR  -r $TURBINE_DIR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-    -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-    -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-    -e PYTHONPATH=$PYTHONPATH \
-    -e PYTHONHOME=$PYTHONHOME \
-    -e TURBINE_LOG=$TURBINE_LOG \
-    -e TURBINE_DEBUG=$TURBINE_DEBUG\
-    -e ADLB_DEBUG=$ADLB_DEBUG \
-    -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+        -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
+        -e PYTHONPATH=$PYTHONPATH \
+        -e PYTHONHOME=$PYTHONHOME \
+        -e TURBINE_LOG=$TURBINE_LOG \
+        -e TURBINE_DEBUG=$TURBINE_DEBUG\
+        -e ADLB_DEBUG=$ADLB_DEBUG \
+        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS

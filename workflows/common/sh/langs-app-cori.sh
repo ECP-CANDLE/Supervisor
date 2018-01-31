@@ -17,13 +17,14 @@ module load tensorflow/intel-head
 # #setenv		 OMP_NUM_THREADS 16 
 
 # Cori / Tensorflow env vars
+# These values are as recommended in 
+# http://www.nersc.gov/users/data-analytics/data-analytics-2/deep-learning/using-tensorflow-at-nersc/
 export KMP_BLOCKTIME=1
 export KMP_SETTINGS=1
 export KMP_AFFINITY="granularity=fine,verbose,compact,1,0"
 export OMP_NUM_THREADS=68
 export NUM_INTER_THREADS=1
 export NUM_INTRA_THREADS=68
-
  
 export PYTHONHOME="/usr/common/software/tensorflow/intel-tensorflow/head"
 PYTHON="$PYTHONHOME/bin/python"

@@ -174,7 +174,8 @@ app (void o) make_dir(string dirname) {
 //}
 
 main() {
-
+  printf("WORKFLOW START: %0.3f", clock());
+  
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
   int ME_ranks[];

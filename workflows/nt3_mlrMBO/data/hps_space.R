@@ -1,0 +1,21 @@
+# see https://cran.r-project.org/web/packages/ParamHelpers/ParamHelpers.pdfmakeNum
+# the parameter names should match names of the arguments expected by the benchmark
+param.set <- makeParamSet(
+  makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
+  makeIntegerParam("epochs", lower = 100, upper = 500),
+  makeDiscreteParam("activation", values = c("softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear")),
+  makeDiscreteParam("dense", values = c("500 100 50", "1000 500 100 50", "2000 1000 500 100 50", "2000 1000 1000 500 100 50", "2000 1000 1000 1000 500 100 50")),
+  makeDiscreteParam("optimizer", values = c("adam", "sgd", "rmsprop", "adagrad", "adadelta")),
+  makeNumericParam("drop", lower = 0, upper = 0.9),
+  makeNumericParam("learning_rate", lower = 0.00001, upper = 0.1),
+  makeDiscreteParam("conv", values = c("50 50 50 50 50 1", "25 25 25 25 25 1", "64 32 16 32 64 1", "100 100 100 100 100 1", "32 20 16 32 10 1")),
+  makeNumericParam("clipnorm", lower = 1e-04, upper = 1e01),
+  makeNumericParam("clipvalue", lower = 1e-04, upper = 1e01),
+  makeNumericParam("decay", lower = 0, upper = 1e01),
+  makeDiscreteParam("epsilon", values = c(1e-6, 1e-8, 1e-10, 1e-12, 1e-14)),
+  makeNumericParam("rho", lower = 1e-04, upper = 1e01),
+  makeNumericParam("momentum", lower = 0, upper = 1e01),
+  makeLogicalParam("nesterov"),
+  makeNumericParam("beta_1", lower = 1e-04, upper = 1e01),
+  makeNumericParam("beta_2", lower = 1e-04, upper = 1e01)
+)
