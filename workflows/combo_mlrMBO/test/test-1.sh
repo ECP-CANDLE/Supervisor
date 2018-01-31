@@ -9,7 +9,7 @@ if (( ${#} != 1 ))
 then
 	echo "Run directory specified."
 	RUN_DIR=$2
-elif (( ${#} == 1 ))
+elif (( ${#} == 1 )) # test-all uses this
 then
 	echo "Automatically assigning run directory in ../experiments folder"
 	RUN_DIR="-a"

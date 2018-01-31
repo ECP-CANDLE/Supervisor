@@ -14,6 +14,131 @@ internal links <<.>> have to be specified with headers [[.]]
 
 Demonstration workflows for CANDLE.
 
+== Support
+
+Contact wozniak@mcs.anl.gov for any questions about installing or running CANDLE/Supervisor .
+
+== Installation
+
+These are abbreviated instructions for installing the Supervisor.
+
+. Install Python (2.7+ or 3.5+)
+. Install R
+. Install necessary Python packages
+.. TensorFlow
+.. Keras
+.. ?
+. Install necessary R packages
++
+----
+$ workflows/common/R/install-candle.sh
+----
++
+. Install http://swift-lang.github.io/swift-t/guide.html#_installation[Swift/T] +
+Enable support for the Python and R installed above.
+. Clone the CANDLE Benchmarks and Supervisor
++
+----
+$ git clone https://github.com/ECP-CANDLE/Benchmarks.git
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
+----
++
+Note that these must be located in the same directory
+. Check out the development branches
++
+----
+$ cd Benchmarks ; git checkout frameworks ; cd -
+$ cd Supervisor ; git checkout master     ; cd -
+----
+. Test a Benchmark
++
+----
+$ python Benchmarks/Pilot1/P1B3/p1b3_baseline_keras2.py
+----
++
+. Test a Supervisor run
++
+----
+$ Supervisor/workflows/nt3_mlrMBO/test/test-1.sh local
+----
++
+where +local+ indicates the name of your site (see <<structure,Structure>>).
+
+[[structure]]
+== Structure
+
+=== Scripts
+
+There are three types of settings scripts in +workflows/common/sh+:
+
++langs+::
+These are settings for the programming language implementations used in Supervisor, such as +PATH+, +PYTHONPATH+, +LD_LIBRARY_PATH+ (often necessary for R), and Swift/T settings.
+
++langs-app+::
+These are settings for the programming language implementations used in Supervisor by Swift/T +app+ functions.  This environment may be different than the overall workflow environment.
+
++sched+::
+These are settings for the system scheduler (e.g., PBS, SLURM, ...).  They are formatted for the http://swift-lang.github.io/swift-t/sites.html#scheduled_systems[Swift/T scheduler settings].
+
++modules+::
+These contain additional modules that must be loaded on certain sites.
+
+See https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/common/sh/README.adoc[the Common Shell Script Readme] for more information.
+
+=== Sites
+
+The site-specific settings for Supervisor are organized into site files.  These are in +workflows/common/sh+ .
+
+Notable sites include:
+
++local+::
+This is a vanilla Linux installation.
+
+Supercomputers::
+We have tested settings for +theta+, +cori+, and +titan+.
+
+Other::
+Other machines may be listed too, including development machines used by the CANDLE team.  These may be useful as a reference
+
+==== Creating your own site
+
+. Pick an existing site similar to your own site.
+. Copy the scripts to contain the new name.
+. Edit the scripts to change +PATH+ and so on.
+. Launch as described <<launch,below>>.
+
+[[launch]]
+=== Launching a run
+
+The typical front-end to a workflow is a +test+ script.  These are stored in the +test/+ directories for each workflow.
+
+The test script accepts the site as an argument.
+
+These scripts do the following:
+
+. Self-identify (set +THIS+ (the directory in which the script is stored), +EMEWS_PROJECT_ROOT+ (the workflow home directory (parent of +THIS+)), etc.)
+. Source CFG_SYS and CFG_PRM files
+.. CFG_SYS is the configure-system script: it selects the number of processes, walltime, etc.
+.. CFG_PRM is the configure-parameters script: it selects algorithm parameters, such as mlrmbo settings +MAX_ITERATIONS+ and +PARAM_SET_FILE+ (which contains further mlrmbo settings), etc.
+. Run +workflow.sh+
+
++workflow.sh+ is the generic shell wrapper script for a given workflow.  It does the following:
+
+. Self-identify
+. Obtain the site argument
+. Set an +EXPID+ (experiment identifier)
+. Process the CFG_SYS and CFG_PRM
+. Load the site-specific settings for +modules+, +lang+, and +sched+
+.. It does this with shell function +source_site()+ which is a simple error checking wrapper around +source+
+. Set up the restart feature
+. Construct the +swift-t+ command line
+. Invoke +swift-t workflow.swift+
+
++workflow.swift+ carries out the workflow as an EMEWS exploration.
+
++app+ functions specified in +workflow.swift+ invoke the Benchmarks.
+
+
 [[matrix]]
 == The Matrix
 
