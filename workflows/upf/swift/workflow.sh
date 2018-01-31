@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
+# UPF WORKFLOW SH
+
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
