@@ -83,9 +83,10 @@ def parse_init_params(params_file):
 
 def update_init_pop(pop, params_file):
     global ga_params
+    print("Reading initial population from {}".format(params_file))
     init_params = parse_init_params(params_file)
-    if len(pop) != len(init_params):
-        raise ValueError("Population size and number of initial params are not equal")
+    if len(pop) > len(init_params):
+        raise ValueError("Not enough initial params to set the population: size of init params < population size")
 
     for i, indiv in enumerate(pop):
         for j, param in enumerate(ga_params):
@@ -122,7 +123,7 @@ def cxUniform(ind1, ind2, indpb):
     return (c1, c2)
 
 def timestamp(scores):
-    return time.time()
+    return str(time.time())
 
 def run():
     """

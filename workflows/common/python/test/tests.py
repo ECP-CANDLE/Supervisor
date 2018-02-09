@@ -5,31 +5,6 @@ import random
 
 import numpy as np
 
-class TestStats(unittest.TestCase):
-
-    def setUp(self):
-        self.vals = [random.uniform(-10, 10) for i in range(1000)]
-
-    def testMean(self):
-        np_mean = np.mean(self.vals)
-        mean = ga_utils.mean(self.vals)
-        self.assertAlmostEqual(np_mean, mean)
-
-    def testMin(self):
-        np_min = np.min(self.vals)
-        min_ = ga_utils.min(self.vals)
-        self.assertEqual(np_min, min_)
-
-    def testMax(self):
-        np_max = np.max(self.vals)
-        max_ = ga_utils.max(self.vals)
-        self.assertEqual(np_max, max_)
-
-    def testStd(self):
-        np_std = np.std(self.vals)
-        std_ = ga_utils.std(self.vals)
-        self.assertAlmostEqual(np_std, std_)
-
 class TestParameters(unittest.TestCase):
 
     def setUp(self):
@@ -86,6 +61,7 @@ class TestParameters(unittest.TestCase):
         p = self.params["activation"]
         values = ["relu", 'sigmoid', 'tanh']
         self.assertEqual(values, p.categories)
+        self.assertEqual(str, p.parse_func)
 
         for i in range(1000):
             v = p.randomDraw()
@@ -103,6 +79,7 @@ class TestParameters(unittest.TestCase):
         values = [32, 64, 128, 256, 512, 1024]
         self.assertEqual(values, p.categories)
         self.assertEqual(1, p.sigma)
+        self.assertEqual(int, p.parse_func)
 
         for i in range(1000):
             v = p.randomDraw()

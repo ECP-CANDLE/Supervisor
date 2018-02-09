@@ -2,13 +2,14 @@
 # so we need to create a synthetic argv.
 import sys
 if not hasattr(sys, 'argv'):
-    sys.argv  = ['combo']
+    sys.argv  = ['p1b1']
 
 import json
 import os
 import numpy as np
 import importlib
 import runner_utils
+
 import socket
 import time
 import math
@@ -40,8 +41,8 @@ def run(hyper_parameter_map, obj_param):
     framework = hyper_parameter_map['framework']
     logger.debug("IMPORT START " + str(time.time()))
     if framework == 'keras':
-        import combo_baseline_keras2
-        pkg = combo_baseline_keras2
+        import p1b1_baseline_keras2
+        pkg = p1b1_baseline_keras2
 
         from keras import backend as K
         if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
@@ -50,31 +51,17 @@ def run(hyper_parameter_map, obj_param):
                 intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
             sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
             K.set_session(sess)
-
     else:
         raise ValueError("Unsupported framework: {}".format(framework))
     logger.debug("IMPORT STOP")
 
     runner_utils.format_params(hyper_parameter_map)
 
-
     # params is python dictionary
     params = pkg.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
-        if(k=="dense"):
-            if(type(v) != list):
-                v=v.split(" ")
-            v = [int(i) for i in v]
-        if(k=="dense_feature_layers"):
-            if(type(v) != list):
-                v=v.split(" ")
-            v = [int(i) for i in v]
-        if(k=="cell_features"):
-            cp_str = v
-            v = list()
-            v.append(cp_str)
         params[k] = v
 
     logger.debug("WRITE_PARAMS START")
@@ -84,21 +71,27 @@ def run(hyper_parameter_map, obj_param):
     history = pkg.run(params)
 
     if framework == 'keras':
-         # works around this error:
-         # https://github.com/tensorflow/tensorflow/issues/3388
-         try:
-             from keras import backend as K
-             K.clear_session()
-         except AttributeError:      # theano does not have this function
-             pass
+        # works around this error:
+        # https://github.com/tensorflow/tensorflow/issues/3388
+        try:
+            from keras import backend as K
+            K.clear_session()
+        except AttributeError:      # theano does not have this function
+            pass
 
-     # use the last validation_loss as the value to minimize
+    # use the last validation_loss as the value to minimize
+    obj_corr = history.history['val_corr']
     obj_loss = history.history['val_loss']
     if(obj_param == "val_loss"):
-        if(math.isnan(obj_loss[-1])):
-            last_val = 99999999
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 999999999
         else:
             last_val = obj_loss[-1]
+    elif(obj_param == "val_corr"):
+        if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
+            last_val = 999999999
+        else:
+            last_val = -obj_corr[-1] #Note negative sign
     else:
         raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
 
@@ -133,7 +126,6 @@ if __name__ == '__main__':
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
     sys.argv = ['p1b1_runner']
-
     result = run(hyper_parameter_map, obj_param)
     logger.debug("WRITE OUTPUT START")
     runner_utils.write_output(result, instance_directory)

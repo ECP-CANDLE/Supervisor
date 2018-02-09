@@ -1,0 +1,2 @@
+*.csv
+!nt3-rs.csv

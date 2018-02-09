@@ -1,9 +1,16 @@
 [
   {
-    "name": "cell_features",
-    "type": "categorical",
-    "element_type": "string",
-    "values": ["mirna", "expression"]
+    "name": "model",
+    "type": "constant",
+    "value": "ae"
+  },
+
+  {
+    "name": "latent_dim",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [2, 8, 32, 128, 512],
+    "sigma": 1
   },
 
   {
@@ -13,33 +20,23 @@
   },
 
   {
-    "name": "dense",
-    "type": "categorical",
-    "element_type": "string",
-    "values": ["1000",
-               "1000 1000",
-               "1000 1000 1000",
-               "1000 1000 1000 1000",
-               "1000 1000 1000 1000 1000"]
-  },
-
-  {
-    "name": "dense_feature_layers",
-    "type": "categorical",
-    "element_type": "string",
-    "values": ["1000",
-               "1000 1000",
-               "1000 1000 1000",
-               "1000 1000 1000 1000",
-               "1000 1000 1000 1000 1000"]
-  },
-
-  {
     "name": "batch_size",
     "type": "ordered",
     "element_type": "int",
-    "values": [32, 64, 128, 256, 512, 1024],
+    "values": [16, 32, 64, 128, 256, 512],
     "sigma": 1
+  },
+
+  {
+    "name": "dense",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["1500 500",
+                "978 978",
+                "978 978 978",
+                "978 978 978 978",
+                "978 978 978 978 978",
+                "978 978 978 978 978 978"]
   },
 
   {
@@ -80,6 +77,14 @@
   },
 
   {
+    "name": "drop",
+    "type": "float",
+    "lower": 0.0,
+    "upper": 0.9,
+    "sigma": 0.045
+  },
+
+  {
     "name": "epochs",
     "type": "int",
     "lower": 100,
@@ -110,6 +115,7 @@
     "upper": 1e01,
     "sigma": 0.5
   },
+
 
   {
     "name": "epsilon",

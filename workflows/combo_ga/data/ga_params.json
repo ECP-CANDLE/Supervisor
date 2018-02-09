@@ -4,7 +4,7 @@
     "type": "constant",
     "value":1
   },
-  
+
   {
     "name": "clipnorm",
     "type": "float",
@@ -16,6 +16,7 @@
   {
     "name": "activation",
     "type": "categorical",
+    "element_type": "string",
     "values": ["relu", "sigmoid", "tanh"]
   },
 
@@ -27,6 +28,7 @@
   {
     "name": "batch_size",
     "type": "ordered",
+    "element_type": "int",
     "values": [32, 64, 128, 256, 512, 1024],
     "sigma": 1
   }
