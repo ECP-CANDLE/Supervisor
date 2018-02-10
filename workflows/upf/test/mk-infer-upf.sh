@@ -24,6 +24,11 @@ DIR=( ${*} )
 {
   for d in ${DIR[@]}
   do
+    if [[ ! -d $d ]]
+    then
+      echo "No such directory: $d" >&2
+      exit 1
+    fi
     export ID=$(      basename $d )
     export MODEL=$(   find $d -name "*.model.h5" )
     export WEIGHTS=$( find $d -name "*.weights.h5" )
