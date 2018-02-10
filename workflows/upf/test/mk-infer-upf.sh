@@ -24,6 +24,7 @@ DIR=( ${*} )
 {
   for d in ${DIR[@]}
   do
+    export ID=$(      basename $d )
     export MODEL=$(   find $d -name "*.model.h5" )
     export WEIGHTS=$( find $d -name "*.weights.h5" )
     m4 -P < infer-template.json | fmt -w 1024
