@@ -21,17 +21,26 @@ OUTPUT=$1
 shift
 DIR=( ${*} )
 
+abort()
+{
+  echo $* >&2
+  exit 1
+}
+
 {
   for d in ${DIR[@]}
   do
     if [[ ! -d $d ]]
     then
-      echo "No such directory: $d" >&2
-      exit 1
+      abort "No such directory: $d"
     fi
     export ID=$(      basename $d )
     export MODEL=$(   find $d -name "*.model.h5" )
     export WEIGHTS=$( find $d -name "*.weights.h5" )
+    if (( ${#MODEL} == 0 || ${#WEIGHTS} == 0 ))
+    then
+      abort "Could not find h5 files in $d"
+    fi
     m4 -P < infer-template.json | fmt -w 1024
   done
 } > ${OUTPUT}
