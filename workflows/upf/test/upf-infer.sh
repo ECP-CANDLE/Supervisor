@@ -1,15 +1,16 @@
 #!/bin/bash
 set -eu
 
-# TEST UPF 1
+# TEST UPF INFER
 
-if (( ${#} != 1 ))
+if (( ${#} != 2 ))
 then
-  echo "usage: test SITE"
+  echo "usage: test SITE UPF"
   exit 1
 fi
 
 SITE=$1
+UPF=$2
 
 # Self-configure
 THIS=$(               cd $( dirname $0 ) ; /bin/pwd )
@@ -20,4 +21,7 @@ export EMEWS_PROJECT_ROOT
 export MODEL_NAME="infer"
 CFG_SYS=$THIS/cfg-sys-1.sh
 
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-infer.txt
+# Set this to a large writable location
+export EXPERIMENTS=/project/projectdirs/m2924/wozniak/Public/data/experiments
+
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $UPF
