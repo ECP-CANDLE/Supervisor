@@ -62,18 +62,21 @@ def run(hyper_parameter_map, obj_param):
             v = list()
             v.append(cp_str)
         params[k] = v
-    
+
     logger.debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
- 
+
     history = pkg.run(params)
 
     runner_utils.keras_clear_session(framework)
 
-    # use the last validation_loss as the value to minimize
-    val_loss = history.history['val_loss']
-    result = val_loss[-1]
+    # Default result if there is no val_loss (as in infer.py)
+    result = 0
+    if history != None:
+        # use the last validation_loss as the value to minimize
+        val_loss = history.history['val_loss']
+        result = val_loss[-1]
     print("result: ", result)
     return result
 
