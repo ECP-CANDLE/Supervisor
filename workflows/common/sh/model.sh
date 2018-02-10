@@ -22,7 +22,6 @@ do
   esac
 done
 shift $(( OPTIND - 1 ))
-set -x
 
 if [ ${#} != 4 ]
 then
@@ -58,14 +57,21 @@ fi
 
 mkdir -p $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
-# exec >> $LOG_FILE
-# exec 2>&1
+exec >> $LOG_FILE
+exec 2>&1
 cd $INSTANCE_DIRECTORY
+
+# This output goes in model.log
+echo MODEL.SH $*
 
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
+
+echo
+echo "USING PYTHON:"
+which python
 
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
