@@ -6,9 +6,12 @@
 
 import assert;
 import io;
+import json;
 import files;
 import string;
 import sys;
+
+system1("date \"+%Y/%m/%d %H:%M\"");
 
 string FRAMEWORK = "keras";
 
@@ -24,11 +27,12 @@ string upf_lines[] = file_lines(upf);
 string results[];
 
 // Evaluate each parameter set
-foreach params, i in upf_lines
+foreach params,i in upf_lines
 {
   printf("params: ", params);
+  id = json_get(params, "id");
   // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
-  results[i] = obj(params, "%i" % (i), obj_param);
+  results[i] = obj(params, id, obj_param);
 }
 
 // Join all result values into one big semicolon-delimited string

@@ -62,7 +62,7 @@ export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=600
-                -f=$UPF
+                -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
                 --obj_param=${OBJ_PARAM:-}
               )
 
@@ -72,6 +72,9 @@ log_script
 
 # Copy settings to TURBINE_OUTPUT for provenance
 cp $CFG_SYS $TURBINE_OUTPUT
+
+# Used by init.sh to copy the UPF to TURBINE_OUTPUT
+export UPF
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
@@ -87,4 +90,5 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
