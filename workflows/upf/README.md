@@ -1,6 +1,6 @@
 # Evaluate an Unrolled Parameter File (UPF)  #
 
-This benchmark evaluates ensembles of "Benchmark" available here: `git@github.com:ECP-CANDLE/Benchmarks.git` for a given set of parameters.
+This workflow evaluates ensembles of "Benchmark" available here: `git@github.com:ECP-CANDLE/Benchmarks.git` for a given set of parameters.
 
 ## Running ##
 
