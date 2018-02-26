@@ -39,7 +39,7 @@ all: py-eval
 $(OBJS): Makefile # Rebuild everything if Makefile changes
 
 py-eval: $(OBJS)
-	gcc -fPIC -o $(@) $(OBJS) \
+	$(CC) -fPIC -o $(@) $(OBJS) \
 		$(LIBS) \
 		$(RPATHS)
 
