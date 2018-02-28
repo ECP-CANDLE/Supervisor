@@ -135,6 +135,7 @@ get_cfg_sys()
     return 1
   fi
 
+  # This becomes a global variable
   CFG_SYS=$1
 
   if ! [[ -f $CFG_SYS ]]
@@ -154,6 +155,7 @@ get_cfg_sys()
 
 get_cfg_prm()
 # Obtain the cfg_prm script file and source it
+# Sets global variable CFG_PRM
 {
   if (( ${#} < 1 ))
   then
@@ -161,7 +163,8 @@ get_cfg_prm()
     return 1
   fi
 
-  local CFG_PRM=$1
+  # This becomes a global variable
+  CFG_PRM=$1
 
   if ! [[ -f $CFG_PRM ]]
   then

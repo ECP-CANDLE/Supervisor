@@ -5,7 +5,7 @@
 # Note that 2 processes are reserved for Swift/EMEMS
 # For example, if PROCS=4 that gives you 2 workers,
 # i.e., 2 concurrent Keras runs.
-export PROCS=${PROCS:-32}
+export PROCS=${PROCS:-3}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
