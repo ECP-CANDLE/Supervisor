@@ -19,6 +19,7 @@ while getopts "t:" OPTION
 do
   case OPTION in
     t) TIMEOUT=$OPTARG ;;
+    *) exit 1 ;; # Bash prints an error message
   esac
 done
 shift $(( OPTIND - 1 ))
