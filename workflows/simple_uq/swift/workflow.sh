@@ -47,7 +47,7 @@ source_site sched   $SITE
 
 # #Set PYTHONPATH for BENCHMARK related stuff
 # BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/common:$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot1/P1B1
-# PYTHONPATH+=":$BENCHMARK_DIR:"
+PYTHONPATH+=":$EMEWS_PROJECT_ROOT/python"
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 

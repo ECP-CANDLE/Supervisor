@@ -1,5 +1,8 @@
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
 # so we need to create a synthetic argv.
+
+print("NT3 RUNNER")
+
 import sys
 if not hasattr(sys, 'argv'):
     sys.argv  = ['nt3_tc1']

@@ -2,6 +2,7 @@
 set -eu
 
 echo RUN MODEL $*
+START=$( date +%s )
 
 # Check for an optional timeout threshold in seconds. If the duration of the
 # model run as executed below, takes longer that this threshhold
@@ -76,5 +77,8 @@ if [ "$RES" -ne 0 ]; then
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
+
+STOP=$( date +%s )
+echo "RUN MODEL OK: $(( STOP - START )) seconds."
 
 exit 0 # Success

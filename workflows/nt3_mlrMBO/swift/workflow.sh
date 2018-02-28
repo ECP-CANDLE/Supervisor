@@ -25,7 +25,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
@@ -94,6 +94,10 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -it=$MAX_ITERATIONS
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
+                # WIP: Need theta_run_model on Theta
+                # -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                # WIP: Need theta_run_logger on Theta
+                # -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 $RESTART_FILE_ARG
