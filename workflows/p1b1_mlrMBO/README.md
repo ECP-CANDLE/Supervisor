@@ -51,7 +51,7 @@ both version 1 and 2.
   * parallelMap : (https://cran.r-project.org/web/packages/parallelMap/index.html)
   * DiceKriging and dependencies : (https://cran.r-project.org/web/packages/DiceKriging/index.html) 
   * rgenoud : (https://cran.r-project.org/web/packages/rgenoud/index.html)
-* Compiled EQ/R, instructions in `ext/EQ-R/eqr/COMPILING.txt`
+* Compiled EQ/R, instructions in `Supervisor/workflows/common/ext/EQ-R/eqr/COMPILING.txt`
 
 Install plotly 4.5.6 - not the latest (which tries to install shiny, which tries to install httpuv, which does not work on Cooley).
 
@@ -62,19 +62,15 @@ The workflow project consists of the following directories.
 ```
 p1b1_mlrMBO/
   data/
-  ext/EQ-R
-  etc/
-  R/
   python/
   test/
   swift/
 ```
 
  * `data` - model input etc. data, such as the hyperopt space description.
- * `etc` - additional code used by EMEWS
- * `ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
- * `R/mlrMBO.R` - the mlrMBO R code
- * `R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
+ * `../commom/ext/EQ-R` - swift-t EMEWS Queues R implementation (EQ/R) extension
+ * `../common/R/mlrMBO.R` - the mlrMBO R code
+ * `../common/R/mlrMBO_utils.R` - utility functions used by the mlrMBO R code
  * `python/p1b1_runner.py` - python code called by the swift script to run p1b1.
  * `python/test/test.py` - python code for testing the p1b1_runner.
  * `swift/workflow.swift` - the swift workflow scrip

@@ -8,6 +8,27 @@ import json
 import os
 import p2b1
 import runner_utils
+import socket
+
+node_pid = "%s,%i" % (socket.gethostname(), os.getpid())
+print("node,pid: " + node_pid)
+
+logger = None
+
+def get_logger():
+    """ Set up logging """
+    global logger
+    if logger is not None:
+        return logger
+    import logging, sys
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    h = logging.StreamHandler(stream=sys.stdout)
+    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-9s %(message)s',
+                             datefmt='%Y/%m/%d %H:%M:%S')
+    h.setFormatter(fmtr)
+    logger.addHandler(h)
+    return logger
 
 def run(hyper_parameter_map):
     framework = hyper_parameter_map['framework']
@@ -27,6 +48,9 @@ def run(hyper_parameter_map):
         params[k] = v
 
     runner_utils.write_params(params, hyper_parameter_map)
+
+    logger = get_logger()
+    logger.debug("run start")
     loss_history = pkg.run(params)
 
     if framework == 'keras':

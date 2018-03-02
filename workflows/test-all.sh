@@ -21,9 +21,22 @@ THIS=$( dirname $0 )
 # P3B1 Theta(?)     Titan(JW,RJ) Cori(JW 8/25)
 # NT3  Theta(JW,PB) Titan(RJ?)   Cori(JW 8/25)
 
-$THIS/p1b1_mlrMBO/test/test-1.sh $SITE || true
-$THIS/p3b1_mlrMBO/test/test-1.sh $SITE || true
-$THIS/nt3_mlrMBO/test/test-1.sh  $SITE || true
+# General test invocation signature:
+# TEST SITE BENCHMARK (DIRECTORY CFGs)
+
+set +e # Run through errors here
+# $THIS/p1b1_mlrMBO/test/test-1.sh $SITE || true
+# $THIS/p3b1_mlrMBO/test/test-1.sh $SITE || true
+# $THIS/nt3_mlrMBO/test/test-1.sh  $SITE || true
+
+for BENCHMARK in p1b1 p3b1 nt3 combo
+do
+  # for ALGORITHM in grid random mlrMBO
+  # do
+    # $THIS/$ALGORITHM/test/test-1.sh $SITE $BENCHMARK
+  $THIS/mlrMBO/test/test-1.sh $SITE $BENCHMARK
+  # done
+done
 
 # $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
 $THIS/p1b1_grid/test/test-1.sh  $SITE || true

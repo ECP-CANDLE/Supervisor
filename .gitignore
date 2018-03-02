@@ -41,3 +41,5 @@ turbine-directory.txt
 *.csv
 *.png
 *.log
+*.tsv
+*.out

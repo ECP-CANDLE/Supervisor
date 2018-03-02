@@ -5,6 +5,8 @@ set -eu
 
 # Installs all R packages needed for Supervisor workflows
 
+echo "This will install multiple R packages for CANDLE."
+echo
 echo "using R:        $( which R )"
 echo "using gcc:      $( which gcc )"
 echo "using gfortran: $( which gfortran )"

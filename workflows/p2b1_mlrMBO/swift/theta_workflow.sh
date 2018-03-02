@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-
-# Main entry point for P2b1 mlrMBO workflow
+# THETA WORKFLOW
+# Main entry point for P2B1 mlrMBO workflow
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
@@ -17,7 +17,8 @@ BENCHMARK_DIR=$EMEWS_PROJECT_ROOT/../../../Benchmarks/Pilot2/P2B1
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-10}
+export PROCS=${PROCS:-4}
+WORKERS=$(( PROCS - 2 ))
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -25,7 +26,7 @@ export PPN=${PPN:-1}
 
 
 export QUEUE=${QUEUE:-default}
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-00:04:00}
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
@@ -34,9 +35,9 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1800}
 # mlrMBO settings
 MAX_BUDGET=${MAX_BUDGET:-110}
 # Total iterations
-MAX_ITERATIONS=${MAX_ITERATIONS:-4}
-DESIGN_SIZE=${DESIGN_SIZE:-8}
-PROPOSE_POINTS=${PROPOSE_POINTS:-8}
+MAX_ITERATIONS=${MAX_ITERATIONS:-1}
+DESIGN_SIZE=${DESIGN_SIZE:-$WORKERS}
+PROPOSE_POINTS=${PROPOSE_POINTS:-$WORKERS}
 PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/parameter_set3.R}
 
 # USER SETTINGS END
@@ -67,7 +68,6 @@ export TURBINE_JOBNAME="${EXPID}_job"
 # export R_HOME=/path/to/R
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # export PYTHONHOME=
-
 
 
 TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
@@ -116,9 +116,9 @@ WORKFLOW_SWIFT=ai_workflow3.swift
 swift-t -n $PROCS $MACHINE -p -I $EQR -r $EQR -r $TURBINE_DIR \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-    -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-    -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
-    -e PYTHONPATH=$PYTHONPATH \
-    -e PYTHONHOME=$PYTHONHOME \
-    -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+        -e EMEWS_PROJECT_ROOT=$EMEWS_PROJECT_ROOT \
+        -e PYTHONPATH=$PYTHONPATH \
+        -e PYTHONHOME=$PYTHONHOME \
+        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT $CMD_LINE_ARGS

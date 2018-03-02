@@ -76,12 +76,12 @@ def run(hyper_parameter_map, obj_param):
     obj_loss = history.history['val_loss']
     if(obj_param == "val_loss"):
         if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
-            last_val = 0
+            last_val = 999999999
         else:
             last_val = obj_loss[-1]
     elif(obj_param == "val_corr"):
         if(math.isnan(obj_loss[-1]) or math.isnan(obj_corr[-1])):
-            last_val = 0
+            last_val = 999999999
         else:
             last_val = -obj_corr[-1] #Note negative sign
     else:
