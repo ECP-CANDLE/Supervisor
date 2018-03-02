@@ -20,6 +20,10 @@ export PATH=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin:$PATH
 # EMEWS Queues for R
 EQR=/lustre/atlas2/csc249/proj-shared/sfw/EQ-R
 
+# For test output processing:
+LOCAL=0
+CRAY=1
+
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))

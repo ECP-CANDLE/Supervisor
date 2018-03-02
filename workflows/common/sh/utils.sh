@@ -91,6 +91,7 @@ get_expid()
 #   which will be exported as TURBINE_OUTPUT
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
+# EXPID is exported into the environment
 {
   if (( ${#} < 1 ))
   then
@@ -117,14 +118,16 @@ get_expid()
       fi
     done
     shift
+    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    check_experiment
+  else
+    export TURBINE_OUTPUT=$EXPID
   fi
-
-  export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
-  check_experiment
 }
 
 get_cfg_sys()
-# Obtain the cfg_sys script file and source it
+# Obtain the CFG_SYS script file from the command line and source it
+# Also sets CFG_SYS as a global variable
 {
   if (( ${#} < 1 ))
   then
@@ -132,7 +135,8 @@ get_cfg_sys()
     return 1
   fi
 
-  local CFG_SYS=$1
+  # This becomes a global variable
+  CFG_SYS=$1
 
   if ! [[ -f $CFG_SYS ]]
   then
@@ -151,6 +155,7 @@ get_cfg_sys()
 
 get_cfg_prm()
 # Obtain the cfg_prm script file and source it
+# Sets global variable CFG_PRM
 {
   if (( ${#} < 1 ))
   then
@@ -158,7 +163,8 @@ get_cfg_prm()
     return 1
   fi
 
-  local CFG_PRM=$1
+  # This becomes a global variable
+  CFG_PRM=$1
 
   if ! [[ -f $CFG_PRM ]]
   then
@@ -178,6 +184,7 @@ get_cfg_prm()
 source_site()
 # Source a settings file for a specific SITE (titan, cori, theta)
 # Succeeds with warning message if file is not found
+# SITE is exported in the environment
 {
   if (( ${#} != 2 ))
   then
@@ -188,7 +195,7 @@ source_site()
   fi
 
   TOKEN=$1
-  SITE=$2
+  export SITE=$2
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
   then
@@ -323,7 +330,38 @@ queue_wait_pbs()
     return 1
   fi
 
-  # TODO
+  local JOBID=$1
+
+  local DELAY_MIN=30
+  local DELAY_MAX=600
+  local DELAY=$DELAY_MIN
+
+  local STATE="PD"
+
+  while (( 1 ))
+  do
+    date "+%Y/%m/%d %H:%M:%S"
+    if ! ( qstat | grep "$JOBID.*$STATE" )
+    then
+      if [[ $STATE == "PD" ]]
+      then
+        echo "Job $JOBID is not pending."
+        STATE="R"
+        DELAY=$DELAY_MIN
+      elif [[ $STATE == "R" ]]
+      then
+        break
+      fi
+    fi
+    sleep $DELAY
+    (( ++ DELAY ))
+    if (( DELAY > DELAY_MAX ))
+    then
+      DELAY=$DELAY_MAX
+    fi
+  done
+  echo "Job $JOBID is not running."
+
 }
 
 

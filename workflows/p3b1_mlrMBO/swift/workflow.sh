@@ -12,6 +12,9 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot3/P3B1
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export BENCHMARK_TIMEOUT
+export MODEL_NAME="p3b1"
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
@@ -88,7 +91,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT

@@ -12,6 +12,10 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/TC1
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export BENCHMARK_TIMEOUT
+export MODEL_NAME="nt3"
+
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
@@ -21,7 +25,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
@@ -88,9 +92,12 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
+                # WIP: Need theta_run_model on Theta
+                # -script_file=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
+                # WIP: Need theta_run_logger on Theta
+                # -log_script=$EMEWS_PROJECT_ROOT/../common/sh/run_logger.sh
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 $RESTART_FILE_ARG
