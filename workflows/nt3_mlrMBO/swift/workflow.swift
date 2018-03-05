@@ -12,7 +12,7 @@ import string;
 import EQR;
 import R;
 import assert;
-import python;
+// import python;
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
