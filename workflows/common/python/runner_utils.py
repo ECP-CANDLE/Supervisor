@@ -46,14 +46,26 @@ def format_params(hyper_parameter_map):
 def write_params(params, hyper_parameter_map):
     parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
     f = "{}/parameters.txt".format(parent_dir)
+    montr=[]
     with open(f, "w") as f_out:
-        f_out.write("[parameters]\n")
+        f_out.write("[Global Params]\n")
         for k,v in params.items():
             if type(v) in DATA_TYPES:
                 v = DATA_TYPES[type(v)]
             if isinstance(v, basestring):
                 v = "'{}'".format(v)
-            f_out.write("{}={}\n".format(k, v))
+
+            if(k =='solr_root' or k == 'timeout' ):
+            # this must written at the end
+                print("hi\n")
+                montr.append(k)
+                montr.append(v)
+            else:
+                f_out.write("{}={}\n".format(k, v))
+        f_out.write("[Monitor Params]\n")
+        for i in range(len(montr)/2):
+            f_out.write("{}={}\n".format(montr[2*i], montr[2*i+1])) 
+
 
 def keras_clear_session(framework):
     if framework == 'keras':
