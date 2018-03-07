@@ -62,7 +62,7 @@ string FRAMEWORK = "keras";
       string fname = "%s/final_res.Rds" % (turbine_output);
       printf("See results in %s", fname) =>
       // printf("Results: %s", finals) =>
-      v = make_void() =>
+      v = propagate(finals) =>
       c = false;
     }
     else if (params == "EQR_ABORT")
