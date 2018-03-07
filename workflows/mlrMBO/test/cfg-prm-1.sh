@@ -24,6 +24,5 @@ elif [ "$MODEL_NAME" = "p1b2" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_hps_exp_01.R}
 else
     echo "Invalid model-" $MODEL_NAME
-    exit
+    exit 1
 fi
-
