@@ -9,7 +9,9 @@ MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-180}
 DESIGN_SIZE=${DESIGN_SIZE:-10}
 
-# Set the default data file for running
+# TODO: move the following code to a utility library-
+#       this is a configuration file
+# Set the R data file for running
 if [ "$MODEL_NAME" = "combo" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/combo_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p1b1" ]; then
