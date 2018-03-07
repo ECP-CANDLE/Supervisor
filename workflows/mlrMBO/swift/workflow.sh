@@ -20,9 +20,10 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 #source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
 
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# Uncomment to turn on Swift/T logging. Can also set TURBINE_LOG,
+# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
+# Do not commit with logging enabled, users have run out of disk space
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
