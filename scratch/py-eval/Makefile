@@ -1,6 +1,8 @@
 
 # PY EVAL MAKEFILE
 
+MPI_ENABLED = 1
+
 # Edit Python settings here
 
 # PYTHON_HOME = ${HOME}/sfw/Python-2.7.10
@@ -29,17 +31,24 @@ INCLUDES = -I $(PYTHON_HOME)/include/python$(PYTHON_VERSION)
 LIBS     = -L $(PYTHON_HOME)/lib -lpython$(PYTHON_VERSION)
 RPATHS   = -Wl,-rpath -Wl,$(PYTHON_HOME)/lib
 
-CFLAGS = -g -Wall -O0 -fPIC -DPYTHON_VERSION_MAJOR=$(PYTHON_VERSION_MAJOR) $(INCLUDES) -fdiagnostics-color=always
+DEFINES = -DPYTHON_VERSION_MAJOR=$(PYTHON_VERSION_MAJOR) \
+	  -DMPI_ENABLED=$(MPI_ENABLED)
 
-SRCS = main.c py-eval.c io.c
-OBJS = $(patsubst %.c,%.o,$(SRCS))
+CFLAGS = -g -Wall -O0 -fPIC $(DEFINES) $(INCLUDES) -fdiagnostics-color=always
+
+# Compilation units
+UNITS   = py-eval io util
+HEADERS = $(patsubst %,%.h,$(UNITS))
+SRCS    = main.c $(patsubst %,%.c,$(UNITS))
+OBJS    = $(patsubst %.c,%.o,$(SRCS))
 
 all: py-eval
 
-$(OBJS): Makefile # Rebuild everything if Makefile changes
+# Rebuild everything if Makefile or headers change
+$(OBJS): Makefile $(HEADERS)
 
 py-eval: $(OBJS)
-	gcc -fPIC -o $(@) $(OBJS) \
+	$(CC) -fPIC -o $(@) $(OBJS) \
 		$(LIBS) \
 		$(RPATHS)
 
