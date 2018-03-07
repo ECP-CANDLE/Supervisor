@@ -1,4 +1,8 @@
 
+import files;
+
 import horovod;
 
-@par=2 horovod(3);
+
+s = read(input("horovod-1.py"));
+@par=2 horovod(s);
