@@ -8,11 +8,13 @@ set -eu
 usage()
 {
   echo "Usage: model.sh [-t TIMEOUT] FRAMEWORK PARAMS RUNID"
-  echo "The environment should have SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT"
+  echo "The environment should have:"
+  echo "  SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT OBJ_RETURN"
   echo "If TIMEOUT is provided, we run under the shell command timeout"
 }
 
-echo MODEL.SH $*
+# set -x
+# echo MODEL.SH
 
 TIMEOUT=""
 while getopts "t:" OPTION
@@ -24,7 +26,7 @@ do
 done
 shift $(( OPTIND - 1 ))
 
-if [ ${#} != 4 ]
+if (( ${#} != 3 ))
 then
   usage
   exit 1

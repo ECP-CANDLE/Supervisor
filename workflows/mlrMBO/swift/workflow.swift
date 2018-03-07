@@ -42,7 +42,7 @@ if (restart_file != "DISABLED") {
 
 string FRAMEWORK = "keras";
 
-(void v) loop(location ME, int ME_rank) {
+(void v) loop(location ME) {
 
   for (boolean b = true, int i = 1;
        b;
