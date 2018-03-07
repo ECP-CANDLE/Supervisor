@@ -1,4 +1,9 @@
 
+/*
+  PY-EVAL H
+  Core py-eval C library
+*/
+
 #pragma once
 
 #include <stdbool.h>

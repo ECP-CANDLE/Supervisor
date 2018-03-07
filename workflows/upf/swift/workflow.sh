@@ -1,17 +1,13 @@
 #! /usr/bin/env bash
 set -eu
 
-# NT3 UNROLLED WORKFLOW
-
-MODEL_NAME="NT3"
-
-echo "NT3 UNROLLED"
+# UPF WORKFLOW SH
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/NT3
+export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P1B2
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
@@ -61,13 +57,13 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-CMD_LINE_ARGS=( -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
-                -model_name=$MODEL_NAME
-                -exp_id=$EXPID
-                -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -site=$SITE
-                $OBJ_PARAM_ARG
-                -f=$UPF
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export BENCHMARK_TIMEOUT
+
+CMD_LINE_ARGS=( -expid=$EXPID
+                -benchmark_timeout=600
+                -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
+                --obj_param=${OBJ_PARAM:-}
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -77,7 +73,9 @@ log_script
 # Copy settings to TURBINE_OUTPUT for provenance
 cp $CFG_SYS $TURBINE_OUTPUT
 
-# echo's anything following this to standard out
+# Used by init.sh to copy the UPF to TURBINE_OUTPUT
+export UPF
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -86,6 +84,11 @@ swift-t -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
+        -e MODEL_SH \
+        -e SITE \
+        -e BENCHMARK_TIMEOUT \
+        -e MODEL_NAME \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}

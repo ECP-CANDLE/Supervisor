@@ -1,5 +1,5 @@
 
-# P1B1 CFG SYS 1
+# P1B1 CFG SYS LEARNER
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -18,4 +18,3 @@ export WALLTIME=${WALLTIME:-02:00:00}
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
-

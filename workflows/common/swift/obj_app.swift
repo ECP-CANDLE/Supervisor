@@ -1,34 +1,43 @@
 
 // OBJ APP
 
-// (string obj_result) obj(string params, string iter_indiv_id) {
-//   string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id) =>
-//   run_model(model_script, params, outdir, iter_indiv_id) =>
-//   string result_file = "%s/result.txt" % outdir =>
-//   obj_result = get_results(result_file);
-//   printf(obj_result);
-// }
+/**
+    The main objective function used by the CANDLE/Supervisor
+    model exploration (optimization) loop.
+    params : The JSON string of params to be passed to the Benchmark
+    run_id : A string run ID that will be the output directory name
+*/
+(string obj_result) obj(string params,
+                        string run_id) {
+  string model_sh       = getenv("MODEL_SH");
+  string turbine_output = getenv("TURBINE_OUTPUT");
 
-(string obj_result) obj(string params, string iter_indiv_id, string site, string obj_param) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  printf("running model shell script in: %s", outdir);
+  string outdir = "%s/run/%s" % (turbine_output, run_id);
+  // printf("running model shell script in: %s", outdir);
+  // We do not use a file type here because this file may not be created,
+  // which is handled by get_results()
   string result_file = outdir/"result.txt";
-  wait (run_model(model_sh, params, outdir, iter_indiv_id, site, obj_param))
+  wait (run_model(model_sh, params, run_id))
   {
     obj_result = get_results(result_file);
   }
-  printf("result(%s): %s", iter_indiv_id, obj_result);
+  printf("result(%s): %s", run_id, obj_result);
 }
 
-app (void o) run_model (string model_sh, string params_string,
-                        string instance, string run_id, string site, string obj_param)
+/**
+   Swift/T app function that runs the Benchmark
+*/
+app (void o) run_model (string model_sh, string params,
+                        string runid)
 {
-  //                      1           2         3         4
-    "bash" model_sh params_string emews_root instance model_name
-  //       5        6     7             8         9     10        11
-       FRAMEWORK exp_id run_id benchmark_timeout site   "-1"  obj_param;
+  //                  1       2      3
+  "bash" model_sh FRAMEWORK params runid;
 }
 
+/**
+   Extracts the Benchmark output if it exists,
+   else, provides a NaN so the workflow can keep running
+*/
 (string obj_result) get_results(string result_file) {
   if (file_exists(result_file)) {
     file line = input(result_file);

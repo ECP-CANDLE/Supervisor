@@ -2,13 +2,22 @@
 set -eu
 
 # NT3 TEST 1
+RUN_DIR=""
 
 if (( ${#} != 1 ))
 then
-  echo "usage: test SITE"
-  exit 1
+	echo "Run directory specified."
+	RUN_DIR=$2
+elif (( ${#} == 1 ))
+then
+	echo "Automatically assigning run directory in ../experiments folder"
+	RUN_DIR="-a"
+else
+	echo "Usage test SITE RUN_DIR(optional)"	
+	exit 1
 fi
 
+echo "Run directory for this case: ", $RUN_DIR
 SITE=$1
 
 # Self-configure
@@ -23,7 +32,7 @@ export CFG_SYS=$THIS/cfg-sys-1A.sh
 export CFG_PRM=$THIS/cfg-prm-1A.sh
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
 
 # Wait for job
 queue_wait
