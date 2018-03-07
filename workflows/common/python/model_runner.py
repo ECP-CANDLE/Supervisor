@@ -1,7 +1,7 @@
 
 # MODEL RUNNER PY
 
-# Currently only supports NT3_TC1
+# Currently only supports NT3_TC1 # Not true? -Justin 2018/02/28
 # See __main__ section for usage
 
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
