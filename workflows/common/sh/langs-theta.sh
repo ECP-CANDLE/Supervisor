@@ -8,7 +8,8 @@
 
 # STC=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc
 # STC=/projects/Candle_ECP/swift/pyr/stc
-STC=/projects/Candle_ECP/swift/2017-12-20/stc
+# STC=/projects/Candle_ECP/swift/2017-12-20/stc
+SWIFT=/projects/Candle_ECP/swift/2018-03-07
 
 export TCL=/projects/Candle_ECP/swift/deps/tcl-8.6.6
 export PY=/projects/Candle_ECP/swift/deps/Python-2.7.12
@@ -16,10 +17,10 @@ export R=/projects/Candle_ECP/swift/deps/R-3.4.1/lib64/R
 
 export LD_LIBRARY_PATH=$PY/lib:$R/lib:${LD_LIBRARY_PATH:-}
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR
+PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR:$SWIFT/turbine/py
 PYTHONHOME=$PY
 
-export PATH=$STC/bin:$TCL/bin:$PY/bin:$PATH
+export PATH=$SWIFT/stc/bin:$TCL/bin:$PY/bin:$PATH
 
 # EMEWS Queues for R
 EQR=/home/wozniak/Public/sfw/theta/EQ-R
