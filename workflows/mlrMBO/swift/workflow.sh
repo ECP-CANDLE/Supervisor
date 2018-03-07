@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-# COMBO WORKFLOW
-# Main entry point for COMBO mlrMBO workflow
+# MLRMBO WORKFLOW
+# Main entry point for mlrMBO workflow
 # See README.md for more information
 
 # Autodetect this workflow directory
@@ -82,12 +82,6 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
-OBJ_PARAM_ARG=""
-if [[ ${OBJ_PARAM:-} != "" ]]
-then
-  OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
-fi
-
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -100,7 +94,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
-		$OBJ_PARAM_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -125,4 +118,5 @@ swift-t -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e OBJ_RETURN \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}

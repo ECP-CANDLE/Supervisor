@@ -36,9 +36,9 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
 export R_FILE=mlrMBO1.R
 
-#val_loss (default) and val_corr are supported
-export OBJ_PARAM="val_loss"
-
+# What to return from the objective function (Keras model)
+# val_loss (default) and val_corr are supported
+export OBJ_RETURN="val_loss"
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM

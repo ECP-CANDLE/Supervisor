@@ -27,7 +27,6 @@ string param_set = argv("param_set_file");
 string model_name = argv("model_name");
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
-string obj_param = argv("obj_param", "val_loss");
 string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
 
@@ -71,20 +70,21 @@ string FRAMEWORK = "keras";
       printf("EQR aborted: see output for R error") =>
       string why = EQR_get(ME);
       printf("%s", why) =>
-      v = propagate() =>
+          // v = propagate(why) =>
       c = false;
     }
     else
     {
         string param_array[] = split(params, ";");
         string results[];
-        foreach p, j in param_array
+        foreach param, j in param_array
         {
-            results[j] = obj(p, "%00i_%000i_%0000i" % (restart_number,i,j), obj_param);
+            results[j] = obj(param,
+                             "%00i_%000i_%0000i" % (restart_number,i,j));
         }
-        string res = join(results, ";");
-        // printf(res);
-        EQR_put(ME, res) => c = true;
+        string result = join(results, ";");
+        // printf(result);
+        EQR_put(ME, result) => c = true;
     }
   }
 }
@@ -114,7 +114,7 @@ restart.file = '%s'
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
-    loop(ME, ME_rank) => {
+    loop(ME) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
         o = propagate();
