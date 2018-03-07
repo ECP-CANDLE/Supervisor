@@ -138,6 +138,13 @@ These scripts do the following:
 
 +app+ functions specified in +workflow.swift+ invoke the Benchmarks.
 
+== Extending CANDLE
+
+There are multiple ways to extend CANDLE/Supervisor, including adding new optimizers, using different NN models, etc.
+
+=== Changing the Keras model
+
+
 
 [[matrix]]
 == The Matrix

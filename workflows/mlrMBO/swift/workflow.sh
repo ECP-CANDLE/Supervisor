@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-# COMBO WORKFLOW
-# Main entry point for COMBO mlrMBO workflow
+# MLRMBO WORKFLOW
+# Main entry point for mlrMBO workflow
 # See README.md for more information
 
 # Autodetect this workflow directory
@@ -20,9 +20,10 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 #source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
 
-# uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# Uncomment to turn on Swift/T logging. Can also set TURBINE_LOG,
+# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
+# Do not commit with logging enabled, users have run out of disk space
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
@@ -46,7 +47,7 @@ then
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow" 
+echo "Running "$MODEL_NAME "workflow"
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
@@ -82,12 +83,6 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
-OBJ_PARAM_ARG=""
-if [[ ${OBJ_PARAM:-} != "" ]]
-then
-  OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
-fi
-
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -100,7 +95,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
-		$OBJ_PARAM_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -125,4 +119,5 @@ swift-t -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e OBJ_RETURN \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
