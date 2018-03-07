@@ -435,3 +435,21 @@ check_directory_exists() {
   fi
 
 }
+
+pad_keys() {
+  # Pad 1st tokens
+  printf "%-15s" $1
+  shift
+  echo ${*}
+}
+
+print_json() {
+  # Pretty print a Supervisor JSON fragment
+  # Uses stdin/stdout
+  tr -d '{}' | tr ',":' '\n  ' | \
+    while read line
+    do
+      printf "  "
+      pad_keys $line
+    done
+}
