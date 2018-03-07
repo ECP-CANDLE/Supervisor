@@ -1,24 +1,26 @@
 #!/bin/bash
 set -eu
 
-echo "Usage test-1.sh BECHMARK_NAME SITE RUN_DIR(optional, -a=automatic)"	
+# MLRMBO TEST 1
+
+usage()
+{
+  echo "Usage: test BENCHMARK_NAME SITE RUN_DIR(optional)"
+  echo "       RUN_DIR is optional, use -a for automatic"
+}
 
 RUN_DIR=""
-
-if (( ${#} > 2 ))
+if (( ${#} == 3 ))
 then
-	echo "Run directory specified."
 	RUN_DIR=$3
 elif (( ${#} == 2 )) # test-all uses this
 then
-	echo "Automatically assigning run directory in ../experiments folder"
 	RUN_DIR="-a"
 else
-	echo "Usage test SITE RUN_DIR(optional)"	
-	exit 1
+        usage
+        exit 1
 fi
 
-echo "Run directory for this case: ./"$RUN_DIR
 export MODEL_NAME=$1
 SITE=$2
 
