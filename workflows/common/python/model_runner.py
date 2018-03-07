@@ -33,7 +33,7 @@ def import_pkg(framework, model_name):
         raise ValueError("Invalid framework: {}".format(framework))
     return pkg
 
-def run(hyper_parameter_map, obj_param):
+def run(hyper_parameter_map, obj_return):
 
     global logger
     logger = log_tools.get_logger(logger, __name__)
@@ -74,11 +74,21 @@ def run(hyper_parameter_map, obj_param):
     # Default result if there is no val_loss (as in infer.py)
     result = 0
     if history != None:
-        # use the last validation_loss as the value to minimize
-        val_loss = history.history['val_loss']
+        # Return the history entry that the user requested.
+        val_loss = history.history[obj_return]
         result = val_loss[-1]
-    print("result: ", result)
+    print("result: " + result)
     return result
+
+def get_obj_return():
+    obj_return = os.getenv("OBJ_RETURN")
+    valid_obj_returns = [ "val_loss", "val_corr" ]
+    if obj_return == None:
+        raise Exception("No OBJ_RETURN was in the environment!")
+    if obj_return not in valid_obj_returns:
+        raise Exception("Invalid value for OBJ_RETURN: use: " +
+                        valid_obj_returns)
+    return obj_return
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
@@ -90,12 +100,14 @@ if __name__ == '__main__':
       instance_directory,
       framework,
       runid,
-      obj_param,
       benchmark_timeout ) = sys.argv
+
+    obj_return = get_obj_return()
 
     hyper_parameter_map = runner_utils.init(param_string,
                                             instance_directory,
-                                            framework, 'save')
+                                            framework,
+                                            out_dir_key='save')
     hyper_parameter_map['model_name']    = os.getenv("MODEL_NAME")
     if hyper_parameter_map['model_name'] == None:
         raise Exception("No MODEL_NAME was in the environment!")
@@ -103,10 +115,11 @@ if __name__ == '__main__':
     hyper_parameter_map['run_id']  = runid
     hyper_parameter_map['timeout'] = benchmark_timeout
     # clear sys.argv so that argparse doesn't object
-    sys.argv = ['nt3_tc1_runner']
+    sys.argv = [] # ['nt3_tc1_runner']
 
     # Call to Benchmark!
-    result = run(hyper_parameter_map, obj_param)
+    logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    result = run(hyper_parameter_map, obj_return)
 
     runner_utils.write_output(result, instance_directory)
     logger.debug("RUN STOP")
