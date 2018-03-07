@@ -1,24 +1,15 @@
 
+/*
+  PY-EVAL C
+*/
+
 #include <Python.h>
 
 #include <stdarg.h>
 #include <stdio.h>
 
 #include "py-eval.h"
-
-static void
-verbose(char* fmt, ...)
-{
-  static bool verbose = false;
-
-  if (!verbose) return;
-
-  va_list ap;
-  va_start(ap, fmt);
-  vprintf(fmt, ap);
-  printf("\n");
-  va_end(ap);
-}
+#include "util.h"
 
 static bool
 handle_python_exception(void)

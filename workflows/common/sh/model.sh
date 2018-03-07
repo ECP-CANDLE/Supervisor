@@ -8,11 +8,13 @@ set -eu
 usage()
 {
   echo "Usage: model.sh [-t TIMEOUT] FRAMEWORK PARAMS RUNID"
-  echo "The environment should have SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT"
+  echo "The environment should have:"
+  echo "  SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT OBJ_RETURN"
   echo "If TIMEOUT is provided, we run under the shell command timeout"
 }
 
-echo MODEL.SH $*
+# set -x
+# echo MODEL.SH
 
 TIMEOUT=""
 while getopts "t:" OPTION
@@ -24,7 +26,7 @@ do
 done
 shift $(( OPTIND - 1 ))
 
-if [ ${#} != 4 ]
+if (( ${#} != 3 ))
 then
   usage
   exit 1
@@ -35,35 +37,28 @@ shift
 
 # JSON string of parameters
 PARAMS="$1"
-echo $PARAMS
 shift
 
 RUNID=$1
 shift
 
-# loss or corr
-OBJ_PARAM="$1"
-echo $OBJ_PARAM
-
-
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
-shift
 
 TIMEOUT_CMD=""
 if [ -n "$TIMEOUT" ]; then
   TIMEOUT_CMD="timeout $TIMEOUT"
 fi
 
+# All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
 exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
 
-# This output goes in model.log
-echo MODEL.SH $*
+echo MODEL.SH
 
 # get the site and source lang-app-{SITE} from workflow/common/sh folder
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
@@ -71,19 +66,23 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
 echo
+echo PARAMS:
+echo $PARAMS | print_json
+
+echo
 echo "USING PYTHON:"
 which python
 
+set -x
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
             "$FRAMEWORK"
             "$RUNID"
-            "$OBJ_PARAM"
             "$BENCHMARK_TIMEOUT")
-MODEL_CMD="python ${arg_array[@]}"
-echo MODEL_CMD: $MODEL_CMD
-if ! $TIMEOUT_CMD python "${arg_array[@]}"
+MODEL_CMD="python -u ${arg_array[@]}"
+# echo MODEL_CMD: $MODEL_CMD
+if ! $TIMEOUT_CMD python -u "${arg_array[@]}"
 then
    # $? is the exit status of the most recently executed command
    # (i.e the line above)
