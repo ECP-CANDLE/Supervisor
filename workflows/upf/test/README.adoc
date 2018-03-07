@@ -1,0 +1,22 @@
+
+== Infer case
+
+This requires the infer.py in Benchmarks branch issue-8
+
+. Identify your output directories
+. Make an infer UPF:
++
+----
+$ ./mk-infer-upf.sh upf-infer.txt <directories...>
+----
++
+This will find the files and paste together JSON document upf-infer.txt
+. Run
++
+----
+$ ./upf-infer.sh
+----
+
+=== Examples
+
+The original example data is specified in upf-infer-orig.txt

@@ -1,0 +1,13 @@
+m4_dnl INFER TEMPLATE JSON
+m4_dnl The JSON template.
+m4_dnl Substitutes environment variables into JSON UPF.
+m4_dnl Note: Any blank lines or whitespace herein will be in the UPF.
+m4_dnl       Leading whitespace will break the use of fmt -w
+m4_define(`m4_getenv', `m4_esyscmd(printf -- "$`$1'")')m4_dnl
+{
+"id":           "m4_getenv(ID)",
+"model_file":   "m4_getenv(MODEL)",
+"weights_file": "m4_getenv(WEIGHTS)",
+"drug_set":     "ALMANAC",
+"sample_set":   "GDSC"
+}

@@ -91,6 +91,7 @@ get_expid()
 #   which will be exported as TURBINE_OUTPUT
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
+# EXPID is exported into the environment
 {
   if (( ${#} < 1 ))
   then
@@ -134,6 +135,7 @@ get_cfg_sys()
     return 1
   fi
 
+  # This becomes a global variable
   CFG_SYS=$1
 
   if ! [[ -f $CFG_SYS ]]
@@ -153,6 +155,7 @@ get_cfg_sys()
 
 get_cfg_prm()
 # Obtain the cfg_prm script file and source it
+# Sets global variable CFG_PRM
 {
   if (( ${#} < 1 ))
   then
@@ -160,7 +163,8 @@ get_cfg_prm()
     return 1
   fi
 
-  local CFG_PRM=$1
+  # This becomes a global variable
+  CFG_PRM=$1
 
   if ! [[ -f $CFG_PRM ]]
   then
@@ -180,6 +184,7 @@ get_cfg_prm()
 source_site()
 # Source a settings file for a specific SITE (titan, cori, theta)
 # Succeeds with warning message if file is not found
+# SITE is exported in the environment
 {
   if (( ${#} != 2 ))
   then
@@ -190,7 +195,7 @@ source_site()
   fi
 
   TOKEN=$1
-  SITE=$2
+  export SITE=$2
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
   then
@@ -429,4 +434,22 @@ check_directory_exists() {
     done
   fi
 
+}
+
+pad_keys() {
+  # Pad 1st tokens
+  printf "%-15s" $1
+  shift
+  echo ${*}
+}
+
+print_json() {
+  # Pretty print a Supervisor JSON fragment
+  # Uses stdin/stdout
+  tr -d '{}' | tr ',":' '\n  ' | \
+    while read line
+    do
+      printf "  "
+      pad_keys $line
+    done
 }

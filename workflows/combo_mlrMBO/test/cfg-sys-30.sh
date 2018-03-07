@@ -12,9 +12,11 @@ export PPN=${PPN:-1}
 
 export QUEUE=${QUEUE:-regular}
 export WALLTIME=${WALLTIME:-3:00:00}
+# default specified in common/sh/<platform>-sched.sh file
+#export QUEUE=${QUEUE:-regular}
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-1000}
 
