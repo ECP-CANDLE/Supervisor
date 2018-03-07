@@ -47,7 +47,7 @@ then
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow" 
+echo "Running "$MODEL_NAME "workflow"
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
