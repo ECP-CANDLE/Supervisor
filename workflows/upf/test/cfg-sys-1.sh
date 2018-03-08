@@ -13,17 +13,19 @@ export PPN=${PPN:-1}
 
 #export QUEUE=${QUEUE:-batch}
 
-# Good for Cori:
+# Cori: (cf. sched-cori)
 # export QUEUE=${QUEUE:-debug}
-export QUEUE=debug
+# export QUEUE=debug
+# CANDLE on Cori:
+# export PROJECT=m2924
 
-export WALLTIME=${WALLTIME:-00:30:00}
-
+# Theta: (cf. sched-theta)
+export QUEUE=debug-cache-quad
+export PROJECT=ecp-testbed-01
 #export PROJECT=Candle_ECP
 #export PROJECT=CSC249ADOA01
 
-# CANDLE on Cori:
-export PROJECT=m2924
+export WALLTIME=${WALLTIME:-00:10:00}
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
