@@ -57,7 +57,6 @@ def write_params(params, hyper_parameter_map):
 
             if(k =='solr_root' or k == 'timeout' ):
             # this must written at the end
-                print("hi\n")
                 montr.append(k)
                 montr.append(v)
             else:
