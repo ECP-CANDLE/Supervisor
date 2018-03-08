@@ -63,7 +63,6 @@ export BENCHMARK_TIMEOUT
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=600
                 -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
-                --obj_param=${OBJ_PARAM:-}
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -88,6 +87,7 @@ swift-t -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME \
+        -e OBJ_RETURN \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
