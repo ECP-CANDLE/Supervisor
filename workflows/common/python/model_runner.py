@@ -7,8 +7,9 @@
 # tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
 # so we need to create a synthetic argv.
 import sys
-if not hasattr(sys, 'argv'):
-    sys.argv  = ['nt3_tc1']
+if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
+    # sys.argv  = ['nt3_tc1']
+    sys.argv = ['p1b1']
 
 import json
 import os
@@ -119,6 +120,8 @@ if __name__ == '__main__':
 
     # Call to Benchmark!
     logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    sys.argv = ['p1b1']
+    print("sys.argv " + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
 
     runner_utils.write_output(result, instance_directory)
