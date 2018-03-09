@@ -11,8 +11,6 @@
 
 #include "mpi.h"
 
-#include "pbt_ds.h"
-
 /**
   Asserts that condition is true, else aborts.
 */
