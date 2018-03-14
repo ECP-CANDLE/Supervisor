@@ -42,6 +42,11 @@ export R_FILE=mlrMBO1.R
 # val_loss (default) and val_corr are supported
 export OBJ_RETURN="val_loss"
 
+if [[ $SITE == "theta" ]]
+then
+  export WAIT=1
+fi
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
 

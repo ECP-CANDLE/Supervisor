@@ -115,7 +115,13 @@ OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
-WORKFLOW_SWIFT=workflow.swift
+WAIT_ARG=""
+if (( ${WAIT:-0} ))
+then
+  WAIT_ARG="-t w"
+  echo "Turbine will wait for job completion."
+fi
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -129,4 +135,9 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
+        -e MODEL_SH \
+        -e MODEL_NAME \
+        -e SITE \
+        -e BENCHMARK_TIMEOUT \
+        $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
