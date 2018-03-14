@@ -57,14 +57,13 @@ def write_params(params, hyper_parameter_map):
 
             if(k =='solr_root' or k == 'timeout' ):
             # this must written at the end
-                print("hi\n")
                 montr.append(k)
                 montr.append(v)
             else:
                 f_out.write("{}={}\n".format(k, v))
         f_out.write("[Monitor Params]\n")
         for i in range(len(montr)/2):
-            f_out.write("{}={}\n".format(montr[2*i], montr[2*i+1])) 
+            f_out.write("{}={}\n".format(montr[2*i], montr[2*i+1]))
 
 
 def keras_clear_session(framework):
