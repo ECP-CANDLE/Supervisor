@@ -10,7 +10,9 @@ export PROCS=${PROCS:-3}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-#export QUEUE=${QUEUE:-debug-flat-quad}
+# For Theta:
+# export QUEUE=${QUEUE:-debug-flat-quad}
+
 export WALLTIME=${WALLTIME:-00:10:00}
 
 #export PROJECT=Candle_ECP
