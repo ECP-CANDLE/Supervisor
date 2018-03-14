@@ -39,7 +39,7 @@ Scheduling scripts :-
 
 ### Structure ###
 
-The point of the script structure is that it is easy to make copy and modify the test-*.sh script, and the cfg-*.sh scripts.  These can be checked back into the repo for use by others.  The test-*.sh script and the cfg-*.sh scripts should simply contain environment variables that control how workflow.sh and workflow.swift operate.
+The point of the script structure is that it is easy to make copy and modify the `test-\*.sh` script, and the cfg-\*.sh scripts.  These can be checked back into the repo for use by others.  The test-\*.sh script and the cfg-\*.sh scripts should simply contain environment variables that control how workflow.sh and workflow.swift operate.
 
 test-1 and cfg-{sys,prm}-1 should be unmodified for simple testing.
 
@@ -49,9 +49,9 @@ To call a different objective function:
 
 1. Copy common/swift/obj_app.swift to a new directory and/or file name.
 2. Edit the app function body to run your code and return the result.
-3. Edit a test-*.sh script to set environment variables:
-** OBJ_DIR: Set this to the new directory (If changed. Otherwise, OBJ_DIR defaults to the absolute path to common/swift .)
-** OBJ_MODULE: Set this to the Swift file name without suffix (If changed. Otherwise, OBJ_MODULE defaults to obj_app .)
+3. Edit a test-\*.sh script to set environment variables:
+    * OBJ_DIR: Set this to the new directory (If changed. Otherwise, OBJ_DIR defaults to the absolute path to common/swift .)
+    * OBJ_MODULE: Set this to the Swift file name without suffix (If changed. Otherwise, OBJ_MODULE defaults to obj_app .)
 4. Run it!
 
 Simple test for changing objective function:
