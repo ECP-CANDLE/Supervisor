@@ -28,8 +28,8 @@ What you need to install to run the workflow:
 ## Calling sequence ##
 
 Function calls :-
-* upf-1.sh -> swift/workflow.sh -> swift/workflow.swift -> 
-common/swift/obj_app.swift -> common/sh/model.sh -> 
+* test-1.sh -> swift/workflow.sh -> swift/workflow.swift ->
+common/swift/obj_app.swift -> common/sh/model.sh ->
 common/python/model_runner.py -> 'calls the benchmark'
 
 Scheduling scripts :-
