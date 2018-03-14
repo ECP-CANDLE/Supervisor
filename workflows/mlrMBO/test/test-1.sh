@@ -57,3 +57,7 @@ SCRIPT=$( basename $0 .sh )
 check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
+
+# Local Variables:
+# c-basic-offset: 2;
+# End:
