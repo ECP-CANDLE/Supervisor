@@ -4,12 +4,7 @@
 # Currently only supports NT3_TC1 # Not true? -Justin 2018/02/28
 # See __main__ section for usage
 
-# tensoflow.__init__ calls _os.path.basename(_sys.argv[0])
-# so we need to create a synthetic argv.
 import sys
-if not hasattr(sys, 'argv'):
-    sys.argv  = ['nt3_tc1']
-
 import json
 import os
 import numpy as np
@@ -114,11 +109,16 @@ if __name__ == '__main__':
     hyper_parameter_map['experiment_id'] = os.getenv("EXPID")
     hyper_parameter_map['run_id']  = runid
     hyper_parameter_map['timeout'] = benchmark_timeout
-    # clear sys.argv so that argparse doesn't object
-    sys.argv = [] # ['nt3_tc1_runner']
+
+    # tensorflow.__init__ calls _os.path.basename(_sys.argv[0])
+    # so we need to create a synthetic argv.
+    # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
+    # sys.argv  = ['nt3_tc1']
+    sys.argv = ['p1b1']
 
     # Call to Benchmark!
     logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
 
     runner_utils.write_output(result, instance_directory)

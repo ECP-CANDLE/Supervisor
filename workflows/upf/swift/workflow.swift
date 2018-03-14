@@ -1,6 +1,6 @@
 
 /**
-   NT3 UPF WORKFLOW.SWIFT
+   UPF WORKFLOW.SWIFT
    Evaluate an Unrolled Parameter File (UPF)
 */
 
@@ -11,14 +11,15 @@ import files;
 import string;
 import sys;
 
-system1("date \"+%Y/%m/%d %H:%M\"");
-
 string FRAMEWORK = "keras";
 
 // Scan command line
-string obj_param  = argv("obj_param");
 file   upf        = input(argv("f"));
 int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+
+// Report some key facts:
+printf("UPF: %s", filename(upf));
+system1("date \"+%Y/%m/%d %H:%M\"");
 
 // Read unrolled parameter file
 string upf_lines[] = file_lines(upf);
@@ -29,10 +30,10 @@ string results[];
 // Evaluate each parameter set
 foreach params,i in upf_lines
 {
-  printf("params: ", params);
+  printf("params: %s", params);
   id = json_get(params, "id");
   // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
-  results[i] = obj(params, id, obj_param);
+  results[i] = obj(params, id);
 }
 
 // Join all result values into one big semicolon-delimited string

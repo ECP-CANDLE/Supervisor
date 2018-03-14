@@ -1,1 +1,1 @@
-{"epochs": 3}
+{"id": "test0", "epochs": 3}
