@@ -57,10 +57,10 @@ To call a different objective function:
 Simple test for changing objective function:
 
 ```
-$ cd mlrMBO/ # This directory
+$ cd mlrMBO/                        # This directory
 $ export OBJ_DIR=$PWD/test
-$ export OBJ_MODULE=test_obj_fail # Cf. test/test_obj_fail.swift
-$ test/test-1.sh ___ dunedin # Dummy argument for MODEL_NAME (unused)
+$ export OBJ_MODULE=test_obj_fail   # Cf. test/test_obj_fail.swift
+$ test/test-1.sh ___ dunedin        # Dummy argument for MODEL_NAME (unused)
 ...
 Swift: Assertion failed!: test-obj-fail.swift was successfully invoked!
 ...
