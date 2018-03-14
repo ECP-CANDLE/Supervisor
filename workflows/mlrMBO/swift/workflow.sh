@@ -10,7 +10,6 @@ export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 export BENCHMARK_DIR=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 export BENCHMARK_TIMEOUT
 
 SCRIPT_NAME=$(basename $0)
@@ -105,13 +104,18 @@ log_script
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
 cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
-# echo's anything following this to standard out
+# Allow the user to set an objective function
+OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
+OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+# This is used by the obj_app objective function
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+
 WORKFLOW_SWIFT=workflow.swift
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $WORKFLOWS_ROOT/common/swift \
-        -i obj_$SWIFT_IMPL \
+        -I $OBJ_DIR \
+        -i $OBJ_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
