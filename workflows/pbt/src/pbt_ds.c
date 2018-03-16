@@ -23,7 +23,7 @@
 
 int pbt_ds_init(MPI_Comm comm, int nprocs) {
   int id = 1;
-  //printf("nprocs: %d\n", nprocs);
+  printf("nprocs: %d\n", nprocs);
   int rc = dspaces_init(nprocs, id, &comm, NULL);
   CHECK_MSG(rc == 0, "dspaces_init failed!");
 
@@ -69,11 +69,18 @@ void pbt_ds_get_all_scores(int nprocs, double* scores, MPI_Comm comm) {
 
 void pbt_ds_put_weights(int rank, const char* data, size_t size, MPI_Comm comm) {
   const char* var_name = "weights";
+  printf("size: %d\n", size);
+  printf("Acquiring weights lock\n");
   dspaces_lock_on_write(var_name, &comm);
+  printf("Lock acquired\n");
   uint64_t bound = rank;
+  printf("start dspaces_put\n");
   int rc = dspaces_put(var_name, 0, size, 1, &bound, &bound, data);
+  printf("end dspaces_put\n");
   CHECK_MSG(rc == 0, "dspaces_put(%s) failed!\n", var_name);
+  printf("start dspaces_put_sync\n");
   rc = dspaces_put_sync();
+  printf("end dspaces_put_sync\n");
   CHECK_MSG(rc == 0, "dspaces_put_sync() failed!\n", var_name);
   dspaces_unlock_on_write(var_name, &comm);
 }
