@@ -1,8 +1,17 @@
 from mpi4py import MPI
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation
+from timer import Timer
 
+t = Timer()
+t.start()
+from keras.models import Sequential
+t.end("import keras.models")
+
+t.start()
+from keras.layers import Dense, Activation
+t.end("import keras.layers")
+
+print("Importing cPickle etc")
 import cPickle, ctypes, pickle
 from cStringIO import StringIO
 
@@ -98,8 +107,15 @@ def put_weights(rank, model, lib):
     s = pickle_model(model)
     comm = make_comm_arg(MPI.COMM_SELF)
     fake_score = (10 - rank) * 1.23
+    print("Putting Scores")
+    t = Timer()
+    t.start()
     lib.pbt_ds_put_score(rank, ctypes.c_double(fake_score), ctypes.c_double(len(s)), comm)
+    t.end("Put Scores")
+    t.start()
+    print("Putting Weights")
     lib.pbt_ds_put_weights(rank, s, len(s), comm)
+    t.end("Put Weights")
 
 def get_weights(model_data, lib):
     size = int(model_data.size)
@@ -118,20 +134,27 @@ def get_model_data(nprocs, lib):
     return ModelData(data)
 
 def main():
+    print("Initializing lib")
     lib = init_lib()
+    print("lib initialized")
     comm = MPI.COMM_WORLD
     # could also use dataspaces rank here, maybe
     rank = comm.Get_rank()
     nprocs = comm.Get_size()
+    if rank == 0:
+        print("ranks: {}".format(nprocs))
 
+    print("Initializing DS")
     init_ds(rank, lib)
 
-    # the pickeled size is not constant, so this
-    # needs to be changed
+    print("Creating Model")
     model = create_model()
+    print("Init Scores")
     init_scores(rank, comm.Get_size(), lib)
 
+    print("Putting Weights")
     put_weights(rank, model, lib)
+    print("{} - Finished Putting Weights".format(rank))
 
     comm.Barrier()
 
@@ -145,6 +168,7 @@ def main():
 
     comm.Barrier()
     lib.pbt_ds_finalize()
+    print("Done")
 
 if __name__ == '__main__':
     main()
