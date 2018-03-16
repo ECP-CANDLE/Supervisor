@@ -6,6 +6,8 @@ from keras.layers import Dense, Activation
 import cPickle, ctypes, pickle
 from cStringIO import StringIO
 
+import zlib
+
 SCORES_VAR = "scores"
 
 MPI_Comm_type = None
@@ -60,7 +62,9 @@ def create_model():
 
 def pickle_model(model):
     s = cPickle.dumps(model.get_weights(), pickle.HIGHEST_PROTOCOL)
-    #s = s.encode()
+    print("pickled: {}".format(len(s)))
+    s = zlib.compress(s)
+    print("compressed: {}".format(len(s)))
     return s
 
 def init_lib():
@@ -102,7 +106,7 @@ def get_weights(model_data, lib):
     data = ctypes.create_string_buffer(size)
     comm = make_comm_arg(MPI.COMM_SELF)
     lib.pbt_ds_get_weights(model_data.rank, data, size, comm)
-    return cPickle.load(StringIO(data))
+    return cPickle.load(StringIO(zlib.decompress(data)))
 
 def get_model_data(nprocs, lib):
     size = 2 * nprocs
@@ -136,7 +140,7 @@ def main():
         max_data = data.max()
         print("Max: {}".format(max_data))
         weights = get_weights(max_data, lib)
-        print(weights)
+        print(len(weights.__str__()))
         model.set_weights(weights)
 
     comm.Barrier()
