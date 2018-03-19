@@ -1,9 +1,11 @@
 from mpi4py import MPI
-
+import numpy as np
 from timer import Timer
+import sys
 
 t = Timer()
 t.start()
+import keras
 from keras.models import Sequential
 t.end("import keras.models")
 
@@ -14,6 +16,8 @@ t.end("import keras.layers")
 print("Importing cPickle etc")
 import cPickle, ctypes, pickle
 from cStringIO import StringIO
+
+import combo_utils
 
 SCORES_VAR = "scores"
 
@@ -57,17 +61,25 @@ class ModelData:
     def max(self):
         return self.items[self.max_ranks[0]]
 
+    def get_data(self, rank):
+        return self.items[rank]
 
-def create_model():
-    model = Sequential([
-        Dense(32, input_shape=(784,)),
-        Activation('relu'),
-        Dense(10),
-        Activation('softmax'),
-    ])
+def create_model(saved_model):
+    if saved_model == None:
+        model = Sequential([
+            Dense(32, input_shape=(784,)),
+            Activation('relu'),
+            Dense(10),
+            Activation('softmax'),
+        ])
+        model.save("./model.h5")
+    else:
+        print("Using {}".format(saved_model))
+        model = keras.models.load_model(saved_model, custom_objects={'r2' : combo_utils.r2})
+
     return model
 
-def pickle_model(model):
+def pickle_weights(model):
     s = cPickle.dumps(model.get_weights(), pickle.HIGHEST_PROTOCOL)
     #s = s.encode()
     return s
@@ -100,7 +112,7 @@ def init_scores(rank, nprocs, lib):
                         ctypes.c_double(0.0), comm)
 
 def put_weights(rank, model, lib):
-    s = pickle_model(model)
+    s = pickle_weights(model)
     comm = make_comm_arg(MPI.COMM_SELF)
     fake_score = (10 - rank) * 1.23
     print("Putting Scores")
@@ -117,7 +129,10 @@ def get_weights(model_data, lib):
     size = int(model_data.size)
     data = ctypes.create_string_buffer(size)
     comm = make_comm_arg(MPI.COMM_SELF)
+    t = Timer()
+    t.start()
     lib.pbt_ds_get_weights(model_data.rank, data, size, comm)
+    t.end("Got Weights")
     return cPickle.load(StringIO(data))
 
 def get_model_data(nprocs, lib):
@@ -129,7 +144,7 @@ def get_model_data(nprocs, lib):
     lib.pbt_ds_get_all_scores(nprocs, data, comm)
     return ModelData(data)
 
-def main():
+def main(saved_model=None):
     print("Initializing lib")
     lib = init_lib()
     print("lib initialized")
@@ -144,28 +159,41 @@ def main():
     init_ds(rank, lib)
 
     print("Creating Model")
-    model = create_model()
+    model = create_model(saved_model)
     print("Init Scores")
     init_scores(rank, comm.Get_size(), lib)
 
     print("Putting Weights")
-    if rank == 0:
-        put_weights(rank, model, lib)
+    put_weights(rank, model, lib)
     print("{} - Finished Putting Weights".format(rank))
 
     comm.Barrier()
-    #
-    # if rank == 1:
+
+    if rank == 1:
+        data = get_model_data(nprocs, lib)
+        max_data = data.max()
+        print("Max: {}".format(max_data))
+        weights = get_weights(max_data, lib)
+        #print(weights)
+        model.set_weights(weights)
+
+    # if rank == 0:
     #     data = get_model_data(nprocs, lib)
-    #     max_data = data.max()
-    #     print("Max: {}".format(max_data))
-    #     weights = get_weights(max_data, lib)
-    #     #print(weights)
-    #     model.set_weights(weights)
-    #
-    # comm.Barrier()
+    #     zero_data = data.get_data(0)
+    #     stored_weights = get_weights(zero_data, lib)
+    #     weights = model.get_weights()
+    #     if len(weights) == len(stored_weights):
+    #         print("len is equal")
+    #         for i,ar in enumerate(stored_weights):
+    #             print(np.array_equal(weights[i], ar))
+
+
+    comm.Barrier()
     lib.pbt_ds_finalize()
     print("Done")
 
 if __name__ == '__main__':
-    main()
+    saved_model = None
+    if (len(sys.argv) == 2):
+        saved_model = sys.argv[1]
+    main(saved_model)

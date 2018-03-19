@@ -68,7 +68,8 @@ void pbt_ds_get_all_scores(int nprocs, double* scores, MPI_Comm comm) {
 }
 
 void pbt_ds_put_weights(int rank, const char* data, size_t size, MPI_Comm comm) {
-  const char* var_name = "weights";
+  char var_name[50];
+  sprintf(var_name, "weights_%d", rank);
   printf("size: %d\n", size);
   printf("Acquiring weights lock\n");
   dspaces_lock_on_write(var_name, &comm);
@@ -86,7 +87,8 @@ void pbt_ds_put_weights(int rank, const char* data, size_t size, MPI_Comm comm) 
 }
 
 void pbt_ds_get_weights(int rank, char* data, size_t size, MPI_Comm comm) {
-  const char* var_name = "weights";
+  char var_name[50];
+  sprintf(var_name, "weights_%d", rank);
   dspaces_lock_on_read(var_name, &comm);
   uint64_t bound = rank;
   int rc = dspaces_get(var_name, 0, size, 1, &bound, &bound, data);
