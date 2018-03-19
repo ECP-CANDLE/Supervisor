@@ -1,3 +1,5 @@
+set -eu
+
 CLIENTS=2
 
 PATH=$HOME/sfw/dataspaces-1.6.5/bin:$PATH
@@ -14,8 +16,8 @@ while [ ! -f conf ]; do
 done
 sleep 5s
 
-echo "starting main"
-mpirun -n $CLIENTS python python/test.py
+echo "Running $1"
+mpirun -n $CLIENTS python python/$1.py
 
 sleep 1
 
