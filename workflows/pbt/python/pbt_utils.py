@@ -2,7 +2,7 @@ from mpi4py import MPI
 import ctypes
 from timer import Timer
 
-import StringIO
+from cStringIO import StringIO
 
 class ModelMetaData:
     def __init__(self, rank, score, size):
@@ -46,6 +46,7 @@ class ModelData:
     def get_data(self, rank):
         return self.items[rank]
 
+
 class PBTDataSpaces:
 
     def __init__(self):
@@ -68,7 +69,7 @@ class PBTDataSpaces:
         return comm_val
 
     def init_ds(self):
-        self.lib.pbt_ds_init(self.mpi_comm_world, ctypes.c_int(self.world_size))
+        self.lib.pbt_ds_init(ctypes.c_int(self.world_size), self.mpi_comm_world)
 
     def init_scores(self):
         self.lib.pbt_ds_define_score_dim(self.world_size)
@@ -103,3 +104,6 @@ class PBTDataSpaces:
         data = (ctypes.c_double * size)()
         self.lib.pbt_ds_get_all_scores(self.world_size, data, self.mpi_comm_self)
         return ModelData(data)
+
+    def finalize(self):
+        self.lib.pbt_ds_finalize()
