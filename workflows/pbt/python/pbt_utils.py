@@ -1,8 +1,31 @@
 from mpi4py import MPI
-import ctypes
-from timer import Timer
+import ctypes, time
 
 from cStringIO import StringIO
+
+class Timer:
+
+    def __init__(self, fname=None):
+        if fname == None:
+            self.out = None
+        else:
+            self.out = open(fname, 'w')
+
+
+    def start(self):
+        self.t = time.time()
+
+    def end(self, msg):
+        duration = time.time() - self.t
+        line = "{},{},{},{}".format(msg, self.t, time.time(), duration)
+        if self.out != None:
+            self.out.write("{}\n".format(line))
+        else:
+            print(line)
+
+    def close(self):
+        if self.out != None:
+            self.out.close()
 
 class ModelMetaData:
     def __init__(self, rank, score, size):
@@ -78,23 +101,14 @@ class PBTDataSpaces:
 
     def put_weights(self, pickled_weights, score):
         weights_size = len(pickled_weights)
-        print("Putting Scores")
-        t = Timer()
-        t.start()
         self.lib.pbt_ds_put_score(self.rank, ctypes.c_double(score),
                                 ctypes.c_double(weights_size), self.mpi_comm_self)
-        t.start()
-        print("Putting Weights")
         self.lib.pbt_ds_put_weights(self.rank, pickled_weights, weights_size, self.mpi_comm_self)
-        t.end("Put Weights")
 
     def get_weights(self, model_data):
         size = int(model_data.size)
         data = ctypes.create_string_buffer(size)
-        t = Timer()
-        t.start()
         self.lib.pbt_ds_get_weights(model_data.rank, data, size, self.mpi_comm_self)
-        t.end("Got Weights")
         return StringIO(data)
 
     def get_model_data(self):
