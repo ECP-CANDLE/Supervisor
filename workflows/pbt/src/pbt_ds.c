@@ -93,3 +93,27 @@ void pbt_ds_get_weights(int rank, char* data, size_t size, MPI_Comm comm) {
   CHECK_MSG(rc == 0, "dspaces_get(%s) failed!\n", var_name);
   dspaces_unlock_on_read(var_name, &comm);
 }
+
+void pbt_ds_put_w(int rank, int layer, int layer_count, const float* data, size_t size, MPI_Comm comm) {
+  uint64_t bound = rank * layer_count + layer;
+  char var_name[50];
+  sprintf(var_name, "weights_%d", rank);
+  dspaces_lock_on_write(var_name, &comm);
+  int rc = dspaces_put(var_name, 0, size, 1, &bound, &bound, data);
+  CHECK_MSG(rc == 0, "dspaces_put(%s) failed!\n", var_name);
+  rc = dspaces_put_sync();
+  CHECK_MSG(rc == 0, "dspaces_put_sync() failed!\n", var_name);
+  dspaces_unlock_on_write(var_name, &comm);
+}
+
+void pbt_ds_get_w(int rank, int layer, int layer_count, float* data,
+  size_t size, MPI_Comm comm) {
+
+  uint64_t bound = rank * layer_count + layer;
+  char var_name[50];
+  sprintf(var_name, "weights_%d", rank);
+  dspaces_lock_on_read(var_name, &comm);
+  int rc = dspaces_get(var_name, 0, size, 1, &bound, &bound, data);
+  CHECK_MSG(rc == 0, "dspaces_get(%s) failed!\n", var_name);
+  dspaces_unlock_on_read(var_name, &comm);
+}
