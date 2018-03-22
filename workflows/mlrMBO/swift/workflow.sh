@@ -123,6 +123,8 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+export TURBINE_LAUNCH_OPTIONS="-cc none"
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
