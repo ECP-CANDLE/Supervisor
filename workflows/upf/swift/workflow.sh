@@ -75,6 +75,7 @@ cp $CFG_SYS $TURBINE_OUTPUT
 
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
+export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
