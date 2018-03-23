@@ -31,7 +31,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "COMBO: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
 }
 
 if (( ${#} != 4 ))
