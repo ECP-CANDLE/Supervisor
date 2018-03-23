@@ -3,6 +3,9 @@ import ctypes, time
 
 from cStringIO import StringIO
 
+from collections import deque
+import random
+
 class Timer:
 
     def __init__(self, fname=None):
@@ -121,3 +124,174 @@ class PBTDataSpaces:
 
     def finalize(self):
         self.lib.pbt_ds_finalize()
+
+
+class MsgType:
+    ACQUIRE_WRITE_LOCK, RELEASE_WRITE_LOCK, GET_BEST_SCORE, PUT_SCORE, DONE = range(5)
+
+
+class Tags:
+    REQUEST, ACK, SCORE = range(3)
+
+
+class PBTClient:
+
+    def __init__(self, comm, dest):
+        self.comm = comm
+        self.rank = comm.Get_rank()
+        self.dest = dest
+
+    def acquire_lock(self, for_rank):
+        msg = {'type' : MsgType.ACQUIRE_WRITE_LOCK, 'rank' : for_rank}
+        status = MPI.Status()
+        print("{} requesting weights lock: {}".format(self.rank, msg))
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+        # wait for acknowledgement of lock
+        self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+        print("{} acquired weights lock".format(self.rank))
+
+    def release_lock(self, for_rank):
+        msg = {'type' : MsgType.RELEASE_WRITE_LOCK, 'rank' : for_rank}
+        status = MPI.Status()
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+        # wait for acknowledgement of lock release
+        self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+
+    def get_best_score(self, lock_weights=True):
+        msg = {'type' : MsgType.GET_BEST_SCORE, 'lock_weights' : lock_weights}
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+        status = MPI.Status()
+        if lock_weights:
+            self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+            print("{} acquired weights lock".format(self.rank))
+
+        score_rank = self.comm.recv(source=self.dest, tag=Tags.SCORE, status=status)
+        return score_rank
+
+    def put_score(self, score, lock_weights=True):
+        msg = {'type' : MsgType.PUT_SCORE, 'score' : score,
+               'lock_weights' : lock_weights}
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+        # don't return until the score has actually been put
+        self.comm.recv(source=self.dest, tag=Tags.ACK)
+        status = MPI.Status()
+        if lock_weights:
+            self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+            print("{} acquired weights lock".format(self.rank))
+
+    def done(self):
+        msg = {'type' : MsgType.DONE}
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+
+
+class DataStoreLock:
+
+    def __init__(self, comm, source, target, locked_obj):
+        self.source = source
+        self.target = target
+        self.locked_obj = locked_obj
+        self.comm = comm
+
+    def lock(self):
+        print("Ack for lock '{}' lock from {}".format(self.locked_obj, self.target))
+        # send the acknowledgement of the lock back to target
+        self.comm.send(MsgType.ACQUIRE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
+
+    def unlock(self):
+        print("Ack for unlock '{}' lock from {}".format(self.locked_obj, self.target))
+        self.comm.send(MsgType.RELEASE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
+
+
+class PBTMetaDataStore:
+
+    def __init__(self, comm):
+        self.locks = {}
+        self.comm = comm
+        self.rank = self.comm.Get_rank()
+        self.scores = {}
+
+    def acquire_lock(self, requesting_rank, key):
+        lock = DataStoreLock(self.comm, self.rank, requesting_rank, key)
+        if key in self.locks:
+            # assumes that the dequeue will never be empty
+            # an empty deque should be removed from the dict.
+            deq = self.locks[key]
+            deq.append(lock)
+        else:
+            self.locks[key] = deque([lock])
+            lock.lock()
+
+    def release_lock(self, key):
+        if key not in self.locks or len(self.locks[key]) == 0:
+            print("Bad release lock request. No lock found: {}".format(key))
+            return
+
+        deq = self.locks[key]
+        lock = deq.popleft()
+        lock.unlock()
+
+        if len(deq) == 0:
+            # remove the deque
+            del self.locks[key]
+        else:
+            deq[0].lock()
+
+    def get_best_score(self, requesting_rank):
+        # use min, expecting val_loss
+        mins = []
+        val = float('inf')
+        for k in self.scores:
+            score = self.scores[k]
+            if score < val:
+                mins = []
+                val = score
+                mins.append(k)
+            elif score == val:
+                mins.append(k)
+
+        return (random.choice(mins), val)
+
+
+    def put_score(self, putting_rank, score):
+        print("Putting score {},{}".format(putting_rank, score))
+        self.scores[putting_rank] = score
+        self.comm.send(MsgType.PUT_SCORE, tag=Tags.ACK, dest=putting_rank)
+
+    def run(self):
+        status = MPI.Status()
+        live_ranks = self.comm.Get_size() - 1
+        while live_ranks > 0:
+            msg = self.comm.recv(source=MPI.ANY_SOURCE, tag=Tags.REQUEST, status=status)
+            source = status.Get_source()
+            msg_type = msg['type']
+
+            if msg_type == MsgType.ACQUIRE_WRITE_LOCK:
+                msg_rank = msg['rank']
+                key = "weights{}".format(msg_rank)
+                self.acquire_lock(source, key)
+
+            elif msg_type == MsgType.RELEASE_WRITE_LOCK:
+                msg_rank = msg['rank']
+                key = "weights{}".format(msg_rank)
+                self.release_lock(key)
+
+            elif msg_type == MsgType.PUT_SCORE:
+                score = msg['score']
+                lock_weights = msg['lock_weights']
+                self.put_score(source, score)
+                if lock_weights:
+                    key = "weights{}".format(source)
+                    self.acquire_lock(source, key)
+
+            elif msg_type == MsgType.GET_BEST_SCORE:
+                rank, score = self.get_best_score(source)
+                lock_weights = msg['lock_weights']
+                if lock_weights:
+                    key = "weights{}".format(rank)
+                    self.acquire_lock(source, key)
+
+                self.comm.send((rank,score), dest=source, tag=Tags.SCORE)
+
+
+            elif msg_type == MsgType.DONE:
+                live_ranks -= 1
