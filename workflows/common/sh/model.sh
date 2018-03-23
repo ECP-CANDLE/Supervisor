@@ -42,9 +42,9 @@ exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
 
-echo MODEL.SH
+echo "MODEL.SH START:"
 
-# get the site and source lang-app-{SITE} from workflow/common/sh folder
+# Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
