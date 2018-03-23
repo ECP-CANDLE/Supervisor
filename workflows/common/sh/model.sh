@@ -7,24 +7,11 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh [-t TIMEOUT] FRAMEWORK PARAMS RUNID"
+  echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
   echo "The environment should have:"
   echo "  SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT OBJ_RETURN"
   echo "If TIMEOUT is provided, we run under the shell command timeout"
 }
-
-# set -x
-# echo MODEL.SH
-
-TIMEOUT=""
-while getopts "t:" OPTION
-do
-  case OPTION in
-    t) TIMEOUT=$OPTARG ;;
-    *) exit 1 ;; # Bash prints an error message
-  esac
-done
-shift $(( OPTIND - 1 ))
 
 if (( ${#} != 3 ))
 then
@@ -33,22 +20,19 @@ then
 fi
 
 FRAMEWORK=$1 # Usually "keras"
-shift
-
 # JSON string of parameters
-PARAMS="$1"
-shift
-
-RUNID=$1
-shift
+PARAMS="$2"
+RUNID=$3
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
 
+SH_TIMEOUT=${SH_TIMEOUT:-}
 TIMEOUT_CMD=""
-if [ -n "$TIMEOUT" ]; then
-  TIMEOUT_CMD="timeout $TIMEOUT"
+if [[ -n "$SH_TIMEOUT" ]] && [[ $SH_TIMEOUT != "-1" ]]
+then
+  TIMEOUT_CMD="timeout $SH_TIMEOUT"
 fi
 
 # All stdout/stderr after this point goes into model.log !
@@ -82,18 +66,21 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$BENCHMARK_TIMEOUT")
 MODEL_CMD="python -u ${arg_array[@]}"
 # echo MODEL_CMD: $MODEL_CMD
-if ! $TIMEOUT_CMD python -u "${arg_array[@]}"
+if $TIMEOUT_CMD python -u "${arg_array[@]}"
 then
-   # $? is the exit status of the most recently executed command
-   # (i.e the line above)
-   CODE=$?
-   if [ $CODE == 124 ]; then
-     echo "Timeout error in $MODEL_CMD"
-     exit 0 # This will trigger a NaN (the result file does not exist)
-   else
-     echo "Error in $MODEL_CMD"
-     exit 1 # Unknown error in Python: abort the workflow
-   fi
+  : # Assume success so we can keep a failed exit code
+else
+  # $? is the exit status of the most recently executed command
+  # (i.e the line in the 'if' condition)
+  CODE=$?
+  if [ $CODE == 124 ]; then
+    echo "MODEL.SH: Timeout error in $MODEL_CMD"
+    exit 0 # This will trigger a NaN (the result file does not exist)
+  else
+    echo "MODEL.SH: Error in $MODEL_CMD"
+    exit 1 # Unknown error in Python: abort the workflow
+  fi
 fi
 
+echo "MODEL.SH END: SUCCESS"
 exit 0 # Success

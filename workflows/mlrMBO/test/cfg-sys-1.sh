@@ -17,6 +17,14 @@ export WALLTIME=${WALLTIME:-00:10:00}
 
 #export PROJECT=Candle_ECP
 
-# Benchmark run timeout: benchmark run will timeouT
-# after the specified number of seconds. -1 is no timeout.
+# Benchmark run timeout: benchmark run will timeout
+# after the specified number of seconds.
+# If set to -1 there is no timeout.
+# This timeout is implemented with Keras callbacks
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+
+# Shell timeout: benchmark run will be killed
+# after the specified number of seconds.
+# If set to -1 or empty is no timeout.
+# This timeout is implemented with the shell command 'timeout'
+export SH_TIMEOUT=${SH_TIMEOUT:-3}

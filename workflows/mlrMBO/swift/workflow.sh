@@ -139,5 +139,6 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
+        -e SH_TIMEOUT \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
