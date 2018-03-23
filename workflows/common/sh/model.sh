@@ -57,7 +57,6 @@ echo
 echo "USING PYTHON:"
 which python
 
-set -x
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
