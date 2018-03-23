@@ -46,7 +46,7 @@ def format_params(hyper_parameter_map):
 def write_params(params, hyper_parameter_map):
     parent_dir =  hyper_parameter_map['instance_directory'] if 'instance_directory' in hyper_parameter_map else '.'
     f = "{}/parameters.txt".format(parent_dir)
-    montr=[]
+    montr=[] # Monitor params
     with open(f, "w") as f_out:
         f_out.write("[Global Params]\n")
         for k,v in params.items():
