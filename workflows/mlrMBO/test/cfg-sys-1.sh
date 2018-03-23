@@ -25,6 +25,6 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 
 # Shell timeout: benchmark run will be killed
 # after the specified number of seconds.
-# If set to -1 or empty is no timeout.
+# If set to -1 or empty there is no timeout.
 # This timeout is implemented with the shell command 'timeout'
-export SH_TIMEOUT=${SH_TIMEOUT:-3}
+export SH_TIMEOUT=${SH_TIMEOUT:-}
