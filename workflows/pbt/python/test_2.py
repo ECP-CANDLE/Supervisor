@@ -25,8 +25,6 @@ def main():
     pbt_ds.init_ds()
     pbt_ds.init_scores()
 
-
-
     rank = MPI.COMM_WORLD.Get_rank()
     timer = Timer("./timings_{}.csv".format(rank))
     model = keras.models.load_model("./models/combo_model.h5", custom_objects={'r2' : r2})
