@@ -144,11 +144,11 @@ class PBTClient:
     def acquire_lock(self, for_rank):
         msg = {'type' : MsgType.ACQUIRE_WRITE_LOCK, 'rank' : for_rank}
         status = MPI.Status()
-        print("{} requesting weights lock: {}".format(self.rank, msg))
+        #print("{} requesting weights lock: {}".format(self.rank, msg))
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         # wait for acknowledgement of lock
         self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
-        print("{} acquired weights lock".format(self.rank))
+        #print("{} acquired weights lock".format(self.rank))
 
     def release_lock(self, for_rank):
         msg = {'type' : MsgType.RELEASE_WRITE_LOCK, 'rank' : for_rank}
@@ -163,7 +163,7 @@ class PBTClient:
         status = MPI.Status()
         if lock_weights:
             self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
-            print("{} acquired weights lock".format(self.rank))
+            #print{"{} acquired weights lock".format(self.rank))
 
         score_rank = self.comm.recv(source=self.dest, tag=Tags.SCORE, status=status)
         return score_rank
@@ -177,7 +177,7 @@ class PBTClient:
         status = MPI.Status()
         if lock_weights:
             self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
-            print("{} acquired weights lock".format(self.rank))
+            #print{"{} acquired weights lock".format(self.rank))
 
     def done(self):
         msg = {'type' : MsgType.DONE}
@@ -193,12 +193,12 @@ class DataStoreLock:
         self.comm = comm
 
     def lock(self):
-        print("Ack for lock '{}' lock from {}".format(self.locked_obj, self.target))
+        #print{"Ack for lock '{}' lock from {}".format(self.locked_obj, self.target))
         # send the acknowledgement of the lock back to target
         self.comm.send(MsgType.ACQUIRE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
 
     def unlock(self):
-        print("Ack for unlock '{}' lock from {}".format(self.locked_obj, self.target))
+        #print{"Ack for unlock '{}' lock from {}".format(self.locked_obj, self.target))
         self.comm.send(MsgType.RELEASE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
 
 
@@ -253,7 +253,7 @@ class PBTMetaDataStore:
 
 
     def put_score(self, putting_rank, score):
-        print("Putting score {},{}".format(putting_rank, score))
+        #print("Putting score {},{}".format(putting_rank, score))
         self.scores[putting_rank] = score
         self.comm.send(MsgType.PUT_SCORE, tag=Tags.ACK, dest=putting_rank)
 
@@ -292,6 +292,7 @@ class PBTMetaDataStore:
 
                 self.comm.send((rank,score), dest=source, tag=Tags.SCORE)
 
-
             elif msg_type == MsgType.DONE:
                 live_ranks -= 1
+
+        print("Done")
