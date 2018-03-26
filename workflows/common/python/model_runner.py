@@ -72,7 +72,7 @@ def run(hyper_parameter_map, obj_return):
         # Return the history entry that the user requested.
         val_loss = history.history[obj_return]
         result = val_loss[-1]
-    print("result: " + result)
+    print("result: " + str(result))
     return result
 
 def get_obj_return():
