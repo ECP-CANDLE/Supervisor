@@ -15,21 +15,21 @@ GET = 0
 PUT = 1
 
 
+# serialized combo_model includes reference to custom metric "r2"
+# We set that "r2" to this
 def r2(y_true, y_pred):
     SS_res =  K.sum(K.square(y_true - y_pred))
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
-def main():
+def main(model_file):
     pbt_ds = PBTDataSpaces()
     pbt_ds.init_ds()
     pbt_ds.init_scores()
 
-
-
     rank = MPI.COMM_WORLD.Get_rank()
     timer = Timer("./timings_{}.csv".format(rank))
-    model = keras.models.load_model("./models/combo_model.h5", custom_objects={'r2' : r2})
+    model = keras.models.load_model(model_file, custom_objects={'r2' : r2})
 
     timer.start()
     weights = cPickle.dumps(model.get_weights(), pickle.HIGHEST_PROTOCOL)
@@ -39,7 +39,7 @@ def main():
 
     MPI.COMM_WORLD.Barrier()
 
-    for i in range(3):
+    for i in range(48):
         wait = random.uniform(1, 10)
         time.sleep(wait)
 
@@ -61,8 +61,9 @@ def main():
         timer.end(PUT)
 
     timer.close()
+    MPI.COMM_WORLD.Barrier()
     pbt_ds.finalize()
     print("Done")
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])
