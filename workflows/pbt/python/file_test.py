@@ -27,7 +27,7 @@ def run(comm, worker_comm, model_file):
 
     worker_comm.Barrier()
 
-    for i in range(48):
+    for i in range(3):
         wait = random.uniform(1, 10)
         time.sleep(wait)
 
