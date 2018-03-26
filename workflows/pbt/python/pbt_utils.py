@@ -127,7 +127,7 @@ class PBTDataSpaces:
 
 
 class MsgType:
-    ACQUIRE_WRITE_LOCK, RELEASE_WRITE_LOCK, GET_BEST_SCORE, PUT_SCORE, DONE = range(5)
+    LOCKED, UNLOCKED, ACQUIRE_READ_LOCK, RELEASE_READ_LOCK, ACQUIRE_WRITE_LOCK, RELEASE_WRITE_LOCK, GET_BEST_SCORE, PUT_SCORE, DONE = range(9)
 
 
 class Tags:
@@ -141,21 +141,29 @@ class PBTClient:
         self.rank = comm.Get_rank()
         self.dest = dest
 
-    def acquire_lock(self, for_rank):
-        msg = {'type' : MsgType.ACQUIRE_WRITE_LOCK, 'rank' : for_rank}
+    def acquire_read_lock(self, for_rank):
+        msg = {'type' : MsgType.ACQUIRE_READ_LOCK, 'rank' : for_rank}
         status = MPI.Status()
-        #print("{} requesting weights lock: {}".format(self.rank, msg))
+        #print("{} requesting read lock: {}".format(self.rank, msg))
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         # wait for acknowledgement of lock
         self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
-        #print("{} acquired weights lock".format(self.rank))
+        #print("{} acquired read lock".format(self.rank))
 
-    def release_lock(self, for_rank):
+    def release_read_lock(self, for_rank):
+        msg = {'type' : MsgType.RELEASE_READ_LOCK, 'rank' : for_rank}
+        status = MPI.Status()
+        self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
+        # wait for acknowledgement of lock release
+        self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+
+    def release_write_lock(self, for_rank):
         msg = {'type' : MsgType.RELEASE_WRITE_LOCK, 'rank' : for_rank}
         status = MPI.Status()
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         # wait for acknowledgement of lock release
         self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+
 
     def get_best_score(self, lock_weights=True):
         msg = {'type' : MsgType.GET_BEST_SCORE, 'lock_weights' : lock_weights}
@@ -186,20 +194,78 @@ class PBTClient:
 
 class DataStoreLock:
 
-    def __init__(self, comm, source, target, locked_obj):
+    def __init__(self, comm, source, target):
         self.source = source
         self.target = target
-        self.locked_obj = locked_obj
         self.comm = comm
 
     def lock(self):
         #print{"Ack for lock '{}' lock from {}".format(self.locked_obj, self.target))
         # send the acknowledgement of the lock back to target
-        self.comm.send(MsgType.ACQUIRE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
+        self.comm.send(MsgType.LOCKED, dest=self.target, tag=Tags.ACK)
 
     def unlock(self):
         #print{"Ack for unlock '{}' lock from {}".format(self.locked_obj, self.target))
-        self.comm.send(MsgType.RELEASE_WRITE_LOCK, dest=self.target, tag=Tags.ACK)
+        self.comm.send(MsgType.UNLOCKED, dest=self.target, tag=Tags.ACK)
+
+
+class DataStoreLockManager:
+
+    def __init__(self, comm, rank):
+        self.rank = rank
+        self.comm = comm
+        self.readers = {}
+        self.queued_readers = deque()
+        self.queued_writers = deque()
+        self.writer = None
+
+    def read_lock(self, requesting_rank):
+        # if writer, then queue the read
+        # else add DataStoreLock to readers, and call locks
+        lock = DataStoreLock(self.comm, self.rank, requesting_rank)
+        if self.writer != None:
+            self.queued_readers.append(lock)
+        else:
+            self.readers[requesting_rank] = lock
+            lock.lock()
+
+    def read_unlock(self, requesting_rank):
+        # look up Lock in readers and send unlock and remove from readers
+        # if readers is empty, then lock first queued writer and set self.write
+        lock = self.readers.pop(requesting_rank)
+        lock.unlock()
+        if len(self.readers) == 0 and len(self.queued_writers) > 0:
+            self.writer = self.queued_writers.popleft()
+            self.writer.lock()
+
+    def write_lock(self, requesting_rank):
+        # if no readers and self.writer = None then set self.writer
+        # else add to queued writers
+        lock = DataStoreLock(self.comm, self.rank, requesting_rank)
+        if len(self.readers) == 0 and self.writer == None:
+            self.writer = lock
+            lock.lock()
+        else:
+            self.queued_writers.append(lock)
+
+    def write_unlock(self, requesting_rank):
+        # unlock self.writer (shouldn't be None!), set to None
+        # if queued readers then lock those, else check queued writers
+        # and lock first for those
+        if self.writer.target != requesting_rank:
+            print("bad write unlock")
+
+        self.writer.unlock()
+        self.writer = None
+        if len(self.queued_readers) > 0:
+            for lock in self.queued_readers:
+                lock.lock()
+                self.readers[lock.target] = lock
+            self.queued_readers = deque()
+
+        elif len(self.queued_writers) > 0:
+            self.writer = queued_writers.popleft()
+            self.writer.lock()
 
 
 class PBTMetaDataStore:
@@ -209,34 +275,27 @@ class PBTMetaDataStore:
         self.comm = comm
         self.rank = self.comm.Get_rank()
         self.scores = {}
+        for i in range(self.comm.Get_size()):
+            if i != self.rank:
+                self.locks[i] = DataStoreLockManager(self.comm, self.rank)
 
-    def acquire_lock(self, requesting_rank, key):
-        lock = DataStoreLock(self.comm, self.rank, requesting_rank, key)
-        if key in self.locks:
-            # assumes that the dequeue will never be empty
-            # an empty deque should be removed from the dict.
-            deq = self.locks[key]
-            deq.append(lock)
-        else:
-            self.locks[key] = deque([lock])
-            lock.lock()
+    def acquire_read_lock(self, requesting_rank, key):
+        lock_manager = self.locks[key]
+        lock_manager.read_lock(requesting_rank)
 
-    def release_lock(self, key):
-        if key not in self.locks or len(self.locks[key]) == 0:
-            print("Bad release lock request. No lock found: {}".format(key))
-            return
+    def release_read_lock(self, requesting_rank, key):
+        lock_manager = self.locks[key]
+        lock_manager.read_unlock(requesting_rank)
 
-        deq = self.locks[key]
-        lock = deq.popleft()
-        lock.unlock()
+    def acquire_write_lock(self, requesting_rank, key):
+        lock_manager = self.locks[key]
+        lock_manager.write_lock(requesting_rank)
 
-        if len(deq) == 0:
-            # remove the deque
-            del self.locks[key]
-        else:
-            deq[0].lock()
+    def release_write_lock(self, requesting_rank, key):
+        lock_manager = self.locks[key]
+        lock_manager.write_unlock(requesting_rank)
 
-    def get_best_score(self, requesting_rank):
+    def get_best_score(self):
         # use min, expecting val_loss
         mins = []
         val = float('inf')
@@ -251,7 +310,6 @@ class PBTMetaDataStore:
 
         return (random.choice(mins), val)
 
-
     def put_score(self, putting_rank, score):
         #print("Putting score {},{}".format(putting_rank, score))
         self.scores[putting_rank] = score
@@ -265,30 +323,31 @@ class PBTMetaDataStore:
             source = status.Get_source()
             msg_type = msg['type']
 
-            if msg_type == MsgType.ACQUIRE_WRITE_LOCK:
+            if msg_type == MsgType.ACQUIRE_READ_LOCK:
                 msg_rank = msg['rank']
-                key = "weights{}".format(msg_rank)
-                self.acquire_lock(source, key)
+                self.acquire_read_lock(source, msg_rank)
+
+            elif msg_type == MsgType.RELEASE_READ_LOCK:
+                msg_rank = msg['rank']
+                self.release_read_lock(source, msg_rank)
 
             elif msg_type == MsgType.RELEASE_WRITE_LOCK:
                 msg_rank = msg['rank']
-                key = "weights{}".format(msg_rank)
-                self.release_lock(key)
+                self.release_write_lock(source, msg_rank)
 
             elif msg_type == MsgType.PUT_SCORE:
                 score = msg['score']
                 lock_weights = msg['lock_weights']
                 self.put_score(source, score)
                 if lock_weights:
-                    key = "weights{}".format(source)
-                    self.acquire_lock(source, key)
+                    self.acquire_write_lock(source, source)
 
             elif msg_type == MsgType.GET_BEST_SCORE:
-                rank, score = self.get_best_score(source)
+                rank, score = self.get_best_score()
                 lock_weights = msg['lock_weights']
                 if lock_weights:
                     key = "weights{}".format(rank)
-                    self.acquire_lock(source, key)
+                    self.acquire_read_lock(source, rank)
 
                 self.comm.send((rank,score), dest=source, tag=Tags.SCORE)
 

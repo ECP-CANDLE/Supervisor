@@ -22,7 +22,7 @@ def run(comm, worker_comm, model_file):
     timer.start()
     client.put_score(random.random())
     model.save_weights("./weights/weights_{}.h5".format(client.rank))
-    client.release_lock(client.rank)
+    client.release_write_lock(client.rank)
     timer.end(PUT)
 
     worker_comm.Barrier()
@@ -34,7 +34,7 @@ def run(comm, worker_comm, model_file):
         timer.start()
         rank, score = client.get_best_score(lock_weights=True)
         model.load_weights("./weights/weights_{}.h5".format(rank))
-        client.release_lock(rank)
+        client.release_read_lock(rank)
         timer.end(GET)
 
         wait = random.uniform(1, 10)
@@ -42,7 +42,7 @@ def run(comm, worker_comm, model_file):
         timer.start()
         client.put_score(random.uniform(10, 100), lock_weights=True)
         model.save_weights("./weights/weights_{}.h5".format(client.rank))
-        client.release_lock(client.rank)
+        client.release_write_lock(client.rank)
         timer.end(PUT)
 
     timer.close()
