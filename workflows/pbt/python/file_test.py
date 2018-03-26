@@ -1,4 +1,4 @@
-import time, random
+import time, random, sys
 from mpi4py import MPI
 from pbt_utils import PBTMetaDataStore, PBTClient, Timer
 
@@ -14,10 +14,9 @@ def r2(y_true, y_pred):
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
 
-def run(comm, worker_comm):
+def run(comm, worker_comm, model_file):
     client = PBTClient(comm, 0)
-    model = keras.models.load_model("./models/combo_model.h5",
-                                            custom_objects={'r2' : r2})
+    model = keras.models.load_model(model_file, custom_objects={'r2' : r2})
     timer = Timer("./timings_{}.csv".format(client.rank))
 
     timer.start()
@@ -28,7 +27,7 @@ def run(comm, worker_comm):
 
     worker_comm.Barrier()
 
-    for i in range(3):
+    for i in range(48):
         wait = random.uniform(1, 10)
         time.sleep(wait)
 
@@ -49,7 +48,7 @@ def run(comm, worker_comm):
     timer.close()
     client.done()
 
-def main():
+def main(model_file):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     group = comm.Get_group().Excl([0])
@@ -59,7 +58,7 @@ def main():
         data_store = PBTMetaDataStore(comm)
         data_store.run()
     else:
-        run(comm, worker_comm)
+        run(comm, worker_comm, model_file)
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])
