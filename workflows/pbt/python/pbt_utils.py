@@ -280,18 +280,22 @@ class PBTMetaDataStore:
                 self.locks[i] = DataStoreLockManager(self.comm, self.rank)
 
     def acquire_read_lock(self, requesting_rank, key):
+        print("{} acquiring read lock for {}".format(requesting_rank, key))
         lock_manager = self.locks[key]
         lock_manager.read_lock(requesting_rank)
 
     def release_read_lock(self, requesting_rank, key):
+        print("{} releasing read lock for {}".format(requesting_rank, key))
         lock_manager = self.locks[key]
         lock_manager.read_unlock(requesting_rank)
 
     def acquire_write_lock(self, requesting_rank, key):
+        print("{} acquiring write lock for {}".format(requesting_rank, key))
         lock_manager = self.locks[key]
         lock_manager.write_lock(requesting_rank)
 
     def release_write_lock(self, requesting_rank, key):
+        print("{} releasing write lock for {}".format(requesting_rank, key))
         lock_manager = self.locks[key]
         lock_manager.write_unlock(requesting_rank)
 
