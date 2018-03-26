@@ -17,10 +17,19 @@ export WALLTIME=${WALLTIME:-00:10:00}
 
 #export PROJECT=Candle_ECP
 
-# Benchmark run timeout: benchmark run will timeouT
-# after the specified number of seconds. -1 is no timeout.
+# Benchmark run timeout: benchmark run will timeout
+# after the specified number of seconds.
+# If set to -1 there is no timeout.
+# This timeout is implemented with Keras callbacks
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
 # MODEL_PYTHON_SCRIPT=my_script
+
+# Shell timeout: benchmark run will be killed
+# after the specified number of seconds.
+# If set to -1 or empty there is no timeout.
+# This timeout is implemented with the shell command 'timeout'
+export SH_TIMEOUT=${SH_TIMEOUT:-}
+

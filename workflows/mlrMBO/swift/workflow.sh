@@ -32,7 +32,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "COMBO: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
 }
 
 if (( ${#} != 4 ))
@@ -143,5 +143,6 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
+        -e SH_TIMEOUT \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
