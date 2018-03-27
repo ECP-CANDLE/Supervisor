@@ -1,10 +1,12 @@
 from mpi4py import MPI
-import ctypes, time
+import ctypes, time, math
 
 from cStringIO import StringIO
 
 from collections import deque
 import random
+
+import keras
 
 class Timer:
 
@@ -169,12 +171,12 @@ class PBTClient:
         msg = {'type' : MsgType.GET_BEST_SCORE, 'lock_weights' : lock_weights}
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         status = MPI.Status()
-        if lock_weights:
-            self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
-            #print{"{} acquired weights lock".format(self.rank))
-
-        score_rank = self.comm.recv(source=self.dest, tag=Tags.SCORE, status=status)
-        return score_rank
+        rank_score = self.comm.recv(source=self.dest, tag=Tags.SCORE, status=status)
+        if not math.isnan(rank_score[1]):
+            if lock_weights:
+                self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
+                #print{"{} acquired weights lock".format(self.rank))
+        return rank_score
 
     def put_score(self, score, lock_weights=True):
         msg = {'type' : MsgType.PUT_SCORE, 'score' : score,
@@ -270,7 +272,9 @@ class DataStoreLockManager:
 
 class PBTMetaDataStore:
 
-    def __init__(self, comm):
+    DUMMY_RANK = -9999
+
+    def __init__(self, comm, ):
         self.locks = {}
         self.comm = comm
         self.rank = self.comm.Get_rank()
@@ -278,6 +282,8 @@ class PBTMetaDataStore:
         for i in range(self.comm.Get_size()):
             if i != self.rank:
                 self.locks[i] = DataStoreLockManager(self.comm, self.rank)
+                self.scores[i] = float('nan')
+
 
     def acquire_read_lock(self, requesting_rank, key):
         #print("{} acquiring read lock for {}".format(requesting_rank, key))
@@ -286,6 +292,7 @@ class PBTMetaDataStore:
 
     def release_read_lock(self, requesting_rank, key):
         #print("{} releasing read lock for {}".format(requesting_rank, key))
+        # can get NULL_RANK if score requested but no scores yet
         lock_manager = self.locks[key]
         lock_manager.read_unlock(requesting_rank)
 
@@ -305,14 +312,15 @@ class PBTMetaDataStore:
         val = float('inf')
         for k in self.scores:
             score = self.scores[k]
-            if score < val:
-                mins = []
-                val = score
-                mins.append(k)
-            elif score == val:
-                mins.append(k)
+            if not math.isnan(score):
+                if score < val:
+                    mins = []
+                    val = score
+                    mins.append(k)
+                elif score == val:
+                    mins.append(k)
 
-        return (random.choice(mins), val)
+        return (random.choice(mins), val) if len(mins) > 0 else (PBTMetaDataStore.DUMMY_RANK, float('nan'))
 
     def put_score(self, putting_rank, score):
         #print("Putting score {},{}".format(putting_rank, score))
@@ -348,14 +356,54 @@ class PBTMetaDataStore:
 
             elif msg_type == MsgType.GET_BEST_SCORE:
                 rank, score = self.get_best_score()
-                lock_weights = msg['lock_weights']
-                if lock_weights:
-                    key = "weights{}".format(rank)
-                    self.acquire_read_lock(source, rank)
-
                 self.comm.send((rank,score), dest=source, tag=Tags.SCORE)
+
+                if rank != PBTMetaDataStore.DUMMY_RANK:
+                    lock_weights = msg['lock_weights']
+                    if lock_weights:
+                        self.acquire_read_lock(source, rank)
 
             elif msg_type == MsgType.DONE:
                 live_ranks -= 1
 
         print("Done")
+
+
+class PBTCallback(keras.callbacks.Callback):
+
+    GET = 0
+    PUT = 1
+
+    def __init__(self, comm, root_rank, outdir):
+        self.client = PBTClient(comm, root_rank)
+        self.outdir = outdir
+        self.timer = Timer("{}/timings_{}.csv".format(self.outdir, self.client.rank))
+
+    def on_batch_end(self, batch, logs):
+        pass
+
+    def on_epoch_end(self, epoch, logs):
+        score = logs['val_loss']
+        if epoch >= 2:
+            self.timer.start()
+            self.client.put_score(score)
+            print("{} writing weights".format(self.client.rank))
+            self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
+                                                              self.client.rank))
+            self.client.release_write_lock(self.client.rank)
+            self.timer.end(PBTCallback.PUT)
+
+        self.timer.start()
+        rank, best_score = self.client.get_best_score()
+        print("\nscores: {},{} at epoch {}".format(rank, best_score, epoch))
+        if not math.isnan(best_score):
+            # TODO specify if min or max and change to lt or gt as appropriate
+            if rank != self.client.rank and best_score < score:
+                print("{} loading weights from {}".format(self.client.rank, rank))
+                self.model.load_weights("{}/weights_{}.h5".format(self.outdir,
+                                                            rank))
+            self.client.release_read_lock(rank)
+        self.timer.end(PBTCallback.GET)
+
+    def on_train_end(self, logs={}):
+        self.client.done()
