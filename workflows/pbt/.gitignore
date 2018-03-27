@@ -33,3 +33,4 @@ scratch/
 # dataspace runtime conf file
 conf
 experiments
+test_data/combo_model.h5
