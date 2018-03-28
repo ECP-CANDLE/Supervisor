@@ -21,6 +21,8 @@ def import_pkg(framework, model_name):
         from keras import backend as K
         if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
             import tensorflow as tf
+            print("Configuring tensorflow with {} inter threads and {} intra threads".
+                format(os.environ['NUM_INTER_THREADS'], os.environ['NUM_INTRA_THREADS']))
             session_conf = tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
                 intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
             sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
