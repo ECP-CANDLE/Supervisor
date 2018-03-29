@@ -384,14 +384,18 @@ class PBTCallback(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs):
         score = logs['val_loss']
-        if epoch >= 2:
-            self.timer.start()
-            self.client.put_score(score)
-            print("{} writing weights".format(self.client.rank))
-            self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
-                                                              self.client.rank))
-            self.client.release_write_lock(self.client.rank)
-            self.timer.end(PBTCallback.PUT)
+        # TODO don't put if current score worse than previous?
+        # i.e., only write the best so far
+        
+        # start writing at end of 3rd epoch
+        #if epoch >= 2:
+        self.timer.start()
+        self.client.put_score(score)
+        print("{} writing weights".format(self.client.rank))
+        self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
+                                                          self.client.rank))
+        self.client.release_write_lock(self.client.rank)
+        self.timer.end(PBTCallback.PUT)
 
         self.timer.start()
         rank, best_score = self.client.get_best_score()
