@@ -21,7 +21,7 @@ SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
 BENCHMARKS="$SUPERVISOR/../Benchmarks"
 
 mkdir -p $EXP_DIR/weights
-cp pbt.sbatch $EXP_DIR
+cp pbt.sbatch $PARAMS_FILE $EXP_DIR
 cp "$(readlink -f $0)" $EXP_DIR
 
 EXPORTS="ROOT=$ROOT,MODEL_NAME=$MODEL_NAME,PBT_PY=$PBT_PY,BENCHMARKS=$BENCHMARKS"
