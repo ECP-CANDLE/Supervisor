@@ -16,7 +16,7 @@ SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
 PYTHONPATH=$BENCHMARKS/Pilot1/common
 PYTHONPATH+=":$BENCHMARKS/common"
 PYTHONPATH+=":$SUPERVISOR/workflows/common/python"
-PYTHONPATH+=":$ROOT/models/TC1"
+PYTHONPATH+=":$ROOT/models/tc1"
 
 export PYTHONPATH=$PYTHONPATH
 
