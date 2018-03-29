@@ -54,9 +54,10 @@ def main(args):
 
     if rank == 0:
         params = init_params(args[1], comm)
-        init_dirs(args[2])
+        outdir = args[2]
+        init_dirs(outdir)
         comm.scatter(params, root=0)
-        root = pbt_utils.PBTMetaDataStore(comm)
+        root = pbt_utils.PBTMetaDataStore(comm, outdir)
         root.run()
     else:
         params = comm.scatter(None, root=0)

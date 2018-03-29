@@ -129,7 +129,7 @@ class PBTDataSpaces:
 
 
 class MsgType:
-    LOCKED, UNLOCKED, ACQUIRE_READ_LOCK, RELEASE_READ_LOCK, ACQUIRE_WRITE_LOCK, RELEASE_WRITE_LOCK, GET_BEST_SCORE, PUT_SCORE, DONE = range(9)
+    LOCKED, UNLOCKED, ACQUIRE_READ_LOCK, RELEASE_READ_LOCK, ACQUIRE_WRITE_LOCK, RELEASE_WRITE_LOCK, GET_BEST_SCORE, PUT_METRICS, DONE = range(9)
 
 
 class Tags:
@@ -178,8 +178,8 @@ class PBTClient:
                 #print{"{} acquired weights lock".format(self.rank))
         return rank_score
 
-    def put_score(self, score, lock_weights=True):
-        msg = {'type' : MsgType.PUT_SCORE, 'score' : score,
+    def put_metrics(self, metrics, lock_weights=True):
+        msg = {'type' : MsgType.PUT_METRICS, 'metrics' : metrics,
                'lock_weights' : lock_weights}
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         # don't return until the score has actually been put
@@ -274,16 +274,30 @@ class PBTMetaDataStore:
 
     DUMMY_RANK = -9999
 
-    def __init__(self, comm, ):
+    def __init__(self, comm, outdir):
         self.locks = {}
         self.comm = comm
         self.rank = self.comm.Get_rank()
         self.scores = {}
+        self.outdir = outdir
         for i in range(self.comm.Get_size()):
             if i != self.rank:
                 self.locks[i] = DataStoreLockManager(self.comm, self.rank)
-                self.scores[i] = float('nan')
+                self.scores[i] = {'val_loss': float('nan')}
 
+    def write_metrics(self):
+        key, values = self.scores.items()[0]
+        header = [k for k in values]
+        with open("{}/scores.csv".format(self.outdir), 'w') as f_out:
+            f_out.write("rank")
+            f_out.write(",".join(header))
+            f_out.write("\n")
+
+            for k,v in self.scores.items():
+                f_out.write("{},".format(k))
+                for h in header:
+                    f_out.write(",{}".format(v[h]))
+                f_out.write("\n")
 
     def acquire_read_lock(self, requesting_rank, key):
         #print("{} acquiring read lock for {}".format(requesting_rank, key))
@@ -311,7 +325,7 @@ class PBTMetaDataStore:
         mins = []
         val = float('inf')
         for k in self.scores:
-            score = self.scores[k]
+            score = self.scores[k]['val_loss']
             if not math.isnan(score):
                 if score < val:
                     mins = []
@@ -322,10 +336,13 @@ class PBTMetaDataStore:
 
         return (random.choice(mins), val) if len(mins) > 0 else (PBTMetaDataStore.DUMMY_RANK, float('nan'))
 
-    def put_score(self, putting_rank, score):
+    def put_metrics(self, putting_rank, metrics):
+        """
+            scores - dictionary of metrics: val_loss etc.
+        """
         #print("Putting score {},{}".format(putting_rank, score))
-        self.scores[putting_rank] = score
-        self.comm.send(MsgType.PUT_SCORE, tag=Tags.ACK, dest=putting_rank)
+        self.scores[putting_rank] = metrics
+        self.comm.send(MsgType.PUT_METRICS, tag=Tags.ACK, dest=putting_rank)
 
     def run(self):
         status = MPI.Status()
@@ -347,10 +364,10 @@ class PBTMetaDataStore:
                 msg_rank = msg['rank']
                 self.release_write_lock(source, msg_rank)
 
-            elif msg_type == MsgType.PUT_SCORE:
-                score = msg['score']
+            elif msg_type == MsgType.PUT_METRICS:
+                metrics = msg['metrics']
                 lock_weights = msg['lock_weights']
-                self.put_score(source, score)
+                self.put_metrics(source, metrics)
                 if lock_weights:
                     self.acquire_write_lock(source, source)
 
@@ -365,6 +382,8 @@ class PBTMetaDataStore:
 
             elif msg_type == MsgType.DONE:
                 live_ranks -= 1
+
+        self.write_metrics()
 
         print("Done")
 
@@ -386,11 +405,11 @@ class PBTCallback(keras.callbacks.Callback):
         score = logs['val_loss']
         # TODO don't put if current score worse than previous?
         # i.e., only write the best so far
-        
+
         # start writing at end of 3rd epoch
         #if epoch >= 2:
         self.timer.start()
-        self.client.put_score(score)
+        self.client.put_metrics(logs)
         print("{} writing weights".format(self.client.rank))
         self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
                                                           self.client.rank))
