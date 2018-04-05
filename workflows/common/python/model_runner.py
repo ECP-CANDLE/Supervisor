@@ -16,7 +16,7 @@ logger = None
 
 def import_pkg(framework, model_name):
     if framework == 'keras':
-        module_name = "{}_baseline_keras2".format(model_name)
+        module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
         pkg = importlib.import_module(module_name)
     # elif framework is 'mxnet':
     #     import nt3_baseline_mxnet
