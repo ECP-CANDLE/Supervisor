@@ -30,3 +30,7 @@ export WALLTIME=${WALLTIME:-00:10:00}
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+
+# Uncomment below to use custom python script to run
+# Use file name without .py (e.g, my_script.py)
+# MODEL_PYTHON_SCRIPT=my_script
