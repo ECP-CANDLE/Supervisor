@@ -31,10 +31,10 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 5 ))
 then
   usage
   exit 1
@@ -45,6 +45,7 @@ if ! {
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
   get_cfg_prm $4
+  MODEL_NAME=$5
  }
 then
   usage
@@ -92,7 +93,6 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -model_name=$MODEL_NAME
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
