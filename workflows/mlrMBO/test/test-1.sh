@@ -48,7 +48,7 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
 # Wait for job
 queue_wait
