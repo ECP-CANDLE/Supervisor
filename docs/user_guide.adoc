@@ -1,0 +1,53 @@
+= CANDLE User Guide
+
+
+= How to write CANDLE compliant deep learning code
+
+
+= How to run CANDLE compliant code in Theta
+Currently you can run two different workflows in CANDLE:
+Unrolled Parameter File (UPF) and Hyper Parameter Optimization (HPO).
+The UPF workflow allows you to run multi-node executions with different parameters,
+while HPO workflow evaluates the best value of hyperparameters based on mlrMBO algorithm.
+
+
+== Running UPF on Theta
+
+1. Checkout Supervisor repo
+----
+git clone https://github.com/ECP-CANDLE/Supervisor.git
+----
+
+2. Move to upf workflow directory
+----
+cd Supervisor/workflow/upf
+----
+
+3. Set Env variables in `cfg-sys-1.sh`
+You will need to set `BENCHMARK_DIR` to point the directory that your script locates, and 
+`MODEL_PYTHON_SCRIPT` to name the script you want to run
+
+4. Check `test/upf-1.txt` for parameter configuration and modify as needed.
+This file contains multiple number of JSON documents. Each JSON document will contain the command line parameters.
+For example,
+----
+{"id": "test0", "epochs": 10}
+{"id": "test1", "epochs": 20}
+----
+This will invoke two instances, which will run 10 epochs and 20 epochs respectively.
+
+5. You will need to set `QUEUE`, `PROJECT`, `PROCS`, and `WALLTIME`.
+You can configure those in `cfg-sys-1.sh`, or you can provide in your command line.
+----
+$ export QUEUE=default
+$ export PROJECT=myproject
+$ export PROCS=2
+$ export WALLTIME=01:00:00
+
+$ ./test/upf-1.sh theta upf-1.txt
+
+// or 
+
+$ QUEUE=default PROJECT=myproject PROCS=2 WALLTIME=01:00:00 ./test/upf-1.sh theta upf-1.txt
+----
+
