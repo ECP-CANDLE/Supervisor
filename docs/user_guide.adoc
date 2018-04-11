@@ -13,21 +13,25 @@ while HPO workflow evaluates the best value of hyperparameters based on mlrMBO a
 
 == Running UPF on Theta
 
-1. Checkout Supervisor repo
+Step 1. Checkout Supervisor repo
 ----
-git clone https://github.com/ECP-CANDLE/Supervisor.git
-----
-
-2. Move to upf workflow directory
-----
-cd Supervisor/workflow/upf
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
 ----
 
-3. Set Env variables in `cfg-sys-1.sh`
-You will need to set `BENCHMARK_DIR` to point the directory that your script locates, and 
+Step 2. Move to upf workflow directory
+----
+$ cd Supervisor/workflow/upf
+----
+
+Step 3. Set Env variables. In `test/cfg-sys-1.sh`,
+you will need to set `BENCHMARK_DIR` to point the directory that your script locates, and
 `MODEL_PYTHON_SCRIPT` to name the script you want to run
+----
+BENCHMARK_DIR=directory_where_my_script_locates
+MODEL_PYTHON_SCRIPT=my_script
+----
 
-4. Check `test/upf-1.txt` for parameter configuration and modify as needed.
+Step 4. Set execution plan. Check `test/upf-1.txt` for parameter configuration and modify as needed.
 This file contains multiple number of JSON documents. Each JSON document will contain the command line parameters.
 For example,
 ----
@@ -36,18 +40,81 @@ For example,
 ----
 This will invoke two instances, which will run 10 epochs and 20 epochs respectively.
 
-5. You will need to set `QUEUE`, `PROJECT`, `PROCS`, and `WALLTIME`.
-You can configure those in `cfg-sys-1.sh`, or you can provide in your command line.
+Step 5. Submit your job. You will need to set `QUEUE`, `PROJECT`, `PROCS`, and `WALLTIME`.
+You can configure those in `cfg-sys-1.sh` (see Step 3), set as env variables, or you can provide in your command line (see below).
 ----
 $ export QUEUE=default
 $ export PROJECT=myproject
-$ export PROCS=2
+$ export PROCS=3
 $ export WALLTIME=01:00:00
 
 $ ./test/upf-1.sh theta upf-1.txt
 
 // or 
 
-$ QUEUE=default PROJECT=myproject PROCS=2 WALLTIME=01:00:00 ./test/upf-1.sh theta upf-1.txt
+$ QUEUE=default PROJECT=myproject PROCS=3 WALLTIME=01:00:00 ./test/upf-1.sh theta upf-1.txt
 ----
+
+* `QUEUE` refers to the system queue name. The Theta machine has `default`, `debug-flat-quad`, and `debug-cache-quad`. For more information, please check https://www.alcf.anl.gov/user-guides/job-scheduling-policy-xc40-systems#queues
+* `PROJECT` refers to your allocated project name. Please check https://www.alcf.anl.gov/user-guides/allocations, for more detail.
+* `PROCS` is a number of nodes. We recommend adding extra 1 node in addition to the number of executions in your plan. In this example, we set 3 (1 + 2).
+
+Step 6. Check queue status
+----
+$ qstat -h user_name -f
+----
+
+== Running mlrMBO based Hyperparameters Optimization (HPO) on Theta
+
+Step 1. Checkout Supervisor repo
+----
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
+----
+
+Step 2. Move to mlrMBO workflow directory
+----
+$ cd Supervisor/workflow/mlrMBO
+----
+
+Step 3. Set Env variables. In `test/cfg-sys-1.sh`,
+you will need to set `BENCHMARK_DIR` to point the directory that your script locates, and
+`MODEL_PYTHON_SCRIPT` to name the script you want to run
+----
+BENCHMARK_DIR=directory_where_my_script_locates
+MODEL_PYTHON_SCRIPT=my_script
+----
+
+Step 4. Config hyper parameters. In this step, we are configuring parameter sets, which we will iteratively evaluate.
+For example, you can create `workflow/data/mnist.R` as below.
+----
+param.set <- makeParamSet(
+  makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512)),
+  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
+  makeDiscreteParam("optimizer", values=c("adam", "sgd", "rmsprop")),
+  makeIntegerParam("epochs", lower=20, upper=20)
+)
+----
+In this example, we are varying four paramters, `batch_size`, `activation`, `optimizer`, `epochs`.
+Entire parameter space will be 5 x 3 x 3 x 1.
+
+After creating this file, we need to point this file.
+----
+$ export PARAM_SET_FILE=mnist.R
+----
+
+Step 5. Submit your job.
+
+----
+$ ./test/test-1.sh mnist theta
+----
+
+The first argument is MODEL_NAME. If the name is registered in `test/cfg-prm-1.sh`, it will use the pre-configured parameter file.
+Otherwise, CANDLE will use `PARAM_SET_FILE` we configured in step 4.
+
+You can specify the HPO search strategy. As you can see in `test/cfg-prm-1.sh`, you are able to config `PROPOSE_POINTS`, `MAX_CONCURRENT_EVALUATIONS`, `MAX_ITERATIONS`, `MAX_BUDGE`, `DESIGN_SIZE`.
+
+* `DESIGN_SIZE` is a number of param sets that will evaluate at the beginning of HPO search. In this example, CANDLE will select random 10 param sets out of 45 (see Step 4, for break downs).
+* `MAX_ITERATIONS` is a number of iteration.
+* `PROPOSE_POINTS` is a number of param sets that CANDLE will evaluate in each iteration. So, if `MAX_ITERATION=3` and `PROPOSE_POINTS=5`, CANDLE will ended up evaluating 25 params (3 x 5 + 10).
+* `MAX_BUDGET` should be greater than total evaluations. In this example, 45.
 
