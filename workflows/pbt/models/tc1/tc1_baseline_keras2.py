@@ -81,6 +81,7 @@ def read_config_file(file):
     fileParams['classes']=eval(config.get(section[0],'classes'))
     fileParams['pool']=eval(config.get(section[0],'pool'))
     fileParams['save']=eval(config.get(section[0], 'save'))
+    fileParams['lr']=eval(config.get(section[0], 'lr'))
 
     return fileParams
 
@@ -234,8 +235,15 @@ def run(gParameters, callbacks):
 
     model.summary()
 
+    # ["adam", "rmsprop"]
+    lr = gParameters['lr']
+    if gParameters['optimizer'] == 'adam':
+        optimizer = Adam(lr=lr)
+    elif gParameters['optimizer'] == 'rmsprop':
+        optimizer = RMSprop(lr=lr)
+
     model.compile(loss=gParameters['loss'],
-              optimizer=gParameters['optimizer'],
+              optimizer=optimizer,
               metrics=[gParameters['metrics']])
 
     output_dir = gParameters['save']
