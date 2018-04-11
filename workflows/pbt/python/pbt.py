@@ -288,20 +288,21 @@ class PBTMetaDataStore:
                 self.locks[i] = DataStoreLockManager(self.comm, self.rank)
                 self.scores[i] = {'score': float('nan')}
         self.log_file = open(log_file, 'w')
+        self.all_scores = []
 
     def write_data(self):
-        key, values = self.scores.items()[0]
-        header = [k for k in values]
+        header = self.all_scores[0].keys()
         with open("{}/output.csv".format(self.outdir), 'w') as f_out:
-            f_out.write("rank,")
             f_out.write(",".join(header))
             f_out.write("\n")
 
-            for k,v in self.scores.items():
-                f_out.write("{}".format(k))
-                for h in header:
-                    f_out.write(",{}".format(v[h]))
+            for item in self.all_scores:
+                for i, h in enumerate(header):
+                    if i > 0:
+                        f_out.write(",")
+                    f_out.write("{}".format(item[h]))
                 f_out.write("\n")
+
     def done(self):
         self.log_file.close()
         self.write_data()
@@ -336,7 +337,7 @@ class PBTMetaDataStore:
             :param :data - dictionary of data: val_loss etc.
         """
         #print("Putting score {},{}".format(putting_rank, data))
-        data['rank'] = putting_rank
+        self.all_scores.append(data)
         self.scores[putting_rank] = data
         self.comm.send(MsgType.PUT_DATA, tag=Tags.ACK, dest=putting_rank)
 
@@ -409,8 +410,9 @@ class PBTCallback(keras.callbacks.Callback):
         pass
 
     def on_epoch_end(self, epoch, logs):
-
-        data = self.model_worker.pack_data(self.client, self.model, logs)
+        metrics = {'epoch': epoch, 'rank': self.client.rank}
+        metrics.update(logs)
+        data = self.model_worker.pack_data(self.client, self.model, metrics)
         self.client.put_data(data)
         self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
                                                           self.client.rank))
