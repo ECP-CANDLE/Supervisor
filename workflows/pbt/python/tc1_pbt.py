@@ -36,17 +36,17 @@ class ModelWorker:
         # data: {'acc': 0.87916666666666665, 'loss': 0.38366817765765721, 'rank': 1,
         # 'score': 0.36156702836354576, 'lr': 0.0010000000474974513, 'val_acc': 0.87870370237915607,
         # 'val_loss': 0.36156702836354576}
-        print(data)
-        old_lr = data['lr']
-        lr = old_lr
+        current_lr = float(K.get_value(model.optimizer.lr))
+        lr = data['lr']
         draw = random.random()
         if draw <= 0.33:
-            lr = old_lr * 0.8
+            lr = lr * 0.8
         elif draw <= 0.66:
-            lr = old_lr * 1.2
+            lr = lr * 1.2
         # else leave as is
         K.set_value(model.optimizer.lr, lr)
-        pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'], old_lr, lr))
+        pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'],
+            current_lr, lr))
 
 def truncation_select(data, score):
     """
