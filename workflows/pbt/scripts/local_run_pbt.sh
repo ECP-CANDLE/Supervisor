@@ -3,12 +3,12 @@ set -eu
 
 PROCS=$1
 EXP_ID=$2
-MODEL_NAME=$3
+#MODEL_NAME=$3
 
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 ROOT="$THIS/.."
 EXP_DIR="$ROOT/experiments/$EXP_ID"
-PBT_PY="$ROOT/python/pbt.py"
+PBT_PY="$ROOT/python/tc1_pbt.py"
 
 BENCHMARKS=$HOME/Documents/repos/Benchmarks
 SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
@@ -22,7 +22,7 @@ export PYTHONPATH=$PYTHONPATH
 
 mkdir -p $EXP_DIR
 
-PARAMS_FILE=$4
+PARAMS_FILE=$3
 cp $ROOT/data/$PARAMS_FILE $EXP_DIR/
 cd $EXP_DIR
 
