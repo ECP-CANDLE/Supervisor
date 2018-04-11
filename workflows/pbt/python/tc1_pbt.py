@@ -36,6 +36,7 @@ class ModelWorker:
         # data: {'acc': 0.87916666666666665, 'loss': 0.38366817765765721, 'rank': 1,
         # 'score': 0.36156702836354576, 'lr': 0.0010000000474974513, 'val_acc': 0.87870370237915607,
         # 'val_loss': 0.36156702836354576}
+        print(data)
         old_lr = data['lr']
         lr = old_lr
         draw = random.random()
@@ -51,25 +52,21 @@ def truncation_select(data, score):
     """
      :param data: list of dict containg each ranks' model data as well as
      rank itself.
-     :return a tuple of which the first element is the rank of the selected
-     item, and the second element is a dictionary containing that rank's metrics,
-     and hyperparameters.
+     :return a dict that contains all the selected rank's model data, or an
+     empty dict if no selection
     """
     # e.g. data: [{'acc': 0.87916666666666665, 'loss': 0.38366817765765721, 'rank': 1,
     # 'score': 0.36156702836354576, 'lr': 0.0010000000474974513, 'val_acc': 0.87870370237915607,
     # 'val_loss': 0.36156702836354576}, ...]
     items = sorted(data, key=lambda item: item['score'])
     size = len(items)
-    if size > 0:
-        return items[0]
-    return ()
-    # quintile = int(round(size / 5.0))
-    # if score >= items[-quintile][1]['score']:
-    #     # in bottom 20%
-    #     idx = random.randint(0, quintile - 1)
-    #     return items[idx]
-    # else:
-    #     return ()
+    quintile = int(round(size / 5.0))
+    if score >= items[-quintile]['score']:
+        # in bottom 20%
+        idx = random.randint(0, quintile - 1)
+        return items[idx]
+    else:
+        return {}
 
 def init_params(params_file, comm):
     param_factories = ga_utils.create_parameters(params_file)
