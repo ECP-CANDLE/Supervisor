@@ -171,8 +171,7 @@ class PBTClient:
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
         status = MPI.Status()
         result = self.comm.recv(source=self.dest, tag=Tags.SCORE, status=status)
-        if len(result):
-            if lock_weights:
+        if len(result) and lock_weights:
                 self.comm.recv(source=self.dest, tag=Tags.ACK, status=status)
                 #print{"{} acquired weights lock".format(self.rank))
         return result
@@ -378,11 +377,10 @@ class PBTMetaDataStore:
                 result = self.get_data(score)
                 self.comm.send(result, dest=source, tag=Tags.SCORE)
 
-                if len(result) > 0:
-                    lock_weights = msg['lock_weights']
+                lock_weights = msg['lock_weights']
+                if len(result) and lock_weights:
                     rank_to_read = result['rank']
-                    if lock_weights:
-                        self.acquire_read_lock(source, rank_to_read)
+                    self.acquire_read_lock(source, rank_to_read)
 
             elif msg_type == MsgType.LOG:
                 log = msg['log']
@@ -394,8 +392,6 @@ class PBTMetaDataStore:
         self.done()
 
         print("Done")
-
-
 
 
 class PBTCallback(keras.callbacks.Callback):
@@ -413,22 +409,23 @@ class PBTCallback(keras.callbacks.Callback):
         pass
 
     def on_epoch_end(self, epoch, logs):
-        if self.model_worker.ready(self.client, epoch):
-            data = self.model_worker.pack_data(self.client, self.model, logs)
-            self.client.put_data(data)
-            self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
-                                                              self.client.rank))
-            self.client.release_write_lock(self.client.rank)
-            #self.timer.end(PBTCallback.PUT)
 
+        data = self.model_worker.pack_data(self.client, self.model, logs)
+        self.client.put_data(data)
+        self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
+                                                          self.client.rank))
+        self.client.release_write_lock(self.client.rank)
+        #self.timer.end(PBTCallback.PUT)
+
+        if self.model_worker.ready(self.client, epoch):
             result = self.client.get_data(data['score'])
-            rank_to_read = result['rank']
             if len(result):
+                rank_to_read = result['rank']
                 self.model_worker.update(self.client, self.model, result)
                 #print("{} loading weights from {}".format(self.client.rank, rank))
                 self.model.load_weights("{}/weights_{}.h5".format(self.outdir,
                                                             rank_to_read))
-            self.client.release_read_lock(rank_to_read)
+                self.client.release_read_lock(rank_to_read)
 
     def on_train_end(self, logs={}):
         self.client.done()
