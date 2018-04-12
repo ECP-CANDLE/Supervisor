@@ -15,10 +15,10 @@ class ModelWorker:
     def ready(self, pbt_client, epoch):
         # read every n epochs, n.b. first epoch is 0
         e = epoch + 1
-        ready = e % 2 == 0
-        if ready:
-            pbt_client.log("{}: ready at epoch {}".format(self.rank, epoch))
-        return ready
+        return e % 4 == 0
+        # if ready:
+        #     pbt_client.log("{}: ready at epoch {}".format(self.rank, epoch))
+        # return ready
 
     def pack_data(self, pbt_client, model, metrics):
         """ Packs relevant hyperparameters and selected score metric into a dict to be
@@ -29,7 +29,7 @@ class ModelWorker:
         lr = float(K.get_value(model.optimizer.lr))
         data = {'lr': lr, 'score': metrics['val_loss']}
         data.update(metrics)
-        pbt_client.log("{}: putting data".format(self.rank))
+        #pbt_client.log("{}: putting data".format(self.rank))
         return data
 
     def update(self, pbt_client, model, data):
@@ -45,8 +45,9 @@ class ModelWorker:
             lr = lr * 1.2
         # else leave as is
         K.set_value(model.optimizer.lr, lr)
-        pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'],
-            current_lr, lr))
+        pbt_client.log("{},{},{},{},{}".format(self.rank, data['rank'], old_lr, lr, old_lr == lr))
+        #pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'], old_lr, lr))
+
 
 def truncation_select(data, score):
     """
