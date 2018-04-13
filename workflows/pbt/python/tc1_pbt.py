@@ -15,7 +15,7 @@ class ModelWorker:
     def ready(self, pbt_client, epoch):
         # read every n epochs, n.b. first epoch is 0
         e = epoch + 1
-        return e % 4 == 0
+        return e % 5 == 0
         # if ready:
         #     pbt_client.log("{}: ready at epoch {}".format(self.rank, epoch))
         # return ready
@@ -39,13 +39,13 @@ class ModelWorker:
         current_lr = float(K.get_value(model.optimizer.lr))
         lr = data['lr']
         draw = random.random()
-        if draw <= 0.33:
+        if draw < .5:
             lr = lr * 0.8
-        elif draw <= 0.66:
+        else:
             lr = lr * 1.2
-        # else leave as is
+
         K.set_value(model.optimizer.lr, lr)
-        pbt_client.log("{},{},{},{},{}".format(self.rank, data['rank'], old_lr, lr, old_lr == lr))
+        pbt_client.log("{},{},{},{},{}".format(self.rank, data['epoch'], data['rank'], current_lr, lr))
         #pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'], old_lr, lr))
 
 
