@@ -1,9 +1,9 @@
 #!/bin/bash -l
 
-#SBATCH -N 129
+#SBATCH -N 21
 
-#SBATCH -q regular
-#SBATCH -t 15:00:00
+#SBATCH -q debug
+#SBATCH -t 00:30:00
 #SBATCH -C knl,quad,cache
 #SBATCH --license=SCRATCH,project
 
@@ -13,7 +13,7 @@ module load tensorflow/intel-head
 PP="$BENCHMARKS/Pilot1/common"
 PP+=":$BENCHMARKS/common"
 PP+=":$SUPERVISOR/workflows/common/python"
-PP+=":$ROOT/models/$MODEL_NAME"
+PP+=":$ROOT/models/tc1"
 
 export PYTHONPATH=$PP:$PYTHONPATH
 export PATH=$PYTHONPATH:$PATH
@@ -29,4 +29,4 @@ echo "STARTING PYTHON PBT: $PBT_PY"
 echo "PYTHON: $( which python )"
 echo "PYTHONPATH: $PYTHONPATH"
 
-srun --export=ALL -n 129 -c 272 python $PBT_PY $PARAMS_FILE $EXP_DIR $MODEL_NAME $EXP_ID
+srun --export=ALL -n 21 -c 272 python $PBT_PY $PARAMS_FILE $EXP_DIR tc1 $EXP_ID

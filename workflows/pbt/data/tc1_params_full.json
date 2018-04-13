@@ -2,9 +2,16 @@
   {
     "name": "conv",
     "type": "constant",
-    "value": "128 20 1 128 10 1",
+    "value": "0 0 0",
     "def_value": "128 20 1 128 10 1",
     "debug_value": "0 0 0"
+  },
+
+  {
+    "name": "feature_subsample",
+    "type": "constant",
+    "value": 1000,
+    "comment": "debug: 1000, default: remove this entry"
   },
 
   {
@@ -24,7 +31,8 @@
     "name": "optimizer",
     "type": "categorical",
     "element_type": "string",
-    "values": ["adam", "sgd", "rmsprop", "adagrad", "adadelta"]
+    "values": ["adam", "rmsprop"],
+    "orig_values": ["adam", "sgd", "rmsprop", "adagrad", "adadelta"]
   },
 
   {
@@ -33,6 +41,14 @@
     "lower": 0.0,
     "upper": 0.9,
     "sigma": 0.045
+  },
+
+  {
+    "name": "lr",
+    "type": "float",
+    "lower": 0.0001,
+    "upper": 0.01,
+    "sigma": 0.000495
   },
 
   {
@@ -47,7 +63,7 @@
   {
     "name": "epochs",
     "type": "constant",
-    "value": 25
+    "value": 100
   }
 
 ]
