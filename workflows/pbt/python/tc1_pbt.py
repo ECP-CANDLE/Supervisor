@@ -32,7 +32,7 @@ class ModelWorker:
         #pbt_client.log("{}: putting data".format(self.rank))
         return data
 
-    def update(self, pbt_client, model, data):
+    def update(self, epoch, pbt_client, model, data):
         # data: {'acc': 0.87916666666666665, 'loss': 0.38366817765765721, 'rank': 1,
         # 'score': 0.36156702836354576, 'lr': 0.0010000000474974513, 'val_acc': 0.87870370237915607,
         # 'val_loss': 0.36156702836354576}
@@ -45,7 +45,7 @@ class ModelWorker:
             lr = lr * 1.2
 
         K.set_value(model.optimizer.lr, lr)
-        pbt_client.log("{},{},{},{},{}".format(self.rank, data['epoch'], data['rank'], current_lr, lr))
+        pbt_client.log("{},{},{},{},{}".format(self.rank, epoch, data['rank'], current_lr, lr))
         #pbt_client.log("{}: updating from rank {}, lr from {} to {}".format(self.rank, data['rank'], old_lr, lr))
 
 
