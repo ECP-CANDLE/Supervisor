@@ -4,7 +4,7 @@ import ctypes, time, math
 from cStringIO import StringIO
 
 from collections import deque
-import random
+import random, os.path
 
 import keras
 
@@ -287,29 +287,40 @@ class PBTMetaDataStore:
             if i != self.rank:
                 self.locks[i] = DataStoreLockManager(self.comm, self.rank)
                 self.scores[i] = {'score': float('nan')}
-        self.log_file = open(log_file, 'w')
+        self.log_file = log_file
         self.all_scores = []
+        self.logs = []
 
     def write_data(self):
-        header = self.all_scores[0].keys()
-        with open("{}/output.csv".format(self.outdir), 'w') as f_out:
-            f_out.write(",".join(header))
-            f_out.write("\n")
+        if len(self.all_scores):
+            f = "{}/output.csv".format(self.outdir)
+            header = self.all_scores[0].keys()
+            if not os.path.isfile(f):
+                with open(f, 'w') as f_out:
+                    f_out.write(",".join(header))
+                    f_out.write("\n")
 
-            for item in self.all_scores:
-                for i, h in enumerate(header):
-                    if i > 0:
-                        f_out.write(",")
-                    f_out.write("{}".format(item[h]))
-                f_out.write("\n")
+            with open(f, 'a') as f_out:
+                for item in self.all_scores:
+                    for i, h in enumerate(header):
+                        if i > 0:
+                            f_out.write(",")
+                        f_out.write("{}".format(item[h]))
+                    f_out.write("\n")
+
+            self.all_scores = []
 
     def done(self):
-        self.log_file.close()
+        self.write_logs()
         self.write_data()
 
-    def write_log(self, log):
-        self.log_file.write(log)
-        self.log_file.write("\n")
+    def write_logs(self):
+        with open(self.log_file, 'a') as f_out:
+            for l in self.logs:
+                f_out.write(l)
+                f_out.write("\n")
+
+        self.logs = []
 
     def acquire_read_lock(self, requesting_rank, key):
         #print("{} acquiring read lock for {}".format(requesting_rank, key))
@@ -338,6 +349,10 @@ class PBTMetaDataStore:
         """
         #print("Putting score {},{}".format(putting_rank, data))
         self.all_scores.append(data)
+
+        live_ranks = self.comm.Get_size() - 1
+        if len(self.all_scores) == live_ranks:
+            self.write_data()
         self.scores[putting_rank] = data
         self.comm.send(MsgType.PUT_DATA, tag=Tags.ACK, dest=putting_rank)
 
@@ -385,7 +400,9 @@ class PBTMetaDataStore:
 
             elif msg_type == MsgType.LOG:
                 log = msg['log']
-                self.write_log(log)
+                self.logs.append(log)
+                if len(self.logs) > 100:
+                    self.write_logs()
 
             elif msg_type == MsgType.DONE:
                 live_ranks -= 1
@@ -423,7 +440,7 @@ class PBTCallback(keras.callbacks.Callback):
             result = self.client.get_data(data['score'])
             if len(result):
                 rank_to_read = result['rank']
-                self.model_worker.update(self.client, self.model, result)
+                self.model_worker.update(epoch, self.client, self.model, result)
                 #print("{} loading weights from {}".format(self.client.rank, rank))
                 self.model.load_weights("{}/weights_{}.h5".format(self.outdir,
                                                             rank_to_read))
