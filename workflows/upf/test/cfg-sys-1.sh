@@ -20,8 +20,8 @@ export PPN=${PPN:-1}
 # export PROJECT=m2924
 
 # Theta: (cf. sched-theta)
-export QUEUE=debug-cache-quad
-export PROJECT=ecp-testbed-01
+export QUEUE=${QUEUE:-debug-cache-quad}
+export PROJECT=${PROJECT:-ecp-testbed-01}
 #export PROJECT=Candle_ECP
 #export PROJECT=CSC249ADOA01
 
