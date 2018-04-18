@@ -76,7 +76,8 @@ else
     echo "MODEL.SH: Timeout error in $MODEL_CMD"
     exit 0 # This will trigger a NaN (the result file does not exist)
   else
-    echo "MODEL.SH: Error in $MODEL_CMD"
+    echo "MODEL.SH: Error (CODE=$CODE) in $MODEL_CMD"
+    echo "TIMESTAMP:" $( date "+%Y/%m/%d %H:%M:%S" )
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
