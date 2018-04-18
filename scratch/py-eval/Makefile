@@ -1,7 +1,8 @@
 
 # PY EVAL MAKEFILE
 
-MPI_ENABLED = 1
+# MPI_ENABLED = 1
+MPI_ENABLED = 0
 
 # Edit Python settings here
 
@@ -10,7 +11,6 @@ MPI_ENABLED = 1
 # PYTHON_VERSION_MINOR = 7
 # PYTHON_VERSION_SUFFIX =
 
-
 # PYTHON_HOME = ${HOME}/sfw/Python-3.6.1
 # Titan:
 # PYTHON_HOME = /sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3
@@ -18,11 +18,19 @@ MPI_ENABLED = 1
 # PYTHON_VERSION_MINOR = 6
 # PYTHON_VERSION_SUFFIX = m
 
-# Dunedin
-PYTHON_HOME = /usr
+# Cori
+# Module tensorflow/intel-head
+PYTHON_HOME = /usr/common/software/tensorflow/intel-tensorflow/head
 PYTHON_VERSION_MAJOR = 2
 PYTHON_VERSION_MINOR = 7
 PYTHON_VERSION_SUFFIX =
+CC = gcc # module load gcc
+
+# Dunedin
+# PYTHON_HOME = /usr
+# PYTHON_VERSION_MAJOR = 2
+# PYTHON_VERSION_MINOR = 7
+# PYTHON_VERSION_SUFFIX =
 
 # End Python settings
 
