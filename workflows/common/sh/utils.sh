@@ -121,7 +121,7 @@ get_expid()
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
-    export TURBINE_OUTPUT=$EXPID
+    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
 }
 
