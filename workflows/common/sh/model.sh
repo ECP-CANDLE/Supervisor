@@ -78,6 +78,11 @@ else
   else
     echo "MODEL.SH: Error (CODE=$CODE) in $MODEL_CMD"
     echo "TIMESTAMP:" $( date "+%Y/%m/%d %H:%M:%S" )
+    if (( ${IGNORE_ERRORS:-0} ))
+    then
+      echo "IGNORING ERROR."
+      exit 0
+    fi
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
