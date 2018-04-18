@@ -13,14 +13,19 @@ fi
 SWIFT_SCRIPT=$1
 
 module load java gcc
-module load tensorflow/intel-head
+# module load tensorflow/intel-head
+module load python/2.7-anaconda-4.4
 
 PATH=$HOME/Public/sfw/login/swift-t-2018-04-16/stc/bin:$PATH
-# PATH=/usr/common/software/tensorflow/tensorflow/1.4.0rc0/bin:$PATH
 
-swift-t -v
-which python
-echo PP  ${PYTHONPATH:-}
-echo PUB $PYTHONUSERBASE
+# export PYTHONPATH=$HOME/.local/lib/python2.7/site-packages
 
-swift-t $SWIFT_SCRIPT
+# swift-t -v
+# which python
+# echo PP  ${PYTHONPATH:-}
+# echo PUB $PYTHONUSERBASE
+
+export SWIFT_PATH=$PWD
+
+TIC=${SWIFT_SCRIPT%.swift}.tic
+swift-t -u -o $TIC $SWIFT_SCRIPT
