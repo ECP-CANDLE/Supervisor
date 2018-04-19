@@ -1,13 +1,117 @@
-= CANDLE User Guide
+= CANDLE Library User Guide
 
+The CANDLE library provides a wrapper class and utility functions, which enable users run their own deep learning code in high performance computers that CANDLE supports. With the current version of CANDLE library, users should be able to run hyperparameter optimization (mlrMBO workflow) or parallel excution (upf workflow). Due to the design of both workflows, users are required to implement certain methods (will be explained in section 1) and modify several config files (section 2). This user guide will provide an overview of structure and explanation of parameters or varaiables as needed.
 
 = How to write CANDLE compliant deep learning code
 
+== Minimum requirements
+The CANDLE requires two methods, `initialize_parameters()` and `run()`.
+
+=== Initialize_parameters Method
+In `initialize_parameters` method, we will construct a class and build a parameter set, which will be used inside your deep learning code (run method). We provides some common parameters such as `batch_size`, `epochs`, etc. In addition to that, you can construct your own parameters (see Aurgument Specification section below). Finally, the `initialize_parameters` should return a python dictionary, in this doc, will be called `gParameters` (global parameters).
+
+=== Run Method
+You can place your deep learning code in `run(Dict)` method. You can use parameter varaiable like `gParameters['batch_size']`.
+
+We have an https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/mnist_mlp_candle.py[example], that converted a simple MNIST neural net `mnist_mlp.py` provided by https://github.com/keras-team/keras/blob/master/examples/mnist_mlp.py[Keras Team] into CANDLE compliant form. In this example, you will see how the `initialize_parameters` method is implemented and how the actual NN code was transplanted in `run` method.
+
+Finally, the `run()` returns history. This can be omitted for upf workflow, but required for HPO workflow.
+
+[source,python]
+----
+def initialize_parameters():
+    mnist_common = common.MNIST(common.file_path,
+        'default_model.txt',
+        'keras',
+        prog='mnist_mlp',
+        desc='MNIST example'
+    )  // <1>
+
+    # Initialize parameters
+    gParameters = default_utils.initialize_parameters(mnist_common)
+    ..
+
+    return gParameters   // <2>
+
+def run(gParameters): // <3>
+    ##########################################
+    # Your DL start here. See mnist_mlp.py   #
+    ##########################################
+
+    ...
+
+    batch_size = gParameters['batch_size']
+    epochs = gParameters['epochs']
+
+    ...
+
+    model.compile(loss='categorical_crossentropy',
+                optimizer=optimizer,
+                metrics=['accuracy'])
+
+    history = model.fit(x_train, y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        validation_data=(x_test, y_test))
+    ##########################################
+    # End of mnist_mlp.py ####################
+    ##########################################
+  return history  // <4>
+
+----
+<1> In next section, we will explain where the common.MNIST class came from.
+<2> initialize_parameters return dictionary
+<3> run method receives parameter dictionary
+<4> returns history object
+
+
+== Argument Sepcification
+In order to take advantage of the CANDLE framework, a model needs to be able to modify its parameters via either reading from the default_model file, or overwriting those parameters via an appropriate command line argument. We standadized frequently used ML keywords, as well as certain other keywords which are used by the CANDLE scripts. We recommend users aware of these arguemtns to avoid conflicts. For these CANDLE built-in command line arguments, please see https://github.com/ECP-CANDLE/Candle/blob/library/common/default_utils.py[default_utils.py]
+
+=== Adding keyword
+In order to simplify the process of adding keywords, we require the user to provide a list of metadata of how to parse the arugment.
+[Source,JSON]
+----
+[{
+  'name':'shared_nnet_spec', // <1>
+  'nargs':'+', // <2>
+  'type': int, // <3>
+  'help':'network structure of shared layer' // <4>
+}, ...]
+----
+<1> required. Name of parameter.
+<2> optional. The number of command-line arguments.
+<3> required. The type to which the command-line arguments should be converted.
+<4> optional. A brief description of what the argument does.
+you can add `default`, `choices`, and `action` as needed.
+
+=== Building Class
+When you have a list of additional paramaters, you need to pass the definition to be parsed. Even though you don't have any additional parameters, this is generally recommended, since you can buid your own shared method and build data processing code that will be shared.
+
+Please take a look this https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/common.py[example]. This is a source of common.MNIST class definition.
+
+[Source,python]
+----
+additional_definitions = None
+required = None
+
+class MNIST(default_utils.Benchmark):
+    def set_locals(self):
+        if required is not None:
+            self.required = set(required)
+        if additional_definitions is not None:
+            self.additional_definitions = additional_definitions
+----
+
+
+=== Thead Optimization
+Some HPC machines like `Theta`, the performance will greatly improved if we let CANDLE handles threads. So, it is generally recommended to have code like line 14 to 21 in https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/common.py#L14-L21[this example]
 
 = How to run CANDLE compliant code in Theta
-Currently you can run two different workflows in CANDLE:
+As mentioned above, we offer two different workflows in CANDLE:
 Unrolled Parameter File (UPF) and Hyper Parameter Optimization (HPO).
-The UPF workflow allows you to run multi-node executions with different parameters,
+The UPF workflow allows you to run parallel multi-node executions with different parameters,
 while HPO workflow evaluates the best value of hyperparameters based on mlrMBO algorithm.
 
 
