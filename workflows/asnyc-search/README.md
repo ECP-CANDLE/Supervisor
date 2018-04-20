@@ -49,7 +49,7 @@ Scheduling scripts:
 test-1.sh -> cfg-sys-1.sh ->
       common/sh/<machine_name> - module, scheduling, langs .sh files
 ```
-## Making Changes <a name="making_changes"></a>##
+## Making Changes <a name="making_changes"></a>
 
 To create your own SITE files in workflows/common/sh/:
 - langs-SITE.sh
