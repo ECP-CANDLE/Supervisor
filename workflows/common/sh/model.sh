@@ -5,6 +5,8 @@ set -eu
 
 # Shell wrapper around Keras model
 
+echo MODEL.SH
+
 usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
@@ -24,6 +26,8 @@ FRAMEWORK=$1 # Usually "keras"
 # JSON string of parameters
 PARAMS="$2"
 RUNID=$3
+
+echo RUNID $RUNID
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
