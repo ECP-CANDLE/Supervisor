@@ -9,8 +9,9 @@ usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
   echo "The environment should have:"
-  echo "  SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT OBJ_RETURN"
-  echo "If TIMEOUT is provided, we run under the shell command timeout"
+  echo "  EMEWS_PROJECT_ROOT TURBINE_OUTPUT SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "  and MODEL_NAME EXPID for model_runner.py"
+  echo "If SH_TIMEOUT is provided, we run under the shell command timeout"
 }
 
 if (( ${#} != 3 ))
