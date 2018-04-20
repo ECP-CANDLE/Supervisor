@@ -5,12 +5,15 @@ set -eu
 
 # Shell wrapper around Keras model
 
+echo MODEL.SH
+
 usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
   echo "The environment should have:"
-  echo "  SITE MODEL_NAME EXPID BENCHMARK_TIMEOUT OBJ_RETURN"
-  echo "If TIMEOUT is provided, we run under the shell command timeout"
+  echo "  EMEWS_PROJECT_ROOT TURBINE_OUTPUT SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "  and MODEL_NAME EXPID for model_runner.py"
+  echo "If SH_TIMEOUT is provided, we run under the shell command timeout"
 }
 
 if (( ${#} != 3 ))
@@ -23,6 +26,8 @@ FRAMEWORK=$1 # Usually "keras"
 # JSON string of parameters
 PARAMS="$2"
 RUNID=$3
+
+echo RUNID $RUNID
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
