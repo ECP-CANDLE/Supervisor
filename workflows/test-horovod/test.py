@@ -1,6 +1,7 @@
 
 # This is the test Horovod program
 
-print("Importing Horovod...")
+print("Importing...")
+import keras
 import horovod.keras as hvd
-print("Imported Horovod.")
+print("Imported.")
