@@ -8,13 +8,6 @@
   },
 
   {
-    "name": "feature_subsample",
-    "type": "constant",
-    "value": 1000,
-    "comment": "debug: 1000, default: remove this entry"
-  },
-
-  {
     "name": "dense",
     "type": "constant",
     "value": "200 20"
@@ -46,9 +39,9 @@
   {
     "name": "lr",
     "type": "float",
-    "lower": 0.0001,
-    "upper": 0.01,
-    "sigma": 0.000495
+    "lower": 0.00075,
+    "upper": 0.00125,
+    "sigma": 0.000025
   },
 
   {
@@ -63,7 +56,7 @@
   {
     "name": "epochs",
     "type": "constant",
-    "value": 100
+    "value": 200
   }
 
 ]

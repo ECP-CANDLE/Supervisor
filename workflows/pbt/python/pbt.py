@@ -439,7 +439,7 @@ class PBTCallback(keras.callbacks.Callback):
         if self.model_worker.ready(self.client, epoch):
             result = self.client.get_data(data['score'])
             if len(result):
-                print("{},{} is ready - updating".format(epoch, self.client.rank))
+                print("\n{},{} is ready - updating".format(epoch, self.client.rank))
                 rank_to_read = result['rank']
                 self.model_worker.update(epoch, self.client, self.model, result)
                 #print("{} loading weights from {}".format(self.client.rank, rank))
@@ -447,7 +447,7 @@ class PBTCallback(keras.callbacks.Callback):
                                                             rank_to_read))
                 self.client.release_read_lock(rank_to_read)
             else:
-                print("{},{} is ready - no update".format(epoch, self.client.rank))
+                print("\n{},{} is ready - no update".format(epoch, self.client.rank))
 
     def on_train_end(self, logs={}):
         self.client.done()
