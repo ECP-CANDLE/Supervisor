@@ -1,0 +1,36 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.x
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+*~
+.DS_Store
+
+*.d
+/.cproject
+/.project
+/.settings
+
+Debug/
+Release/
+
+/output/
+scratch/
+
+# ipython notebooks
+*.ipynb
+.ipynb_checkpoints
+
+# dataspace runtime conf file
+conf
+experiments
+test_data/combo_model.h5
