@@ -27,6 +27,16 @@ What you need to install to run the workflow:
 * benchmark data -
  See the individual benchmarks README for obtaining the initial data
 
+ Python specific installation needed:
+```
+conda install h5py
+conda install scikit-learn
+conda install pandas
+conda install mpi4py
+conda install -c conda-forge keras
+conda install -c conda-forge scikit-optimize
+```
+
 ## Calling sequence ##
 
 Function calls:
