@@ -40,4 +40,4 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 # Use file name without .py (e.g, my_script.py)
 # MODEL_PYTHON_SCRIPT=my_script
 MODEL_PYTHON_SCRIPT=infer
-BENCHMARK_DIR=/project/projectdirs/m2924/hsyoo_/Benchmarks/Pilot1/Combo/
+BENCHMARK_DIR=/project/projectdirs/m2924/hsyoo/Benchmarks/Pilot1/Combo/

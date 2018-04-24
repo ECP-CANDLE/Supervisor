@@ -1,8 +1,8 @@
 import json
 
-MODEL_TEMPLATE="/project/projectdirs/m2924/hsyoo_/files/model.{}.json"
+MODEL_TEMPLATE="/project/projectdirs/m2924/hsyoo/files/model.{}.json"
 
-TEMPLATE='{"id": "combo.000", "sample_set": "GDSC", "drug_set": "NCI_IOA_AOA", "si":0, "ns": 1, "nd": 100, "n_pred": 30, "model_file": "/project/projectdirs/m2924/hsyoo_/files/uq.drop.10.model.h5", "weights_file": "/project/projectdirs/m2924/hsyoo_/files/uq.drop.10.weights.h5"}'
+TEMPLATE='{"id": "combo.000", "sample_set": "GDSC", "drug_set": "NCI_IOA_AOA", "si":0, "ns": 1, "nd": 100, "n_pred": 30, "model_file": "/project/projectdirs/m2924/hsyoo/files/uq.drop.10.model.h5", "weights_file": "/project/projectdirs/m2924/hsyoo/files/uq.drop.10.weights.h5"}'
 run=json.loads(TEMPLATE)
 
 config_file = open('upf-combo.txt', 'w')
