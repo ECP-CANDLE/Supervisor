@@ -50,6 +50,11 @@ then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
 fi
 
+if [[ ! -f $UPF ]]
+then
+  abort "File not found: UPF=$UPF"
+fi
+
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
 OBJ_PARAM_ARG=""
