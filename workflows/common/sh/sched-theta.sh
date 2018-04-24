@@ -8,3 +8,5 @@ export QUEUE=${QUEUE:-default}
 export PROJECT=CSC249ADOA01
 MACHINE="-m theta"
 
+# Option for CPU binding
+# export TURBINE_LAUNCH_OPTIONS="-cc none"
