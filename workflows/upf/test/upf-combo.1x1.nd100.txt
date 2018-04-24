@@ -1,0 +1,1 @@
+{"drug_set": "NCI_IOA_AOA", "sample_set": "GDSC", "model_file": "/project/projectdirs/m2924/hsyoo_/files/model.10.json", "n_pred": 30, "nd": 100, "weights_file": "/project/projectdirs/m2924/hsyoo_/files/uq.drop.10.weights.h5", "si": 0, "ns": 1, "id": "combo.10.000"}
