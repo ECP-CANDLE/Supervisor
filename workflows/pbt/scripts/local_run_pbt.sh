@@ -1,9 +1,14 @@
 #! /usr/bin/env bash
 set -eu
 
+if [ "$#" -ne 3 ]; then
+  script_name=$(basename $0)
+  echo "Usage: ${script_name} PROCS EXPERIMENT_ID PARAMS_FILE"
+  exit 1
+fi
+
 PROCS=$1
 EXP_ID=$2
-#MODEL_NAME=$3
 
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 ROOT="$THIS/.."
@@ -22,9 +27,11 @@ export PYTHONPATH=$PYTHONPATH
 
 mkdir -p $EXP_DIR
 
-PARAMS_FILE=$3
-cp $ROOT/data/$PARAMS_FILE $EXP_DIR/
+PARAMS_PATH=$3
+cp $PARAMS_PATH $EXP_DIR/
 cd $EXP_DIR
+
+PARAMS_FILE=$( basename $PARAMS_PATH)
 
 mpirun -n $PROCS python $PBT_PY $PARAMS_FILE $EXP_DIR tc1 $EXP_ID
 
