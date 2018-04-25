@@ -110,6 +110,9 @@ log_script
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
 cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
+# Make run directory in advance to reduce contention
+mkdir -pv $TURBINE_OUTPUT/run
+
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}

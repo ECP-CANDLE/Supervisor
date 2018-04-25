@@ -73,6 +73,9 @@ log_script
 # Copy settings to TURBINE_OUTPUT for provenance
 cp $CFG_SYS $TURBINE_OUTPUT
 
+# Make run directory in advance to reduce contention
+mkdir -pv $TURBINE_OUTPUT/run
+
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
 export TURBINE_LAUNCH_OPTIONS="-cc none"
