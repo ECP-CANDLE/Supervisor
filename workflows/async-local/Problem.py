@@ -1,4 +1,6 @@
 
+# The bounding box for the optimization problem
+
 from collections import OrderedDict
 class Problem():
     def __init__(self):

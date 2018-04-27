@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eu
 
-# echo task.sh $*
+# TASK SH
+# Dummy task for testing
 
 if (( ${#} != 1 ))
 then
@@ -9,10 +10,16 @@ then
   exit 1
 fi
 
+WORKFLOWS=$( cd $( dirname 0 )/.. ; /bin/pwd )
+source $WORKFLOWS/common/sh/utils.sh
+
 PARAMS=$1
 
 T=$(( $RANDOM % 3 ))
 
-echo T=$T
+echo "PID: $$"
+echo $PARAMS | print_json
+echo "delay $T"
+echo
 
 sleep $T

@@ -1,0 +1,71 @@
+
+A straightforward implementation of a skopt workflow.
+
+Uses asynchronous background processes for tasks.
+
+Should work fine with aprun on Theta.
+
+Sample output:
+
+----
+$ ./main.sh
+search start:
+started:  16586
+started:  16587
+started:  16592
+TASK: 16586
+  drop           0.3690935629679824
+  batch_size     256
+delay 2
+
+TASK: 16587
+started:  16601
+tasks_running:  4
+  drop           0.8395811989630504
+  batch_size     32
+delay 1
+
+TASK: 16592
+  drop           0.6031331534420412
+  batch_size     64
+delay 1
+
+TASK: 16601
+  drop           0.31583820140922964
+  batch_size     256
+delay 0
+
+started:  16630
+tasks_running:  4
+TASK: 16630
+  drop           0.7536495199979558
+  batch_size     512
+delay 1
+
+started:  16641
+tasks_running:  4
+TASK: 16641
+  drop           0.40034926107103663
+  batch_size     512
+delay 1
+
+started:  16652
+tasks_running:  4
+TASK: 16652
+  drop           0.731156389521627
+  batch_size     32
+delay 0
+
+started:  16663
+tasks_running:  4
+TASK: 16663
+  drop           0.7195980974464558
+  batch_size     64
+delay 1
+
+tasks_running:  3
+tasks_running:  2
+tasks_running:  1
+tasks_running:  0
+Workflow complete!
+----
