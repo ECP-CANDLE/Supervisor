@@ -19,8 +19,13 @@ def depth(l):
         return 0
 
 def create_list_of_json_strings(list_of_lists, params, super_delim=";"):
+
+    if len(list_of_lists) == 0:
+        return []
+
     # create string of ; separated jsonified maps
-    res = []
+    result = []
+
     if (depth(list_of_lists) == 1):
         list_of_lists = [list_of_lists]
 
@@ -30,6 +35,6 @@ def create_list_of_json_strings(list_of_lists, params, super_delim=";"):
             jmap[p] = l[i]
 
         jstring = json.dumps(jmap, cls=MyEncoder)
-        res.append(jstring)
+        result.append(jstring)
 
-    return res, (super_delim.join(res))
+    return result

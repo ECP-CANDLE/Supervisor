@@ -1,7 +1,8 @@
 #!/bin/bash -l
-set -x
 set -eu
 
 export PYTHONPATH=$PWD
 
-python main.py
+python -u main.py
+
+echo "main.sh: OK"
