@@ -1,0 +1,10 @@
+export PYTHONHOME="/usr/"
+PYTHON="$PYTHONHOME/bin/python2.7"
+export LD_LIBRARY_PATH="$PYTHONHOME/lib"
+export PATH="$PYTHONHOME/bin:$PATH"
+
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+PYTHONPATH+=":$PYTHONHOME/lib/python2.7:"
+PYTHONPATH+=":$COMMON_DIR:"
+PYTHONPATH+="$PYTHONHOME/lib/python2.7/dist-packages"
+export PYTHONPATH
