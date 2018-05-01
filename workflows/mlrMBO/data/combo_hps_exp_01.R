@@ -43,7 +43,7 @@ param.set <- makeParamSet(
                     
   makeDiscreteParam("warmup_lr", values=c(1, 0)),
                                      
-  makeIntegerParam("epochs", lower=5, upper=10)
+  makeIntegerParam("epochs", lower=5, upper=1000)
 )
 
 

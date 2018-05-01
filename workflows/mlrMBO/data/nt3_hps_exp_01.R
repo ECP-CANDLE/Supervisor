@@ -3,7 +3,7 @@
 
 param.set <- makeParamSet(
   makeDiscreteParam("batch_size", values = c(16, 32, 64, 128, 256, 512)),
-  makeIntegerParam("epochs", lower = 5, upper = 7),
+  makeIntegerParam("epochs", lower = 5, upper = 1000),
   makeDiscreteParam("activation", values = c("softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear")),
   makeDiscreteParam("dense", values = c("500 100 50", "1000 500 100 50", "2000 1000 500 100 50", "2000 1000 1000 500 100 50", "2000 1000 1000 1000 500 100 50")),
   makeDiscreteParam("optimizer", values = c("adam", "sgd", "rmsprop", "adagrad", "adadelta")),
