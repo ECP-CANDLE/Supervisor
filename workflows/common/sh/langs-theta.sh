@@ -10,6 +10,7 @@
 # STC=/projects/Candle_ECP/swift/pyr/stc
 # STC=/projects/Candle_ECP/swift/2017-12-20/stc
 SWIFT=/projects/Candle_ECP/swift/2018-03-07
+# SWIFT=/projects/Candle_ECP/swift/2018-04-25
 
 export TCL=/projects/Candle_ECP/swift/deps/tcl-8.6.6
 export PY=/projects/Candle_ECP/swift/deps/Python-2.7.12

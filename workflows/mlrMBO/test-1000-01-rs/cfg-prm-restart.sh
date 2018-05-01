@@ -1,17 +1,18 @@
-# CFG PRM 1
+# CFG PRM RESTART
+# Configuration of parameters: 1
 
 # mlrMBO settings
-
+# How many to runs evaluate per iteration -> 
+	#Adding the number of restart runs to the budget (9 - for the test case)
+	#This is the minimum number of runs required for restart 9 (greater than 8, which is the design size)
+MAX_BUDGET=${MAX_BUDGET:-25}
 # Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-5}
-MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-1}
-MAX_ITERATIONS=${MAX_ITERATIONS:-3}
-MAX_BUDGET=${MAX_BUDGET:-180}
-DESIGN_SIZE=${DESIGN_SIZE:-10}
+MAX_ITERATIONS=${MAX_ITERATIONS:-2}
+DESIGN_SIZE=${DESIGN_SIZE:-6}
+MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-6}
+PROPOSE_POINTS=${PROPOSE_POINTS:-6}
 
-# TODO: move the following code to a utility library-
-#       this is a configuration file
-# Set the R data file for running
+# Set the default data file for running
 if [ "$MODEL_NAME" = "combo" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/combo_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p1b1" ]; then
@@ -22,11 +23,9 @@ elif [ "$MODEL_NAME" = "p1b3" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b3_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p1b2" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_hps_exp_01.R}
-elif [ "$MODEL_NAME" = "p2b1" ]; then
-    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_param1.R}
-elif [ "$PARAM_SET_FILE" != "" ]; then
-    PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
-else
+else 
     echo "Invalid model-" $MODEL_NAME
-    exit 1
+    exit
 fi
+
+
