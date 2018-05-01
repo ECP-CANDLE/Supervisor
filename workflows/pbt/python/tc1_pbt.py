@@ -72,7 +72,7 @@ def truncation_select(data, score):
         return {}
 
 def init_params(params_file, comm):
-    param_factories = ga_utils.create_parameters(params_file)
+    param_factories = ga_utils.create_parameters(params_file, True)
     params = [{}]
     for i in range(comm.Get_size() - 1):
         hyper_parameter_map = {}

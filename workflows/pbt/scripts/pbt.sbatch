@@ -7,7 +7,6 @@
 #SBATCH -C knl,quad,cache
 #SBATCH --license=SCRATCH,project
 
-#export PYTHONPATH=/global/u1/n/ncollier/.local/cori/intel-tensorflowhead/lib/python2.7/site-packages:$PYTHONPATH
 module load tensorflow/intel-head
 
 PP="$BENCHMARKS/Pilot1/common"
