@@ -3,15 +3,14 @@
     "name": "conv",
     "type": "constant",
     "value": "0 0 0",
-    "def_value": "128 20 1 128 10 1",
-    "debug_value": "0 0 0"
+    "comment": "def_value 128 20 1 128 10 1, debug value: 0 0 0"
   },
 
   {
     "name": "feature_subsample",
     "type": "constant",
     "value": 500,
-    "comment": "debug: 1000, default: remove this entry"
+    "comment": "debug: 1000 or 500, default: remove this entry"
   },
 
   {
@@ -31,38 +30,34 @@
     "name": "optimizer",
     "type": "categorical",
     "element_type": "string",
-    "values": ["adam", "rmsprop"],
-    "orig_values": ["adam", "sgd", "rmsprop", "adagrad", "adadelta"]
+    "values": ["adam", "rmsprop"]
   },
 
   {
     "name": "drop",
     "type": "float",
     "lower": 0.0,
-    "upper": 0.9,
-    "sigma": 0.045
+    "upper": 0.9
   },
 
   {
     "name": "lr",
     "type": "float",
     "lower": 0.0001,
-    "upper": 0.01,
-    "sigma": 0.000495
+    "upper": 0.01
   },
 
   {
     "name": "batch_size",
     "type": "ordered",
     "element_type": "int",
-    "values": [32, 64],
-    "sigma": 1
+    "values": [32, 64]
   },
 
   {
     "name": "epochs",
     "type": "constant",
-    "value": 20
+    "value": 5
   }
 
 ]

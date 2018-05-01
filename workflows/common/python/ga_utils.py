@@ -164,7 +164,7 @@ class LogicalParameter:
         else:
             return False
 
-def create_parameters(param_file):
+def create_parameters(param_file, ignore_sigma=False):
     with open(param_file) as json_file:
         data = json.load(json_file)
 
@@ -172,10 +172,13 @@ def create_parameters(param_file):
     for item in data:
         name = item['name']
         t = item['type']
+        if ignore_sigma:
+            sigma = float('nan')
         if t == 'int' or t == 'float':
             lower = item['lower']
             upper = item['upper']
-            sigma = item['sigma']
+            if not ignore_sigma:
+                sigma = item['sigma']
 
             if t == 'int':
                 params.append(IntParameter(name, int(lower), int(upper),
@@ -194,7 +197,8 @@ def create_parameters(param_file):
 
         elif t == "ordered":
             vs = item['values']
-            sigma = item['sigma']
+            if not ignore_sigma:
+                sigma = item['sigma']
             element_type = item['element_type']
             params.append(OrderedParameter(name, vs, sigma, element_type))
         elif t == 'constant':
