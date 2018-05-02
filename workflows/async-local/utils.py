@@ -38,3 +38,10 @@ def create_list_of_json_strings(list_of_lists, params, super_delim=";"):
         result.append(jstring)
 
     return result
+
+def print_namespace(title, ns):
+    print("")
+    print(title)
+    for k,v in vars(ns).items():
+        print("  %s %s" % (k, v))
+    print("")

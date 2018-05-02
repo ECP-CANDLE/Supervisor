@@ -3,77 +3,110 @@
 
 from __future__ import print_function
 
-import os
-import time
-from skopt import Optimizer
+import logging, os, sys, time
 
 from utils import *
 
 from Problem import Problem
 from Task import task
 
-# Set up
-problem = Problem()
-starting_point = problem.starting_point
+logger = logging.getLogger(__name__)
 
-# Parameters for search workflow
-init_size = 4
-max_evals = 8
-num_workers = 1
-seed = 42
+def main():
+    setup_log()
+    points_init, points_max = parse_args()
+    problem, optimizer = setup()
+    success = search(problem, optimizer, points_init, points_max)
+    print("Workflow success!" if success else "Workflow failed!")
 
-# Start the optimizer
-parDict = { 'kappa' : 1.96 }
-space = [problem.space[key] for key in problem.params]
-opt = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
-                acq_func='LCB', acq_func_kwargs={}, random_state=seed)
+def setup_log():
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("[%(asctime)s %(process)d] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
 
-print("search start:")
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("points_init")
+    parser.add_argument("points_max")
+    args = parser.parse_args()
+    print_namespace("optimizer settings:", args)
+    return (int(args.points_init), int(args.points_max))
 
-# Create the initial sample points
-points = opt.ask(n_points=init_size)
+def setup():
 
-# Number of tasks submitted so far:
-task_count = 0
-# Number of tasks running in the background
-tasks_running = 0
+    logger.info("setup() START")
+    from skopt import Optimizer
 
-# Map from PID to (params, Popen object)
-# Need to manage these references or Popen objects are lost
-pids = {}
+    # Set up
+    problem = Problem()
+    starting_point = problem.starting_point
+    seed = 42
 
-while True:
+    # Start the optimizer
+    parDict = { 'kappa' : 1.96 }
+    space = [problem.space[key] for key in problem.params]
+    optimizer = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
+                    acq_func='LCB', acq_func_kwargs={}, random_state=seed)
+    logger.info("setup() STOP")
+    return (problem, optimizer)
 
-    jsons = create_list_of_json_strings(points, problem.params)
-    for i, json in enumerate(jsons):
-        # Note: this puts the task in a background process
-        process = task(json)
-        # print("%i -> %s" % ( process.pid, points[i]))
-        pids[process.pid] = (points[i], process)
-        task_count += 1
-        tasks_running += 1
-    print("tasks_running: ", tasks_running)
-    if tasks_running == 0:
-        break
+def search(problem, optimizer, points_init, points_max):
+    print("search start:")
 
-    (pid, status) = os.wait()
-    tasks_running -= 1
+    # Create the initial sample points
+    points = optimizer.ask(n_points=points_init)
 
-    if os.WEXITSTATUS(status):
-        print("pid failed: ", pid)
-        exit(1)
+    # Number of tasks submitted so far:
+    task_count = 0
+    # Number of tasks running in the background
+    tasks_running = 0
 
-    (point, process) = pids[pid]
-    del pids[pid]
-    # print("")
-    # print("completed: ", pid)
-    # print("pids: ", len(pids))
+    # Map from PID to (params, Popen object)
+    # Need to manage these references or Popen objects are lost
+    pids = {}
 
-    # print("point: ", str(point))
-    opt.tell(point, 12)
-    time.sleep(1)
+    # Once we find a failure, we stop producing new tasks
+    success = True
 
-    # Create another sample point (if not exhausted)
-    points = opt.ask(n_points=1) if task_count < max_evals else []
+    while True:
 
-print("Workflow complete!")
+        jsons = create_list_of_json_strings(points, problem.params)
+        for i, json in enumerate(jsons):
+            # Note: this puts the task in a background process
+            process = task(json)
+            # print("%i -> %s" % ( process.pid, points[i]))
+            pids[process.pid] = (points[i], process)
+            task_count += 1
+            tasks_running += 1
+        print("tasks_running: ", tasks_running)
+        if tasks_running == 0:
+            break
+
+        (pid, status) = os.wait()
+        tasks_running -= 1
+
+        if os.WEXITSTATUS(status):
+            print("pid failed: ", pid)
+            success = False
+
+        (point, process) = pids[pid]
+        del pids[pid]
+        # print("")
+        # print("completed: ", pid)
+        # print("pids: ", len(pids))
+
+        # print("point: ", str(point))
+        optimizer.tell(point, 12)
+        time.sleep(1)
+
+        # Create another sample point (if not exhausted or failed)
+        if task_count < points_max and success:
+            points = optimizer.ask(n_points=1)
+        else:
+            points = []
+    return success
+
+if __name__ == '__main__':
+    main()

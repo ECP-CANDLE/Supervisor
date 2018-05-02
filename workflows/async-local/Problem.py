@@ -1,5 +1,7 @@
 
+# PROBLEM
 # The bounding box for the optimization problem
+# This should be a user plug-in
 
 from collections import OrderedDict
 class Problem():
@@ -14,7 +16,7 @@ class Problem():
         self.params = self.space.keys()
         self.starting_point = [0.1, 16]
 
-if __name__ == '__main__':
-    instance = Problem()
-    print(instance.space)
-    print(instance.params)
+# if __name__ == '__main__':
+#     instance = Problem()
+#     print(instance.space)
+#     print(instance.params)
