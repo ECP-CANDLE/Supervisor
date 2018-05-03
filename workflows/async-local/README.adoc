@@ -1,11 +1,79 @@
 
-A straightforward implementation of a skopt workflow.
+== Async Local
+
+A straightforward implementation of a skopt workflow
+that runs everything in a Python subprocess.
 
 Uses asynchronous background processes for tasks.
 
-Should work fine with aprun on Theta.
+Works fine with aprun on Theta.
 
-Sample output:
+== Overview
+
+. The search algorithm is set up using the normal skopt API.
+. The workflow starts points_init tasks
+. As each task exits, it is replaced by a new one from skopt
+. When points_max tasks have been issued, the workflow issues
+  no more tasks, but waits for the outstanding ones to complete.
+. If any task fails (non-zero exit code), the workflow issues
+  no more tasks, but waits for the outstanding ones to complete.
+  It also may print a Python stack trace.
+
+== Implementation notes
+
+These details will change rapidly as the workflow becomes more generic.
+
+. If OUTPUT is in the environment, this is used as an output directory,
+  else the workflow uses $PWD .
+. The workflow tasks are each assigned a unique integer number.
+. The output for each task goes to a file with the given number in
+  the output directory.
+
+== File index
+
+main.sh::
+Shell interface for the Python program.
+
+main.py::
+The main Python program.
+Sets up and runs the search loop.
+
+Task.py::
+The Python task (objective function).
+Currently hard-coded to run task.sh.
+Needs to become a plug-in.
+
+Problem.py::
+The bounding box for the skopt search.
+Needs to become a plug-in.
+
+task.sh::
+A dummy task.
+Can be replaced by any shell script, including the ff Horovod script.
+
+utils.py::
+Misc. Python utilities.
+
+=== System-specific scripts
+
+submit-theta.sh::
+Submits main.sh on Theta
+
+== Concepts
+
+NODES::
+The number of nodes in the allocation
+
+Task::
+An execution of the objective function in the search
+
+PARALLELISM::
+The number of nodes in each task
+
+CONCURRENCY::
+The number of (parallel) tasks running at a point in time
+
+== Sample output
 
 ----
 $ ./main.sh
