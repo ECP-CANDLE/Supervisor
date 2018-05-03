@@ -1,5 +1,6 @@
 
 # MAIN PY
+# The main code for the search algorithm
 
 from __future__ import print_function
 
@@ -8,35 +9,38 @@ import logging, os, sys, time
 from utils import *
 
 from Problem import Problem
-from Task import task
+from Task import Task
 
 logger = logging.getLogger(__name__)
 
 def main():
     setup_log()
-    points_init, points_max = parse_args()
+    parallelism, points_init, points_max = parse_args()
     problem, optimizer = setup()
-    success = search(problem, optimizer, points_init, points_max)
+    success = search(problem, optimizer,
+                     parallelism, points_init, points_max)
     print("Workflow success!" if success else "Workflow failed!")
 
 def setup_log():
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("[%(asctime)s %(process)d] %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
-    handler.setLevel(logging.INFO)
-    logger.addHandler(handler)
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(levelname)s: %(message)s',
+                        datefmt='%Y/%m/%d %H:%M:%S')
 
 def parse_args():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("parallelism")
     parser.add_argument("points_init")
     parser.add_argument("points_max")
     args = parser.parse_args()
     print_namespace("optimizer settings:", args)
-    return (int(args.points_init), int(args.points_max))
+    return (int(args.parallelism),
+            int(args.points_init),
+            int(args.points_max))
 
 def setup():
 
-    logger.info("setup() START")
+    logger.debug("setup() START")
     from skopt import Optimizer
 
     # Set up
@@ -49,10 +53,10 @@ def setup():
     space = [problem.space[key] for key in problem.params]
     optimizer = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
                     acq_func='LCB', acq_func_kwargs={}, random_state=seed)
-    logger.info("setup() STOP")
+    logger.debug("setup() STOP")
     return (problem, optimizer)
 
-def search(problem, optimizer, points_init, points_max):
+def search(problem, optimizer, parallelism, points_init, points_max):
     print("search start:")
 
     # Create the initial sample points
@@ -75,9 +79,12 @@ def search(problem, optimizer, points_init, points_max):
         jsons = create_list_of_json_strings(points, problem.params)
         for i, json in enumerate(jsons):
             # Note: this puts the task in a background process
-            process = task(json)
-            # print("%i -> %s" % ( process.pid, points[i]))
-            pids[process.pid] = (points[i], process)
+            T = Task(parallelism, number=task_count, params=json)
+            status = T.go()
+            if not status:
+                success = False
+                break
+            pids[T.process.pid] = (points[i], T)
             task_count += 1
             tasks_running += 1
         print("tasks_running: ", tasks_running)
@@ -93,13 +100,9 @@ def search(problem, optimizer, points_init, points_max):
 
         (point, process) = pids[pid]
         del pids[pid]
-        # print("")
-        # print("completed: ", pid)
-        # print("pids: ", len(pids))
 
-        # print("point: ", str(point))
         optimizer.tell(point, 12)
-        time.sleep(1)
+        # time.sleep(1)
 
         # Create another sample point (if not exhausted or failed)
         if task_count < points_max and success:

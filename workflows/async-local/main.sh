@@ -1,6 +1,12 @@
 #!/bin/bash -l
 set -eu
 
+# MAIN SH
+# Shell wrapper for search code
+# Use 'main.sh -h' for help
+
+START=$SECONDS
+
 export PYTHONPATH=$PWD
 
 # Theta
@@ -9,4 +15,7 @@ which python
 
 nice python -u main.py $*
 
+STOP=$SECONDS
+
 echo "main.sh: OK"
+echo "TIME: $(( STOP - START ))"
