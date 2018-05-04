@@ -67,8 +67,8 @@ def search(problem, optimizer, parallelism, points_init, points_max):
     # Number of tasks running in the background
     tasks_running = 0
 
-    # Map from PID to (params, Popen object)
-    # Need to manage these references or Popen objects are lost
+    # Map from PID to (params, Task object)
+    # Need to hold these references or Popen objects are garbage-collected
     pids = {}
 
     # Once we find a failure, we stop producing new tasks
@@ -91,16 +91,18 @@ def search(problem, optimizer, parallelism, points_init, points_max):
         if tasks_running == 0:
             break
 
+        # Wait for exactly one task to complete, get its PID
         (pid, status) = os.wait()
         tasks_running -= 1
-
         if os.WEXITSTATUS(status):
             print("pid failed: ", pid)
             success = False
 
-        (point, process) = pids[pid]
+        # Look up the task and delete it from the dictionary
+        (point, task) = pids[pid]
         del pids[pid]
 
+        # Pass the result back to the optimizer
         optimizer.tell(point, 12)
         # time.sleep(1)
 
