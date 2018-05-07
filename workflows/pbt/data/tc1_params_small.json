@@ -49,7 +49,7 @@
 
   {
     "name": "batch_size",
-    "type": "ordered",
+    "type": "categorical",
     "element_type": "int",
     "values": [32, 64]
   },
