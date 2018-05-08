@@ -34,6 +34,6 @@ CRAY=0
 which_check python
 which_check swift-t
 # Log settings to output
-show     PYTHONHOME
-log_path LD_LIBRARY_PATH
-log_path PYTHONPATH
+# show     PYTHONHOME
+# log_path LD_LIBRARY_PATH
+# log_path PYTHONPATH
