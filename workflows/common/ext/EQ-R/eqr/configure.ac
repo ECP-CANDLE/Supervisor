@@ -30,7 +30,7 @@ AC_PREFIX_DEFAULT($PWD/..)
 
 USE_TCLSH=tclsh$TCL_VERSION
 AC_PATH_PROG([TCL],[$USE_TCLSH],[nope])
-[[ ${TCL} == "nope" ]] && AC_MSG_ERROR([Could not find $USE_TCLSH!])
+[[ ${TCL} == "nope" ]] && AC_MSG_ERROR([Could not find program $USE_TCLSH!])
 AC_SUBST([USE_TCLSH])
 
 # We only need C++

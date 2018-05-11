@@ -1,0 +1,10 @@
+
+== Cori
+
+Try Python in module tensorflow/intel-head
+
+See test-cori.sh
+
+$ ./test-cori.sh sanity/test-python.swift
+$ ./test-cori.sh sanity/test-numpy.swift
+$ ./test-cori.sh sanity/test-horovod.swift

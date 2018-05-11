@@ -1,0 +1,224 @@
+= CANDLE Library User Guide
+
+The CANDLE library provides a wrapper class and utility functions, which enable users run their own deep learning code in high performance computers that CANDLE supports. With the current version of CANDLE library, users should be able to run hyperparameter optimization (mlrMBO workflow) or parallel excution (upf workflow). Due to the design of both workflows, users are required to implement certain methods (will be explained in section 1) and modify several config files (section 2). This user guide will provide an overview of structure and explanation of parameters or varaiables as needed.
+
+= How to write CANDLE compliant deep learning code
+
+== Minimum requirements
+The CANDLE requires two methods, `initialize_parameters()` and `run()`.
+
+=== Initialize_parameters Method
+In `initialize_parameters` method, we will construct a class and build a parameter set, which will be used inside your deep learning code (run method). We provides some common parameters such as `batch_size`, `epochs`, etc. In addition to that, you can construct your own parameters (see Aurgument Specification section below). Finally, the `initialize_parameters` should return a python dictionary, in this doc, will be called `gParameters` (global parameters).
+
+=== Run Method
+You can place your deep learning code in `run(Dict)` method. You can use parameter varaiable like `gParameters['batch_size']`.
+
+We have an https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/mnist_mlp_candle.py[example], that converted a simple MNIST neural net `mnist_mlp.py` provided by https://github.com/keras-team/keras/blob/master/examples/mnist_mlp.py[Keras Team] into CANDLE compliant form. In this example, you will see how the `initialize_parameters` method is implemented and how the actual NN code was transplanted in `run` method.
+
+Finally, the `run()` returns history. This can be omitted for upf workflow, but required for HPO workflow.
+
+[source,python]
+----
+def initialize_parameters():
+    mnist_common = common.MNIST(common.file_path,
+        'default_model.txt',
+        'keras',
+        prog='mnist_mlp',
+        desc='MNIST example'
+    )  // <1>
+
+    # Initialize parameters
+    gParameters = default_utils.initialize_parameters(mnist_common)
+    ..
+
+    return gParameters   // <2>
+
+def run(gParameters): // <3>
+    ##########################################
+    # Your DL start here. See mnist_mlp.py   #
+    ##########################################
+
+    ...
+
+    batch_size = gParameters['batch_size']
+    epochs = gParameters['epochs']
+
+    ...
+
+    model.compile(loss='categorical_crossentropy',
+                optimizer=optimizer,
+                metrics=['accuracy'])
+
+    history = model.fit(x_train, y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        validation_data=(x_test, y_test))
+    ##########################################
+    # End of mnist_mlp.py ####################
+    ##########################################
+  return history  // <4>
+
+----
+<1> In next section, we will explain where the common.MNIST class came from.
+<2> initialize_parameters return dictionary
+<3> run method receives parameter dictionary
+<4> returns history object
+
+
+== Argument Sepcification
+In order to take advantage of the CANDLE framework, a model needs to be able to modify its parameters via either reading from the default_model file, or overwriting those parameters via an appropriate command line argument. We standadized frequently used ML keywords, as well as certain other keywords which are used by the CANDLE scripts. We recommend users aware of these arguemtns to avoid conflicts. For these CANDLE built-in command line arguments, please see https://github.com/ECP-CANDLE/Candle/blob/library/common/default_utils.py[default_utils.py]
+
+=== Adding keyword
+In order to simplify the process of adding keywords, we require the user to provide a list of metadata of how to parse the arugment.
+[Source,JSON]
+----
+[{
+  'name':'shared_nnet_spec', // <1>
+  'nargs':'+', // <2>
+  'type': int, // <3>
+  'help':'network structure of shared layer' // <4>
+}, ...]
+----
+<1> required. Name of parameter.
+<2> optional. The number of command-line arguments.
+<3> required. The type to which the command-line arguments should be converted.
+<4> optional. A brief description of what the argument does.
+you can add `default`, `choices`, and `action` as needed.
+
+=== Building Class
+When you have a list of additional paramaters, you need to pass the definition to be parsed. Even though you don't have any additional parameters, this is generally recommended, since you can buid your own shared method and build data processing code that will be shared.
+
+Please take a look this https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/common.py[example]. This is a source of common.MNIST class definition.
+
+[Source,python]
+----
+additional_definitions = None
+required = None
+
+class MNIST(default_utils.Benchmark):
+    def set_locals(self):
+        if required is not None:
+            self.required = set(required)
+        if additional_definitions is not None:
+            self.additional_definitions = additional_definitions
+----
+
+
+=== Thead Optimization
+Some HPC machines like `Theta`, the performance will greatly improved if we let CANDLE handles threads. So, it is generally recommended to have code like line 14 to 21 in https://github.com/ECP-CANDLE/Candle/blob/library/examples/mnist/common.py#L14-L21[this example]
+
+= How to run CANDLE compliant code in Theta
+As mentioned above, we offer two different workflows in CANDLE:
+Unrolled Parameter File (UPF) and Hyper Parameter Optimization (HPO).
+The UPF workflow allows you to run parallel multi-node executions with different parameters,
+while HPO workflow evaluates the best value of hyperparameters based on mlrMBO algorithm.
+
+
+== Running UPF on Theta
+
+Step 1. Checkout Supervisor repo
+----
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
+----
+
+Step 2. Move to upf workflow directory
+----
+$ cd Supervisor/workflow/upf
+----
+
+Step 3. Set Env variables. In `test/cfg-sys-1.sh`,
+you will need to set `BENCHMARK_DIR` to point the directory that your script locates, and
+`MODEL_PYTHON_SCRIPT` to name the script you want to run
+----
+BENCHMARK_DIR=directory_where_my_script_locates
+MODEL_PYTHON_SCRIPT=my_script
+----
+
+Step 4. Set execution plan. Check `test/upf-1.txt` for parameter configuration and modify as needed.
+This file contains multiple number of JSON documents. Each JSON document will contain the command line parameters.
+For example,
+----
+{"id": "test0", "epochs": 10}
+{"id": "test1", "epochs": 20}
+----
+This will invoke two instances, which will run 10 epochs and 20 epochs respectively.
+
+Step 5. Submit your job. You will need to set `QUEUE`, `PROJECT`, `PROCS`, and `WALLTIME`.
+You can configure those in `cfg-sys-1.sh` (see Step 3), set as env variables, or you can provide in your command line (see below).
+----
+$ export QUEUE=default
+$ export PROJECT=myproject
+$ export PROCS=3
+$ export WALLTIME=01:00:00
+
+$ ./test/upf-1.sh theta upf-1.txt
+
+// or 
+
+$ QUEUE=default PROJECT=myproject PROCS=3 WALLTIME=01:00:00 ./test/upf-1.sh theta upf-1.txt
+----
+
+* `QUEUE` refers to the system queue name. The Theta machine has `default`, `debug-flat-quad`, and `debug-cache-quad`. For more information, please check https://www.alcf.anl.gov/user-guides/job-scheduling-policy-xc40-systems#queues
+* `PROJECT` refers to your allocated project name. Please check https://www.alcf.anl.gov/user-guides/allocations, for more detail.
+* `PROCS` is a number of nodes. We recommend adding extra 1 node in addition to the number of executions in your plan. In this example, we set 3 (1 + 2).
+
+Step 6. Check queue status
+----
+$ qstat -h user_name -f
+----
+
+== Running mlrMBO based Hyperparameters Optimization (HPO) on Theta
+
+Step 1. Checkout Supervisor repo
+----
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
+----
+
+Step 2. Move to mlrMBO workflow directory
+----
+$ cd Supervisor/workflow/mlrMBO
+----
+
+Step 3. Set Env variables. In `test/cfg-sys-1.sh`,
+you will need to set `BENCHMARK_DIR` to point the directory that your script locates, and
+`MODEL_PYTHON_SCRIPT` to name the script you want to run
+----
+BENCHMARK_DIR=directory_where_my_script_locates
+MODEL_PYTHON_SCRIPT=my_script
+----
+
+Step 4. Config hyper parameters. In this step, we are configuring parameter sets, which we will iteratively evaluate.
+For example, you can create `workflow/data/mnist.R` as below.
+----
+param.set <- makeParamSet(
+  makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512)),
+  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
+  makeDiscreteParam("optimizer", values=c("adam", "sgd", "rmsprop")),
+  makeIntegerParam("epochs", lower=20, upper=20)
+)
+----
+In this example, we are varying four paramters, `batch_size`, `activation`, `optimizer`, `epochs`.
+Entire parameter space will be 5 x 3 x 3 x 1.
+
+After creating this file, we need to point this file.
+----
+$ export PARAM_SET_FILE=mnist.R
+----
+
+Step 5. Submit your job.
+
+----
+$ ./test/test-1.sh mnist theta
+----
+
+The first argument is MODEL_NAME. If the name is registered in `test/cfg-prm-1.sh`, it will use the pre-configured parameter file.
+Otherwise, CANDLE will use `PARAM_SET_FILE` we configured in step 4.
+
+You can specify the HPO search strategy. As you can see in `test/cfg-prm-1.sh`, you are able to config `PROPOSE_POINTS`, `MAX_CONCURRENT_EVALUATIONS`, `MAX_ITERATIONS`, `MAX_BUDGE`, `DESIGN_SIZE`.
+
+* `DESIGN_SIZE` is a number of param sets that will evaluate at the beginning of HPO search. In this example, CANDLE will select random 10 param sets out of 45 (see Step 4, for break downs).
+* `MAX_ITERATIONS` is a number of iteration.
+* `PROPOSE_POINTS` is a number of param sets that CANDLE will evaluate in each iteration. So, if `MAX_ITERATION=3` and `PROPOSE_POINTS=5`, CANDLE will ended up evaluating 25 params (3 x 5 + 10).
+* `MAX_BUDGET` should be greater than total evaluations. In this example, 45.
+

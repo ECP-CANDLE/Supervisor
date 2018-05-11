@@ -5,7 +5,7 @@
 
 export PY=/usr/lib/python2.7/
 # Modify to specify the location of SWIFT_T installation
-export SWIFT_T=$HOME/install/
+export SWIFT_T=$HOME/install/swift-t/
 export LD_LIBRARY_PATH=$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
@@ -29,8 +29,11 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 export LOCAL=1
 export CRAY=0
 
+PATH=$SWIFT_T/bin/:$PATH
 # Log settings to output
-which python swift-t
+echo "here 1"
+#which python swift-t
+echo "here 2"
 # Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH

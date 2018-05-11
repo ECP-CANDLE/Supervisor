@@ -138,6 +138,21 @@ These scripts do the following:
 
 +app+ functions specified in +workflow.swift+ invoke the Benchmarks.
 
+=== Customizing the workflow settings
+
+The development workflow for the test scripts is as follows.
+
++test-1.sh+ corresponds to +cfg-sys-1+ and +cfg-prm-1+ .  These "test 1" scripts should not be modified so that developers have a quick, short test to verify that the system works.
+
+To start a new test case, copy +test-1.sh+, for example, +test-copy.sh+.  +test-copy+ can refer to copies of +cfg-sys-1+ and +cfg-prm-1+ .  Modify the QUEUE, PROJECT, and other settings.  If the new test has value to others on the team, push the copied scripts into Git.
+
+== Extending CANDLE
+
+There are multiple ways to extend CANDLE/Supervisor, including adding new optimizers, using different NN models, etc.
+
+=== Changing the Keras model
+
+
 
 [[matrix]]
 == The Matrix
