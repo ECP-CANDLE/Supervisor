@@ -1,0 +1,63 @@
+[
+  {
+    "name": "conv",
+    "type": "constant",
+    "value": "0 0 0",
+    "comment": "def_value 128 20 1 128 10 1, debug value: 0 0 0"
+  },
+
+  {
+    "name": "feature_subsample",
+    "type": "constant",
+    "value": 500,
+    "comment": "debug: 1000 or 500, default: remove this entry"
+  },
+
+  {
+    "name": "dense",
+    "type": "constant",
+    "value": "200 20"
+  },
+
+  {
+    "name": "activation",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
+  },
+
+  {
+    "name": "optimizer",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["adam", "rmsprop"]
+  },
+
+  {
+    "name": "drop",
+    "type": "float",
+    "lower": 0.0,
+    "upper": 0.9
+  },
+
+  {
+    "name": "lr",
+    "type": "float",
+    "lower": 0.0001,
+    "upper": 0.01
+  },
+
+  {
+    "name": "batch_size",
+    "type": "categorical",
+    "element_type": "int",
+    "values": [32, 64]
+  },
+
+  {
+    "name": "epochs",
+    "type": "constant",
+    "value": 5
+  }
+
+]
