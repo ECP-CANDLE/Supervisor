@@ -31,7 +31,7 @@ import os
 bash = '/bin/bash'
 cmd = [bash,model_sh,"keras","{}".format(params), runid]
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#p = subprocess.Popen(["/bin/bash","/home/jozik/repos/Supervisor/workflows/asnyc-search/test/hello.sh"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#p = subprocess.Popen(["/bin/bash","/home/jozik/repos/Supervisor/workflows/async-search/test/hello.sh"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 print("just launched cmd: " + ":".join(cmd))
 out,err = p.communicate()
 print("out: ", out)
