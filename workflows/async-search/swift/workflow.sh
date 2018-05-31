@@ -111,7 +111,7 @@ log_script
 
 #Store scripts to provenance
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/asnyc-search/python/$PY_PACKAGE.py $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $WORKFLOWS_ROOT/async-search/python/$PY_PACKAGE.py $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
