@@ -83,7 +83,7 @@ string FRAMEWORK = "keras";
         string param_array[] = split(params, ";") => c = true;
         foreach param, j in param_array
         {
-            obj(param,"%2i_%3i_%4i" % (restart_number,i,j), ME_rank);
+          obj(param,"%00i_%000i_%0000i" % (restart_number,i,j), ME_rank);
         }
     }
   }
