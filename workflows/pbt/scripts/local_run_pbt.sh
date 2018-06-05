@@ -8,31 +8,35 @@ if [ "$#" -ne 3 ]; then
 fi
 
 PROCS=$1
-EXP_ID=$2
 
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
-ROOT="$THIS/.."
-EXP_DIR="$ROOT/experiments/$EXP_ID"
-PBT_PY="$ROOT/python/tc1_pbt.py"
+PBT_PY="$THIS/../python/tc1_pbt.py"
+source $THIS/cfg.sh $2 $3
 
-BENCHMARKS=$HOME/Documents/repos/Benchmarks
-SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
+# EXP_ID=$2
+#
+# THIS=$( cd $( dirname $0 ) ; /bin/pwd )
+# ROOT="$THIS/.."
+# EXP_DIR="$ROOT/experiments/$EXP_ID"
+# PBT_PY="$ROOT/python/tc1_pbt.py"
+#
+# BENCHMARKS=$HOME/Documents/repos/Benchmarks
+# SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
+#
+# PYTHONPATH=$BENCHMARKS/Pilot1/common
+# PYTHONPATH+=":$BENCHMARKS/common"
+# PYTHONPATH+=":$SUPERVISOR/workflows/common/python"
+# PYTHONPATH+=":$ROOT/models/tc1"
+#
+# export PYTHONPATH=$PYTHONPATH
+#
+# mkdir -p $EXP_DIR
+#
+# PARAMS_PATH=$3
+# cp $PARAMS_PATH $EXP_DIR/
+# cd $EXP_DIR
 
-PYTHONPATH=$BENCHMARKS/Pilot1/common
-PYTHONPATH+=":$BENCHMARKS/common"
-PYTHONPATH+=":$SUPERVISOR/workflows/common/python"
-PYTHONPATH+=":$ROOT/models/tc1"
-
-export PYTHONPATH=$PYTHONPATH
-
-mkdir -p $EXP_DIR
-
-PARAMS_PATH=$3
-cp $PARAMS_PATH $EXP_DIR/
-cd $EXP_DIR
-
-PARAMS_FILE=$( basename $PARAMS_PATH)
-
+PARAMS_FILE=$( basename $PARAMS_PATH )
 mpirun -n $PROCS python $PBT_PY $PARAMS_FILE $EXP_DIR tc1 $EXP_ID
 
 cd $THIS
