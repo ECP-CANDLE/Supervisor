@@ -2,8 +2,7 @@
   {
     "name": "conv",
     "type": "constant",
-    "value": "0 0 0",
-    "def_value": "128 20 1 128 10 1",
+    "value": "128 20 1 128 10 1",
     "debug_value": "0 0 0"
   },
 
@@ -32,25 +31,22 @@
     "name": "drop",
     "type": "float",
     "lower": 0.0,
-    "upper": 0.9,
-    "sigma": 0.045
+    "upper": 0.9
   },
 
   {
     "name": "lr",
     "type": "float",
     "lower": 0.00075,
-    "upper": 0.00125,
-    "sigma": 0.000025
+    "upper": 0.00125
   },
 
   {
     "name": "batch_size",
-    "type": "ordered",
+    "type": "categorical",
     "element_type": "int",
     "values": [32, 64],
-    "def_values": [32, 64, 128, 256, 512, 1024],
-    "sigma": 1
+    "def_values": [32, 64, 128, 256, 512, 1024]
   },
 
   {
