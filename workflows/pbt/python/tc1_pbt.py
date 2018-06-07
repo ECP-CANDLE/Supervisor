@@ -8,14 +8,14 @@ import pbt
 
 from keras import backend as K
 
-class ModelWorker:
+class TC1PBTWorker:
     def __init__(self, rank):
         self.rank = rank
 
-    def ready(self, pbt_client, epoch):
+    def ready(self, pbt_client, model, epoch):
         # read every n epochs, n.b. first epoch is 0
         e = epoch + 1
-        return e % 5 == 0
+        return e % 2 == 0
         # if ready:
         #     pbt_client.log("{}: ready at epoch {}".format(self.rank, epoch))
         # return ready
@@ -72,7 +72,7 @@ def truncation_select(data, score):
         return {}
 
 def init_params(params_file, comm):
-    param_factories = ga_utils.create_parameters(params_file)
+    param_factories = ga_utils.create_parameters(params_file, True)
     params = [{}]
     for i in range(comm.Get_size() - 1):
         hyper_parameter_map = {}
@@ -102,7 +102,7 @@ def run_model(comm, rank, hyper_parameter_map, args):
     sys.argv = [runner]
     pkg = importlib.import_module(runner)
     weights_dir = "{}/weights".format(exp_dir)
-    pbt_callback = pbt.PBTCallback(comm, 0, weights_dir, ModelWorker(rank))
+    pbt_callback = pbt.PBTCallback(comm, 0, weights_dir, TC1PBTWorker(rank))
     pkg.run(hyper_parameter_map, [pbt_callback])
 
 def init_dirs(outdir):

@@ -17,11 +17,6 @@ This prevents ^M from appearing in the output:
 
 This is the main home page about CANDLE Supervisor effort with links to workflows and other supporting information.
 
-== Key deadlines
-
-1. May 15: End-to-end demo of hyperparameter harness
-2. June 5-9: ANL hackathon and Theta reservation
-
 == Workflows
 
 The workflows are currently indexed in the README visible https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows[here].
@@ -40,8 +35,8 @@ Other Theta ESP notes are here: https://collab.cels.anl.gov/display/ESP
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
 +
-This uses the system-installed Python with ML libs at: +
-+/usr/common/software/python/2.7-anaconda/envs/deeplearning+
+This uses the system-installed Python with ML libs in module: +
++tensorflow/intel-head+
 
 [[titan]]
 * https://www.olcf.ornl.gov/titan[Titan]
