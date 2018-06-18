@@ -10,6 +10,7 @@ import problem_tc1 as problem
 problem_params = None
 
 class MyEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, np.integer):
             return int(obj)
@@ -101,29 +102,43 @@ def run():
     nrank = newcomm.rank
     #print("ME nrank is {}".format(nrank))
 
+    counter_threshold = 1
+    counter = 0
     while eval_counter < max_evals:
         print("\neval_counter = {}".format(eval_counter))
         data = newcomm.recv(source=MPI.ANY_SOURCE, status=status)
+        counter = counter + 1
         xstring = data['x']
         x = askedDict[xstring]
         y = data['cost']
         opt.tell(x, y)
-        source = status.Get_source()
-        tag = status.Get_tag()
+        #source = status.Get_source()
+        #tag = status.Get_tag()
+
         elapsed_time = float(time.time() - start_time)
         print('elapsed_time:%1.3f'%elapsed_time)
-        # TODO: transform data object to string
+        if elapsed_time < 5:
+            counter_threshold = 10
+        else:
+            counter_threshold = 1
+
         results.append(str(data))
         eval_counter = eval_counter + 1
         currently_out = currently_out - 1
         print("currently_out:{}, total_out:{}".format(currently_out,total_out))
-        if currently_out < num_workers + num_buffer and total_out < max_evals:
-            x = opt.ask()
+        if currently_out < num_workers + num_buffer and total_out < max_evals and counter == counter_threshold:
+            n_points = counter
+            if n_points + total_out > max_evals:
+                n_points = max_evals - total_out
+            x = opt.ask(n_points=n_points)
             res, resstring = create_list_of_json_strings(x)
-            askedDict[res[0]] = x
+            for r,xx in zip(res,x):
+                askedDict[r] = xx
+
             eqpy.OUT_put(resstring)
-            currently_out = currently_out + 1
-            total_out = total_out + 1
+            currently_out = currently_out + n_points
+            total_out = total_out + n_points
+            counter = 0
     print('Search finishing')
     eqpy.OUT_put("DONE")
     eqpy.OUT_put(";".join(results))
