@@ -48,6 +48,7 @@ def create_list_of_json_strings(list_of_lists, super_delim=";"):
 
 def run():
     start_time = time.time()
+    print('start_time:%1.3f'%start_time)
     comm = MPI.COMM_WORLD   # get MPI communicator object
     size = comm.size        # total number of processes
     rank = comm.rank        # rank of this process
