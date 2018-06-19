@@ -62,7 +62,7 @@ def write_params(params, hyper_parameter_map):
             else:
                 f_out.write("{}={}\n".format(k, v))
         f_out.write("[Monitor Params]\n")
-        for i in range(len(montr)/2):
+        for i in range(int(len(montr)/2)):
             f_out.write("{}={}\n".format(montr[2*i], montr[2*i+1]))
 
 
