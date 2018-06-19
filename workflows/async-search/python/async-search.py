@@ -104,7 +104,9 @@ def run():
 
     counter_threshold = 1
     counter = 0
+    end_iter_time = 0
     while eval_counter < max_evals:
+        start_iter_time = time.time()
         print("\neval_counter = {}".format(eval_counter))
         data = newcomm.recv(source=MPI.ANY_SOURCE, status=status)
         counter = counter + 1
@@ -117,16 +119,22 @@ def run():
 
         elapsed_time = float(time.time() - start_time)
         print('elapsed_time:%1.3f'%elapsed_time)
-        if elapsed_time < 5:
-            counter_threshold = 10
-        else:
-            counter_threshold = 1
-
         results.append(str(data))
         eval_counter = eval_counter + 1
         currently_out = currently_out - 1
+
+        if start_iter_time - end_iter_time < 5:
+            counter_threshold = 10
+            if max_evals - eval_counter < counter_threshold:
+                counter_threshold = max_evals - eval_counter
+            if counter_threshold > currently_out:
+                counter_threshold = currently_out
+        else:
+            counter_threshold = 1
+        print("counter_threshold: {}".format(counter_threshold))
+
         print("currently_out:{}, total_out:{}".format(currently_out,total_out))
-        if currently_out < num_workers + num_buffer and total_out < max_evals and counter == counter_threshold:
+        if currently_out < num_workers + num_buffer and total_out < max_evals and counter >= counter_threshold:
             n_points = counter
             if n_points + total_out > max_evals:
                 n_points = max_evals - total_out
@@ -139,6 +147,7 @@ def run():
             currently_out = currently_out + n_points
             total_out = total_out + n_points
             counter = 0
+            end_iter_time = start_iter_time
     print('Search finishing')
     eqpy.OUT_put("DONE")
     eqpy.OUT_put(";".join(results))
