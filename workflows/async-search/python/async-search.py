@@ -67,7 +67,7 @@ def run():
     eqpy.OUT_put("Params")
     # initial parameter set telling us the number of times to run the loop
     initparams = eqpy.IN_get()
-    (init_size, max_evals, num_workers, num_buffer, seed) = eval('{}'.format(initparams))
+    (init_size, max_evals, num_workers, num_buffer, seed, max_threshold) = eval('{}'.format(initparams))
 
     space = [spaceDict[key] for key in params]
     print(space)
@@ -75,6 +75,8 @@ def run():
     parDict = {}
     resultsList = []
     parDict['kappa'] = 1.96
+    # can set to num cores
+    parDict['n_jobs'] = 48
     init_x = []
 
     opt = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
@@ -82,7 +84,7 @@ def run():
 
     eval_counter = 0
     askedDict = {}
-    print("Master starting with {} init_size, {} max_evals, {} num_workers, {} num_buffer".format(init_size,max_evals,num_workers,num_buffer))
+    print("Master starting with {} init_size, {} max_evals, {} num_workers, {} num_buffer, {} max_threshold".format(init_size,max_evals,num_workers,num_buffer, max_threshold))
     x = opt.ask(n_points=init_size)
     res, resstring = create_list_of_json_strings(x)
     print("Initial design is {}".format(resstring))
@@ -104,7 +106,9 @@ def run():
 
     counter_threshold = 1
     counter = 0
+    end_iter_time = 0
     while eval_counter < max_evals:
+        start_iter_time = time.time()
         print("\neval_counter = {}".format(eval_counter))
         data = newcomm.recv(source=MPI.ANY_SOURCE, status=status)
         counter = counter + 1
@@ -117,28 +121,39 @@ def run():
 
         elapsed_time = float(time.time() - start_time)
         print('elapsed_time:%1.3f'%elapsed_time)
-        if elapsed_time < 5:
-            counter_threshold = 10
-        else:
-            counter_threshold = 1
-
         results.append(str(data))
         eval_counter = eval_counter + 1
         currently_out = currently_out - 1
+
+        if start_iter_time - end_iter_time < 16:
+            counter_threshold = max_threshold
+            if max_evals - eval_counter < counter_threshold:
+                counter_threshold = max_evals - eval_counter
+            if counter_threshold > currently_out:
+                counter_threshold = currently_out
+        else:
+            counter_threshold = 1
+        print("counter_threshold: {}".format(counter_threshold))
+
         print("currently_out:{}, total_out:{}".format(currently_out,total_out))
-        if currently_out < num_workers + num_buffer and total_out < max_evals and counter == counter_threshold:
+        if currently_out < num_workers + num_buffer and total_out < max_evals and counter >= counter_threshold:
             n_points = counter
             if n_points + total_out > max_evals:
                 n_points = max_evals - total_out
+            ts = time.time()
             x = opt.ask(n_points=n_points)
             res, resstring = create_list_of_json_strings(x)
             for r,xx in zip(res,x):
                 askedDict[r] = xx
 
             eqpy.OUT_put(resstring)
+            print('point production elapsed_time:%1.3f' % float(time.time() - ts))
             currently_out = currently_out + n_points
             total_out = total_out + n_points
             counter = 0
+
+        end_iter_time = start_iter_time
+
     print('Search finishing')
     eqpy.OUT_put("DONE")
     eqpy.OUT_put(";".join(results))

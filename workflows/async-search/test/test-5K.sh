@@ -33,8 +33,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-1.sh
-export CFG_PRM=$THIS/cfg-prm-1.sh
+export CFG_SYS=$THIS/cfg-sys-5K.sh
+export CFG_PRM=$THIS/cfg-prm-5K.sh
 
 export TURBINE_MPI_THREAD=1
 export MPICH_MAX_THREAD_SAFETY=multiple
