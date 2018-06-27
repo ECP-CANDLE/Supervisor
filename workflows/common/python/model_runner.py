@@ -18,6 +18,17 @@ def import_pkg(framework, model_name):
     if framework == 'keras':
         module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
         pkg = importlib.import_module(module_name)
+
+        from keras import backend as K
+        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+            import tensorflow as tf
+            print("Configuring tensorflow with {} inter threads and {} intra threads".
+                format(os.environ['NUM_INTER_THREADS'], os.environ['NUM_INTRA_THREADS']))
+            session_conf = tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
+                intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
+            sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+            K.set_session(sess)
+
     # elif framework is 'mxnet':
     #     import nt3_baseline_mxnet
     #     pkg = nt3_baseline_keras_baseline_mxnet

@@ -4,7 +4,7 @@ class Problem():
         space = OrderedDict()
         #problem specific parameters
         space['drop'] = (0, 0.9)
-        space['batch_size'] = [16, 32, 64, 128, 256, 512]
+        space['batch_size'] = [16, 32, 64, 128] #, 256, 512]
         #space['p3'] = [2 , 4, 8, 16, 32, 64, 128]
         #space['p4'] = ['a', 'b', 'c']
         self.space = space

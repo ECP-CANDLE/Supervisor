@@ -70,6 +70,7 @@ then
   abort "The site '$SITE' did not set the location of EQ/Py: this will not work!"
 fi
 
+
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
 RESTART_FILE_ARG=""
@@ -100,6 +101,7 @@ CMD_LINE_ARGS=( -init_size=$INIT_SIZE
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                -max_threshold=$MAX_THRESHOLD
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $PY_PACKAGE_ARG
@@ -128,7 +130,7 @@ fi
 
 #export TURBINE_LAUNCH_OPTIONS="-cc none"
 
-swift-t -n $PROCS \
+swift-t -l -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPy \
         -I $OBJ_DIR \
