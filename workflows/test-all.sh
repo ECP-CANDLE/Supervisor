@@ -39,7 +39,7 @@ do
 done
 
 # $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
-$THIS/p1b1_grid/test/test-1.sh  $SITE || true
-$THIS/p1b1_random/test/test-1.sh  $SITE || true
+$THIS/grid/test/test-1.sh  p1b1 $SITE || true
+$THIS/random/test/test-1.sh  p1b1 $SITE || true
 
 echo "test-all: SUCCESS"
