@@ -5,6 +5,8 @@
 () obj(string params, string run_id, int dest) {
   string template = """
 from __future__ import print_function
+import datetime
+
 # template args
 params = '''%s'''
 runid = "%s"
@@ -37,6 +39,7 @@ rank = newcomm.Get_rank()
 
 bash = '/bin/bash'
 cmd = [bash,model_sh,"keras","{}".format(params), runid]
+print('{} subprocess start: {}'.format(runid, str(datetime.datetime.now())))
 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 #print("just launched cmd: " + ":".join(cmd))
 out,err = p.communicate()
@@ -46,6 +49,7 @@ out,err = p.communicate()
 #print("rc: ", rc)
 
 
+print('{} subprocess end: {}'.format(runid, str(datetime.datetime.now())))
 # Collect
 result_file = outdir + "/result.txt"
 
