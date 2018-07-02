@@ -43,3 +43,5 @@ turbine-directory.txt
 *.log
 *.tsv
 *.out
+
+.vscode
