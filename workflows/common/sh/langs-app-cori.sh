@@ -22,9 +22,9 @@ module load tensorflow/intel-head
 export KMP_BLOCKTIME=1
 export KMP_SETTINGS=1
 export KMP_AFFINITY="granularity=fine,verbose,compact,1,0"
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=68
 export NUM_INTER_THREADS=1
-export NUM_INTRA_THREADS=16
+export NUM_INTRA_THREADS=68
 
 export PYTHONHOME="/usr/common/software/tensorflow/intel-tensorflow/head"
 PYTHON="$PYTHONHOME/bin/python"
