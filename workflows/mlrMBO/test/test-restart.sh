@@ -30,8 +30,7 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 #Two variables for restarting from existing results, will be removed with more development for automatic setup
-export RESTART_FILE=$EMEWS_PROJECT_ROOT/test/restart-combo.csv
-export RESTART_NUMBER=2
+export OBJ_RETURN="val_loss"
 
 
 # Select configurations
@@ -46,7 +45,7 @@ export OBJ_PARAM="val_loss"
 
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
 # Wait for job
 queue_wait

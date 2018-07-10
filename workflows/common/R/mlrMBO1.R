@@ -85,7 +85,7 @@
     # TODO: Make this an argument
     restartFile<-restart.file 
     if (file.exists(restart.file)) {
-      print(paste("Loading restart:", restart.file))
+      print(paste("Loading restart1:", restart.file))
 
       nk<-100
       dummydf<-generateDesign(n = nk, par.set = getParamSet(obj.fun))
@@ -96,15 +96,20 @@
       res<-read.csv(restart.file)
       cnames<-names(res)
       names(res)<-cnames
-      # print(names(res))
-      # print(names(dummydf))
+
+      print(names(res))
+      print(names(dummydf))
       #Check if names are different, print difference and quit
+      print ("before subset read the file - later error")
 
       res<-subset(res, select=names(dummydf))
+      print ("read the file - later error")
+
       res<-rbind(dummydf,res)
       res<-res[-c(1:nk),] # remove the dummy
       rownames(res)<-NULL
       chkpntResults<-res
+
     } else if (restart.file == "DISABLED") {
       print("Not a restart.")
     } else {
