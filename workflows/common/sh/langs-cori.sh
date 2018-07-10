@@ -5,7 +5,7 @@
 # Assumes modules are loaded (cf. modules-cori.sh)
 
 # Swift/T
-SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-02-04
+SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-06-05
 export PATH=$SWIFT/stc/bin:$PATH
 # On Cori, we have a good Swift/T Python embedded interpreter,
 # but we use app anyway
@@ -39,6 +39,6 @@ LD_LIBRARY_PATH+=$R_HOME/lib
 # Log settings to output
 which python swift-t
 # Cf. utils.sh
-show     PYTHONHOME
-log_path LD_LIBRARY_PATH
-log_path PYTHONPATH
+# show     PYTHONHOME
+# log_path LD_LIBRARY_PATH
+# log_path PYTHONPATH
