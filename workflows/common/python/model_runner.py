@@ -11,7 +11,7 @@ import numpy as np
 import importlib
 import runner_utils
 import log_tools
-
+import math
 logger = None
 
 def import_pkg(framework, model_name):
@@ -81,8 +81,21 @@ def run(hyper_parameter_map, obj_return):
     if history != None:
         # Return the history entry that the user requested.
         val_loss = history.history[obj_return]
-        result = val_loss[-1]
-    print("result: " + str(result))
+        # Return a large number for nan and flip sign for val_corr
+        if(obj_return == "val_loss"):
+            if(math.isnan(val_loss[-1])):
+                result = 999999999
+            else:
+                result = val_loss[-1]
+        elif(obj_return == "val_corr"):
+            if(math.isnan(val_loss[-1])):
+                result = 999999999
+            else:
+                result = -val_loss[-1] #Note negative sign
+        else:
+            raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+
+        print("result: " + str(result))
     return result
 
 def get_obj_return():
