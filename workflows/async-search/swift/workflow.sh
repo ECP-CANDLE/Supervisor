@@ -102,6 +102,7 @@ CMD_LINE_ARGS=( -init_size=$INIT_SIZE
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 -max_threshold=$MAX_THRESHOLD
+                -n_jobs=$N_JOBS
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $PY_PACKAGE_ARG

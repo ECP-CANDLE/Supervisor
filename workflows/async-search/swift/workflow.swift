@@ -98,7 +98,7 @@ string FRAMEWORK = "keras";
     // algo_params is the string of parameters used to initialize the
     // Python algorithm. We pass these as Python code: a comma separated string
     // of variable=value assignments.
-    string algo_params = "%d,%d,%d,%d,%d,%d" % (init_size, max_evals, num_regular_workers, num_buffer, random_seed,
+    string algo_params = "%d,%d,%d,%d,%d,%d,%d" % (init_size, max_evals, num_regular_workers, num_buffer, random_seed,
       max_threshold, n_jobs);
     string algorithm = py_package;
     EQPy_init_package(ME, algorithm) =>
