@@ -11,13 +11,23 @@ import numpy as np
 import importlib
 import runner_utils
 import log_tools
-
+import math
 logger = None
 
 def import_pkg(framework, model_name):
     if framework == 'keras':
         module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
         pkg = importlib.import_module(module_name)
+
+        from keras import backend as K
+        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+            import tensorflow as tf
+            print("Configuring tensorflow with {} inter threads and {} intra threads".
+                format(os.environ['NUM_INTER_THREADS'], os.environ['NUM_INTRA_THREADS']))
+            session_conf = tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
+                intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
+            sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+            K.set_session(sess)
     # elif framework is 'mxnet':
     #     import nt3_baseline_mxnet
     #     pkg = nt3_baseline_keras_baseline_mxnet
@@ -71,8 +81,21 @@ def run(hyper_parameter_map, obj_return):
     if history != None:
         # Return the history entry that the user requested.
         val_loss = history.history[obj_return]
-        result = val_loss[-1]
-    print("result: " + str(result))
+        # Return a large number for nan and flip sign for val_corr
+        if(obj_return == "val_loss"):
+            if(math.isnan(val_loss[-1])):
+                result = 999999999
+            else:
+                result = val_loss[-1]
+        elif(obj_return == "val_corr"):
+            if(math.isnan(val_loss[-1])):
+                result = 999999999
+            else:
+                result = -val_loss[-1] #Note negative sign
+        else:
+            raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+
+        print("result: " + str(result))
     return result
 
 def get_obj_return():
