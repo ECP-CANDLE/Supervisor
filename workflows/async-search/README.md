@@ -76,7 +76,7 @@ The point of the script structure is that it is easy to make copy and modify the
 
 `test-1.sh` and `cfg-{sys,prm}-1.sh` should be unmodified for simple testing.
 
-The relevant parameters for the asynchronous search algorithm are defined in `cfg-\*.sh` scripts (see example in cfg-prm-1.sh). These are:
+The relevant parameters for the asynchronous search algorithm are defined in `cfg-\*.sh` scripts (see example in `cfg-prm-1.sh`). These are:
 - INIT_SIZE: The number of initial random samples. (Note: INIT_SIZE needs to be larger than PROCS-2 for now.)
 - MAX_EVALS: The maximum number of evaluations/tasks to perform.
 - NUM_BUFFER: The size of the tasks buffer that should be maintained above the available workers (num_workers) such that if the currently out tasks are less than (num workers + NUM_BUFFER), more tasks are generated.
