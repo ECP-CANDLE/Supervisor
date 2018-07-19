@@ -24,10 +24,11 @@ PYTHONPATH+=$COMMON_DIR
 export PYTHONHOME=$PYTHON
 
 # R
-export R_HOME=/global/u1/w/wozniak/Public/sfw/R-3.4.0/lib64/R
+export R_HOME=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R
 
 # EMEWS Queues for R
 EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
