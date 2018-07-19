@@ -74,7 +74,15 @@ copy existing ones but modify the langs-SITE.sh file to define the EQPy location
 
 The point of the script structure is that it is easy to make copy and modify the `test-\*.sh` script, and the `cfg-\*.sh` scripts.  These can be checked back into the repo for use by others.  The `test-\*.sh` script and the `cfg-\*.sh` scripts should simply contain environment variables that control how `workflow.sh` and `workflow.swift` operate.
 
-`test-1` and `cfg-{sys,prm}-1` should be unmodified for simple testing.
+`test-1.sh` and `cfg-{sys,prm}-1.sh` should be unmodified for simple testing.
+
+The relevant parameters for the asynchronous search algorithm are defined in `cfg-\*.sh` scripts (see example in cfg-prm-1.sh).
+These are:
+INIT_SIZE: The number of initial random samples. (Note: INIT_SIZE needs to be larger than PROCS-2 for now.)
+MAX_EVALS: The maximum number of evaluations/tasks to perform.
+NUM_BUFFER: The size of the tasks buffer that should be maintained above the available workers (num_workers) such that if the currently out tasks are less than (num workers + NUM_BUFFER), more tasks are generated.
+MAX_THRESHOLD:
+N_JOBS: 
 
 ### Where to check for output ###
 
