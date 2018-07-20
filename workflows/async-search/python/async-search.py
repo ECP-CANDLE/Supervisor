@@ -126,6 +126,8 @@ def run():
         eval_counter = eval_counter + 1
         currently_out = currently_out - 1
 
+        # if jobs are finishing within 16 seconds of
+        # each other, then batch the point production
         if start_iter_time - end_iter_time < 16:
             counter_threshold = max_threshold
             if max_evals - eval_counter < counter_threshold:
