@@ -32,11 +32,7 @@ class ThreadRunner(threading.Thread):
     def __init__(self, runnable):
         threading.Thread.__init__(self)
         self.runnable = runnable
-<<<<<<< HEAD
         self.exc = "Exited normally"
-=======
-        self.exc = None
->>>>>>> seach_ga_v2
 
     def run(self):
         try:
