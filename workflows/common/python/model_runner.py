@@ -131,7 +131,7 @@ if __name__ == '__main__':
         raise Exception("No MODEL_NAME was in the environment!")
     hyper_parameter_map['experiment_id'] = os.getenv("EXPID")
     hyper_parameter_map['run_id']  = runid
-    hyper_parameter_map['timeout'] = benchmark_timeout
+    hyper_parameter_map['timeout'] = float(benchmark_timeout)
 
     # tensorflow.__init__ calls _os.path.basename(_sys.argv[0])
     # so we need to create a synthetic argv.
