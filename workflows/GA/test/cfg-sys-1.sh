@@ -1,4 +1,4 @@
-# 
+#
 # COMBO CFG SYS 1
 
 # The number of MPI processes
@@ -34,7 +34,11 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=0
 
-# for running locally
-export PYTHONHOME=$HOME/anaconda3
-export PYTHON=python3.6
-export SWIFT_T=$HOME/sfw/swift-t-4c8f0afd
+# if the deap python package is not installed with swift-t's embedded python
+# it may be ncessary to include its location in the PYTHONPATH
+export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+
+# for running locally, edit as necessary
+# export PYTHONHOME=$HOME/anaconda3
+# export PYTHON=python3.6
+# export SWIFT_T=$HOME/sfw/swift-t-4c8f0afd
