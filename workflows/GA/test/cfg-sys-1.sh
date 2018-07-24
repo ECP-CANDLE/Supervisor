@@ -10,7 +10,7 @@ export PROCS=${PROCS:-4}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-export WALLTIME=${WALLTIME:-03:30:00}
+export WALLTIME=${WALLTIME:-01:00:00}
 
 #export PROJECT=Candle_ECP
 
@@ -36,7 +36,7 @@ export IGNORE_ERRORS=0
 
 # if the deap python package is not installed with swift-t's embedded python
 # it may be ncessary to include its location in the PYTHONPATH
-export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+# export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 
 # for running locally, edit as necessary
 # export PYTHONHOME=$HOME/anaconda3
