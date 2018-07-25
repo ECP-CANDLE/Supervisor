@@ -19,6 +19,7 @@ export PATH=/lustre/atlas2/csc249/proj-shared/sfw/swift-t/stc/bin:$PATH
 
 # EMEWS Queues for R
 EQR=/lustre/atlas2/csc249/proj-shared/sfw/EQ-R
+EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
 LOCAL=0
