@@ -22,7 +22,8 @@ class Task:
             output = get_output()
             log = output + ("/%04i.txt" % self.number)
             self.fd = open(log, "w")
-            self.process = subprocess.Popen(args=[script, str(self.parallelism), self.params],
+            args = [script, str(self.parallelism), self.params],
+            self.process = subprocess.Popen(args=args,
                                             stdin=None,
                                             stdout=self.fd,
                                             stderr=subprocess.STDOUT)
