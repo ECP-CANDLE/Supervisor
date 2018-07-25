@@ -1,0 +1,164 @@
+[
+  {
+    "name": "model",
+    "type": "constant",
+    "value": "ae"
+  },
+
+  {
+    "name": "latent_dim",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [2, 8, 32, 128, 512],
+    "sigma": 1
+  },
+
+  {
+    "name": "use_landmark_genes",
+    "type": "constant",
+    "value": 1
+  },
+
+  {
+    "name": "batch_size",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [16, 32, 64, 128, 256, 512],
+    "sigma": 1
+  },
+
+  {
+    "name": "dense",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["1500 500",
+                "978 978",
+                "978 978 978",
+                "978 978 978 978",
+                "978 978 978 978 978",
+                "978 978 978 978 978 978"]
+  },
+
+  {
+    "name": "residual",
+    "type": "logical"
+  },
+
+  {
+    "name": "activation",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["relu", "sigmoid", "tanh"]
+  },
+
+  {
+    "name": "optimizer",
+    "type": "categorical",
+    "element_type": "string",
+    "values": ["adam", "sgd", "rmsprop"]
+  },
+
+  {
+    "name": "learning_rate",
+    "type": "float",
+    "lower": 0.00001,
+    "upper": 0.1,
+    "sigma": 0.0049995
+  },
+
+  {
+    "name": "reduce_lr",
+    "type": "logical"
+  },
+
+  {
+    "name": "warmup_lr",
+    "type": "logical"
+  },
+
+  {
+    "name": "drop",
+    "type": "float",
+    "lower": 0.0,
+    "upper": 0.9,
+    "sigma": 0.045
+  },
+
+  {
+    "name": "epochs",
+    "type": "int",
+    "lower": 100,
+    "upper": 500,
+    "sigma": 20
+  },
+
+  {
+    "name": "clipnorm",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.499995
+  },
+
+  {
+    "name": "clipvalue",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.499995
+  },
+
+  {
+    "name": "decay",
+    "type": "float",
+    "lower": 0,
+    "upper": 1e01,
+    "sigma": 0.5
+  },
+
+
+  {
+    "name": "epsilon",
+    "type": "ordered",
+    "element_type": "float",
+    "values": [1e-6, 1e-8, 1e-10, 1e-12, 1e-14],
+    "sigma": 1
+  },
+
+  {
+    "name": "rho",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.499995
+  },
+
+  {
+    "name": "momentum",
+    "type": "float",
+    "lower": 0,
+    "upper": 1e01,
+    "sigma": 0.5
+  },
+
+  {
+    "name": "nesterov",
+    "type": "logical"
+  },
+
+  {
+    "name": "beta_1",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.499995
+  },
+
+  {
+    "name": "beta_2",
+    "type": "float",
+    "lower": 1e-04,
+    "upper": 1e01,
+    "sigma": 0.499995
+  }
+]

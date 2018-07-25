@@ -5,8 +5,8 @@
 
 export PY=/usr/lib/python2.7/
 # Modify to specify the location of SWIFT_T installation
-export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
-export LD_LIBRARY_PATH+=$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
+export SWIFT_T=$HOME/install/swift-t/
+export LD_LIBRARY_PATH=$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
@@ -16,7 +16,10 @@ export PATH=$SWIFT_T/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
-EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+#EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+# EMEWS Queues for Py
+EQPy=$EMEWS_PROJECT_ROOT/ext/EQ-Py
+
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
@@ -30,6 +33,10 @@ export LOCAL=1
 export CRAY=0
 
 PATH=$SWIFT_T/bin/:$PATH
-# Cf. utils.s
+# Log settings to output
+echo "here 1"
+#which python swift-t
+echo "here 2"
+# Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
