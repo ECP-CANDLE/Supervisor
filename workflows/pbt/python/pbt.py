@@ -580,6 +580,7 @@ class PBTCallback(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs):
         metrics = {'epoch': epoch, 'rank': self.client.rank, 'duration' : time.time() - self.epoch_start}
+        print("Rank: {}, Epoch: {}".format(self.client.rank, epoch))
         metrics.update(logs)
         data = self.pbt_worker.pack_data(self.client, self.model, metrics)
         self.client.put(data, self.model)
