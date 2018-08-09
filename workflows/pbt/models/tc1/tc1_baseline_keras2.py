@@ -29,6 +29,8 @@ sys.path.append(lib_path2)
 import data_utils
 import p1_common
 
+from solr_keras import CandleRemoteMonitor
+
 #EPOCH = 400
 #BATCH = 20
 #CLASSES = 2
@@ -258,7 +260,9 @@ def run(gParameters, callbacks):
     # csv_logger = CSVLogger('{}/training.log'.format(output_dir))
     # reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=1, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
 
+    candleRemoteMonitor = CandleRemoteMonitor(params=gParameters)
     #callbacks.append(reduce_lr)
+    callbacks.append(candleRemoteMonitor)
     history = model.fit(X_train, Y_train,
                     batch_size=gParameters['batch_size'],
                     epochs=gParameters['epochs'],
