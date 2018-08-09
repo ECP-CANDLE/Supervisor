@@ -62,7 +62,7 @@ def truncation_select(data, score):
     items = sorted(data, key=lambda item: item['score'])
     size = len(items)
     quintile = int(round(size / 5.0))
-    if score >= items[-quintile]['score']:
+    if quintile > 1 and score >= items[-quintile]['score']:
         # in bottom 20%, so select from top 20%
         idx = random.randint(0, quintile - 1)
         #print("Returning: {}".format(items[idx]))
