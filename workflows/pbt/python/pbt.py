@@ -470,7 +470,7 @@ class PBTMetaDataStore:
         self.logs.append("PBT End: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', t)))
         self.logs.append("Duration: {}".format(time.time() - start_time))
         self.done()
-        
+
         print("Done")
         
 
@@ -543,6 +543,7 @@ class PBTWorker:
         """
         pass
 
+import traceback
 
 
 class PBTCallback(keras.callbacks.Callback):
@@ -585,11 +586,12 @@ class PBTCallback(keras.callbacks.Callback):
         pass
 
     def on_epoch_begin(self, epoch, logs):
+        #print("Rank: {}, Epoch: {} start".format(self.client.rank, epoch))
         self.epoch_start = time.time()
 
     def on_epoch_end(self, epoch, logs):
         metrics = {'epoch': epoch, 'rank': self.client.rank, 'duration' : time.time() - self.epoch_start}
-        #print("Rank: {}, Epoch: {}".format(self.client.rank, epoch))
+        #print("Rank: {}, Epoch: {} end".format(self.client.rank, epoch))
         metrics.update(logs)
         data = self.pbt_worker.pack_data(self.client, self.model, metrics)
         self.client.put(data, self.model)
@@ -598,14 +600,15 @@ class PBTCallback(keras.callbacks.Callback):
         if self.pbt_worker.ready(self.client, self.model, epoch):
             result = self.client.get_data(data['score'])
             if len(result):
-                print("\n{},{} is ready - updating".format(epoch, self.client.rank))
+                print("{},{} is ready - updating".format(epoch, self.client.rank))
                 rank_to_read = result['rank']
                 self.pbt_worker.update(epoch, self.client, self.model, result)
-                print("\n{},{} updated".format(epoch, self.client.rank))
+                print("{},{} updated".format(epoch, self.client.rank))
                 #print("{} loading weights from {}".format(self.client.rank, rank))
                 self.client.load_weights(self.model, result, rank_to_read)
             else:
-                print("\n{},{} is ready - no update".format(epoch, self.client.rank))
+                print("{},{} is ready - no update".format(epoch, self.client.rank))
+    
 
     def on_train_end(self, logs={}):
         self.client.done()
