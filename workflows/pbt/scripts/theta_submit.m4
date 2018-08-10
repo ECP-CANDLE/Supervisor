@@ -3,14 +3,9 @@ ifelse(getenv_nospace(PROJECT), `',,#COBALT -A getenv_nospace(PROJECT)
 )ifelse(getenv_nospace(QUEUE), `',,#COBALT -q getenv(QUEUE)
 )#COBALT -n getenv(NODES)
 #COBALT -t getenv(WALLTIME)
-#COBALT -o output.txt
-#COBALT -e output.txt
+#COBALT -j oe
+#COBALT -o getenv_nospace(EXP_DIR)/output.txt
 #COBALT --cwd getenv(EXP_DIR)
-
-PP="$BENCHMARKS/Pilot1/common"
-PP+=":$BENCHMARKS/common"
-PP+=":$SUPERVISOR/workflows/common/python"
-PP+=":$ROOT/models/tc1"
 
 export PYTHONPATH=$PP:$PYTHONPATH
 export PATH=$PYTHONPATH:$PATH

@@ -36,7 +36,7 @@ export NODES=$(( PROCS/PPN ))
 (( PROCS % PPN )) && (( NODES++ )) || true
 declare NODES
 
-SH=$EXP_DIR/run.pbs
+SH=$EXP_DIR/script.sh
 m4 common.m4 "$SITE"_submit.m4 > ${SH}
 chmod u+x ${SH}
 cp -p $PARAMS_FILE $EXP_DIR
