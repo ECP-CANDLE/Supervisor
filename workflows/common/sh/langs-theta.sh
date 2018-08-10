@@ -26,6 +26,7 @@ export PATH=$SWIFT/stc/bin:$TCL/bin:$PY/bin:$PATH
 # EMEWS Queues for R
 EQR=/home/wozniak/Public/sfw/theta/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
+PYTHONPATH=$EQPy:$PYTHONPATH
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
