@@ -23,4 +23,4 @@ echo "STARTING PYTHON PBT: $PBT_PY"
 echo "PYTHON: $( which python )"
 echo "PYTHONPATH: $PYTHONPATH"
 
-aprun -n getenv(NODES) -N getenv(PPN) python $PBT_PY $PARAMS_FILE $EXP_DIR tc1 $EXP_ID
+aprun -n getenv(PROCS) -N getenv(PPN) python $PBT_PY $PARAMS_FILE $EXP_DIR tc1 $EXP_ID
