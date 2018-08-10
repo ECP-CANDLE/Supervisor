@@ -13,7 +13,7 @@ export PPN=${PPN:-1}
 # For Theta:
 # export QUEUE=${QUEUE:-debug}
 
-export WALLTIME=${WALLTIME:-08:00:00}
+export WALLTIME=${WALLTIME:-06:00:00}
 
 PYTHONPATH+=:$HOME/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 export PYTHONPATH
