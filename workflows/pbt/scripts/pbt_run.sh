@@ -17,7 +17,7 @@ export ROOT="$THIS/.."
 # get output directory, nodes, etc.
 source $SITE.cfg
 
-export EXP_DIR=${EXP_DIR:-"$ROOT/experiments/$EXP_ID"}
+export EXP_DIR=${EXP_DIR:-$ROOT/experiments/$EXP_ID}
 export PBT_PY="$ROOT/python/tc1_pbt.py"
 
 export SUPERVISOR=$( cd "$PWD/../../.."  ; /bin/pwd )
