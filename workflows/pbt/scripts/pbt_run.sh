@@ -48,5 +48,6 @@ echo "EXPERIMENT DIRECTORY: $EXP_DIR"
 
 source "$SITE"_submit.cfg
 
+#echo $CMD
 $CMD
 
