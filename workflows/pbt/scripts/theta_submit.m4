@@ -3,8 +3,8 @@ ifelse(getenv_nospace(PROJECT), `',,#COBALT -A getenv_nospace(PROJECT)
 )ifelse(getenv_nospace(QUEUE), `',,#COBALT -q getenv(QUEUE)
 )#COBALT -n getenv(NODES)
 #COBALT -t getenv(WALLTIME)
-#COBALT -j oe
 #COBALT -o getenv_nospace(EXP_DIR)/output.txt
+#COBALT -e getenv_nospace(EXP_DIR)/output.txt          
 #COBALT --cwd getenv(EXP_DIR)
 
 export PYTHONPATH=$PP:$PYTHONPATH
