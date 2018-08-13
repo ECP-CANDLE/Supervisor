@@ -30,7 +30,7 @@ PP+=":$SUPERVISOR/workflows/common/python"
 PP+=":$ROOT/models/tc1"
 export PP=$PP
 
-mkdir -p $EXP_DIR/weights
+mkdir -p "$EXP_DIR/weights"
 
 export NODES=$(( PROCS/PPN ))
 (( PROCS % PPN )) && (( NODES++ )) || true
