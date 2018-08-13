@@ -419,6 +419,7 @@ class PBTMetaDataStore:
         t = time.localtime()
         start_time = time.time()
         self.logs.append("PBT Start: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', t)))
+        self.write_logs()
         
         status = MPI.Status()
         live_ranks = self.comm.Get_size() - 1
@@ -459,7 +460,7 @@ class PBTMetaDataStore:
             elif msg_type == MsgType.LOG:
                 log = msg['log']
                 self.logs.append(log)
-                if len(self.logs) > 100:
+                if len(self.logs) > 20:
                     self.write_logs()
 
             elif msg_type == MsgType.DONE:
@@ -586,7 +587,10 @@ class PBTCallback(keras.callbacks.Callback):
         pass
 
     def on_epoch_begin(self, epoch, logs):
-        #print("Rank: {}, Epoch: {} start".format(self.client.rank, epoch))
+        if self.client.rank < 500:
+            t = time.localtime()
+            self.client.log("Client {} Epoch {} Start: {}".format(self.client.rank, epoch, time.strftime('%Y-%m-%d %H:%M:%S', t)))
+       
         self.epoch_start = time.time()
 
     def on_epoch_end(self, epoch, logs):
@@ -606,8 +610,8 @@ class PBTCallback(keras.callbacks.Callback):
                 print("{},{} updated".format(epoch, self.client.rank))
                 #print("{} loading weights from {}".format(self.client.rank, rank))
                 self.client.load_weights(self.model, result, rank_to_read)
-            else:
-                print("{},{} is ready - no update".format(epoch, self.client.rank))
+            #else:
+              #  print("{},{} is ready - no update".format(epoch, self.client.rank))
     
 
     def on_train_end(self, logs={}):

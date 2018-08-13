@@ -1,5 +1,5 @@
 import sys
-import importlib
+import importlib, time
 from mpi4py import MPI
 import os, random, math
 
@@ -106,6 +106,10 @@ def run_model(comm, rank, hyper_parameter_map, args):
     pkg = importlib.import_module(runner)
     weights_dir = "{}/weights".format(exp_dir)
     pbt_callback = pbt.PBTCallback(comm, 0, weights_dir, TC1PBTWorker(rank))
+    if rank < 500:
+        t = time.localtime()
+        pbt_callback.client.log("Client {} Start: {}".format(rank, time.strftime('%Y-%m-%d %H:%M:%S', t)))
+
     pkg.run(hyper_parameter_map, [pbt_callback])
 
 def init_dirs(outdir):
