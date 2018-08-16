@@ -53,7 +53,6 @@ $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NA
 # Wait for job
 queue_wait
 
-cp $0 $TURBINE_OUTPUT
 # Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )

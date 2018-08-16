@@ -58,7 +58,7 @@ echo "Running "$MODEL_NAME "workflow"
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 # Adding the project specific python directory to PYTHONPATH
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/../common/ext/EQ-Py
 
 source_site modules $SITE
 source_site langs   $SITE
