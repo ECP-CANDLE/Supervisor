@@ -5,9 +5,7 @@
 
 export PY=/homes/jain/anaconda3/
 # Modify to specify the location of SWIFT_T installation
-#export SWIFT_T=/homes/jain/swift-t-install/
-#export LD_LIBRARY_PATH=/homes/jain/R-3.4.3/lib/R/lib:$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
-export LD_LIBRARY_PATH=/homes/jain/install/swift-t/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R:/homes/jain/install/swift-t/lib
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
@@ -33,9 +31,6 @@ export CRAY=0
 
 PATH=/homes/jain/install/swift-t/bin/:$PATH
 # Log settings to output
-echo "here 1"
-#which python swift-t
-echo "here 2"
 # Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
