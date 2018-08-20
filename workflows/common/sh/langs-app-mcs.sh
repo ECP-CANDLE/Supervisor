@@ -1,0 +1,9 @@
+export PYTHONHOME="/homes/jain/anaconda3"
+PYTHON="$PYTHONHOME/bin/"
+export LD_LIBRARY_PATH="$PYTHONHOME/lib"
+export PATH="$PYTHONHOME/bin:$PATH"
+
+COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
+PYTHONPATH+=":$PYTHONHOME/lib/:"
+PYTHONPATH+=":$COMMON_DIR:"
+export PYTHONPATH
