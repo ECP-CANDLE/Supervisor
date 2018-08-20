@@ -587,9 +587,9 @@ class PBTCallback(keras.callbacks.Callback):
         pass
 
     def on_epoch_begin(self, epoch, logs):
-        if self.client.rank < 500:
-            t = time.localtime()
-            self.client.log("Client {} Epoch {} Start: {}".format(self.client.rank, epoch, time.strftime('%Y-%m-%d %H:%M:%S', t)))
+        
+        t = time.localtime()
+        self.client.log("Client {} Epoch {} Start: {}".format(self.client.rank, epoch, time.strftime('%Y-%m-%d %H:%M:%S', t)))
        
         self.epoch_start = time.time()
 
@@ -615,4 +615,6 @@ class PBTCallback(keras.callbacks.Callback):
     
 
     def on_train_end(self, logs={}):
+        t = time.localtime()
+        self.client.log("Client {} End: {}".format(self.client.rank, time.strftime('%Y-%m-%d %H:%M:%S', t)))
         self.client.done()
