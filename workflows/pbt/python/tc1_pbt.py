@@ -8,6 +8,7 @@ import pbt
 
 from keras import backend as K
 
+
 class TC1PBTWorker:
     def __init__(self, rank):
         self.rank = rank
@@ -86,7 +87,6 @@ def init_params(params_file, comm):
     return params
 
 def run_model(comm, rank, hyper_parameter_map, args):
-
     exp_dir = args[2]
     instance_dir = "{}/run_{}/".format(exp_dir, rank)
     if not os.path.exists(instance_dir):
@@ -109,7 +109,7 @@ def run_model(comm, rank, hyper_parameter_map, args):
 
     t = time.localtime()
     pbt_callback.client.log("Client {} Start: {}".format(rank, time.strftime('%Y-%m-%d %H:%M:%S', t)))
-    
+
     pkg.run(hyper_parameter_map, [pbt_callback])
 
 

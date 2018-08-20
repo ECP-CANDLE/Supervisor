@@ -29,7 +29,7 @@ sys.path.append(lib_path2)
 import data_utils
 import p1_common
 
-from solr_keras import CandleRemoteMonitor
+from solr_keras import CandleRemoteMonitor, TerminateOnTimeOut
 
 #EPOCH = 400
 #BATCH = 20
@@ -84,6 +84,7 @@ def read_config_file(file):
     fileParams['pool']=eval(config.get(section[0],'pool'))
     fileParams['save']=eval(config.get(section[0], 'save'))
     fileParams['lr']=eval(config.get(section[0], 'lr'))
+    fileParams['timeout']=eval(config.get(section[0], 'timeout'))
 
     return fileParams
 
@@ -262,7 +263,10 @@ def run(gParameters, callbacks):
 
     candleRemoteMonitor = CandleRemoteMonitor(params=gParameters)
     #callbacks.append(reduce_lr)
+    timeout = 3600
+    timeoutMonitor = TerminateOnTimeOut(timeout)
     callbacks.append(candleRemoteMonitor)
+    callbacks.append(timeoutMonitor)
     history = model.fit(X_train, Y_train,
                     batch_size=gParameters['batch_size'],
                     epochs=gParameters['epochs'],
