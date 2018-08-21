@@ -263,10 +263,10 @@ def run(gParameters, callbacks):
 
     candleRemoteMonitor = CandleRemoteMonitor(params=gParameters)
     #callbacks.append(reduce_lr)
-    timeout = 3600
-    timeoutMonitor = TerminateOnTimeOut(timeout)
+    #timeout = 3600
+    #timeoutMonitor = TerminateOnTimeOut(timeout)
     callbacks.append(candleRemoteMonitor)
-    callbacks.append(timeoutMonitor)
+    #callbacks.append(timeoutMonitor)
     history = model.fit(X_train, Y_train,
                     batch_size=gParameters['batch_size'],
                     epochs=gParameters['epochs'],
