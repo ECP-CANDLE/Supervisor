@@ -19,6 +19,7 @@ PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
 PYTHONPATH+=$BENCHMARK_DIR:
 PYTHONPATH+=$BENCHMARKS_ROOT/common:
 PYTHONPATH+=$SWIFT/turbine/py:
+PYTHONPATH+=/global/project/projectdirs/m2924/shared/deeplearning2.7/lib/python2.7/site-packages:
 COMMON_DIR=$WORKFLOWS_ROOT/common/python
 PYTHONPATH+=$COMMON_DIR
 export PYTHONHOME=$PYTHON
