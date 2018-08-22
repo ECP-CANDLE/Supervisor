@@ -4,7 +4,7 @@ import time
 import json
 import numpy as np
 from skopt import Optimizer
-import problem_tc1 as problem
+import as_problem as problem
 import datetime
 
 # list of ga_utils parameter objects
