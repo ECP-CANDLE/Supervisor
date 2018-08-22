@@ -3,15 +3,18 @@
 # Language settings for any local machine like Ubuntu
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 
-export PY=/homes/jain/anaconda3/
+export PY=/homes/jain/anaconda3/bin/python/
+export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
 # Modify to specify the location of SWIFT_T installation
-export LD_LIBRARY_PATH=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/lib:/homes/jain/install/swift-t/lib
+export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
+export LD_LIBRARY_PATH+=:$R/lib:$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
-export PATH=/homes/jain/install/swift-t/bin:$PATH
+export PATH=$SWIFT_T/turbine/bin:$SWIFT_T/stc/bin:$PATH
+echo $PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
@@ -23,14 +26,11 @@ export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
-# LD_LIBRARY_PATH+=$R_HOME/lib
 
 # For test output processing:
 export LOCAL=1
 export CRAY=0
 
-PATH=/homes/jain/install/swift-t/bin/:$PATH
-# Log settings to output
-# Cf. utils.sh
+# Cf. utils.s
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
