@@ -6,7 +6,7 @@
 export PY=/homes/jain/anaconda3/bin/python/
 export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
 # Modify to specify the location of SWIFT_T installation
-export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
+export SWIFT_T=${SWIFT_T:-/homes/jain/install/swift-t/}
 export LD_LIBRARY_PATH+=:$R/lib:$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
