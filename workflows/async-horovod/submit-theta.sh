@@ -5,11 +5,12 @@ set -eu
 # Runs main.sh on Theta
 # Use 'submit-theta.sh -h' for help
 
-THIS=$( dirname $0 )
+THIS=$( readlink --canonicalize-existing $( dirname $0 ) )
 
 usage()
 {
-  echo "usage: submit-theta [-q QUEUE] [-w WALLTIME] NODES <MAIN ARGS>"
+  echo "usage: submit-theta [-q QUEUE] [-w WALLTIME] NODES OUTPUT <MAIN ARGS>"
+  echo "       OUTPUT is appended to MAIN ARGS"
   echo "main.py args are:"
   $THIS/main.sh -h
 }
@@ -17,13 +18,15 @@ usage()
 # Defaults:
 QUEUE="default"
 WALLTIME=00:02:00
+WAIT=0
 
-while getopts "hq:w:" OPTION
+while getopts "hq:w:W" OPTION
 do
   case $OPTION in
     h) usage ; exit 0 ;;
     q) QUEUE=$OPTARG ;;
     w) WALLTIME=$OPTARG ;;
+    W) WAIT=1 ;;
     *) exit 1 ;;
   esac
 done
@@ -37,29 +40,72 @@ then
 fi
 
 NODES=$1
-shift
+OUTPUT=$2
+shift 2
+# Remaining arguments are passed through to Python via MAIN_ARGS
 
-TIMESTAMP=$( date "+%Y-%m-%d_%H:%M:%S" )
-OUTPUT=output/$TIMESTAMP
-LOG=output/$TIMESTAMP.txt
+# Handle relative path in user input:
+OUTPUT=$( readlink --canonicalize-missing $OUTPUT )
+# Construct arguments passed to Python:
+MAIN_ARGS=( $* $OUTPUT )
+
+# Set up output:
 mkdir -p $OUTPUT
-echo OUTPUT=$OUTPUT
+cd $OUTPUT
+MAIN_OUT=$OUTPUT/main.txt
+COBALT_OUT=$OUTPUT/cobalt.log
 
-echo TIMESTAMP=$TIMESTAMP > $LOG
+PROJECT=CSC249ADOA01
+BENCHMARKS=$( readlink --canonicalize-existing $THIS/../../../Benchmarks || \
+                echo "Could not find BENCHMARKS!" >&2 )
+if [[ ${BENCHMARKS} == "" ]]
+then
+  exit 1
+fi
+
 {
-  echo NODES: $NODES
-  echo MAIN ARGS: $*
+  echo "SUBMIT: MAIN"
+  echo -n "QSUB:      " ; date "+%Y-%m-%d %H:%M %p"
+  echo "LOGIN:    " $( hostname )
+  echo "NODES:      $NODES"
+  echo "MAIN ARGS:  ${MAIN_ARGS[@]}"
+  echo "BENCHMARKS: $BENCHMARKS"
+  echo "OUTPUT:     $OUTPUT"
   echo
-} | tee -a $LOG
+} | tee $MAIN_OUT
 
-JOB=$( qsub --project CSC249ADOA01 \
-            --queue $QUEUE \
-            --nodecount $NODES \
-            --time $WALLTIME \
-            --output $LOG \
-            --error $LOG \
-            --env OUTPUT=$OUTPUT \
-            ./main.sh $* )
+QSUB_OPTS=( --project   $PROJECT
+            --queue     $QUEUE
+            --nodecount $NODES
+            --time      $WALLTIME
+            --output    $MAIN_OUT
+            --error     $MAIN_OUT
+            --debuglog  $COBALT_OUT # Normally jobid.cobaltlog
+            --env       BENCHMARKS=$BENCHMARKS
+          )
 
-echo JOB=$JOB
+if [[ -f $COBALT_OUT ]]
+then
+  # Cobalt will append to this file: must truncate it
+  echo > $COBALT_OUT
+fi
+
+JOB=$( qsub ${QSUB_OPTS[@]} $THIS/main.sh ${MAIN_ARGS[@]} )
+
+echo "JOB: $JOB"
+echo $JOB > $OUTPUT/job.txt
+
+if (( ! WAIT ))
+then
+  exit 0
+fi
+
+echo "cqwait $JOB ..."
 cqwait $JOB
+echo "cqwait $JOB done."
+
+{
+  echo
+  echo -n "QWAIT: "
+  date "+%Y-%m-%d %H:%M %p"
+} | tee -a $MAIN_OUT
