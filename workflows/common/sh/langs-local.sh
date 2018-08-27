@@ -2,8 +2,6 @@
 # LANGS LOCAL
 # Language settings for any local machine like Ubuntu
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
-
-export PY=/usr/lib/python2.7/
 # Modify to specify the location of SWIFT_T installation
 export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
 export LD_LIBRARY_PATH+=$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
@@ -17,6 +15,7 @@ SWIFT_IMPL="app"
 
 # EMEWS Queues for R
 EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
