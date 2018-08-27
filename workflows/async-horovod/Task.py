@@ -26,7 +26,7 @@ class Task:
         self.open_output()
 
         try:
-            args = [ self.script, self.output, str(self.number),
+            args = [ self.script, self.output, "%04i"%self.number,
                      str(self.parallelism),
                      "adam", str(learning_rate) ]
             self.logger.debug("task: " + " ".join(args))
@@ -51,7 +51,7 @@ class Task:
         except Exception as e:
             print("")
             from utils import fail
-            fail("Could open task output file: " +
+            fail("Could not open task output file: " +
                  output_file + "\n" + str(e))
 
     def __del__(self):
