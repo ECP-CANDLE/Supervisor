@@ -4,21 +4,21 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-256}
+export PROCS=${PROCS:-4}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-2}
 
 # For Theta:
 # export QUEUE=${QUEUE:-debug}
 
-export WALLTIME=${WALLTIME:-06:00:00}
+export WALLTIME=${WALLTIME:-00:60:00}
 
-PYTHONPATH+=:$HOME/.local/cori/deeplearning2.7/lib/python2.7/site-packages
-export PYTHONPATH
+#PYTHONPATH+=:$HOME/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+#export PYTHONPATH
 
-LD_LIBRARY_PATH+=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R/lib:/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R/library/RInside/lib
+#LD_LIBRARY_PATH+=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R/lib:/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R/library/RInside/lib
 
 #export PROJECT=Candle_ECP
 

@@ -10,7 +10,7 @@ async-search is an asynchronous iterative optimizer written in Python. It evalua
 (NOTE: currently INIT_SIZE must be at least PROCS-2)
 4. You will pass the MODEL_NAME, SITE, and optional experiment id arguments to **test-1.sh** file when launching:
 `./test-1.sh <model_name> <machine_name> [expid]`
-where `model_name` can be tc1 etc., `machine_name` can be local-as, cori, theta, titan etc. (see [NOTE](#making_changes) below on creating new SITE files.)
+where `model_name` can be tc1 etc., `machine_name` can be local, cori, theta, titan etc. (see [NOTE](#making_changes) below on creating new SITE files.)
 5. The parameter space is defined in a **problem\*.py** file (see **workflows/async-search/python/problem_tc1.py** for an example with tc1.). This is imported as `problem` in **async-search.py**.
 6. The benchmark will be run for the number of processors specified
 7. Final objective function values, along with parameters, will be available in the experiments directory and also printed
@@ -68,7 +68,7 @@ To create your own SITE files in workflows/common/sh/:
 - modules-SITE.sh
 - sched-SITE.sh config
 
-copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local-as.sh for an example).
+copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local.sh for an example).
 
 ### Structure ###
 

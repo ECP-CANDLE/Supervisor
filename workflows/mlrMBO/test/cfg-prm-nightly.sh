@@ -3,11 +3,11 @@
 # mlrMBO settings
 
 # Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-5}
+PROPOSE_POINTS=${PROPOSE_POINTS:-15}
 MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-1}
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-180}
-DESIGN_SIZE=${DESIGN_SIZE:-10}
+DESIGN_SIZE=${DESIGN_SIZE:-15}
 
 # TODO: move the following code to a utility library-
 #       this is a configuration file
