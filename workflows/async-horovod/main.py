@@ -67,7 +67,7 @@ def read_cfg(cfg):
             J[d] = defaults[d]
 
     check(is_integer(J["launch_delay"]),
-          "launch_delay must be integer if present: launch_delay=" +
+          "launch_delay must be integer if present: launch_delay='%s'" %
           str(J["launch_delay"]))
 
     global logger
@@ -83,7 +83,7 @@ def setup_run(output):
     logger.debug("output: " + output)
     try:
         if not os.path.exists(output):
-            os.makedirs(output, exist_ok=True)
+            os.makedirs(output)
         os.chdir(output)
     except Exception as e:
         fail("could not make output directory: " +
