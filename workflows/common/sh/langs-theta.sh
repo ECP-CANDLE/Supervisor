@@ -12,6 +12,11 @@
 SWIFT=/projects/Candle_ECP/swift/2018-03-07
 # SWIFT=/projects/Candle_ECP/swift/2018-04-25
 
+# This has:
+# using Python: /lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native/lib python2.7
+# using R: /projects/Candle_ECP/swift/deps/R-3.4.1/lib64/R
+# SWIFT=/home/wozniak/Public/sfw/theta/swift-t/2018-08-22b
+
 export TCL=/projects/Candle_ECP/swift/deps/tcl-8.6.6
 export PY=/projects/Candle_ECP/swift/deps/Python-2.7.12
 export R=/projects/Candle_ECP/swift/deps/R-3.4.1/lib64/R
