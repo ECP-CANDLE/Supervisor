@@ -68,7 +68,7 @@ Task::
 An execution of the objective function in the search
 
 PARALLELISM::
-The number of nodes in each task
+The number of nodes in each task (per Horovod invocation)
 
 CONCURRENCY::
 The number of (parallel) tasks running at a point in time
@@ -79,6 +79,9 @@ The number of (parallel) tasks running at a point in time
 . Set environment variable BENCHMARKS to your Benchmarks clone
 . Optionally set environment variable DRYRUN=1
 
+----
+export BENCHMARKS=$HOME/proj/Benchmarks
+----
 
 == Sample output
 
