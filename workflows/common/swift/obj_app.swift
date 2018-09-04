@@ -45,6 +45,6 @@ app (void o) run_model (string model_sh, string params,
   } else {
     printf("File not found: %s", result_file);
     // return with a large value 
-    obj_result = 1e7;
+    obj_result = "1e7";
   }
 }
