@@ -58,8 +58,7 @@ echo "Running "$MODEL_NAME "workflow"
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
-source_site modules $SITE
-source_site langs   $SITE
+source_site env   $SITE
 source_site sched   $SITE
 
 if [[ ${EQR:-} == "" ]]

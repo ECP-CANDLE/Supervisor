@@ -60,8 +60,7 @@ PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 # Adding the project specific python directory to PYTHONPATH
 PYTHONPATH+=:$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/../common/ext/EQ-Py
 
-source_site modules $SITE
-source_site langs   $SITE
+source_site env   $SITE
 source_site sched   $SITE
 
 # TODO: Modify to EQPy
