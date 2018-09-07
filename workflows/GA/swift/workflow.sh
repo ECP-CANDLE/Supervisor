@@ -55,8 +55,7 @@ fi
 
 echo "Running "$MODEL_NAME "workflow"
 
-source_site modules $SITE
-source_site langs   $SITE
+source_site env   $SITE
 source_site sched   $SITE
 
 # Set PYTHONPATH for BENCHMARK related stuff
