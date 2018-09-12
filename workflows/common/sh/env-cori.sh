@@ -1,4 +1,9 @@
-
+## Load Modules Here
+module load java
+module load PrgEnv-intel PrgEnv-gnu
+#module load python
+#module load python/2.7-anaconda-4.4
+##
 # LANGS CORI
 # Language settings for Cori (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
