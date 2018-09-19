@@ -5,7 +5,7 @@
 *.o
 *.x
 *.so
-*.pyc
+#*.pyc
 
 # SWIG-generated interfaces
 *_wrap.cxx
@@ -14,7 +14,7 @@
 pkgIndex.tcl
 
 # STC outputs:
-*.tic
+#*.tic
 
 # Autoconf stuff
 autom4te.cache
