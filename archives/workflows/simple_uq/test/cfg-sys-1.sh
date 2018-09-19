@@ -1,4 +1,0 @@
-
-# CFG SYS 1
-
-PROCS=3

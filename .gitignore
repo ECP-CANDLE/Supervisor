@@ -14,7 +14,7 @@
 pkgIndex.tcl
 
 # STC outputs:
-*.tic
+#*.tic
 
 # Autoconf stuff
 autom4te.cache
