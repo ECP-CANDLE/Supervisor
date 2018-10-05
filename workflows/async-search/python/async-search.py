@@ -6,7 +6,7 @@ import numpy as np
 from skopt import Optimizer
 import as_problem as problem
 import datetime
-
+import math
 # list of ga_utils parameter objects
 problem_params = None
 
@@ -116,6 +116,8 @@ def run():
         xstring = data['x']
         x = askedDict[xstring]
         y = data['cost']
+        if math.isnan(y):
+            y[:]=1e6
         opt.tell(x, y)
         #source = status.Get_source()
         #tag = status.Get_tag()
