@@ -117,7 +117,7 @@ def run():
         x = askedDict[xstring]
         y = data['cost']
         if math.isnan(y):
-            y[:]=1e6
+            y[:]=math.MaxFloat64
         opt.tell(x, y)
         #source = status.Get_source()
         #tag = status.Get_tag()
