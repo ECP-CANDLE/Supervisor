@@ -13,7 +13,8 @@ then
   echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
   exit 1
 fi
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
 BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
@@ -59,7 +60,7 @@ echo "Running "$MODEL_NAME "workflow"
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
 source_site env   $SITE
-source_site sched   $SITE
+source_site sched $SITE
 
 if [[ ${EQR:-} == "" ]]
 then
@@ -143,10 +144,12 @@ swift-t -n $PROCS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
         -e MODEL_NAME \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
+        -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \

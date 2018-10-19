@@ -5,8 +5,6 @@ set -eu
 
 # Shell wrapper around Keras model
 
-echo MODEL.SH
-
 usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
@@ -27,8 +25,6 @@ FRAMEWORK=$1 # Usually "keras"
 PARAMS="$2"
 RUNID=$3
 
-echo RUNID $RUNID
-
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
@@ -48,6 +44,8 @@ exec 2>&1
 cd $INSTANCE_DIRECTORY
 
 echo "MODEL.SH START:"
+echo "MODEL_NAME: $MODEL_NAME"
+echo "RUNID: $RUNID"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )

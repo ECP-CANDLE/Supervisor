@@ -24,9 +24,13 @@ elif [ "$MODEL_NAME" = "p1b2" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p2b1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_param1.R}
-elif [ "$PARAM_SET_FILE" != "" ]; then
-    PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
-else
-    echo "Invalid model-" $MODEL_NAME
-    exit 1
+fi
+
+# For cc_t29res
+# PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/nt3_hps_exp_01.R
+
+if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
+  # PARAM_SET_FILE must be set before this script returns!
+  echo "Invalid model-" "'${MODEL_NAME:-}'"
+  exit 1
 fi

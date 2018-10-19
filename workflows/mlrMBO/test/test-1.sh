@@ -35,6 +35,9 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+# export MODEL_PYTHON_SCRIPT=cc_t29res
+# export MODEL_PYTHON_DIR=$HOME/proj/candle_tutorials/Topics/1_migrating_your_DNN_to_candle
+
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
 export R_FILE=mlrMBO-mbo.R
 
