@@ -27,7 +27,7 @@ elif [ "$MODEL_NAME" = "p2b1" ]; then
 fi
 
 # For cc_t29res
-# PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/nt3_hps_exp_01.R
+PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/nt3_hps_exp_01.R
 
 if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
   # PARAM_SET_FILE must be set before this script returns!
