@@ -24,10 +24,10 @@ print(sys.path)
 print("")
 
 def import_pkg(framework, model_name):
-    print "model_name", model_name
+    print ("model_name", model_name)
     if framework == 'keras':
         module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
-        print "module_name:", module_name
+        print ("module_name:", module_name)
         pkg = importlib.import_module(module_name)
 
         from keras import backend as K
