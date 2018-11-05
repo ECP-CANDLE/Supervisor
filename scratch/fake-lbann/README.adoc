@@ -19,6 +19,7 @@ $ make
 . Run
 +
 ----
+$ export PYTHONPATH=$PWD
 $ mpiexec -n 2 -l py-eval test_1.py 0
 ----
 
