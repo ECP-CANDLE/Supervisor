@@ -48,6 +48,5 @@ test_1.py::
 A Python fragment that can call the FL interface
 
 py-eval::
-See the https://github.com/ECP-CANDLE/Supervisor/tree/develop/scratch/py-eval[py-eval docs]
-+
+See the https://github.com/ECP-CANDLE/Supervisor/tree/develop/scratch/py-eval[py-eval docs] +
 py-eval sets the environment variable COMM for use by MPI tasks inside it
