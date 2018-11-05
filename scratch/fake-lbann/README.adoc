@@ -39,8 +39,7 @@ fl_interface.i::
 The SWIG interface file
 
 fl_interface.[hc]::
-A glue layer to accept an integer from the parent environment and convert it to an integer for FL
-
+A glue layer to accept an integer from the parent environment and convert it to an MPI_Comm for FL
 
 === The workflow layer
 
