@@ -1,14 +1,14 @@
-#cc = mpicc
-#ld = mpicc
+CC = mpicc
+LD = mpicc
 
 # Cori
-cc = cc
-ld = cc
+#CC = cc
+#LD = cc
 
 CFLAGS = -Wall -O0 -g3 -MMD -MP -fPIC
 
-#DATASPACES = $(HOME)/sfw/dataspaces-1.6.5
-DATASPACES=/project/projectdirs/m2924/ncollier/sfw/dataspaces-1.6.5
+DATASPACES = $(HOME)/sfw/dataspaces-1.6.5
+#DATASPACES=/project/projectdirs/m2924/ncollier/sfw/dataspaces-1.6.5
 
 DS_C = $(DATASPACES)/bin/dspaces_config
 DSPACES_INC=$(shell $(DS_C) -c)
@@ -20,11 +20,14 @@ LDFLAGS = $(DSPACES_LIB) -Wl,-rpath -Wl,$(DATASPACES)/lib
 
 LIB_NAME = libpbt_ds.so
 
-libpbt : src/pbt_ds.o
-	$(ld) -shared $^ $(LDFLAGS) -o $(LIB_NAME)
+all: libpbt
 
-src/%.o : src/%.c
-	$(cc) $(CFLAGS) -c $< -o $@
+libpbt : pbt_ds.o
+	$(LD) -shared $^ $(LDFLAGS) -o $(LIB_NAME)
+	cp libpbt_ds.so ../python
+
+src/%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -fv src/*.o $(LIB_NAME)
+	rm -fv *.o $(LIB_NAME)
