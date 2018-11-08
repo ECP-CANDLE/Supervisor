@@ -1,13 +1,15 @@
-## Load Modules Here
-module load java
-module load PrgEnv-intel PrgEnv-gnu
-#module load python
-#module load python/2.7-anaconda-4.4
-##
-# LANGS CORI
+
+# ENV CORI
 # Language settings for Cori (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
 # Assumes modules are loaded (cf. modules-cori.sh)
+
+## Load Modules Here
+module load java
+# module load PrgEnv-intel PrgEnv-gnu
+#module load python
+#module load python/2.7-anaconda-4.4
+##
 
 # Swift/T
 SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-06-05
