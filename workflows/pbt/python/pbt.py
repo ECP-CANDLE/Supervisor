@@ -5,6 +5,7 @@ from collections import deque
 import random, os.path
 
 import keras
+import pbt_utils
 
 try:
     import cPickle as pkl
@@ -179,11 +180,13 @@ class PBTClient:
 
     def put(self, data, model):
         self.put_data(data)
-        model.save_weights("{}/weights_{}.h5".format(self.outdir, self.rank))
+        #model.save_weights("{}/weights_{}.h5".format(self.outdir, self.rank))
+        pbt_utils.save_state(model, self.outdir, self.rank)
         self.release_write_lock(self.rank)
 
-    def load_weights(self, model, data, read_rank):
-        model.load_weights("{}/weights_{}.h5".format(self.outdir, read_rank))
+    def load_state(self, model, data, read_rank):
+        pbt_utils.load_state(model, self.outdir, read_rank)
+        #model.load_weights("{}/weights_{}.h5".format(self.outdir, read_rank))
         self.release_read_lock(read_rank)
 
 class DataSpacesPBTClient(PBTClient):
@@ -575,9 +578,10 @@ class PBTCallback(keras.callbacks.Callback):
         :param pbt_worker: A class that implements the PBTWorker API.
         """
         if dataspaces:
-           self.client = DataSpacesPBTClient(comm, root_rank, outdir)
+            raise ValueError("Dataspaces is not currently supported")
+            #self.client = DataSpacesPBTClient(comm, root_rank, outdir)
         else:
-           self.client = PBTClient(comm, root_rank, outdir)
+            self.client = PBTClient(comm, root_rank, outdir)
 
         self.outdir = outdir
         #self.timer = Timer("{}/timings_{}.csv".format(self.outdir, self.client.rank))
@@ -606,10 +610,13 @@ class PBTCallback(keras.callbacks.Callback):
             if len(result):
                 print("{},{} is ready - updating".format(epoch, self.client.rank))
                 rank_to_read = result['rank']
+                self.client.load_state(self.model, result, rank_to_read)
+                # update after loading state as loading the state will set the state
+                # of the optimizer etc.
                 self.pbt_worker.update(epoch, self.client, self.model, result)
                 print("{},{} updated".format(epoch, self.client.rank))
                 #print("{} loading weights from {}".format(self.client.rank, rank))
-                self.client.load_weights(self.model, result, rank_to_read)
+               
             #else:
               #  print("{},{} is ready - no update".format(epoch, self.client.rank))
     
