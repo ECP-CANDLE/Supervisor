@@ -25,6 +25,8 @@ int max_evals = toint(argv("max_evals", "20"));
 int num_buffer = toint(argv("num_buffer", "2"));
 int num_regular_workers = turbine_workers()-1;
 int random_seed = toint(argv("seed", "0"));
+int max_threshold = toint(argv("max_threshold", "1"));
+int n_jobs = toint(argv("n_jobs", "1"));
 
 string model_name = argv("model_name");
 string exp_id = argv("exp_id");
@@ -50,7 +52,7 @@ string FRAMEWORK = "keras";
        b;
        b=c, i = i + 1)
   {
-    string params =  EQPy_get(ME);
+    string params = EQPy_get(ME);
     boolean c;
 
     if (params == "DONE")
@@ -83,7 +85,7 @@ string FRAMEWORK = "keras";
         string param_array[] = split(params, ";") => c = true;
         foreach param, j in param_array
         {
-            obj(param,"%2i_%3i_%4i" % (restart_number,i,j), ME_rank);
+          obj(param,"%00i_%000i_%0000i" % (restart_number,i,j), ME_rank);
         }
     }
   }
@@ -96,7 +98,8 @@ string FRAMEWORK = "keras";
     // algo_params is the string of parameters used to initialize the
     // Python algorithm. We pass these as Python code: a comma separated string
     // of variable=value assignments.
-    string algo_params = "%d,%d,%d,%d,%d" % (init_size, max_evals, num_regular_workers, num_buffer, random_seed);
+    string algo_params = "%d,%d,%d,%d,%d,%d,%d" % (init_size, max_evals, num_regular_workers, num_buffer, random_seed,
+      max_threshold, n_jobs);
     string algorithm = py_package;
     EQPy_init_package(ME, algorithm) =>
     EQPy_get(ME) =>

@@ -5,12 +5,12 @@ async-search is an asynchronous iterative optimizer written in Python. It evalua
 ## Running ##
 
 1. cd into the **Supervisor/workflows/async-search/test** directory
-2. Specify the async-search parameters in the *cfg-prm-1.sh* file (INIT_SIZE, etc.).  
+2. Specify the async-search parameters in the *cfg-prm-1.sh* file (INIT_SIZE, etc.).
 3. Specify the PROCS, queue etc. in **cfg-sys-1.sh** file
 (NOTE: currently INIT_SIZE must be at least PROCS-2)
 4. You will pass the MODEL_NAME, SITE, and optional experiment id arguments to **test-1.sh** file when launching:
 `./test-1.sh <model_name> <machine_name> [expid]`
-where `model_name` can be tc1 etc., `machine_name` can be local-as, cori, theta, titan etc. (see [NOTE](#making_changes) below on creating new SITE files.)
+where `model_name` can be tc1 etc., `machine_name` can be local, cori, theta, titan etc. (see [NOTE](#making_changes) below on creating new SITE files.)
 5. The parameter space is defined in a **problem\*.py** file (see **workflows/async-search/python/problem_tc1.py** for an example with tc1.). This is imported as `problem` in **async-search.py**.
 6. The benchmark will be run for the number of processors specified
 7. Final objective function values, along with parameters, will be available in the experiments directory and also printed
@@ -68,13 +68,20 @@ To create your own SITE files in workflows/common/sh/:
 - modules-SITE.sh
 - sched-SITE.sh config
 
-copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local-as.sh for an example).
+copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local.sh for an example).
 
 ### Structure ###
 
-The point of the script structure is that it is easy to make copy and modify the `test-\*.sh` script, and the `cfg-\*.sh` scripts.  These can be checked back into the repo for use by others.  The `test-\*.sh` script and the `cfg-\*.sh` scripts should simply contain environment variables that control how `workflow.sh` and `workflow.swift` operate.
+The point of the script structure is that it is easy to make copy and modify the `test-*.sh` script, and the `cfg-*.sh` scripts.  These can be checked back into the repo for use by others.  The `test-*.sh` script and the `cfg-*.sh` scripts should simply contain environment variables that control how `workflow.sh` and `workflow.swift` operate.
 
-`test-1` and `cfg-{sys,prm}-1` should be unmodified for simple testing.
+`test-1.sh` and `cfg-{sys,prm}-1.sh` should be unmodified for simple testing.
+
+The relevant parameters for the asynchronous search algorithm are defined in `cfg-*.sh` scripts (see example in `cfg-prm-1.sh`). These are:
+- INIT_SIZE: The number of initial random samples. (Note: INIT_SIZE needs to be larger than PROCS-2 for now.)
+- MAX_EVALS: The maximum number of evaluations/tasks to perform.
+- NUM_BUFFER: The size of the tasks buffer that should be maintained above the available workers (num_workers) such that if the currently out tasks are less than (num workers + NUM_BUFFER), more tasks are generated.
+- MAX_THRESHOLD: Under normal circumstances, when a single model evaluation is finished, a new hyper parameter set is produced for evaluation. If the model evaluations occur within 15 seconds of each other, a MAX_THRESHOLD number of evalutions must occur before the corresponding number of new values are produced for evaluation. This can help with performance when many models finish within a few seconds of each other.
+- N_JOBS: The number of jobs to run in parallel when producing points (i.e. hyperparameter values) for evaluation. -1 will set this to the number of cores.
 
 ### Where to check for output ###
 

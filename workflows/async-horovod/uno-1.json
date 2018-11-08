@@ -1,0 +1,5 @@
+{
+    "log_level" : "DEBUG",
+    "launch_delay": 1,
+    "script": "/home/wozniak/proj/SV/workflows/async-horovod/run-uno.sh"
+}

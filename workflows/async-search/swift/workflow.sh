@@ -14,8 +14,8 @@ then
   exit 1
 fi
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-#BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1
+BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo
+#BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
@@ -58,10 +58,9 @@ echo "Running "$MODEL_NAME "workflow"
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 # Adding the project specific python directory to PYTHONPATH
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/ext/EQ-Py
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/python:$EMEWS_PROJECT_ROOT/../common/ext/EQ-Py
 
-source_site modules $SITE
-source_site langs   $SITE
+source_site env   $SITE
 source_site sched   $SITE
 
 # TODO: Modify to EQPy
@@ -69,6 +68,7 @@ if [[ ${EQPy:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/Py: this will not work!"
 fi
+
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -100,6 +100,8 @@ CMD_LINE_ARGS=( -init_size=$INIT_SIZE
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                -max_threshold=$MAX_THRESHOLD
+                -n_jobs=$N_JOBS
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $PY_PACKAGE_ARG
@@ -111,7 +113,7 @@ log_script
 
 #Store scripts to provenance
 #copy the configuration files and R file (for mlrMBO params) to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/asnyc-search/python/$PY_PACKAGE.py $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $WORKFLOWS_ROOT/async-search/python/$PY_PACKAGE.py $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
@@ -128,7 +130,7 @@ fi
 
 #export TURBINE_LAUNCH_OPTIONS="-cc none"
 
-swift-t -n $PROCS \
+swift-t -l -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPy \
         -I $OBJ_DIR \
@@ -147,5 +149,7 @@ swift-t -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e SH_TIMEOUT \
+        -e MPICH_MAX_THREAD_SAFETY=$MPICH_MAX_THREAD_SAFETY \
+        -e TURBINE_MPI_THREAD=$TURBINE_MPI_THREAD \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}

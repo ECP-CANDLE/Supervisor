@@ -24,7 +24,7 @@ THIS=$( dirname $0 )
 # General test invocation signature:
 # TEST SITE BENCHMARK (DIRECTORY CFGs)
 
-set +e # Run through errors here
+# set e # Run through errors here
 # $THIS/p1b1_mlrMBO/test/test-1.sh $SITE || true
 # $THIS/p3b1_mlrMBO/test/test-1.sh $SITE || true
 # $THIS/nt3_mlrMBO/test/test-1.sh  $SITE || true
@@ -34,12 +34,13 @@ do
   # for ALGORITHM in grid random mlrMBO
   # do
     # $THIS/$ALGORITHM/test/test-1.sh $SITE $BENCHMARK
-  $THIS/mlrMBO/test/test-1.sh $SITE $BENCHMARK
+  set -x
+  $THIS/mlrMBO/test/test-1.sh $BENCHMARK $SITE
   # done
 done
 
 # $THIS/p2b1_mlrMBO/test/test-1.sh  $SITE
-$THIS/p1b1_grid/test/test-1.sh  $SITE || true
-$THIS/p1b1_random/test/test-1.sh  $SITE || true
+$THIS/grid/test/test-1.sh  p1b1 $SITE || true
+$THIS/random/test/test-1.sh  p1b1 $SITE || true
 
 echo "test-all: SUCCESS"

@@ -11,7 +11,8 @@ export PROCS=${PROCS:-3}
 export PPN=${PPN:-1}
 
 # For Theta:
-# export QUEUE=${QUEUE:-debug-flat-quad}
+export QUEUE=${QUEUE:-debug-flat-quad}
+# export QUEUE=R.candle
 
 export WALLTIME=${WALLTIME:-00:10:00}
 

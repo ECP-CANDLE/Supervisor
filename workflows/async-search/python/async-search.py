@@ -4,12 +4,16 @@ import time
 import json
 import numpy as np
 from skopt import Optimizer
-import problem_tc1 as problem
+import as_problem as problem
+import datetime
+import math
+import sys
 
 # list of ga_utils parameter objects
 problem_params = None
 
 class MyEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, np.integer):
             return int(obj)
@@ -48,6 +52,7 @@ def create_list_of_json_strings(list_of_lists, super_delim=";"):
 
 def run():
     start_time = time.time()
+    print("run() start: {}".format(str(datetime.datetime.now())))
     comm = MPI.COMM_WORLD   # get MPI communicator object
     size = comm.size        # total number of processes
     rank = comm.rank        # rank of this process
@@ -65,7 +70,7 @@ def run():
     eqpy.OUT_put("Params")
     # initial parameter set telling us the number of times to run the loop
     initparams = eqpy.IN_get()
-    (init_size, max_evals, num_workers, num_buffer, seed) = eval('{}'.format(initparams))
+    (init_size, max_evals, num_workers, num_buffer, seed, max_threshold, n_jobs) = eval('{}'.format(initparams))
 
     space = [spaceDict[key] for key in params]
     print(space)
@@ -73,6 +78,8 @@ def run():
     parDict = {}
     resultsList = []
     parDict['kappa'] = 1.96
+    # can set to num cores
+    parDict['n_jobs'] = n_jobs
     init_x = []
 
     opt = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
@@ -80,7 +87,7 @@ def run():
 
     eval_counter = 0
     askedDict = {}
-    print("Master starting with {} init_size, {} max_evals, {} num_workers, {} num_buffer".format(init_size,max_evals,num_workers,num_buffer))
+    print("Master starting with {} init_size, {} max_evals, {} num_workers, {} num_buffer, {} max_threshold".format(init_size,max_evals,num_workers,num_buffer, max_threshold))
     x = opt.ask(n_points=init_size)
     res, resstring = create_list_of_json_strings(x)
     print("Initial design is {}".format(resstring))
@@ -100,29 +107,60 @@ def run():
     nrank = newcomm.rank
     #print("ME nrank is {}".format(nrank))
 
+    counter_threshold = 1
+    counter = 0
+    end_iter_time = 0
     while eval_counter < max_evals:
+        start_iter_time = time.time()
         print("\neval_counter = {}".format(eval_counter))
         data = newcomm.recv(source=MPI.ANY_SOURCE, status=status)
+        counter = counter + 1
         xstring = data['x']
         x = askedDict[xstring]
         y = data['cost']
+        if math.isnan(y):
+            y=sys.float_info.max
         opt.tell(x, y)
-        source = status.Get_source()
-        tag = status.Get_tag()
+        #source = status.Get_source()
+        #tag = status.Get_tag()
+
         elapsed_time = float(time.time() - start_time)
         print('elapsed_time:%1.3f'%elapsed_time)
-        # TODO: transform data object to string
         results.append(str(data))
         eval_counter = eval_counter + 1
         currently_out = currently_out - 1
+
+        # if jobs are finishing within 16 seconds of
+        # each other, then batch the point production
+        if start_iter_time - end_iter_time < 16:
+            counter_threshold = max_threshold
+            if max_evals - eval_counter < counter_threshold:
+                counter_threshold = max_evals - eval_counter
+            if counter_threshold > currently_out:
+                counter_threshold = currently_out
+        else:
+            counter_threshold = 1
+        print("counter_threshold: {}".format(counter_threshold))
+
         print("currently_out:{}, total_out:{}".format(currently_out,total_out))
-        if currently_out < num_workers + num_buffer and total_out < max_evals:
-            x = opt.ask()
+        if currently_out < num_workers + num_buffer and total_out < max_evals and counter >= counter_threshold:
+            n_points = counter
+            if n_points + total_out > max_evals:
+                n_points = max_evals - total_out
+            ts = time.time()
+            x = opt.ask(n_points=n_points)
             res, resstring = create_list_of_json_strings(x)
-            askedDict[res[0]] = x
+            for r,xx in zip(res,x):
+                askedDict[r] = xx
+
             eqpy.OUT_put(resstring)
-            currently_out = currently_out + 1
-            total_out = total_out + 1
+            print('point production elapsed_time:%1.3f' % float(time.time() - ts))
+            currently_out = currently_out + n_points
+            total_out = total_out + n_points
+            counter = 0
+
+        end_iter_time = start_iter_time
+
     print('Search finishing')
     eqpy.OUT_put("DONE")
     eqpy.OUT_put(";".join(results))
