@@ -35,7 +35,8 @@ export PYTHONHOME=$PYTHON
 export R_HOME=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R
 
 # EMEWS Queues for R
-EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+# EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R-2018-11-08
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
