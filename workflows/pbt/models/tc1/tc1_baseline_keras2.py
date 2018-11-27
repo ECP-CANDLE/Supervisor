@@ -29,6 +29,8 @@ sys.path.append(lib_path2)
 import data_utils
 import p1_common
 
+from solr_keras import CandleRemoteMonitor, TerminateOnTimeOut
+
 #EPOCH = 400
 #BATCH = 20
 #CLASSES = 2
@@ -82,6 +84,7 @@ def read_config_file(file):
     fileParams['pool']=eval(config.get(section[0],'pool'))
     fileParams['save']=eval(config.get(section[0], 'save'))
     fileParams['lr']=eval(config.get(section[0], 'lr'))
+    fileParams['timeout']=eval(config.get(section[0], 'timeout'))
 
     return fileParams
 
@@ -253,15 +256,21 @@ def run(gParameters, callbacks):
 
     model_name = gParameters['model_name']
     path = '{}/{}.autosave.model.h5'.format(output_dir, model_name)
-    checkpointer = ModelCheckpoint(filepath=path, verbose=1, save_weights_only=False, save_best_only=True)
-    csv_logger = CSVLogger('{}/training.log'.format(output_dir))
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=1, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
 
+    # checkpointer = ModelCheckpoint(filepath=path, verbose=1, save_weights_only=False, save_best_only=True)
+    # csv_logger = CSVLogger('{}/training.log'.format(output_dir))
+    # reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, verbose=1, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
+
+    candleRemoteMonitor = CandleRemoteMonitor(params=gParameters)
     #callbacks.append(reduce_lr)
+    #timeout = 3600
+    #timeoutMonitor = TerminateOnTimeOut(timeout)
+    callbacks.append(candleRemoteMonitor)
+    #callbacks.append(timeoutMonitor)
     history = model.fit(X_train, Y_train,
                     batch_size=gParameters['batch_size'],
                     epochs=gParameters['epochs'],
-                    verbose=1,
+                    verbose=0,
                     validation_data=(X_test, Y_test),
                     callbacks = callbacks)
 

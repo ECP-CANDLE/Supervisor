@@ -1,10 +1,23 @@
 from mpi4py import MPI
-import time, math
+import time, math, ctypes
 
 from collections import deque
 import random, os.path
 
 import keras
+import pbt_utils
+
+try:
+    import cPickle as pkl
+except ImportError:
+    import pickle as pkl
+
+try:
+    from StringIO import StringIO as IO
+except ImportError:
+    from io import BytesIO as IO
+
+
 
 class Timer:
 
@@ -44,7 +57,7 @@ class PBTClient:
     from a PBTMetaDataStore.
     """
 
-    def __init__(self, comm, dest):
+    def __init__(self, comm, dest, outdir):
         """Initializes the PBT client with a communicator and the destination rank
         of the PBTMetaDataStore
 
@@ -54,6 +67,7 @@ class PBTClient:
         self.comm = comm
         self.rank = comm.Get_rank()
         self.dest = dest
+        self.outdir = outdir
 
     def acquire_read_lock(self, for_rank):
         """Acquries a read lock the weights file for the specified rank.
@@ -164,6 +178,66 @@ class PBTClient:
         self.comm.send(msg, dest=self.dest, tag=Tags.REQUEST)
 
 
+    def put(self, data, model):
+        self.put_data(data)
+        #model.save_weights("{}/weights_{}.h5".format(self.outdir, self.rank))
+        pbt_utils.save_state(model, self.outdir, self.rank)
+        self.release_write_lock(self.rank)
+
+    def load_state(self, model, data, read_rank):
+        pbt_utils.load_state(model, self.outdir, read_rank)
+        #model.load_weights("{}/weights_{}.h5".format(self.outdir, read_rank))
+        self.release_read_lock(read_rank)
+
+class DataSpacesPBTClient(PBTClient):
+
+    def __init__(self, comm, dest, outdir):
+        # For python 2 compatibility
+        super(DataSpacesPBTClient, self).__init__(comm, dest, outdir)
+        path = os.path.dirname(os.path.abspath(__file__))
+        self.lib = ctypes.cdll.LoadLibrary("{}/libpbt_ds.so".format(path))
+        # different mpi implementation use different types for
+        # MPI_Comm, this determines which type to use
+        if MPI._sizeof(MPI.Comm) == ctypes.sizeof(ctypes.c_int):
+            self.mpi_comm_type = ctypes.c_int
+        else:
+            self.mpi_comm_type = ctypes.c_void_p
+
+        group = comm.Get_group()
+        newgroup = group.Excl([dest])
+        ds_comm = comm.Create(newgroup)
+
+        self.mpi_comm_self = self.make_comm_arg(MPI.COMM_SELF)
+        mpi_comm_ds = self.make_comm_arg(ds_comm)
+        world_size = ds_comm.Get_size()
+        self.lib.pbt_ds_init(ctypes.c_int(world_size), mpi_comm_ds)
+
+    def make_comm_arg(self, comm):
+        comm_ptr = MPI._addressof(comm)
+        comm_val = self.mpi_comm_type.from_address(comm_ptr)
+        return comm_val
+
+    def put(self, data, model):
+        weights = pkl.dumps(model.get_weights(), pkl.HIGHEST_PROTOCOL)
+        weights_size = len(weights)
+        data['_weights_size_'] = weights_size
+        self.put_data(data)
+        self.lib.pbt_ds_put_weights(self.rank, weights, weights_size, self.mpi_comm_self)
+        self.release_write_lock(self.rank)
+
+    def load_weights(self, model, data, read_rank):
+        weights_size = data['_weights_size_']
+        str_weights = ctypes.create_string_buffer(weights_size)
+        self.lib.pbt_ds_get_weights(read_rank, str_weights, weights_size, self.mpi_comm_self)
+        model.set_weights(pkl.load(IO(str_weights)))
+        self.release_read_lock(read_rank)
+
+    def done(self):
+        # For python 2 compatibility
+        super(DataSpacesPBTClient, self).done()
+        self.lib.pbt_ds_finalize()
+
+
 class DataStoreLock:
     """Lock for an individual weights file.
     """
@@ -252,7 +326,7 @@ class PBTMetaDataStore:
 
     DUMMY_RANK = -9999
 
-    def __init__(self, comm, outdir, exploiter, log_file):
+    def __init__(self, comm, outdir, exploiter, log_file, dataspaces=False):
         self.locks = {}
         self.comm = comm
         self.rank = self.comm.Get_rank()
@@ -266,6 +340,13 @@ class PBTMetaDataStore:
         self.log_file = log_file
         self.all_scores = []
         self.logs = []
+
+        if dataspaces:
+            # PBTClient's perform this collective action so it needs to
+            # be done here as well.
+            group = comm.Get_group()
+            newgroup = group.Excl([self.rank])
+            ds_comm = comm.Create(newgroup)
 
     def write_data(self):
         if len(self.all_scores):
@@ -338,6 +419,11 @@ class PBTMetaDataStore:
         return result
 
     def run(self):
+        t = time.localtime()
+        start_time = time.time()
+        self.logs.append("PBT Start: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', t)))
+        self.write_logs()
+        
         status = MPI.Status()
         live_ranks = self.comm.Get_size() - 1
         while live_ranks > 0:
@@ -377,15 +463,20 @@ class PBTMetaDataStore:
             elif msg_type == MsgType.LOG:
                 log = msg['log']
                 self.logs.append(log)
-                if len(self.logs) > 100:
+                if len(self.logs) > 20:
                     self.write_logs()
 
             elif msg_type == MsgType.DONE:
                 live_ranks -= 1
 
+        
+        t = time.localtime()
+        self.logs.append("PBT End: {}".format(time.strftime('%Y-%m-%d %H:%M:%S', t)))
+        self.logs.append("Duration: {}".format(time.time() - start_time))
         self.done()
 
         print("Done")
+        
 
 class PBTWorker:
     """  PBTCallback uses classes that implement this API to determine
@@ -456,6 +547,9 @@ class PBTWorker:
         """
         pass
 
+import traceback
+
+
 class PBTCallback(keras.callbacks.Callback):
     """Implements PBT via keras callback.
 
@@ -475,15 +569,20 @@ class PBTCallback(keras.callbacks.Callback):
     GET = 0
     PUT = 1
 
-    def __init__(self, comm, root_rank, outdir, pbt_worker):
+    def __init__(self, comm, root_rank, outdir, pbt_worker, dataspaces=False):
         """ Initializes this PBTCallback.
 
         :param comm: the MPI communicator in which this PBTCallback operates
         :param root_rank: the rank of the PBTMetaDataStore
         :param outdir: the directory into which model weights will be written
         :param pbt_worker: A class that implements the PBTWorker API.
-       """
-        self.client = PBTClient(comm, root_rank)
+        """
+        if dataspaces:
+            raise ValueError("Dataspaces is not currently supported")
+            #self.client = DataSpacesPBTClient(comm, root_rank, outdir)
+        else:
+            self.client = PBTClient(comm, root_rank, outdir)
+
         self.outdir = outdir
         #self.timer = Timer("{}/timings_{}.csv".format(self.outdir, self.client.rank))
         self.pbt_worker = pbt_worker
@@ -491,28 +590,38 @@ class PBTCallback(keras.callbacks.Callback):
     def on_batch_end(self, batch, logs):
         pass
 
+    def on_epoch_begin(self, epoch, logs):
+        
+        t = time.localtime()
+        self.client.log("Client {} Epoch {} Start: {}".format(self.client.rank, epoch, time.strftime('%Y-%m-%d %H:%M:%S', t)))
+       
+        self.epoch_start = time.time()
+
     def on_epoch_end(self, epoch, logs):
-        metrics = {'epoch': epoch, 'rank': self.client.rank}
+        metrics = {'epoch': epoch, 'rank': self.client.rank, 'duration' : time.time() - self.epoch_start}
+        #print("Rank: {}, Epoch: {} end".format(self.client.rank, epoch))
         metrics.update(logs)
         data = self.pbt_worker.pack_data(self.client, self.model, metrics)
-        self.client.put_data(data)
-        self.model.save_weights("{}/weights_{}.h5".format(self.outdir,
-                                                          self.client.rank))
-        self.client.release_write_lock(self.client.rank)
+        self.client.put(data, self.model)
         #self.timer.end(PBTCallback.PUT)
 
         if self.pbt_worker.ready(self.client, self.model, epoch):
             result = self.client.get_data(data['score'])
             if len(result):
-                print("\n{},{} is ready - updating".format(epoch, self.client.rank))
+                print("{},{} is ready - updating".format(epoch, self.client.rank))
                 rank_to_read = result['rank']
+                self.client.load_state(self.model, result, rank_to_read)
+                # update after loading state as loading the state will set the state
+                # of the optimizer etc.
                 self.pbt_worker.update(epoch, self.client, self.model, result)
+                print("{},{} updated".format(epoch, self.client.rank))
                 #print("{} loading weights from {}".format(self.client.rank, rank))
-                self.model.load_weights("{}/weights_{}.h5".format(self.outdir,
-                                                            rank_to_read))
-                self.client.release_read_lock(rank_to_read)
-            else:
-                print("\n{},{} is ready - no update".format(epoch, self.client.rank))
+               
+            #else:
+              #  print("{},{} is ready - no update".format(epoch, self.client.rank))
+    
 
     def on_train_end(self, logs={}):
+        t = time.localtime()
+        self.client.log("Client {} End: {}".format(self.client.rank, time.strftime('%Y-%m-%d %H:%M:%S', t)))
         self.client.done()

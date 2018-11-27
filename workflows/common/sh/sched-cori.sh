@@ -4,8 +4,8 @@
 
 # Tell Swift/T to generate and submit a SLURM script
 MACHINE="-m slurm"
-export QUEUE=${QUEUE:-regular}
-# export QUEUE=${QUEUE:-debug}
+# export QUEUE=${QUEUE:-regular}
+export QUEUE=${QUEUE:-debug}
 
 # CANDLE at NERSC:
 export PROJECT=m2924
