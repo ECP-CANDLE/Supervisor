@@ -109,8 +109,11 @@ def run_model(comm, rank, hyper_parameter_map, args):
 
     t = time.localtime()
     pbt_callback.client.log("Client {} Start: {}".format(rank, time.strftime('%Y-%m-%d %H:%M:%S', t)))
-
-    pkg.run(hyper_parameter_map, [pbt_callback])
+    try:
+        pkg.run(hyper_parameter_map, [pbt_callback])
+    except:
+        pbt_callback.client.done()
+        raise
 
 
 def init_dirs(outdir):
