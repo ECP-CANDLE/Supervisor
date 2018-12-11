@@ -1,13 +1,15 @@
-## Load Modules Here
-module load java
-module load PrgEnv-intel PrgEnv-gnu
-#module load python
-#module load python/2.7-anaconda-4.4
-##
-# LANGS CORI
+
+# ENV CORI
 # Language settings for Cori (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
 # Assumes modules are loaded (cf. modules-cori.sh)
+
+## Load Modules Here
+module load java
+# module load PrgEnv-intel PrgEnv-gnu
+#module load python
+#module load python/2.7-anaconda-4.4
+##
 
 # Swift/T
 SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-06-05
@@ -33,7 +35,8 @@ export PYTHONHOME=$PYTHON
 export R_HOME=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R
 
 # EMEWS Queues for R
-EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+# EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
+EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R-2018-11-08
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 # Resident task workers and ranks
 export TURBINE_RESIDENT_WORK_WORKERS=1
