@@ -127,18 +127,25 @@ def init_dirs(outdir):
 def main(args):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
-
+    # default to empty map indicating the param parsing failed
+    params = [{} for _ in range(comm.Get_size())]
     if rank == 0:
-        params = init_params(args[1], comm)
-        outdir = args[2]
-        init_dirs(outdir)
-        comm.scatter(params, root=0)
-        log_file = "{}/log.txt".format(outdir)
-        root = pbt.PBTMetaDataStore(comm, outdir, truncation_select, log_file)
-        root.run()
+        try:
+            params = init_params(args[1], comm)
+        except:
+            comm.scatter(params, root=0)
+            raise
+        else:
+            outdir = args[2]
+            init_dirs(outdir)
+            comm.scatter(params, root=0)
+            log_file = "{}/log.txt".format(outdir)
+            root = pbt.PBTMetaDataStore(comm, outdir, truncation_select, log_file)
+            root.run()
     else:
         params = comm.scatter(None, root=0)
-        run_model(comm, rank, params, args)
+        if len(params) > 0:
+            run_model(comm, rank, params, args)
         #print("{}: {}".format(rank, params))
 
 
