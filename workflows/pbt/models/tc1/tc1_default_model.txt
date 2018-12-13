@@ -18,3 +18,4 @@ classes=36
 feature_subsample=0
 pool=[1, 10]
 save='.'
+timeout=10
