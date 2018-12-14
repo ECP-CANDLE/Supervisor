@@ -41,7 +41,7 @@ then
 fi
 
 # All stdout/stderr after this point goes into model.log !
-mkdir -p $INSTANCE_DIRECTORY
+mkdir -pv $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
 exec >> $LOG_FILE
 exec 2>&1

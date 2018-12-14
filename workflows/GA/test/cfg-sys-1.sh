@@ -12,6 +12,7 @@ export PPN=${PPN:-1}
 
 export WALLTIME=${WALLTIME:-01:00:00}
 
+export QUEUE='debug-flat-quad'
 #export PROJECT=Candle_ECP
 
 #  Benchmark run timeout: benchmark run will timeout

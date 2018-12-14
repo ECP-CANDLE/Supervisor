@@ -72,12 +72,12 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.write_params(params, hyper_parameter_map)
     logger.debug("WRITE_PARAMS STOP")
 
-    history = pkg.run(params)
-
+    # history = pkg.run(params)
+    history = None
     runner_utils.keras_clear_session(framework)
 
     # Default result if there is no val_loss (as in infer.py)
-    result = 0
+    result = np.random.uniform(0, -1)
     if history != None:
         # Return the history entry that the user requested.
         val_loss = history.history[obj_return]
@@ -96,6 +96,7 @@ def run(hyper_parameter_map, obj_return):
             raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
 
         print("result: " + str(result))
+    print("result: " + str(result))
     return result
 
 def get_obj_return():

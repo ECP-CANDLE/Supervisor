@@ -21,7 +21,7 @@ export TCL=/projects/Candle_ECP/swift/deps/tcl-8.6.6
 export PY=/projects/Candle_ECP/swift/deps/Python-2.7.12
 export R=/projects/Candle_ECP/swift/deps/R-3.4.1/lib64/R
 
-export LD_LIBRARY_PATH=$PY/lib:$R/lib:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$R/lib:${LD_LIBRARY_PATH:-}
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
 PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR:$SWIFT/turbine/py
 PYTHONHOME=$PY
