@@ -4,10 +4,11 @@ from scipy.stats import ttest_ind
 
 
 
+# Could be used for NT3 (f(row) -> binary)
 # Use t-test to select features that are discriminative between two sample classes
-# data: an array, where rows are samples and columns are features
+# data: an array, where rows are samples and columns are features (e.g., RNA expression row)
 # label: a binary variable vector indicating the class labels. Its length is the same as the number
-#       of rows in data.
+#       of rows in data. (e.g., normal or tumor)
 # cutoff: a positive number for selecting predictive features. If cutoff < 1, this function
 #       selects features with p-values <= cutoff. If cutoff >= 1, it must be an integer
 #       indicating the number of features to be selected based on p-value.
@@ -30,7 +31,7 @@ def ttest_FS(data, label, cutoff):
     return sorted(fid)
 
 
-
+# For drug response regression (f(row) -> real)
 # Use Pearson correlation coefficient to select predictive features for regression.
 # data: an array, where rows are samples and columns are features
 # target: a vector of real numbers indicating the regression target. Its length is the same as the
@@ -77,8 +78,8 @@ def COXEN_FS(data1, data2, cutoff):
 
 
 
-numF = 10
-numS = 50
+numF = 10 # Number of features
+numS = 50 # Number of samples to be multiplied by 2
 data1 = np.random.randn(numF, numS)
 for i in range(numF):
     data1[i, :] = data1[i, :] + i/5
