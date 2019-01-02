@@ -130,7 +130,7 @@ int CACHE_RANK_IDX = 1;
     location loc = locationFromRank(string2int(rank));
     location cache_loc = locationFromRank(string2int(r_ranks[CACHE_RANK_IDX]));
     string me1_params = "";
-    EQPy_init_package(loc, "me1.py") =>
+    EQPy_init_package(loc, "me1") =>
     EQPy_run(loc) =>
     EQPy_put(loc, me1_params) =>
     run_workflow(loc, cache_loc) => {
@@ -172,7 +172,7 @@ int CACHE_RANK_IDX = 1;
     } else {
       string param_array[] = split(params, ";");
       string results[];
-      //printf("%i", size(param_array));
+      // printf("%i", size(param_array));
       // Lauch an me2 run for each set of parameters produced by 
       // me1
       foreach p, j in param_array

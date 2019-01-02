@@ -21,7 +21,7 @@ source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
 
 export EXPID=$1
 export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
-#check_directory_exists
+check_directory_exists
 
 # TODO edit the number of processes as required.
 # 1040
@@ -67,9 +67,6 @@ if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
 fi
 
-export PROCS_PER_RUN=1
-export ADLB_PAR_MOD=$PROCS_PER_RUN
-
 MODEL_DIR=$EMEWS_PROJECT_ROOT/model
 
 export TURBINE_MPI_THREAD=1
@@ -87,4 +84,6 @@ log_script
 set -x
 
 swift-t -n $PROCS $MACHINE -p  -r$EQPy -I $EQPy \
+  -e MPICH_MAX_THREAD_SAFETY=$MPICH_MAX_THREAD_SAFETY \
+  -e PYTHONPATH=$PYTHONPATH \
   $EMEWS_PROJECT_ROOT/swift/workflow.swift 

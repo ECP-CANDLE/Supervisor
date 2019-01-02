@@ -9,6 +9,12 @@ the *task_cache* (see below) resident task and one for an *me2*
 resident task. Any more than 3 and the additional resident tasks are *me2*
 resident tasks.
 
+To run the workflow, edit `swift/workflow.sh` for your machine (i.e. edit
+swift-t location, number of PROCS etc.), and 
+run. The script takes a single argument: an experiment id. So, ```./workflow.sh t1```
+
+Note that is work in progress and I have seen some seg faults when then entire
+workflow has finished.
 
 The implementation consists of two nested loops driven by these resident
 tasks. The overall flow looks like:
