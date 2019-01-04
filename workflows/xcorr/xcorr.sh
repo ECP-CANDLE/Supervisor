@@ -2,4 +2,4 @@
 
 export PYTHONPATH=$PWD
 
-swift-t xcorr.swift
+swift-t -p xcorr.swift

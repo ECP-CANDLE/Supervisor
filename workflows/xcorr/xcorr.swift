@@ -3,7 +3,14 @@ import files;
 import io;
 import python;
 
-file studies[] = glob("studies/*.data");
+file studies[] = glob("test_data/data*.tsv");
+
+string xcorr_template = 
+"""
+import xcorr
+
+fids = xcorr.compute_feature_correlationf('%s', '%s', %i)
+""";
 
 // for study 1 in set of studies
 //   for study 2 in set of studies
@@ -16,37 +23,16 @@ foreach study1 in studies
     printf("%s ?= %s", filename(study1), filename(study2));
     if (filename(study1) != filename(study2))
     {
-      compute_correlations(study1, study2);
+      compute_feature_correlation(study1, study2);
     }
   }
 }
 
-// compute correlations:
-//   compute feature cross correlation matrix in study 1
-//   compute feature cross correlation matrix in study 2
-//   compute feature correlation between study 1 and study 2
-compute_correlations(file study1, file study2)
-{
-  wait (compute_feature_cross_corellation_matrix(study1),
-        compute_feature_cross_corellation_matrix(study2))
-  {
-    compute_feature_correlation(study1, study2);
-  }
-}
-
-(string v)
-compute_feature_cross_corellation_matrix(file study)
-{
-  v = python("from xcorr import *",
-             "compute_feature_cross_corellation_matrix('%s')" %
-             filename(study));
-}
-
 compute_feature_correlation(file study1, file study2)
 {
-  python("from xcorr import *",
-         "compute_feature_corellation('%s', '%s')" %
-         (filename(study1), filename(study2)));
+  code = xcorr_template % (filename(study1), filename(study2), 3);
+  string fids = python_persist(code, "str(fids)");
+  printf(fids);
 }
 
 
