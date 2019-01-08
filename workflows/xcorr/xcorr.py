@@ -1,6 +1,7 @@
 import numpy as np
 import os
 
+
 def compute_feature_correlationf(study1_f, study2_f, cutoff, delimiter='\t'):
     """ 
     Use the COXEN approach to select the features that are generalizable between 
@@ -18,6 +19,7 @@ def compute_feature_correlationf(study1_f, study2_f, cutoff, delimiter='\t'):
     data1 = np.loadtxt(study1_f, delimiter=delimiter)
     data2 = np.loadtxt(study2_f, delimiter=delimiter)
     return compute_feature_correlation(data1, data2, cutoff)
+    
 
 def compute_feature_correlation(data1, data2, cutoff):
     """ 
