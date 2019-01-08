@@ -77,7 +77,7 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.keras_clear_session(framework)
 
     # Default result if there is no val_loss (as in infer.py)
-    result = np.random.uniform(0, -1)
+    result = np.random.uniform(0, 1)
     if history != None:
         # Return the history entry that the user requested.
         val_loss = history.history[obj_return]
