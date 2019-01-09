@@ -25,3 +25,34 @@ Translation of +xcorr-psuedo.swift+ into runnable workflow
 +xcorr.py+::
 
 Implementation of the cross-correlation application functionality
+
+== Database
+
+=== Quick start
+
+----
+# Create the DB
+$ python db-init.py
+# Is it there?
+$ ls xcorr.db
+xcorr.db
+# Check that the table is there w/o Python:
+# (This requires APT sqlit3 or equivalent)
+$ sqlite3
+sqlite> .open xcorr.db
+sqlite> .tables
+records
+sqlite> .schema records
+CREATE TABLE records(
+       time timestamp,
+       metadata varchar(1024));
+(Ctrl-D to exit)
+# Insert some dummy data:
+$ python db-insert-junk.py
+# View that data:
+$ sqlite3 xcorr.db "select * from records;"
+2019-01-09 14:22:08|0
+2019-01-09 14:22:08|1
+2019-01-09 14:22:08|2
+...
+----
