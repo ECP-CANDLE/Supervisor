@@ -37,7 +37,7 @@ $ python db-init.py
 $ ls xcorr.db
 xcorr.db
 # Check that the table is there w/o Python:
-# (This requires APT sqlit3 or equivalent)
+# (This requires APT sqlite3 or equivalent)
 $ sqlite3
 sqlite> .open xcorr.db
 sqlite> .tables
@@ -46,7 +46,7 @@ sqlite> .schema records
 CREATE TABLE records(
        time timestamp,
        metadata varchar(1024));
-(Ctrl-D to exit)
+sqlite> (Ctrl-D to exit)
 # Insert some dummy data:
 $ python db-insert-junk.py
 # View that data:
