@@ -13,13 +13,15 @@ cursor = conn.cursor()
 records = []
 for i in range(1,11):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    data = "metadata for record: " + str(i)
-    record = (d,data)
+    filename = "file-%i.csv" % i
+    source1 = "feature1"
+    source2 = "feature2"
+    cutoff = 0.9
+    record = (d,filename,source1,source2,cutoff)
     records.append(record)
 
 def insert_record(cursor, record):
     # print("inserting: " + str(record))
-    # cursor.execute("insert into records values (?, ?);", record)
     cmd = "insert into records values %s;" % str(record)
     print("SQL: " + cmd)
     rc = cursor.execute(cmd)
