@@ -18,7 +18,14 @@ for i in range(0,10):
     records.append(record)
 
 def insert_record(cursor, record):
-    cursor.execute("insert into records values (?, ?);", record)
-    
+    # print("inserting: " + str(record))
+    # cursor.execute("insert into records values (?, ?);", record)
+    cmd = "insert into records values %s;" % str(record)
+    print("SQL: " + cmd)
+    rc = cursor.execute(cmd)
+
 for record in records:
     insert_record(cursor, record)
+conn.commit()
+
+conn.close()
