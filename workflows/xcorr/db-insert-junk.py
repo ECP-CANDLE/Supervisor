@@ -11,9 +11,9 @@ conn = sqlite3.connect('xcorr.db')
 cursor = conn.cursor()
 
 records = []
-for i in range(0,10):
+for i in range(1,11):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    data = str(i)
+    data = "metadata for record: " + str(i)
     record = (d,data)
     records.append(record)
 
