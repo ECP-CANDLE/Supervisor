@@ -48,9 +48,12 @@ def coxen_feature_selection(source_1, source_2, correlation_cutoff,
     cross_correlation_cutoff, drug_ids=None, output_file=None):
 
     df1 = select_features(gene_df, 'source', source_1)
-    df1 = df1.drop(['source'], axis=1)
+    # add namespace prefix as required by Uno
+    df1 = df1.drop(['source'], axis=1).add_prefix("rnaseq.")
+
     df2 = select_features(gene_df, 'source', source_2)
-    df2 = df2.drop(['source'], axis=1)
+    # add namespace prefix as required by Uno
+    df2 = df2.drop(['source'], axis=1).add_prefix("rnaseq.")
 
     dr_df = select_features(drug_df, 'SOURCE', source_1)
     if drug_ids is not None:
