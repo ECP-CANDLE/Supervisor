@@ -3,36 +3,68 @@ import files;
 import io;
 import python;
 
-file studies[] = glob("test_data/data*.tsv");
+string studies[] = ["CCLE", "CTRP", "gCSI", "GDSC", "NCI60"]; //  "CTRP", "gCSI", "GDSC",
+string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_combat.bz2";
+string drug_response_data = "./test_data/rescaled_combined_single_drug_growth_100K";
+int cutoffs[][] = [[200, 100], 
+                   [100, 50], 
+                   [400, 200],
+                   [200, 50],
+                   [400, 50],
+                   [400, 100]];
+
 
 string xcorr_template = 
 """
-import xcorr
+import uno_xcorr
 
-fids = xcorr.compute_feature_correlationf('%s', '%s', %i)
+study1 = '%s'
+study2 = '%s'
+correlation_cutoff = %d
+cross_correlation_cutoff = %d
+features_file = '%s'
+uno_xcorr.coxen_feature_selection(study1, study2, correlation_cutoff, cross_correlation_cutoff, output_file=features_file)
 """;
 
-// for study 1 in set of studies
-//   for study 2 in set of studies
-//     if study 1 not equal study 2
-//       compute correlations
-foreach study1 in studies
+string init_xcorr_template =
+"""
+import uno_xcorr
+
+rna_seq_data = '%s'
+drug_response_data = '%s'
+
+uno_xcorr.init_uno_xcorr(rna_seq_data, drug_response_data)
+""";
+
+init_uno_xcorr() => 
 {
-  foreach study2 in studies
+  foreach study1 in studies
   {
-    printf("%s ?= %s", filename(study1), filename(study2));
-    if (filename(study1) != filename(study2))
+    foreach study2 in studies
     {
-      compute_feature_correlation(study1, study2);
+      if (study1 != study2)
+      {
+        foreach cutoff in cutoffs
+        {
+          printf("Study1: %s, Study2: %s, cc: %d, ccc: %d", study1, study2, cutoff[0], cutoff[1]);
+          fname = "./test_data/%s_%s_%d_%d_features.txt" % (study1, study2, cutoff[0], cutoff[1]);
+          compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
+        }
+      }
     }
   }
 }
 
-compute_feature_correlation(file study1, file study2)
+(void o)init_uno_xcorr() {
+  init_code = init_xcorr_template % (rna_seq_data, drug_response_data);
+  python_persist(init_code, "''") =>
+  o = propagate();
+}
+
+compute_feature_correlation(string study1, string study2, int cor_cutoff, int cross_cor_cutoff, string features_file)
 {
-  code = xcorr_template % (filename(study1), filename(study2), 3);
-  string fids = python_persist(code, "str(fids)");
-  printf(fids);
+  code = xcorr_template % (study1, study2, cor_cutoff, cross_cor_cutoff, features_file);
+  python_persist(code, "''");
 }
 
 
