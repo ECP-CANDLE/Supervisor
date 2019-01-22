@@ -55,4 +55,11 @@ $ sqlite3 xcorr.db "select * from records;"
 2019-01-09 14:22:08|1
 2019-01-09 14:22:08|2
 ...
+# To start over, just:
+$ rm xcorr.db
+----
+
+Run all the commands above:
+----
+$ ./run
 ----

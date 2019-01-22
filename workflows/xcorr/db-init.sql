@@ -5,5 +5,13 @@
 */
 
 create table records(
+       /* use rowid for unique record id */
        time timestamp,
-       metadata varchar(1024));
+       filename text,
+       source1 text,
+       source2 text,
+       /* cutoff for the correlation */
+       cutoff_corr real,
+       /* cutoff for the cross-correlation */
+       cutoff_xcorr real
+);
