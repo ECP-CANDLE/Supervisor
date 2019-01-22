@@ -4,7 +4,7 @@
 # See init-db.sql for the table schema
 
 import datetime
-import time    
+import time
 import sqlite3
 
 conn = sqlite3.connect('xcorr.db')
