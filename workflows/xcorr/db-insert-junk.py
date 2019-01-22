@@ -16,8 +16,9 @@ for i in range(1,11):
     filename = "file-%i.csv" % i
     source1 = "feature1"
     source2 = "feature2"
-    cutoff = 0.9
-    record = (d,filename,source1,source2,cutoff)
+    cutoff_corr = 0.9
+    cutoff_xcorr = 0.8
+    record = (d,filename,source1,source2,cutoff_corr,cutoff_xcorr)
     records.append(record)
 
 def insert_record(cursor, record):

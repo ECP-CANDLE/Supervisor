@@ -10,5 +10,8 @@ create table records(
        filename text,
        source1 text,
        source2 text,
-       cutoff real
+       /* cutoff for the correlation */
+       cutoff_corr real,
+       /* cutoff for the cross-correlation */
+       cutoff_xcorr real
 );
