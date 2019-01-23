@@ -16,3 +16,4 @@ python db-insert-junk.py
 
 sqlite3 $DB "select rowid, * from records;"
 sqlite3 $DB "select rowid, * from feature_names;"
+sqlite3 $DB "select *        from features;"
