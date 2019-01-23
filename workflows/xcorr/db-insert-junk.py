@@ -25,4 +25,8 @@ for name in feature_names:
     DB.insert("feature_names", [q(name)])
 
 DB.commit()
+
+names = DB.read_feature_names()
+print(names)
+
 DB.close()
