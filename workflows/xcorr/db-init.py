@@ -10,4 +10,4 @@ cursor = conn.cursor()
 with open("db-init.sql", "r") as fp:
     sqlcode = fp.read()
 
-cursor.execute(sqlcode);
+cursor.executescript(sqlcode);

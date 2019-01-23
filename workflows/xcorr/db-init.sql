@@ -15,3 +15,12 @@ create table records(
        /* cutoff for the cross-correlation */
        cutoff_xcorr real
 );
+
+create table features(
+       record_id integer,
+       feature_id integer
+);
+
+create table feature_names(
+       name text
+);
