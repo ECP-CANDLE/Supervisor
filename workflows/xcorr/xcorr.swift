@@ -29,9 +29,9 @@ uno_xcorr.coxen_feature_selection(study1, study2, correlation_cutoff, cross_corr
 string init_template =
 """
 import uno_xcorr
-import xcorr_db
+from xcorr_db import xcorr_db
 
-xcorr_db.init('./xcorr.db')
+DB = xcorr_db('xcorr.db')
 
 rna_seq_data = '%s'
 drug_response_data = '%s'
@@ -42,10 +42,9 @@ uno_xcorr.init_uno_xcorr(rna_seq_data, drug_response_data)
 
 string log_corr_template =
 """
-import xcorr_db
-
 # filename, source1, source2, cutoff_corr, cutoff_xcorr
-xcorr_db.insert_xcorr_record('%s', '%s', '%s', %f, %f)
+DB.insert_xcorr_record(filename='%s', source1='%s', source2='%s', cutoff_corr=%f, cutoff_xcorr=%f)
+DB.commit()
 """;
 
 init_xcorr() => 
