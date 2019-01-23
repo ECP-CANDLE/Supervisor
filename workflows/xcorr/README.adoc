@@ -1,6 +1,24 @@
 
 = Cross-correlation workflow
 
+== Installation
+
+This installs everything in a Conda location so you can easily remove it later.
+
+----
+$ curl -o Anaconda3-5.3.0-Linux-x86_64.sh https://repo.anaconda.com/archive/Anaconda3-5.3.0-Linux-x86_64.sh
+# Make the installer executable
+$ chmod u+x ./Anaconda3-5.3.0-Linux-x86_64.sh
+# Run the installer, accepting the defaults.
+$ ./Anaconda3-5.3.0-Linux-x86_64.sh
+# Manually update your path
+$ export PATH=$HOME/anaconda3/bin:$PATH
+$ conda create -n candle python=3.6
+$ conda activate candle
+# Install Swift/T
+$ conda install -c lightsource2-tag swift-t
+----
+
 == Quick start
 
 ----
