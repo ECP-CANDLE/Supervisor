@@ -3,9 +3,9 @@ for study 1 in set of studies
   for study 2 in set of studies
     if study 1 not equal study 2
       for cutoffs in set of cutoffs
-        gene_features_file = compute correlations (study1, study2, correlation_cutoff, cross_correlation_cutoff)
-        log(study1, study2, correlation_cutoff, cross_correlation_cutoff, gene_features_file)
-        log(contents of gene_features_file: list of gene names)
+        gene_features_list = compute correlations (study1, study2, correlation_cutoff, cross_correlation_cutoff)
+        log(study1, study2, correlation_cutoff, cross_correlation_cutoff, gene_features_list)
+        log(contents of gene_features_list: list of gene names for this Uno run)
         run Uno, passing gene_features_file via --feature_subset_path
         
 
