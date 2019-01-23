@@ -5,9 +5,9 @@ import sys
 
 conn = None
 
-def init(db_path):
+def init(db_file):
     global conn
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_file)
 
 def insert_xcorr_record(filename, source1, source2, cutoff_corr, cutoff_xcorr):
     sql = "insert into records values(?, ?, ?, ?, ?, ?)"
