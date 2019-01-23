@@ -11,7 +11,7 @@ from xcorr_db import xcorr_db, q
 
 DB = xcorr_db('xcorr.db')
 
-for i in range(1,11):
+for i in range(1,4):
     filename = "file-%i.csv" % i
     source1 = "feature1"
     source2 = "feature2"
