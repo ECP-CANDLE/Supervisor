@@ -16,6 +16,7 @@ $ export PATH=$HOME/anaconda3/bin:$PATH
 $ conda create -n candle python=3.6
 $ conda activate candle
 # Install Swift/T
+$ conda install numpy pandas
 $ conda install -c lightsource2-tag swift-t
 ----
 
