@@ -29,8 +29,8 @@ def crossCorrelation_FS(data1, data2, cutoff):
 
 
 # Use COXEN approach to select predictive and generalizable genes for prediction.
-# source1: the name of study 1, should be one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60'
-# source2: the name of study 2, should be one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60'
+# study1: the name of study 1, should be one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60'
+# study2: the name of study 2, should be one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60'
 # rnaSeqData: gene expression data following the format of combined_rnaseq_data_combat
 # drugResponseData: drug response data following the format of rescaled_combined_single_drug_growth
 # cutoffCorrelation: a positive number for selecting predictive genes. If cutoffCorrelation < 1, genes
@@ -41,14 +41,14 @@ def crossCorrelation_FS(data1, data2, cutoff):
 #        whose cross-correlation coefficient >= cutoffCrossCorrelation are selected. If cutoffCrossCorrelation >= 1,
 #        it must be an integer indicating the number of genes to be selected based on cross-correlation coefficient.
 
-def COXEN_FeatureSelection(source1, source2, rnaSeqData, drugResponseData, cutoffCorrelation=200, cutoffCrossCorrelation=100):
-    # get rnaSeq data of source1 and source2
-    source = np.array([i.split('.')[0] for i in rnaSeqData.index])
-    data1 = rnaSeqData.iloc[np.where(source == source1)[0], :]
-    data2 = rnaSeqData.iloc[np.where(source == source2)[0], :]
+def COXEN_FeatureSelection(study1, study2, rnaSeqData, drugResponseData, cutoffCorrelation=200, cutoffCrossCorrelation=100):
+    # get rnaSeq data of study1 and study2
+    study = np.array([i.split('.')[0] for i in rnaSeqData.index])
+    data1 = rnaSeqData.iloc[np.where(study == study1)[0], :]
+    data2 = rnaSeqData.iloc[np.where(study == study2)[0], :]
 
     # keep only drug response data of cell lines in data1
-    drugResponseData = drugResponseData.iloc[np.where(drugResponseData.SOURCE == source1)[0], :]
+    drugResponseData = drugResponseData.iloc[np.where(drugResponseData.SOURCE == study1)[0], :]
     drugResponseData = drugResponseData.iloc[np.where(np.isin(drugResponseData.CELLNAME, data1.index))[0], :]
 
     # perform the first step of COXEN approach to select predictive genes. To avoid exceeding the memory limit,
@@ -89,5 +89,5 @@ drugResponseData = pd.read_csv('/home/nick/Documents/repos/Benchmarks/Data/Pilot
 # The following line of code is just a example randomly selecting 10000 samples through subsetting drugResponseData.
 drugResponseData = drugResponseData.iloc[np.random.permutation(drugResponseData.shape[0])[:10000], :]
 
-selectedGenes = COXEN_FeatureSelection(source1='CTRP', source2='CCLE', rnaSeqData=rnaSeqData,
+selectedGenes = COXEN_FeatureSelection(study1='CTRP', study2='CCLE', rnaSeqData=rnaSeqData,
                        drugResponseData=drugResponseData, cutoffCorrelation=100, cutoffCrossCorrelation=50)

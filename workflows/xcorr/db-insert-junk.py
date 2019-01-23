@@ -21,15 +21,15 @@ print(name2id)
 
 for i in range(1,4):
     filename = "file-%i.csv" % i
-    source1 = "study1"
-    source2 = "study2"
+    study1 = "study1"
+    study2 = "study2"
     cutoff_corr = 0.9
     cutoff_xcorr = 0.8
     features = [ id for id in feature_names
                  if random.randint(0,1) == 0 ]
     # print(features)
     record = (filename,features,cutoff_corr,cutoff_xcorr)
-    DB.insert_xcorr_record(filename, source1, source2, features,
+    DB.insert_xcorr_record(filename, study1, study2, features,
                            cutoff_corr, cutoff_xcorr)
 
 DB.commit()

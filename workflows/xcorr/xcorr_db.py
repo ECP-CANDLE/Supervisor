@@ -15,7 +15,7 @@ class xcorr_db:
         self.id2name = None
         self.name2id = None
 
-    def insert_xcorr_record(self, filename, source1, source2, features,
+    def insert_xcorr_record(self, filename, study1, study2, features,
                             cutoff_corr, cutoff_xcorr):
         """
         Insert a new XCORR record.
@@ -23,7 +23,7 @@ class xcorr_db:
         """
         sql = "insert into records values(?, ?, ?, ?, ?, ?)"
         ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        values = (ts, filename, source1, source2,
+        values = (ts, filename, study1, study2,
                   cutoff_corr, cutoff_xcorr)
         print("DB: insert xcorr record: " + str(values))
         self.cursor.execute(sql, values)

@@ -17,7 +17,7 @@ $ conda create -n candle python=3.6
 $ conda activate candle
 # Install Swift/T
 $ conda install numpy pandas
-$ conda install -c lightsource2-tag swift-t
+$ conda install -c lightstudy2-tag swift-t
 ----
 
 == Quick start

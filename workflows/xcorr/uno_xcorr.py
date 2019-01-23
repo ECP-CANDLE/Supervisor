@@ -19,7 +19,7 @@ def init_uno_xcorr(rna_seq_path, drug_response_path, drug_ids=None):
     global gene_df
     gene_df = pd.read_csv(rna_seq_path, compression='infer', sep='\t', engine='c', na_values=['na', '-', ''],
         header=0, index_col=0)
-    gene_df['source'] = gene_df.index.str.extract('^([^.]*)', expand=False)
+    gene_df['study'] = gene_df.index.str.extract('^([^.]*)', expand=False)
     
     global drug_df
     drug_df = pd.read_csv(drug_response_path, compression='infer', sep='\t', engine='c',
@@ -28,34 +28,34 @@ def init_uno_xcorr(rna_seq_path, drug_response_path, drug_ids=None):
         drug_df = drug_df[drug_df['DRUG_ID'].isin(drug_ids)]
 
 
-def select_features(df, source_col, source='all'):
+def select_features(df, study_col, study='all'):
     """ Selects and returns a data frame from features whose 
-    source is equal to the specified source. If source is 'all' then
+    study is equal to the specified study. If study is 'all' then
     all features are returned. 
 
-    :param source: a string specifing the source -- one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60' 
+    :param study: a string specifing the study -- one of 'CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60' 
         or 'all'.
     """
 
     df1 = df
-    if source != 'all':
-        df1 = df1[df1[source_col] == source]
+    if study != 'all':
+        df1 = df1[df1[study_col] == study]
     return df1
 
 
 ## TODO: add additional args / functions for additional sample selection
-def coxen_feature_selection(source_1, source_2, correlation_cutoff, 
+def coxen_feature_selection(study_1, study_2, correlation_cutoff, 
     cross_correlation_cutoff, drug_ids=None, output_file=None):
 
-    df1 = select_features(gene_df, 'source', source_1)
+    df1 = select_features(gene_df, 'study', study_1)
     # add namespace prefix as required by Uno
-    df1 = df1.drop(['source'], axis=1).add_prefix("rnaseq.")
+    df1 = df1.drop(['study'], axis=1).add_prefix("rnaseq.")
 
-    df2 = select_features(gene_df, 'source', source_2)
+    df2 = select_features(gene_df, 'study', study_2)
     # add namespace prefix as required by Uno
-    df2 = df2.drop(['source'], axis=1).add_prefix("rnaseq.")
+    df2 = df2.drop(['study'], axis=1).add_prefix("rnaseq.")
 
-    dr_df = select_features(drug_df, 'SOURCE', source_1)
+    dr_df = select_features(drug_df, 'SOURCE', study_1)
     if drug_ids is not None:
         dr_df = dr_df[dr_df['DRUG_ID'].isin(drug_ids)]
 

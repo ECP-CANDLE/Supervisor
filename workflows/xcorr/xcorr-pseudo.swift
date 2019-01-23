@@ -11,7 +11,7 @@ for study 1 in set of studies
 
 compute correlations(study1, study2, correlation_cutoff, cross_correlation_cutoff):
   cf. uno_xcorr.coxen_feature_selection:
-    * source selection by study will generate set of cell lines (samples) to be used
+    * study selection by study will generate set of cell lines (samples) to be used
     * COXEN correlation based on the selected samples, to select best N gene features between
       the two studies
     * write gene features to file

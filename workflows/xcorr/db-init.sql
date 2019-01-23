@@ -9,8 +9,8 @@ create table records(
        /* use rowid for unique record id */
        time timestamp,
        filename text,
-       source1 text,
-       source2 text,
+       study1 text,
+       study2 text,
        /* cutoff for the correlation */
        cutoff_corr real,
        /* cutoff for the cross-correlation */
