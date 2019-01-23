@@ -4,6 +4,7 @@
     See db-init.py for usage
 */
 
+/* The main table, one row for each training run */
 create table records(
        /* use rowid for unique record id */
        time timestamp,
@@ -16,11 +17,17 @@ create table records(
        cutoff_xcorr real
 );
 
+
+/* A given record will have multiple entries in this table,
+   one for each feature used
+*/
 create table features(
-       record_id integer,
-       feature_id integer
+       record_id integer, /* the rowid in table records */
+       feature_id integer /* the rowid in table feature_names */
 );
 
+/* Maps feature IDs (the rowid) to feature names */
 create table feature_names(
+       /* use rowid for unique record id */
        name text
 );
