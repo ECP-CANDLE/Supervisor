@@ -6,15 +6,15 @@ import python;
 string studies[] = ["CCLE", "CTRP", "gCSI", "GDSC", "NCI60"]; //  "CTRP", "gCSI", "GDSC",
 string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_combat.bz2";
 string drug_response_data = "./test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[200, 100], 
-                   [100, 50], 
+int cutoffs[][] = [[200, 100],
+                   [100, 50],
                    [400, 200],
                    [200, 50],
                    [400, 50],
                    [400, 100]];
 
 
-string xcorr_template = 
+string xcorr_template =
 """
 import uno_xcorr
 
@@ -47,7 +47,7 @@ DB.insert_xcorr_record(filename='%s', source1='%s', source2='%s', cutoff_corr=%f
 DB.commit()
 """;
 
-init_xcorr() => 
+init_xcorr() =>
 {
   foreach study1 in studies
   {
