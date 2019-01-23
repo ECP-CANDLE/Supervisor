@@ -4,7 +4,9 @@
 == Quick start
 
 ----
-$ ./make-fake-studies.sh
+# Create the DB if you haven't already
+$ python db-init.py
+# Run the workflow
 $ ./xcorr.sh
 ----
 
@@ -25,6 +27,14 @@ Translation of +xcorr-psuedo.swift+ into runnable workflow
 +xcorr.py+::
 
 Implementation of the cross-correlation application functionality
+
++uno_xcorr.py+::
+
+Cross-correlation functionality specialized for Uno benchmark compatible data
+
++xcorr_db.py+::
+
+DB related functionality for xcorr logging
 
 == Database
 

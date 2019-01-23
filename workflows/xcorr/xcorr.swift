@@ -26,9 +26,12 @@ features_file = '%s'
 uno_xcorr.coxen_feature_selection(study1, study2, correlation_cutoff, cross_correlation_cutoff, output_file=features_file)
 """;
 
-string init_xcorr_template =
+string init_template =
 """
 import uno_xcorr
+import xcorr_db
+
+xcorr_db.init('./xcorr.db')
 
 rna_seq_data = '%s'
 drug_response_data = '%s'
@@ -36,7 +39,16 @@ drug_response_data = '%s'
 uno_xcorr.init_uno_xcorr(rna_seq_data, drug_response_data)
 """;
 
-init_uno_xcorr() => 
+
+string log_corr_template =
+"""
+import xcorr_db
+
+# filename, source1, source2, cutoff_corr, cutoff_xcorr
+xcorr_db.insert_xcorr_record('%s', '%s', '%s', %f, %f)
+""";
+
+init_xcorr() => 
 {
   foreach study1 in studies
   {
@@ -55,15 +67,17 @@ init_uno_xcorr() =>
   }
 }
 
-(void o)init_uno_xcorr() {
-  init_code = init_xcorr_template % (rna_seq_data, drug_response_data);
+(void o)init_xcorr() {
+  init_code = init_template % (rna_seq_data, drug_response_data);
   python_persist(init_code, "''") =>
   o = propagate();
 }
 
-compute_feature_correlation(string study1, string study2, int cor_cutoff, int cross_cor_cutoff, string features_file)
+compute_feature_correlation(string study1, string study2, int corr_cutoff, int xcorr_cutoff, string features_file)
 {
-  code = xcorr_template % (study1, study2, cor_cutoff, cross_cor_cutoff, features_file);
+  log_code = log_corr_template % (features_file, study1, study2, corr_cutoff, xcorr_cutoff);
+  python_persist(log_code, "''");
+  code = xcorr_template % (study1, study2, corr_cutoff, xcorr_cutoff, features_file);
   python_persist(code, "''");
 }
 
