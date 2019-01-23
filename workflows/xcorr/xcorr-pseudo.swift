@@ -7,12 +7,12 @@ for study 1 in set of studies
         log(study1, study2, correlation_cutoff, cross_correlation_cutoff, gene_features_list)
         log(contents of gene_features_list: list of gene names for this Uno run)
         run Uno, passing gene_features_file via --feature_subset_path
-        
+
 
 compute correlations(study1, study2, correlation_cutoff, cross_correlation_cutoff):
   cf. uno_xcorr.coxen_feature_selection:
     * source selection by study will generate set of cell lines (samples) to be used
-    * COXEN correlation based on the selected samples, to select best N gene features between 
+    * COXEN correlation based on the selected samples, to select best N gene features between
       the two studies
     * write gene features to file
 
@@ -27,6 +27,3 @@ cutoffCorrelation=400, cutoffCrossCorrelation=200
 cutoffCorrelation=200, cutoffCrossCorrelation=50
 cutoffCorrelation=400, cutoffCrossCorrelation=50
 cutoffCorrelation=400, cutoffCrossCorrelation=100
-
-
-
