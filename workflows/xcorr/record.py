@@ -9,11 +9,14 @@ class Record:
         self.studies  = []
 
     def scan(self, row):
-        self.rowid, self.ts, self.filename = row[0:3]
+        self.rowid, self.ts, self.cutoff_corr, self.cutoff_xcorr = \
+                row[0:4]
+
 
     def print(self):
-        print("record:   " + str(self.rowid))
-        print("time:     " + self.ts)
-        print("filename: " + self.filename)
-        print("features: " + ", ".join(self.features))
-        print("studies:  " + ", ".join(self.studies))
+        print("record:       " + str(self.rowid))
+        print("timestamp:    " + self.ts)
+        print("cutoff_corr:  " + str(self.cutoff_corr))
+        print("cutoff_xcorr: " + str(self.cutoff_xcorr))
+        print("features:     " + ", ".join(self.features))
+        print("studies:      " + ", ".join(self.studies))

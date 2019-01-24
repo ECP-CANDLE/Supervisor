@@ -8,11 +8,10 @@
 create table records(
        rowid integer primary key,
        time timestamp,
-       filename text,
        /* cutoff for the correlation */
-       cutoff_corr real,
+       cutoff_corr integer,
        /* cutoff for the cross-correlation */
-       cutoff_xcorr real
+       cutoff_xcorr integer
 );
 
 /* A given record will have multiple entries in this table,

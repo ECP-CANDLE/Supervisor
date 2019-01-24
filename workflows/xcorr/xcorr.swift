@@ -43,9 +43,9 @@ uno_xcorr.init_uno_xcorr(rna_seq_data, drug_response_data)
 
 string log_corr_template =
 """
-DB.insert_xcorr_record(filename='%s',
-                       studies=[ '%s', '%s' ],
-                       features=[],
+features = DB.scan_features_file('%s')
+DB.insert_xcorr_record(studies=[ '%s', '%s' ],
+                       features=features,
                        cutoff_corr=%f, cutoff_xcorr=%f)
 DB.commit()
 """;

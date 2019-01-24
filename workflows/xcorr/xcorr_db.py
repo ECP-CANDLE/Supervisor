@@ -18,15 +18,15 @@ class xcorr_db:
         self.study_name2id   = None
         self.autoclose = True
 
-    def insert_xcorr_record(self, filename, studies, features,
+    def insert_xcorr_record(self, studies, features,
                             cutoff_corr, cutoff_xcorr):
         """
         Insert a new XCORR record.
         :return: The ID of the new record
         """
         ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        names  = [ "time",  "filename",    "cutoff_corr",    "cutoff_xcorr" ]
-        values = [  q(ts), q(filename), str(cutoff_corr), str(cutoff_xcorr) ]
+        names  = [ "time",    "cutoff_corr",    "cutoff_xcorr" ]
+        values = [  q(ts), str(cutoff_corr), str(cutoff_xcorr) ]
         record_id = self.insert("records", names, values)
         print("DB: inserted record: " + record_id)
         for feature in features:
@@ -39,6 +39,20 @@ class xcorr_db:
                                    [ record_id ,  study_id ])
 
         return record_id
+
+    def scan_features_file(self, filename):
+        results = []
+        with open(filename) as fp:
+            while True:
+                line = fp.readline()
+                if line == "": break
+                tokens = line.split("#")
+                line = tokens[0]
+                line = line.strip()
+                if line == "": continue
+                line = line.replace("rnaseq.", "")
+                results.append(line)
+        return results
 
     def read_feature_names(self):
         cmd = "select rowid, name from feature_names;"

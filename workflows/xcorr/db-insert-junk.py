@@ -18,14 +18,12 @@ feature_names = feature_name2id.keys()
 study_names   = study_name2id  .keys()
 
 for i in range(1,4):
-    filename = "file-%i.csv" % i
-    cutoff_corr = 0.9
-    cutoff_xcorr = 0.8
+    cutoff_corr = 200
+    cutoff_xcorr = 50
     features = [ feature for feature in feature_names
                  if random.randint(0,300) == 0 ]
     studies  = [ study   for study   in study_names
                  if random.randint(0,1) == 0 ]
-    # print(features)
-    record = (filename,features,cutoff_corr,cutoff_xcorr)
-    DB.insert_xcorr_record(filename, studies, features,
+    record = ( features, cutoff_corr, cutoff_xcorr )
+    DB.insert_xcorr_record(studies, features,
                            cutoff_corr, cutoff_xcorr)
