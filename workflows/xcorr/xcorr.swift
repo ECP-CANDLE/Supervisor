@@ -46,7 +46,7 @@ string log_corr_template =
 features = DB.scan_features_file('%s')
 DB.insert_xcorr_record(studies=[ '%s', '%s' ],
                        features=features,
-                       cutoff_corr=%f, cutoff_xcorr=%f)
+                       cutoff_corr=%d, cutoff_xcorr=%d)
 DB.commit()
 """;
 
