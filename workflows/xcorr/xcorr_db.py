@@ -24,20 +24,19 @@ class xcorr_db:
         Insert a new XCORR record.
         :return: The ID of the new record
         """
-        sql = "insert into records values(?, ?, ?, ?)"
         ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        values = (ts, filename,
-                  cutoff_corr, cutoff_xcorr)
-        print("DB: insert xcorr record: " + str(values))
-        self.cursor.execute(sql, values)
-        record_id = str(self.cursor.lastrowid)
+        names  = [ "time",  "filename",    "cutoff_corr",    "cutoff_xcorr" ]
+        values = [  q(ts), q(filename), str(cutoff_corr), str(cutoff_xcorr) ]
+        record_id = self.insert("records", names, values)
         print("DB: inserted record: " + record_id)
         for feature in features:
             feature_id = str(self.feature_name2id[feature])
-            self.insert("features", (record_id, feature_id))
+            self.insert("features", ["record_id", "feature_id"],
+                                    [ record_id ,  feature_id ])
         for study in studies:
             study_id = str(self.study_name2id[study])
-            self.insert("studies", (record_id, study_id))
+            self.insert("studies", ["record_id", "study_id"],
+                                   [ record_id ,  study_id ])
 
         return record_id
 
@@ -67,9 +66,11 @@ class xcorr_db:
             self.study_name2id[name]  = rowid
         return self.study_id2name, self.study_name2id
 
-    def insert(self, table, values):
-        tpl = sql_tuple(values)
-        cmd = "insert into %s values %s;" % (table, tpl)
+    def insert(self, table, names, values):
+        """ Do a SQL insert """
+        names_tpl  = sql_tuple(names)
+        values_tpl = sql_tuple(values)
+        cmd = "insert into %s %s values %s;" % (table, names_tpl, values_tpl)
         print("SQL: " + cmd)
         self.cursor.execute(cmd)
         rowid = str(self.cursor.lastrowid)

@@ -6,7 +6,7 @@
 
 /* The main table, one row for each training run */
 create table records(
-       /* use rowid for unique record id */
+       rowid integer primary key,
        time timestamp,
        filename text,
        /* cutoff for the correlation */
@@ -19,8 +19,8 @@ create table records(
    one for each feature used
 */
 create table features(
-       record_id integer, /* the rowid in table records */
-       feature_id integer /* the rowid in table feature_names */
+       record_id  integer, /* the rowid in table records */
+       feature_id integer  /* the rowid in table feature_names */
 );
 
 /* A given record will have multiple entries in this table,
@@ -28,17 +28,17 @@ create table features(
 */
 create table studies(
        record_id integer, /* the rowid in table records */
-       study_id integer   /* the rowid in table study_names */
+       study_id  integer  /* the rowid in table study_names */
 );
 
 /* Maps feature IDs (the rowid) to feature names */
 create table feature_names(
-       /* use rowid for unique record id */
+       rowid integer primary key,
        name text
 );
 
 /* Maps study IDs (the rowid) to study names */
 create table study_names(
-       /* use rowid for unique record id */
+       rowid integer primary key,
        name text
 );
