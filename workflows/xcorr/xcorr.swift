@@ -3,7 +3,7 @@ import files;
 import io;
 import python;
 
-string studies[] = ["CCLE", "CTRP", "gCSI", "GDSC", "NCI60"]; //  "CTRP", "gCSI", "GDSC",
+string studies[] = file_lines(input("studies.txt"));
 string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_combat.bz2";
 string drug_response_data = "./test_data/rescaled_combined_single_drug_growth_100K";
 int cutoffs[][] = [[200, 100],
