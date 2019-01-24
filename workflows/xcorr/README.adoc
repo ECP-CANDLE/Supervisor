@@ -27,6 +27,22 @@ $ conda install -c lightsource2-tag swift-t
 $ python db-init.py
 # Run the workflow
 $ ./xcorr.sh
+# Kill it with Ctrl-C after ~10 seconds
+# View what you generated
+$ export PYTHONPATH=$PWD
+$ python list-records.py
+record:   1
+time:     2019-01-24 14:48:11
+filename: ./test_data/NCI60_GDSC_400_50_features.txt
+features:
+studies:  NCI60, GDSC
+
+record:   2
+time:     2019-01-24 14:48:11
+filename: ./test_data/CCLE_CTRP_400_100_features.txt
+features:
+studies:  CCLE, CTRP
+...
 ----
 
 == File index
