@@ -60,7 +60,7 @@ def coxen_feature_selection(study_1, study_2, correlation_cutoff,
         dr_df = dr_df[dr_df['DRUG_ID'].isin(drug_ids)]
 
     # keep only drug response data of cell lines in data1
-    dr_df = drug_df.iloc[np.where(np.isin(dr_df.CELLNAME, df1.index))[0], :]
+    dr_df = dr_df.iloc[np.where(np.isin(dr_df.CELLNAME, df1.index))[0], :]
 
     # perform the first step of COXEN approach to select predictive genes. To avoid exceeding the memory limit,
     # the prediction power of genes (i.e. absolute correlation coefficient with drug response) is calculated in batches.
