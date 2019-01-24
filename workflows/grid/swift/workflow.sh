@@ -46,7 +46,7 @@ if ! {
   get_expid   $2 # Sets EXPID
   MODEL_NAME=$5
   get_cfg_sys $3
-  get_cfg_prm $4
+  get_cfg_prm $4 # this sets MODEL_NAME to p1b1
  }
 then
   usage
@@ -103,6 +103,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
+
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
 
@@ -152,3 +153,5 @@ swift-t -n $PROCS \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+
+exit 44

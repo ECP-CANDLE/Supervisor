@@ -44,6 +44,7 @@ exec 2>&1
 cd $INSTANCE_DIRECTORY
 
 echo "MODEL.SH START:"
+date +%s
 echo "MODEL_NAME: $MODEL_NAME"
 echo "RUNID: $RUNID"
 
@@ -67,7 +68,7 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$RUNID"
             "$BENCHMARK_TIMEOUT")
 MODEL_CMD="python -u ${arg_array[@]}"
-# echo MODEL_CMD: $MODEL_CMD
+ echo MODEL_CMD: $MODEL_CMD
 if $TIMEOUT_CMD python -u "${arg_array[@]}"
 then
   : # Assume success so we can keep a failed exit code
@@ -92,6 +93,7 @@ else
   fi
 fi
 
+date +%s
 echo "MODEL.SH END: SUCCESS"
 exit 0 # Success
 

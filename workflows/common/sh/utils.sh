@@ -194,8 +194,8 @@ source_site()
     return 1
   fi
 
-  TOKEN=$1
-  export SITE=$2
+  TOKEN=$1 # env
+  export SITE=$2 # biowulf
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
   then

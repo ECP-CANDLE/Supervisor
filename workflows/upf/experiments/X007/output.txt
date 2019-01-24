@@ -1,0 +1,5 @@
+stdin: is not a tty
+TURBINE-SLURM.SH
+
++ srun -cc none /usr/local/Tcl_Tk/8.6.8/gcc_7.2.0/bin/tclsh8.6 /gpfs/gsfs9/users/BIDS-HPC/public/candle/Supervisor/workflows/upf/experiments/X007/swift-t-workflow.5JR.tic -expid=X007 -benchmark_timeout=600 -f=upf-1.txt
+srun: error: Invalid numeric value "c" for cpus-per-task.
