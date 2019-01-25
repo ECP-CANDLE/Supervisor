@@ -19,7 +19,6 @@ int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 // Report some key facts:
 printf("UPF: %s", filename(upf));
-
 system1("date \"+%Y/%m/%d %H:%M\"");
 
 // Read unrolled parameter file

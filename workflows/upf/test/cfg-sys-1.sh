@@ -17,8 +17,7 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-debug}
 # Cori queues: debug, regular
 # export QUEUE=regular
-#export QUEUE=debug
-export QUEUE=gpu
+export QUEUE=debug
 # CANDLE on Cori:
 # export PROJECT=m2924
 
@@ -41,6 +40,3 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 # Use file name without .py (e.g, my_script.py)
 # BENCHMARK_DIR=/path/to/
 # MODEL_PYTHON_SCRIPT=my_script
-#BENCHMARK_DIR=/data/BIDS-HPC/public/candle/Benchmarks/Pilot1/P1B3/
-MODEL_PYTHON_DIR=/data/BIDS-HPC/public/candle/Benchmarks/Pilot1/P1B3/
-MODEL_PYTHON_SCRIPT=p1b3_baseline_keras2

@@ -2,7 +2,7 @@
 # Language settings for non-Singularity Biowulf (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
 
-# Modules
+# Modules; this and following R block are what was needed to successfully at least COMPILE Swift/T
 module load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 python/3.6 ant/1.10.3 java/1.8.0_181
 
 # Load R paths manually since we can't load the module on the Biowulf submit nodes
@@ -11,18 +11,20 @@ PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/b
 export R_LIBS_SITE=/usr/local/apps/R/3.5/site-library_build2
 export R_LIBS_USER=~/R/%v/library
 
+# Which line is uncommented depends on which GPU system we’re using, e.g., k20x needs the first line uncommented, and p100 and v100’s need the second line uncommented. This suppresses an MPI error due to having multiple Infiniband interfaces.
+#export OMPI_MCA_btl_openib_if_exclude="mlx4_0:1"
+export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
+
+# Other additions
 CANDLE=/data/BIDS-HPC/public/candle
-export R_LIBS=$CANDLE/R/libs/
+export R_LIBS=$CANDLE/R/libs/ # these are the libraries I installed via workflows/common/R/install-candle.sh
 export PATH=$PATH:$CANDLE/swift-t-install/stc/bin
 export PATH=$PATH:$CANDLE/swift-t-install/turbine/bin
 export TURBINE_LOG=1
 export ADLB_DEBUG_RANKS=1
 export ADLB_DEBUG_HOSTMAP=1
-#export OMPI_MCA_btl_openib_if_exclude="mlx4_0:1"
-export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
-
-export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so
-export EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so
+export EQR=$WORKFLOWS_ROOT/common/ext/EQ-R # I don’t know where else to find this directory that needs to be available, e.g., in workflow.sh
 PYTHONPATH=$PYTHONPATH:$CANDLE/swift-t-install/turbine/py
 
 # Set up environment
@@ -64,8 +66,8 @@ SWIFT_IMPL="app"
 PYTHON=$(cd $(dirname $(which python))/../; pwd)
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
-PYTHONPATH+=$BENCHMARK_DIR:
-PYTHONPATH+=$BENCHMARKS_ROOT/common:
+#PYTHONPATH+=$BENCHMARK_DIR:
+#PYTHONPATH+=$BENCHMARKS_ROOT/common:
 #PYTHONPATH+=$SWIFT/turbine/py:
 COMMON_DIR=$WORKFLOWS_ROOT/common/python
 PYTHONPATH+=$COMMON_DIR

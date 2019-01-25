@@ -6,9 +6,9 @@ set -eu
 # Autodetect this workflow directory
 #export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P1B2
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
+#export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+#BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P1B2
+#export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
@@ -82,20 +82,6 @@ export UPF
 #export TURBINE_LAUNCH_OPTIONS="-cc none"
 export TURBINE_LAUNCH_OPTIONS=""
 
-#echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-#echo $MODEL_PYTHON_SCRIPT
-#echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-
-#echo "111111111111111111"
-#echo $PYTHONPATH
-
-#swift-t -n 3 -r /home/weismanal/notebook/2019-01-17 /home/weismanal/notebook/2019-01-17/myextension2.swift # -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-
-#srun -n 1 python /data/BIDS-HPC/public/candle/Benchmarks/Pilot1/P1B3/p1b3_baseline_keras2.py
-
-if [ 1 -eq 1 ]; then
-
-#swift-t -V -V -n $PROCS \
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -116,5 +102,3 @@ swift-t -n $PROCS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
-
-fi

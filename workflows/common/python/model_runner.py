@@ -16,7 +16,7 @@ logger = None
 
 print("MODEL RUNNER...")
 
-sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
+#sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 
 print("sys.path:")

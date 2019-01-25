@@ -18,7 +18,7 @@ export PPN=${PPN:-1}
 # Cori queues: debug, regular
 # export QUEUE=regular
 #export QUEUE=debug
-export QUEUE=gpu
+export QUEUE=${QUEUE:-gpu}
 # CANDLE on Cori:
 # export PROJECT=m2924
 
@@ -30,12 +30,14 @@ export QUEUE=gpu
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
+export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE:-k20x}:1 --mem=${MEM_PER_NODE:-20G}"
+
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov
 
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600} # probably not needed but this variable is baked into rest of code, e.g., workflow.sh
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
@@ -44,5 +46,3 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 #BENCHMARK_DIR=/data/BIDS-HPC/public/candle/Benchmarks/Pilot1/P1B3/
 #MODEL_PYTHON_DIR=/data/BIDS-HPC/public/candle/Benchmarks/Pilot1/P1B3/
 #MODEL_PYTHON_SCRIPT=p1b3_baseline_keras2
-
-export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE}:1 --mem=${MEM_PER_NODE}"
