@@ -1,14 +1,12 @@
 import numpy as np
-from scipy.stats import ttest_ind
-
 import os
 
 def correlation_feature_selection(data, targets, labels, cutoff):
     """
     Use Pearson correlation coefficient to select predictive features for regression.
     :param data: an data table, where rows are samples and columns are features
-    :param data_label: 
-    :param targets: a vector of real numbers indicating the regression targets, with length the same as the number of rows in data.
+    :param label: sample labels of data, which match with targets
+    :param targets: a vector of real numbers indicating the regression targets, with a length the same as labels.
     :param cutoff: a positive number for selecting predictive features. If cutoff < 1, this function selects
        the features with an absolute correlation coefficient >= cutoff. If cutoff >= 1, it must be an
        integer indicating the number of features to be selected based on absolute correlation coefficient.
