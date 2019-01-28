@@ -73,7 +73,7 @@ Original cross-correlation pseudocode
 
 +xcorr.swift+::
 
-Translation of +xcorr-psuedo.swift+ into runnable workflow
+Translation of +xcorr-pseudo.swift+ into runnable workflow
 
 +xcorr.py+::
 

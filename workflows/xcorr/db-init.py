@@ -1,7 +1,7 @@
 
 # DB INIT PY
 # Initialize the SQLite DB
-# See init-db.sql for the table schema
+# See db-init.sql for the table schema
 
 from xcorr_db import xcorr_db, q
 
