@@ -87,7 +87,25 @@ Cross-correlation functionality specialized for Uno benchmark compatible data
 
 DB related functionality for xcorr logging
 
-== Database
+== Workflow description
+
+. The overarching idea is to execute the nested loops in xcorr-pseudo.swift
+. The user needs to have the Anaconda environment and software installed
+. The user needs to set up the DB
+.. Create the tables
+.. Set up the tables 'feature_names' and 'study_names',
+   which are based on the provided data files.
+   These tables map between names and ID numbers for these items.
+. Each iteration
+.. Sets up the correlations by calling the math functions in xcorr.py
+... This creates a feature list for Uno execution
+.. Runs Uno (not yet implemented)
+.. Inserts metadata into the DB
+... The DB insertion entry point is in xcorr_db.insert_xcorr_record()
+... This inserts the main metadata in table 'records',
+    with feature and study references in tables 'features' and 'studies'
+
+== Database testing
 
 === Quick start
 

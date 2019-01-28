@@ -10,6 +10,11 @@ import sys
 class xcorr_db:
 
     def __init__(self, db_file):
+        """
+        Sets up a wrapper around the SQL connection and cursor objects
+        Also caches dicts that convert between names and ids for the
+        features and studies tables
+        """
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
         self.feature_id2name = None
@@ -31,12 +36,14 @@ class xcorr_db:
         print("DB: inserted record: " + record_id)
         for feature in features:
             feature_id = str(self.feature_name2id[feature])
-            self.insert("features", ["record_id", "feature_id"],
-                                    [ record_id ,  feature_id ])
+            self.insert(table="features",
+                        names=["record_id", "feature_id"],
+                        values=[ record_id ,  feature_id ])
         for study in studies:
             study_id = str(self.study_name2id[study])
-            self.insert("studies", ["record_id", "study_id"],
-                                   [ record_id ,  study_id ])
+            self.insert(table="studies",
+                        names=["record_id", "study_id"],
+                        values=[ record_id ,  study_id ])
 
         return record_id
 

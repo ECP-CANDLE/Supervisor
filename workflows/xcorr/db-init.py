@@ -8,12 +8,17 @@ from xcorr_db import xcorr_db, q
 DB = xcorr_db('xcorr.db')
 
 def create_tables():
+    """ Set up the tables defined in the SQL file """
     with open("db-init.sql") as fp:
         sqlcode = fp.read()
     DB.executescript(sqlcode);
     DB.commit()
 
 def insert_feature_names():
+    """
+    Copy features from the header of this datafile
+    into the features table
+    """
     datafile = "test_data/combined_rnaseq_data_lincs1000_combat"
 
     with open(datafile) as fp:
@@ -48,6 +53,7 @@ def create_indices():
     DB.execute("create index features_index on features(record_id);")
     DB.execute("create index  studies_index on studies ( study_id);")
 
+# Catch and print all exceptions to improve visibility of success/failure
 success = False
 try:
     create_tables()
