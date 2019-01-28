@@ -3,12 +3,13 @@
 # DB helper functions
 
 import datetime
+import logging
 import sqlite3
 import sys
 
 class xcorr_db:
 
-    def __init__(self, db_file):
+    def __init__(self, db_file, log=False):
         """
         Sets up a wrapper around the SQL connection and cursor objects
         Also caches dicts that convert between names and ids for the
@@ -20,7 +21,12 @@ class xcorr_db:
         self.feature_name2id = None
         self.study_id2name   = None
         self.study_name2id   = None
-        self.autoclose = True
+        self.autoclose       = True
+        self.logger          = None # Default
+        if log:
+            logging.basicConfig(format="SQL: %(message)s")
+            self.logger = logging.getLogger("xcorr_db")
+            self.logger.setLevel(logging.DEBUG)
 
     def insert_xcorr_record(self, studies, features,
                             cutoff_corr, cutoff_xcorr):
@@ -32,7 +38,6 @@ class xcorr_db:
         names  = [ "time",    "cutoff_corr",    "cutoff_xcorr" ]
         values = [  q(ts), str(cutoff_corr), str(cutoff_xcorr) ]
         record_id = self.insert("records", names, values)
-        print("DB: inserted record: " + record_id)
         for feature in features:
             feature_id = str(self.feature_name2id[feature])
             self.insert(table="features",
@@ -43,7 +48,7 @@ class xcorr_db:
             self.insert(table="studies",
                         names=["record_id", "study_id"],
                         values=[ record_id ,  study_id ])
-
+        self.log("inserted record: " + record_id)
         return record_id
 
     def scan_features_file(self, filename):
@@ -91,12 +96,12 @@ class xcorr_db:
         names_tpl  = sql_tuple(names)
         values_tpl = sql_tuple(values)
         cmd = "insert into %s %s values %s;" % (table, names_tpl, values_tpl)
-        print("SQL: " + cmd)
-        self.cursor.execute(cmd)
+        self.execute(cmd)
         rowid = str(self.cursor.lastrowid)
         return rowid
 
     def execute(self, cmd):
+        self.log(cmd)
         self.cursor.execute(cmd)
 
     def executescript(self, cmds):
@@ -109,12 +114,16 @@ class xcorr_db:
         self.autoclose = False
         self.conn.close()
 
+    def log(self, message):
+        if self.logger:
+            self.logger.info(message)
+
     def __del__(self):
         if not self.autoclose:
             return
         self.conn.commit()
         self.conn.close()
-        print("DB auto-closed.");
+        self.log("DB auto-closed.");
 
 
 def q(s):
