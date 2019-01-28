@@ -1,0 +1,9 @@
+10	4	5	tanh	16	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_10/model_weights.h5	981
+11	4	5	tanh	32	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_11/model_weights.h5	427
+16	5	3	tanh	16	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_16/model_weights.h5	1371
+17	5	3	tanh	32	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_17/model_weights.h5	847
+22	5	5	tanh	16	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_22/model_weights.h5	778
+23	5	5	tanh	32	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_23/model_weights.h5	315
+28	6	3	tanh	16	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_28/model_weights.h5	1183
+34	6	5	tanh	16	/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_34/model_weights.h5	561
+last_good_unet	5	5	relu	64	/home/weismanal/notebook/2019-01-23/continuing_original_unet/model_weights.h5	139

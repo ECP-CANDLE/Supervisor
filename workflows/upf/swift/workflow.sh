@@ -39,7 +39,7 @@ then
 fi
 
 # Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+#PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
 source_site env   $SITE
 source_site sched   $SITE
@@ -88,7 +88,6 @@ swift-t -n $PROCS \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e MODEL_SH \
         -e SITE \
@@ -102,3 +101,4 @@ swift-t -n $PROCS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+        #-e BENCHMARKS_ROOT \
