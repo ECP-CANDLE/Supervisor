@@ -41,12 +41,12 @@ class xcorr_db:
         for feature in features:
             feature_id = str(self.feature_name2id[feature])
             self.insert(table="features",
-                        names=["record_id", "feature_id"],
+                        names=[ "record_id", "feature_id"],
                         values=[ record_id ,  feature_id ])
         for study in studies:
             study_id = str(self.study_name2id[study])
             self.insert(table="studies",
-                        names=["record_id", "study_id"],
+                        names=[ "record_id", "study_id"],
                         values=[ record_id ,  study_id ])
         self.log("inserted record: " + record_id)
         return record_id
