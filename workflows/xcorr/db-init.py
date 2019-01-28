@@ -48,7 +48,20 @@ def create_indices():
     DB.execute("create index features_index on features(record_id);")
     DB.execute("create index  studies_index on studies ( study_id);")
 
-create_tables()
-insert_feature_names()
-insert_study_names()
-create_indices()
+success = False
+try:
+    create_tables()
+    insert_feature_names()
+    insert_study_names()
+    create_indices()
+    success = True
+except Exception as e:
+    import traceback
+    print(traceback.format_exc())
+
+if not success:
+    print("DB: !!! INIT FAILED !!!")
+    import sys
+    sys.exit(1)
+
+print("DB: initialized successfully")
