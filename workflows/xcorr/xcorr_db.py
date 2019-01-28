@@ -2,9 +2,8 @@
 # XCORR DB PY
 # DB helper functions
 
-import sqlite3
 import datetime
-
+import sqlite3
 import sys
 
 class xcorr_db:
