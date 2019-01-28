@@ -5,19 +5,35 @@
 
 This installs everything in a Conda location so you can easily remove it later.
 
+NOTE: For Anaconda, you are now supposed to source conda.sh ,
+not modify PATH directly
+
 ----
 $ curl -o Anaconda3-5.3.0-Linux-x86_64.sh https://repo.anaconda.com/archive/Anaconda3-5.3.0-Linux-x86_64.sh
 # Make the installer executable
 $ chmod u+x ./Anaconda3-5.3.0-Linux-x86_64.sh
 # Run the installer, accepting the defaults.
 $ ./Anaconda3-5.3.0-Linux-x86_64.sh
-# Manually update your path
-$ export PATH=$HOME/anaconda3/bin:$PATH
+# Start Anaconda
+$ source $HOME/anaconda3/etc/profile.d/conda.sh
 $ conda create -n candle python=3.6
-$ conda activate candle
-# Install Swift/T
+$ source activate candle
 $ conda install scipy pandas
+# Install Swift/T
 $ conda install -c lightsource2-tag swift-t
+----
+
+Set up the data
+----
+# Need -k to keep the compressed file
+$ bunzip2 -k test_data/combined_rnaseq_data_lincs1000_combat.bz2
+----
+
+After logout, to restart working:
+----
+# Start Anaconda
+$ source $HOME/anaconda3/etc/profile.d/conda.sh
+$ source activate candle
 ----
 
 == Quick start
