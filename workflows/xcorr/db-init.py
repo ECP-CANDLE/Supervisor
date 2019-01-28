@@ -30,7 +30,9 @@ def insert_feature_names():
     for name in feature_names:
         if name == "": continue
         name = name.strip()
-        DB.insert("feature_names", ["name"], [q(name)])
+        DB.insert(table="feature_names",
+                  names=["name"],
+                  values=[q(name)])
 
 def insert_study_names():
     """ Copy study names from studies.txt into the DB """
@@ -46,7 +48,9 @@ def insert_study_names():
             studies.append(line)
 
     for study in studies:
-        DB.insert("study_names", ["name"], [q(study)])
+        DB.insert(table="study_names",
+                  names=["name"],
+                  values=[q(study)])
 
 def create_indices():
     """ Create indices after data insertion for speed """
