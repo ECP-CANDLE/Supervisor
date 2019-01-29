@@ -4,6 +4,7 @@
 #SBATCH --mem=20G
 #SBATCH --gres=gpu:v100:1
 #SBATCH --time=24:00:00
+#SBATCH --job-name=hpset_23
 
 # Set up environment
 module load python/3.6
