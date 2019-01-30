@@ -1,7 +1,15 @@
 
+/*
+  XCORR SWIFT
+  Main cross-correlation workflow
+*/
+
 import files;
 import io;
 import python;
+import unix;
+
+printf("XCORR WORKFLOW");
 
 string studies[] = file_lines(input("studies.txt"));
 string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_combat.bz2";
@@ -50,6 +58,11 @@ DB.insert_xcorr_record(studies=[ '%s', '%s' ],
 DB.commit()
 """;
 
+app uno(file features)
+{
+  "./uno.sh" features ;
+}
+
 init_xcorr() =>
 {
   foreach study1 in studies
@@ -60,9 +73,14 @@ init_xcorr() =>
       {
         foreach cutoff in cutoffs
         {
-          printf("Study1: %s, Study2: %s, cc: %d, ccc: %d", study1, study2, cutoff[0], cutoff[1]);
-          fname = "./test_data/%s_%s_%d_%d_features.txt" % (study1, study2, cutoff[0], cutoff[1]);
-          compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
+          printf("Study1: %s, Study2: %s, cc: %d, ccc: %d",
+                 study1, study2, cutoff[0], cutoff[1]);
+          fname = "./test_data/%s_%s_%d_%d_features.txt" %
+                   (study1, study2, cutoff[0], cutoff[1]);
+          file features<fname>;
+          compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname) =>
+            features = touch();
+          uno(features);
         }
       }
     }
@@ -75,12 +93,14 @@ init_xcorr() =>
   o = propagate();
 }
 
+(void v)
 compute_feature_correlation(string study1, string study2, int corr_cutoff, int xcorr_cutoff, string features_file)
 {
   log_code = log_corr_template % (features_file, study1, study2, corr_cutoff, xcorr_cutoff);
   python_persist(log_code, "''");
   code = xcorr_template % (study1, study2, corr_cutoff, xcorr_cutoff, features_file);
-  python_persist(code, "''");
+  python_persist(code, "''") =>
+    v = propagate();
 }
 
 
