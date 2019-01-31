@@ -16,6 +16,9 @@ def init_uno_xcorr(rna_seq_path, drug_response_path, drug_ids=None):
         rescaled_combined_single_drug_growth
     """
 
+    rank = os.getenv('PMIX_RANK')
+    print('rank %s Setting up uno_xcorr...' % rank)
+
     global gene_df
     gene_df = pd.read_csv(rna_seq_path, compression='infer', sep='\t', engine='c', na_values=['na', '-', ''],
         header=0, index_col=0)

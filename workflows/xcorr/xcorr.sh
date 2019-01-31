@@ -46,4 +46,4 @@ export PYTHONPATH=$THIS
 
 # Run workflow under nice to prevent the Benchmark from
 # locking up the system
-nice swift-t -p xcorr.swift
+nice swift-t -l -p xcorr.swift

@@ -4,8 +4,19 @@
 
 import datetime
 import logging
+import os
 import sqlite3
 import sys
+
+def setup_db():
+    if 'DB' not in globals():
+        rank = os.getenv('PMIX_RANK')
+        print('rank %s Connecting to DB...' % rank)
+        global DB
+        DB = xcorr_db('xcorr.db')
+        DB.read_feature_names()
+        DB.read_study_names()
+    return DB
 
 class xcorr_db:
 
