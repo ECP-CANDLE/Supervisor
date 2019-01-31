@@ -105,6 +105,10 @@ DB related functionality for xcorr logging
 ... This inserts the main metadata in table 'records',
     with feature and study references in tables 'features' and 'studies'
 
+== Features
+
+To do a dry run, which just prints the +python+ Uno commands instead of running them, set environment variable +DRYRUN=echo+ .
+
 == Database testing
 
 === Quick start

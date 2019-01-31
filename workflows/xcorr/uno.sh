@@ -40,11 +40,13 @@ OUTPUT=$EXPERIMENT/$ID
 mkdir -pv $OUTPUT
 cd $OUTPUT
 
+DRYRUN=${DRYRUN:-}
+
 {
   echo "UNO.SH $*"
   which python
   echo
-  python $UNO --cell_feature_subset_path $FEATURES
+  $DRYRUN python $UNO --cell_feature_subset_path $FEATURES
   echo
   echo "UNO.SH: SUCCESS"
 } >& output.txt
