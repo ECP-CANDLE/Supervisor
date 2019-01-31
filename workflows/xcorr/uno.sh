@@ -44,6 +44,7 @@ DRYRUN=${DRYRUN:-}
 
 {
   echo "UNO.SH $*"
+  echo "DATE:" $( date "+%Y-%m-%d %H:%M:%S" )
   which python
   echo
   $DRYRUN python $UNO --cell_feature_subset_path $FEATURES
