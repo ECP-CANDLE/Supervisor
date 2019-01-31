@@ -107,7 +107,7 @@ DB related functionality for xcorr logging
 
 == Features
 
-To do a dry run, which just prints the +python+ Uno commands instead of running them, set environment variable +DRYRUN=echo+ .
+To do a dry run, which just prints the +python+ Uno commands instead of running a whole TensorFlow training cycle, set environment variable +DRYRUN=echo+ .
 
 == Database testing
 
