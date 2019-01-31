@@ -94,8 +94,8 @@ uno_xcorr.coxen_feature_selection(study1, study2,
                                  corr_cutoff, xcorr_cutoff,
                                  features_file);
 
-  python_persist(xcorr_code, "''") =>
-    python_persist(log_code, "''") =>
+  python_persist(xcorr_code) =>
+    python_persist(log_code) =>
     v = propagate();
 }
 
