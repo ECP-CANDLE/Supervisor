@@ -48,6 +48,7 @@ class xcorr_db:
             self.insert(table="studies",
                         names=[ "record_id", "study_id"],
                         values=[ record_id ,  study_id ])
+        self.commit()
         self.log("inserted record: " + record_id)
         return record_id
 
