@@ -109,6 +109,11 @@ DB related functionality for xcorr logging
 
 To do a dry run, which just prints the +python+ Uno commands instead of running a whole TensorFlow training cycle, set environment variable +DRYRUN=echo+ .
 
+To run on more than 1 worker, set environment variable +PROCS=N+ ; this will run on +N-1+ workers.  The default is +N=2+ .  This runs
+----
+swift-t -n $PROCS ...
+----
+
 == Database testing
 
 === Quick start

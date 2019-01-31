@@ -44,6 +44,12 @@ BENCHMARKS=$( readlink --canonicalize-existing ../../../Benchmarks ) || \
 
 export PYTHONPATH=$THIS
 
+PROCS=${PROCS:-2}
+
+echo PROCS=$PROCS
+
+echo # Spacer
+
 # Run workflow under nice to prevent the Benchmark from
 # locking up the system
-nice swift-t -l -p xcorr.swift
+nice swift-t -l -p -n $PROCS xcorr.swift
