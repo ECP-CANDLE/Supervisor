@@ -8,7 +8,8 @@ export PROPOSE_POINTS=30
 export DESIGN_SIZE=30
 export PROCS=6
 export QUEUE=gpu
-export WALLTIME=00:60:00
+export WALLTIME=00:45:00
+GPU_TYPE=p100
 export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE:-k20x}:1 --mem=${MEM_PER_NODE:-20G}"
 
-$CANDLE/Supervisor/workflows/mlrMBO/test/test-1.sh 000 biowulf -a
+$CANDLE/Supervisor/workflows/mlrMBO/test/test-1.sh 010 biowulf -a
