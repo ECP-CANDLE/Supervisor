@@ -12,9 +12,9 @@ fail()
   exit 1
 }
 
-if (( ${#} != 1 ))
+if (( ${#} != 4 ))
 then
-  fail "provide a single features file!"
+  fail "provide features files, study1, study2 and preprocess rnaseq value!"
 fi
 
 FEATURES=$1
@@ -26,6 +26,10 @@ fi
 # (we are going to change PWD)
 FEATURES=$( readlink --canonicalize-existing $THIS/$FEATURES ) || \
   fail "could not canonicalize: $FEATURES"
+
+STUDY1=$2
+STUDY2=$3
+PREPROP_RNASEQ=$4
 
 UNO=$BENCHMARKS/Pilot1/Uno/uno_baseline_keras2.py
 if [[ ! -f $UNO ]]
@@ -47,7 +51,7 @@ DRYRUN=${DRYRUN:-}
   echo "DATE:" $( date "+%Y-%m-%d %H:%M:%S" )
   which python
   echo
-  $DRYRUN python $UNO --cell_feature_subset_path $FEATURES
+  $DRYRUN python $UNO --cell_feature_subset_path $FEATURES --train_sources $STUDY1 $STUDY2 --preprocess_rnaseq $PREPROP_RNASEQ
   echo
   echo "UNO.SH: SUCCESS"
 } >& output.txt
