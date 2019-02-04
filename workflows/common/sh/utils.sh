@@ -262,6 +262,9 @@ queue_wait_site()
   elif [[ $SITE == "titan" ]]
   then
     queue_wait_pbs $JOBID
+  elif [[ $SITE == "biowulf" ]]
+  then
+    queue_wait_slurm $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1

@@ -20,7 +20,7 @@ MEM_PER_NODE=20G # just moved down from 50G and may have to go back up if get me
 
 # Model settings that aren't gParameters (they're processed before the MODEL_PYTHON_SCRIPT)
 # Note that $obj_return is also processed prior to MODEL_PYTHON_SCRIPT for some reason, but it should definitely be a parameter in the model
-WORKFLOW_TYPE=upf # upf, mlrmbo, etc.
+WORKFLOW_TYPE=upf # upf, mlrMBO, etc.
 WORKFLOW_SETTINGS=$SCRIPTDIR/upf.txt # e.g., the unrolled parameter file
 EXPERIMENTS=$SCRIPTDIR/experiments
 MODEL_PYTHON_DIR=$CANDLE/Supervisor/workflows/examples

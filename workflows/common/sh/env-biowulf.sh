@@ -13,7 +13,7 @@ export R_LIBS_USER=~/R/%v/library
 
 # Which line is uncommented depends on which GPU system we’re using, e.g., k20x needs the first line uncommented, and p100 and v100’s need the second line uncommented. This suppresses an MPI error due to having multiple Infiniband interfaces.
 #export OMPI_MCA_btl_openib_if_exclude="mlx4_0:1"
-export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
+#export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
 
 # Other additions
 CANDLE=/data/BIDS-HPC/public/candle
