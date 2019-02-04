@@ -14,7 +14,7 @@ fail()
 
 if (( ${#} != 4 ))
 then
-  fail "provide features files, study1, study2 and preprocess rnaseq value!"
+  fail "provide one features file, study1, study2 and preprocess rnaseq value!"
 fi
 
 FEATURES=$1
