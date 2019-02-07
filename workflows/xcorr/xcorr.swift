@@ -22,9 +22,9 @@ int cutoffs[][] = [[200, 100],
                    [400, 50],
                    [400, 100]];
 
-app uno(file features, string study1, string study2)
+app uno(file features, string study1)
 {
-  "./uno.sh" features study1 study2 preprocess_rnaseq;
+  "./uno.sh" features study1 preprocess_rnaseq;
 }
 
 foreach study1 in studies
@@ -42,7 +42,8 @@ foreach study1 in studies
         file features<fname>;
         compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname) =>
           features = touch();
-        uno(features, study1, study2);
+        // train study1 using the specified features
+        uno(features, study1);
       }
     }
   }
