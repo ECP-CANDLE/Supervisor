@@ -33,7 +33,7 @@ Workflow for running single training job not using CANDLE:
 
 2. Modify the model parameters by editing $WORKINGDIR/single_param_set.txt as appropriate.
 
-3. Ensure the $DEFAULT_PARAMS_FILE variable in $WORKINGDIR/run_without_candle.sh points to the parameters file that was just modified, e.g.,
+3. Modify the sbatch parameters in $WORKINGDIR/run_without_candle.sh and ensure the $DEFAULT_PARAMS_FILE variable points to the parameters file that was just modified, e.g.,
 
      export DEFAULT_PARAMS_FILE=/home/weismanal/notebook/2019-01-28/jobs/not_candle/single_param_set.txt
 
