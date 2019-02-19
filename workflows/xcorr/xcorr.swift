@@ -12,7 +12,8 @@ import unix;
 printf("XCORR WORKFLOW");
 
 string studies[] = file_lines(input("studies.txt"));
-string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_combat.bz2";
+string preprocess_rnaseq = "combat";
+string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_%s.bz2" % preprocess_rnaseq;
 string drug_response_data = "./test_data/rescaled_combined_single_drug_growth_100K";
 int cutoffs[][] = [[200, 100],
                    [100, 50],
@@ -21,9 +22,9 @@ int cutoffs[][] = [[200, 100],
                    [400, 50],
                    [400, 100]];
 
-app uno(file features)
+app uno(file features, string study1)
 {
-  "./uno.sh" features ;
+  "./uno.sh" features study1 preprocess_rnaseq;
 }
 
 foreach study1 in studies
@@ -41,7 +42,8 @@ foreach study1 in studies
         file features<fname>;
         compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname) =>
           features = touch();
-        uno(features);
+        // train study1 using the specified features
+        uno(features, study1);
       }
     }
   }

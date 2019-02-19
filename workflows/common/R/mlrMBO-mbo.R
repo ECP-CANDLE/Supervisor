@@ -121,8 +121,7 @@
     }
 
     if (is.null(chkpntResults)){
-        design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
-    	design = head(design, n = propose.points)
+        design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
     } else {
       	design = chkpntResults
     }
