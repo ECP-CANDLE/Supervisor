@@ -1,4 +1,13 @@
 
+/*
+  I2.SWIFT
+
+  The idea is to stuff all generated params combinations in a big
+  array (params) indexed by the hash code of the params.  Then we pull
+  out all the hash codes with keys(params) .  Then we can iterate over
+  the hash codes, retrieve the params, and assign work to the ME_ranks
+*/
+
 import io;
 import matrix;
 import string;
