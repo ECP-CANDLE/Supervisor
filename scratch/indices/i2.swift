@@ -41,9 +41,10 @@ foreach i in [0:5]
 // Get all hash codes in a contiguous array for looping
 int K[] = keys_integer(params);
 
-foreach hash_index, rank in K
+foreach hash_index, r in K
 {
   // printf("hash_index: %i", hash_index);
   params_string = params[hash_index];
+  rank = ME_ranks[r];
   printf("run on ME rank: %i params: \"%s\"", rank, params_string);
 }
