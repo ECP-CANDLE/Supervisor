@@ -16,9 +16,13 @@ SWIFT_IMPL="app"
 # EMEWS Queues for R
 EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
-# Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
+if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+then
+    # Resident task workers and ranks
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
 
 # LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}

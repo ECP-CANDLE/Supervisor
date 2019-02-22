@@ -34,8 +34,13 @@ EQR=/home/wozniak/Public/sfw/theta/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 PYTHONPATH=$EQPy:$PYTHONPATH
 # Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+then
+    # Resident task workers and ranks
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
+
 
 # The Swift Implementation type: "app" or "py"
 # Selects the *.swift files to include

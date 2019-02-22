@@ -8,12 +8,12 @@ import os
 import sqlite3
 import sys
 
-def setup_db():
+def setup_db(db_file):
     if 'DB' not in globals():
         rank = os.getenv('PMIX_RANK')
         print('rank %s Connecting to DB...' % rank)
         global DB
-        DB = xcorr_db('xcorr.db')
+        DB = xcorr_db(db_file)
         DB.read_feature_names()
         DB.read_study_names()
     return DB

@@ -59,7 +59,7 @@ compute_feature_correlation(string study1, string study2,
 from xcorr_db import xcorr_db, setup_db
 
 global DB
-DB = setup_db()
+DB = setup_db('xcorr.db')
 
 features = DB.scan_features_file('%s')
 DB.insert_xcorr_record(studies=[ '%s', '%s' ],

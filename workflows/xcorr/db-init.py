@@ -11,7 +11,7 @@ def create_tables():
     """ Set up the tables defined in the SQL file """
     with open("db-init.sql") as fp:
         sqlcode = fp.read()
-    DB.executescript(sqlcode);
+    DB.executescript(sqlcode)
     DB.commit()
 
 def insert_feature_names():
