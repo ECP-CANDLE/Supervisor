@@ -158,9 +158,10 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         {
             param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq);
             updated_param = python_persist(param_code, "params_json");
-            printf("Updated Params: %s", updated_param);
-            results[j] = int2string(hash(updated_param));//obj(updated_param,
-                         //    "%00i_%000i_%0000i" % (restart_number,i,j));
+            // TODO log run with record_id in DB
+            //printf("Updated Params: %s", updated_param);
+            results[j] = obj(updated_param,
+                             "%00i_%000i_%0000i" % (restart_number,i,j));
         }
         string result = join(results, ";");
         // printf(result);
@@ -222,10 +223,10 @@ main() {
                 study1, study2, cutoff[0], cutoff[1]);
           fname = "%s/data/%s_%s_%d_%d_features.txt" %
             (turbine_output, study1, study2, cutoff[0], cutoff[1]);
-         
+
           string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
           int h = hash(record_id);
-          params[h] = [record_id, fname, study1]; 
+          params[h] = [record_id, fname, study1];
         }
       }
     }
@@ -248,7 +249,3 @@ main() {
     start(rank, ps[0], ps[1], ps[2]);
   }
 }
-
-
-
-
