@@ -18,16 +18,16 @@ param.set <- makeParamSet(
 
   
     # use consecutive 978-neuron layers to facilitate residual connections
-  makeDiscreteParam("dense", values=c("1500 500",
-                                      "978 978",
-                                      "978 978 978",
-                                      "978 978 978 978",
-                                      "978 978 978 978 978",
-                                      "978 978 978 978 978 978")),
+#  makeDiscreteParam("dense", values=c("1500 500",
+#                                      "978 978",
+#                                      "978 978 978",
+#                                      "978 978 978 978",
+#                                      "978 978 978 978 978",
+#                                      "978 978 978 978 978 978")),
   
   makeDiscreteParam("residual", values=c(1, 0)),
   
-  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
+#  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
   
   makeDiscreteParam("optimizer", values=c("adam", "sgd")),
                     
