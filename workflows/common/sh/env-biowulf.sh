@@ -25,7 +25,7 @@ export ADLB_DEBUG_RANKS=1
 export ADLB_DEBUG_HOSTMAP=1
 export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so
 export EQR=$WORKFLOWS_ROOT/common/ext/EQ-R # I don’t know where else to find this directory that needs to be available, e.g., in workflow.sh
-PYTHONPATH=$PYTHONPATH:$CANDLE/swift-t-install/turbine/py
+PYTHONPATH=${PYTHONPATH:-}:$CANDLE/swift-t-install/turbine/py
 
 # Set up environment
 #module load python/3.6
