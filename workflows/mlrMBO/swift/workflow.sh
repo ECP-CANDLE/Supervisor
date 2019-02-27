@@ -149,8 +149,9 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
-        -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+
+echo $TURBINE_OUTPUT > turbin-directory.txt
