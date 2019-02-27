@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # so we need to create a synthetic argv.
     # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
     # sys.argv  = ['nt3_tc1']
-    # sys.argv = ['p1b1']
+    sys.argv = ['p1b1']
 
     # Call to Benchmark!
     logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
