@@ -9,7 +9,8 @@
 # STC=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc
 # STC=/projects/Candle_ECP/swift/pyr/stc
 # STC=/projects/Candle_ECP/swift/2017-12-20/stc
-SWIFT=/projects/Candle_ECP/swift/2018-03-07
+# SWIFT=/projects/Candle_ECP/swift/2018-03-07
+SWIFT=/projects/Candle_ECP/swift/2019-02-27
 # SWIFT=/projects/Candle_ECP/swift/2018-04-25
 
 # This has:
@@ -47,6 +48,8 @@ fi
 # If "app", use app functions
 # If "py", use in-memory Python functions
 SWIFT_IMPL="app"
+
+export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 # Log settings to output
 echo "Programs:"
