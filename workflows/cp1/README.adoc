@@ -24,7 +24,7 @@ Copy the DB and run the workflow in `workflows/cp1`
 $ cp ../xcorr/xcorr.db cp1.db
 $ cd test
 # edit cfg-* as necessary
-$ ./test-1.sh
+$ ./test-1.sh theta -a
 ----
 
 === More Details

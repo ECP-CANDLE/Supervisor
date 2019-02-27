@@ -77,7 +77,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
-export TURBINE_LAUNCH_OPTIONS="-cc none"
+# export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
@@ -93,6 +93,7 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
