@@ -535,9 +535,6 @@ body.manpage div.sectionbody {
 }
 
 
-
-/* Asciidoc customizations */
-
 a:visited {
   color: gray;
 }
@@ -755,23 +752,6 @@ asciidoc.install(2);
 </div>
 </div>
 <div class="sect1">
-<h2 id="_key_deadlines">Key deadlines</h2>
-<div class="sectionbody">
-<div class="olist arabic"><ol class="arabic">
-<li>
-<p>
-May 15: End-to-end demo of hyperparameter harness
-</p>
-</li>
-<li>
-<p>
-June 5-9: ANL hackathon and Theta reservation
-</p>
-</li>
-</ol></div>
-</div>
-</div>
-<div class="sect1">
 <h2 id="_workflows">Workflows</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The workflows are currently indexed in the README visible <a href="https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows">here</a>.</p></div>
@@ -786,20 +766,29 @@ June 5-9: ANL hackathon and Theta reservation
 <div class="sect1">
 <h2 id="_swift_installations">Swift installations</h2>
 <div class="sectionbody">
-<div class="ulist"><ul>
-<li>
-<p>
-<a href="http://swift-lang.github.io/swift-t/sites.html#_theta">Theta</a>
-</p>
+<div class="sect2">
+<h3 id="_a_href_http_swift_lang_github_io_swift_t_sites_html__theta_theta_a"><a href="http://swift-lang.github.io/swift-t/sites.html#_theta">Theta</a></h3>
 <div class="paragraph"><p>This is linked to Python and R but currently without ML libs.</p></div>
 <div class="paragraph"><p>Other Theta ESP notes are here: <a href="https://collab.cels.anl.gov/display/ESP">https://collab.cels.anl.gov/display/ESP</a></p></div>
-</li>
+<div class="sect3">
+<h4 id="_python">Python</h4>
+<div class="paragraph"><p>Installed in:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>/projects/Candle_ECP/swift/deps/Python-2.7.12</code></pre>
+</div></div>
+<div class="paragraph"><p>To run this installation, you must set:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ export LD_LIBRARY_PATH=/projects/Candle_ECP/swift/deps/Python-2.7.12/lib</code></pre>
+</div></div>
+<div class="ulist"><ul>
 <li>
 <p>
 <a href="http://swift-lang.github.io/swift-t/sites.html#_cori">Cori</a>
 </p>
-<div class="paragraph"><p>This uses the system-installed Python with ML libs at:<br />
-<code>/usr/common/software/python/2.7-anaconda/envs/deeplearning</code></p></div>
+<div class="paragraph"><p>This uses the system-installed Python with ML libs in module:<br />
+<code>tensorflow/intel-head</code></p></div>
 </li>
 <li>
 <p>
@@ -849,11 +838,12 @@ This uses a VirtualEnv Python at <code>/home/pbalapra/.virtualenvs</code>
 </div>
 </div>
 </div>
+</div>
+</div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated
- 2017-07-03 10:28:35 CDT
+Last updated 2019-02-27 17:11:17 CST
 </div>
 </div>
 </body>
