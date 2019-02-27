@@ -45,7 +45,7 @@ if (restart_file != "DISABLED") {
 }
 
 
-string studies[] = ["CCLE", "CTRP", "gCSI"]; //file_lines(input(xcorr_root + "/studies.txt"));
+string studies[] = ["CCLE", "CTRP"]; //, "gCSI"]; //file_lines(input(xcorr_root + "/studies.txt"));
 string rna_seq_data = "%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
 string drug_response_data = xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
 int cutoffs[][] = [[200, 100]]; //,
