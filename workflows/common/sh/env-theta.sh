@@ -9,7 +9,8 @@
 # STC=/home/wozniak/Public/sfw/theta/swift-t-pyr/stc
 # STC=/projects/Candle_ECP/swift/pyr/stc
 # STC=/projects/Candle_ECP/swift/2017-12-20/stc
-SWIFT=/projects/Candle_ECP/swift/2018-03-07
+# SWIFT=/projects/Candle_ECP/swift/2018-03-07
+SWIFT=/projects/Candle_ECP/swift/2019-02-27
 # SWIFT=/projects/Candle_ECP/swift/2018-04-25
 
 # This has:
@@ -34,14 +35,21 @@ EQR=/home/wozniak/Public/sfw/theta/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 PYTHONPATH=$EQPy:$PYTHONPATH
 # Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+then
+    # Resident task workers and ranks
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
+
 
 # The Swift Implementation type: "app" or "py"
 # Selects the *.swift files to include
 # If "app", use app functions
 # If "py", use in-memory Python functions
 SWIFT_IMPL="app"
+
+export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 # Log settings to output
 echo "Programs:"

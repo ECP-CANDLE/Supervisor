@@ -77,10 +77,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
-
-#### NOTE I'M REPLACING THE FOLLOWING LINE!!!! ####
-#export TURBINE_LAUNCH_OPTIONS="-cc none"
-export TURBINE_LAUNCH_OPTIONS=""
+# export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
         ${MACHINE:-} \

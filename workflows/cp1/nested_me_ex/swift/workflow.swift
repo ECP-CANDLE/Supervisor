@@ -135,8 +135,6 @@ int CACHE_RANK_IDX = 1;
     EQPy_put(loc, me1_params) =>
     run_workflow(loc, cache_loc) => {
         EQPy_put(cache_loc, "DONE") =>
-        EQPy_stop(loc);
-        EQPy_stop(cache_loc);
         o = propagate();
     }
 }

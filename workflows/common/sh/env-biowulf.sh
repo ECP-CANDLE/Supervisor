@@ -79,10 +79,16 @@ export PYTHONHOME=$PYTHON
 
 # EMEWS Queues for R
 #EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
-export EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
+EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
+
 # Resident task workers and ranks
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+then
+    # Resident task workers and ranks
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
+
 echo "RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS"
 
 # LD_LIBRARY_PATH

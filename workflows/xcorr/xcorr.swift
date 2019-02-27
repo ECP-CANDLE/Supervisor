@@ -1,52 +1,104 @@
 
+/*
+  XCORR SWIFT
+  Main cross-correlation workflow
+*/
+
 import files;
 import io;
 import python;
+import unix;
 
-file studies[] = glob("studies/*.data");
+printf("XCORR WORKFLOW");
 
-// for study 1 in set of studies
-//   for study 2 in set of studies
-//     if study 1 not equal study 2
-//       compute correlations
+string studies[] = file_lines(input("studies.txt"));
+string preprocess_rnaseq = "combat";
+string rna_seq_data = "./test_data/combined_rnaseq_data_lincs1000_%s.bz2" % preprocess_rnaseq;
+string drug_response_data = "./test_data/rescaled_combined_single_drug_growth_100K";
+int cutoffs[][] = [[200, 100],
+                   [100, 50],
+                   [400, 200],
+                   [200, 50],
+                   [400, 50],
+                   [400, 100]];
+
+app uno(file features, string study1)
+{
+  "./uno.sh" features study1 preprocess_rnaseq;
+}
+
 foreach study1 in studies
 {
   foreach study2 in studies
   {
-    printf("%s ?= %s", filename(study1), filename(study2));
-    if (filename(study1) != filename(study2))
+    if (study1 != study2)
     {
-      compute_correlations(study1, study2);
+      foreach cutoff in cutoffs
+      {
+        printf("Study1: %s, Study2: %s, cc: %d, ccc: %d",
+               study1, study2, cutoff[0], cutoff[1]);
+        fname = "./test_data/%s_%s_%d_%d_features.txt" %
+          (study1, study2, cutoff[0], cutoff[1]);
+        file features<fname>;
+        compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname) =>
+          features = touch();
+        // train study1 using the specified features
+        uno(features, study1);
+      }
     }
   }
 }
 
-// compute correlations:
-//   compute feature cross correlation matrix in study 1
-//   compute feature cross correlation matrix in study 2
-//   compute feature correlation between study 1 and study 2
-compute_correlations(file study1, file study2)
+(void v)
+compute_feature_correlation(string study1, string study2,
+                            int corr_cutoff, int xcorr_cutoff,
+                            string features_file)
 {
-  wait (compute_feature_cross_corellation_matrix(study1),
-        compute_feature_cross_corellation_matrix(study2))
-  {
-    compute_feature_correlation(study1, study2);
-  }
-}
+  log_corr_template =
+"""
+from xcorr_db import xcorr_db, setup_db
 
-(string v)
-compute_feature_cross_corellation_matrix(file study)
-{
-  v = python("from xcorr import *",
-             "compute_feature_cross_corellation_matrix('%s')" %
-             filename(study));
-}
+global DB
+DB = setup_db('xcorr.db')
 
-compute_feature_correlation(file study1, file study2)
-{
-  python("from xcorr import *",
-         "compute_feature_corellation('%s', '%s')" %
-         (filename(study1), filename(study2)));
+features = DB.scan_features_file('%s')
+DB.insert_xcorr_record(studies=[ '%s', '%s' ],
+                       features=features,
+                       cutoff_corr=%d, cutoff_xcorr=%d)
+""";
+
+  xcorr_template =
+"""
+rna_seq_data = '%s'
+drug_response_data = '%s'
+study1 = '%s'
+study2 = '%s'
+correlation_cutoff = %d
+cross_correlation_cutoff = %d
+features_file = '%s'
+
+import uno_xcorr
+
+if uno_xcorr.gene_df is None:
+    uno_xcorr.init_uno_xcorr(rna_seq_data, drug_response_data)
+
+uno_xcorr.coxen_feature_selection(study1, study2,
+                                  correlation_cutoff,
+                                  cross_correlation_cutoff,
+                                  output_file=features_file)
+""";
+
+  log_code = log_corr_template % (features_file, study1, study2,
+                                  corr_cutoff, xcorr_cutoff);
+
+  xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
+                                 study1, study2,
+                                 corr_cutoff, xcorr_cutoff,
+                                 features_file);
+
+  python_persist(xcorr_code) =>
+    python_persist(log_code) =>
+    v = propagate();
 }
 
 

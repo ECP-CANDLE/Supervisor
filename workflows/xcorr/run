@@ -1,0 +1,19 @@
+#!/bin/bash
+set -eux
+
+# RUN
+# Quickly test all Python/sqlite3 operations
+
+DB=xcorr.db
+
+rm -fv $DB
+
+which python sqlite3
+python --version
+
+python db-init.py
+python db-insert-junk.py
+
+sqlite3 $DB "select rowid, * from records;"
+sqlite3 $DB "select rowid, * from feature_names;"
+sqlite3 $DB "select *        from features;"

@@ -1,0 +1,153 @@
+
+= Cross-correlation workflow
+
+== Installation
+
+This installs everything in a Conda location so you can easily remove it later.
+
+NOTE: For Anaconda, you are now supposed to source conda.sh ,
+not modify PATH directly
+
+----
+$ curl -o Anaconda3-5.3.0-Linux-x86_64.sh https://repo.anaconda.com/archive/Anaconda3-5.3.0-Linux-x86_64.sh
+# Make the installer executable
+$ chmod u+x ./Anaconda3-5.3.0-Linux-x86_64.sh
+# Run the installer, accepting the defaults.
+$ ./Anaconda3-5.3.0-Linux-x86_64.sh
+# Start Anaconda
+$ source $HOME/anaconda3/etc/profile.d/conda.sh
+$ conda create -n candle python=3.6
+$ source activate candle
+$ conda install scipy pandas
+# Install Swift/T
+$ conda install -c lightsource2-tag swift-t
+----
+
+Set up the data
+----
+# Need -k to keep the compressed file
+$ bunzip2 -k test_data/combined_rnaseq_data_lincs1000_combat.bz2
+----
+
+After logout, to restart working:
+----
+# Start Anaconda
+$ source $HOME/anaconda3/etc/profile.d/conda.sh
+$ source activate candle
+----
+
+== Quick start
+
+----
+# Create the DB if you haven't already
+$ python db-init.py
+# Run the workflow
+$ ./xcorr.sh
+# Kill it with Ctrl-C after ~10 seconds
+# View what you generated
+$ export PYTHONPATH=$PWD
+$ python list-records.py
+record:   1
+time:     2019-01-24 14:48:11
+filename: ./test_data/NCI60_GDSC_400_50_features.txt
+features:
+studies:  NCI60, GDSC
+
+record:   2
+time:     2019-01-24 14:48:11
+filename: ./test_data/CCLE_CTRP_400_100_features.txt
+features:
+studies:  CCLE, CTRP
+...
+----
+
+== File index
+
++make-fake-studies.sh+::
+
+Creates fake study data in +studies/+
+
++xcorr-psuedo.swift+::
+
+Original cross-correlation pseudocode
+
++xcorr.swift+::
+
+Translation of +xcorr-pseudo.swift+ into runnable workflow
+
++xcorr.py+::
+
+Implementation of the cross-correlation application functionality
+
++uno_xcorr.py+::
+
+Cross-correlation functionality specialized for Uno benchmark compatible data
+
++xcorr_db.py+::
+
+DB related functionality for xcorr logging
+
+== Workflow description
+
+. The overarching idea is to execute the nested loops in xcorr-pseudo.swift
+. The user needs to have the Anaconda environment and software installed
+. The user needs to set up the DB
+.. Create the tables
+.. Set up the tables 'feature_names' and 'study_names',
+   which are based on the provided data files.
+   These tables map between names and ID numbers for these items.
+. Each iteration
+.. Sets up the correlations by calling the math functions in xcorr.py
+... This creates a feature list for Uno execution
+.. Runs Uno (not yet implemented)
+.. Inserts metadata into the DB
+... The DB insertion entry point is in xcorr_db.insert_xcorr_record()
+... This inserts the main metadata in table 'records',
+    with feature and study references in tables 'features' and 'studies'
+
+== Features
+
+To do a dry run, which just prints the +python+ Uno commands instead of running a whole TensorFlow training cycle, set environment variable +DRYRUN=echo+ .
+
+To run on more than 1 worker, set environment variable +PROCS=N+ ; this will run on +N-1+ workers.  The default is +N=2+ .  This runs
+----
+swift-t -n $PROCS ...
+----
+
+== Database testing
+
+=== Quick start
+
+----
+# Create the DB
+$ python db-init.py
+# Is it there?
+$ ls xcorr.db
+xcorr.db
+# Check that the table is there w/o Python:
+# (This requires APT sqlite3 or equivalent)
+$ sqlite3
+sqlite> .open xcorr.db
+sqlite> .tables
+records
+sqlite> .schema records
+CREATE TABLE records(
+       time timestamp,
+       metadata varchar(1024));
+sqlite> (Ctrl-D to exit)
+# Insert some dummy data:
+$ python db-insert-junk.py
+# View that data:
+$ sqlite3 xcorr.db "select * from records;"
+2019-01-09 14:22:08|0
+2019-01-09 14:22:08|1
+2019-01-09 14:22:08|2
+...
+# To start over, just:
+$ rm xcorr.db
+----
+
+Run all the commands above:
+----
+$ ./run
+----

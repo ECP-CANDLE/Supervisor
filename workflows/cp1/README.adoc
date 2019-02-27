@@ -1,0 +1,33 @@
+
+= Mini Challenge Problem workflow
+
+Currently, this uses a mix of xcorr and cp1.
+
+== Quick Start
+
+Setup the Data in `workflows/xcorr`
+
+----
+$ cd ../xcorr
+# Need -k to keep the compressed file
+$ bunzip2 -k test_data/combined_rnaseq_data_lincs1000_combat.bz2
+# Create the DB
+$ python db-init.py
+# Is it there?
+$ ls xcorr.db
+xcorr.db
+----
+
+Copy the DB and run the workflow in `workflows/cp1`
+
+----
+$ cp ../xcorr/xcorr.db cp1.db
+$ cd test
+# edit cfg-* as necessary
+$ ./test-1.sh theta -a
+----
+
+=== More Details
+
+ TODO
+...

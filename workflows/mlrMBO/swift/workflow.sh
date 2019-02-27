@@ -153,7 +153,5 @@ swift-t -n $PROCS \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
-#        -e BENCHMARKS_ROOT \
-#        -e BENCHMARKS_ROOT \
 
 echo $TURBINE_OUTPUT > turbine-directory.txt
