@@ -4,8 +4,8 @@
 param.set <- makeParamSet(
 
   # large batch_size only makes sense when warmup_lr is on
-  #makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024)),
-  makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
+  makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024)),
+  #makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
 
   makeDiscreteParam("residual", values=c(1, 0)),
 

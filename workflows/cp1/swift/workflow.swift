@@ -119,7 +119,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   record_id = python_persist(log_code, "str(record_id)");
 }
 
-(void v) loop(location ME, string feature_file, string train_source) {
+(void v) loop(int init_prio, int modulo_prio, location ME, string feature_file, string train_source) {
 
   for (boolean b = true, int i = 1;
        b;
@@ -152,6 +152,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
     }
     else
     {
+        int prio = init_prio - i * modulo_prio;
         string param_array[] = split(params, ";");
         string results[];
         foreach param, j in param_array
@@ -160,8 +161,8 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             updated_param = python_persist(param_code, "params_json");
             // TODO log run with record_id in DB
             //printf("Updated Params: %s", updated_param);
-            results[j] = obj(updated_param,
-                             "%00i_%000i_%0000i" % (restart_number,i,j));
+            results[j] = obj_prio(updated_param,
+                             "%00i_%000i_%0000i" % (restart_number,i,j), prio);
         }
         string result = join(results, ";");
         // printf(result);
@@ -188,7 +189,7 @@ restart.file = '%s'
 //   o = propagate();
 // }
 
-(void o) start(int ME_rank, string record_id, string feature_file, string study1) {
+(void o) start(int init_prio, int modulo_prio, int ME_rank, string record_id, string feature_file, string study1) {
     location ME = locationFromRank(ME_rank);
 
     // algo_params is the string of parameters used to initialize the
@@ -201,7 +202,7 @@ restart.file = '%s'
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
-    loop(ME, feature_file, study1) => {
+    loop(init_prio, modulo_prio, ME, feature_file, study1) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
         o = propagate();
@@ -241,11 +242,12 @@ main() {
   assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
   int keys[] = keys_integer(params);
 
+  int modulo_prio = size(ME_ranks);
   foreach hash_index, r in keys
   {
     string ps[] = params[hash_index];
     int rank = ME_ranks[r];
     // rank, record_id, feature file name, study1 name
-    start(rank, ps[0], ps[1], ps[2]);
+    start(-r - 1, modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
 }
