@@ -16,7 +16,7 @@ Demonstration workflows for CANDLE.
 
 == Support
 
-Contact wozniak@mcs.anl.gov for any questions about installing or running CANDLE/Supervisor .
+Contact woz@anl.gov for any questions about installing or running CANDLE/Supervisor .
 
 == Installation
 

@@ -27,11 +27,23 @@ The database work is described in the README visible https://github.com/ECP-CAND
 
 == Swift installations
 
-* http://swift-lang.github.io/swift-t/sites.html#_theta[Theta]
-+
+=== http://swift-lang.github.io/swift-t/sites.html#_theta[Theta]
+
 This is linked to Python and R but currently without ML libs.
-+
+
 Other Theta ESP notes are here: https://collab.cels.anl.gov/display/ESP
+
+==== Python
+
+Installed in:
+----
+/projects/Candle_ECP/swift/deps/Python-2.7.12
+----
+
+To run this installation, you must set:
+----
+$ export LD_LIBRARY_PATH=/projects/Candle_ECP/swift/deps/Python-2.7.12/lib
+----
 
 * http://swift-lang.github.io/swift-t/sites.html#_cori[Cori]
 +
