@@ -126,10 +126,6 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# This should be moved to one or more specific site files.
-# It does not work on workstations, for example.  -Justin 2018/04/18
-# export TURBINE_LAUNCH_OPTIONS="-cc none"
-
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
