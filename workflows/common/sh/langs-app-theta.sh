@@ -1,3 +1,6 @@
+
+# LANGS APP THETA SH
+
 # Theta / Tensorflow env vars
 export KMP_BLOCKTIME=30
 export KMP_SETTINGS=1
