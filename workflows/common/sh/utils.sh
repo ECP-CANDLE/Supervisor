@@ -364,12 +364,47 @@ queue_wait_pbs()
     fi
   done
   echo "Job $JOBID is not running."
-
 }
 
 queue_wait_lsf()
 {
-  echo "common/sh/utils.sh: queue_wait_lsf() is not yet implemented."
+  if (( ${#} != 1 ))
+  then
+    echo "usage: queue_wait_lsf JOBID"
+    return 1
+  fi
+
+  local JOBID=$1
+
+  local DELAY_MIN=30
+  local DELAY_MAX=600
+  local DELAY=$DELAY_MIN
+
+  local STATE="PEND"
+
+  while (( 1 ))
+  do
+    date "+%Y/%m/%d %H:%M:%S"
+    if ! ( qstat | grep "$JOBID.*$STATE" )
+    then
+      if [[ $STATE == "PD" ]]
+      then
+        echo "Job $JOBID is not pending."
+        STATE="RUN"
+        DELAY=$DELAY_MIN
+      elif [[ $STATE == "RUN" ]]
+      then
+        break
+      fi
+    fi
+    sleep $DELAY
+    (( ++ DELAY ))
+    if (( DELAY > DELAY_MAX ))
+    then
+      DELAY=$DELAY_MAX
+    fi
+  done
+  echo "Job $JOBID is not running."
 }
 
 check_output()
