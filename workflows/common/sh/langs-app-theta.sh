@@ -22,7 +22,6 @@ export PYTHONHOME="/opt/intel/python/2017.0.035/intelpython35"
 APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
 PYTHONPATH+=":/lus/theta-fs0/projects/CSC249ADOA01/hsyoo/candle_py_deps/"
 
-
 PYTHON="$PYTHONHOME/bin/python"
 export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"
