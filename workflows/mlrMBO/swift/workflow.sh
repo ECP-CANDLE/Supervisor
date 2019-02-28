@@ -150,4 +150,4 @@ swift-t -n $PROCS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
-echo $TURBINE_OUTPUT > turbin-directory.txt
+echo $TURBINE_OUTPUT > turbine-directory.txt
