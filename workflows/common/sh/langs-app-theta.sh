@@ -12,6 +12,7 @@ export NUM_INTRA_THREADS=128
 # export PYTHONHOME="/lus/theta-fs
 APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
 
+# Clear anything set by the system or Swift/T environment
 unset PYTHONPATH
 unset LD_LIBRARY_PATH
 
