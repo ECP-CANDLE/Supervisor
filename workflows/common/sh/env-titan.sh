@@ -1,6 +1,6 @@
 
-# LANGS Titan
-# Language settings for Titan (Swift, Python, R, Tcl, etc.)
+# ENV Titan
+# Environment settings for Titan (Swift, Python, R, Tcl, etc.)
 
 SWIFT_IMPL=app
 
