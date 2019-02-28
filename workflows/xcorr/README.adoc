@@ -40,6 +40,7 @@ $ source activate candle
 
 ----
 # Create the DB if you haven't already
+$ bzip2 -d test_data/combined_rnaseq_data_lincs1000_combat.bz2`
 $ python db-init.py
 # Run the workflow
 $ ./xcorr.sh
