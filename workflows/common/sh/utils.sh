@@ -92,6 +92,9 @@ get_expid()
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
 # EXPID is exported into the environment
+# TURBINE_OUTPUT is canonicalized, because it may be soft-linked
+#    to another filesystem (e.g., on Summit), and must be accessible
+#    from the compute nodes without accessing the soft-links
 {
   if (( ${#} < 1 ))
   then
@@ -123,6 +126,13 @@ get_expid()
   else
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
+  TO=$( readlink --canonicalize $TURBINE_OUTPUT )
+  if [[ $TO == "" ]]
+  then
+    echo "Could not canonicalize: $TURBINE_OUTPUT"
+    exit 1
+  fi
+  TURBINE_OUTPUT=$TO
 }
 
 get_cfg_sys()
