@@ -110,6 +110,8 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                -db_file=$DB_FILE
+                -cache_dir=$CACHE_DIR
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
@@ -126,6 +128,7 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
+mkdir -pv $CACHE_DIR
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}

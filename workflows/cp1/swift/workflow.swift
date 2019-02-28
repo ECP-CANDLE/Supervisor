@@ -12,6 +12,7 @@ import sys;
 import string;
 import EQR;
 import location;
+import math;
 
 string FRAMEWORK = "keras";
 
@@ -22,7 +23,9 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 
 printf("TURBINE_OUTPUT: " + turbine_output);
 
-string db_file = emews_root + "/cp1.db";
+string db_file = argv("db_file");
+string cache_dir = argv("cache_dir");
+
 
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
@@ -64,6 +67,14 @@ params = json.loads('%s')
 params['cell_feature_subset_path'] = '%s'
 params['train_sources'] = '%s'
 params['preprocess_rnaseq'] = '%s'
+
+import os
+cf = os.path.basename(params['cell_feature_subset_path'])
+idx = cf.rfind('.')
+if idx != -1:
+  cf = [:idx]
+
+params['cache'] = '%s/{}_cache'.format(cf)
 params_json = json.dumps(params)
 """;
 
@@ -157,12 +168,14 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         string results[];
         foreach param, j in param_array
         {
-            param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq);
+            param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq,
+                cache_dir);
             updated_param = python_persist(param_code, "params_json");
             // TODO log run with record_id in DB
             //printf("Updated Params: %s", updated_param);
+            // use init_prio as the id of this mlrMBO
             results[j] = obj_prio(updated_param,
-                             "%00i_%000i_%0000i" % (restart_number,i,j), prio);
+                             "%00i_%00i_%000i_%0000i" % (abs_integer(init_prio), restart_number,i,j), prio);
         }
         string result = join(results, ";");
         // printf(result);
