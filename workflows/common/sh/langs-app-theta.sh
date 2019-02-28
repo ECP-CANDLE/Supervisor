@@ -9,7 +9,7 @@ export NUM_INTRA_THREADS=128
 # export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
 module load datascience/keras-2.2.2
 export PYTHONHOME="/opt/intel/python/2017.0.035/intelpython35/"
-export PYTHONPATH=$PYTHONPATH:/lus/theta-fs0/projects/CSC249ADOA01/hsyoo/candle_py_deps/
+export PYTHONPATH=/lus/theta-fs0/projects/CSC249ADOA01/hsyoo/candle_py_deps/
 
 
 PYTHON="$PYTHONHOME/bin/python"
@@ -17,7 +17,7 @@ export LD_LIBRARY_PATH="$PYTHONHOME/lib"
 export PATH="$PYTHONHOME/bin:$PATH"
 
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-PYTHONPATH+=":$PYTHONHOME/lib/python2.7:"
+PYTHONPATH+=":$PYTHONHOME/lib/python3.5:"
 PYTHONPATH+=":$COMMON_DIR:"
-PYTHONPATH+="$PYTHONHOME/lib/python2.7/site-packages"
+PYTHONPATH+="$PYTHONHOME/lib/python3.5/site-packages"
 export PYTHONPATH
