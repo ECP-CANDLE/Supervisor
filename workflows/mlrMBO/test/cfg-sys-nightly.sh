@@ -13,7 +13,8 @@ export PPN=${PPN:-1}
 # For Theta:
 # export QUEUE=${QUEUE:-debug-flat-quad}
 
-export WALLTIME=${WALLTIME:-00:10:00}
+# export WALLTIME=${WALLTIME:-00:10:00}
+export WALLTIME=${WALLTIME:-10}
 
 #export PROJECT=Candle_ECP
 
