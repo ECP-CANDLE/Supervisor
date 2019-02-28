@@ -14,6 +14,11 @@ export R=$ROOT/gcc-6.4.0/R-3.5.2/lib64/R/lib
 
 export LD_LIBRARY_PATH=$R/lib:$LD_LIBRARY_PATH
 
+SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-02-27
+PATH=$SWIFT/stc/bin:$PATH
+
+log_path PATH
+
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
@@ -21,7 +26,7 @@ export LD_LIBRARY_PATH=$R/lib:$LD_LIBRARY_PATH
 PYTHONHOME=$PY
 
 # EMEWS Queues for R
-EQR=$ROOT/EQ-R
+EQR=$ROOT/gcc-6.4.0/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
