@@ -72,7 +72,7 @@ import os
 cf = os.path.basename(params['cell_feature_subset_path'])
 idx = cf.rfind('.')
 if idx != -1:
-  cf = [:idx]
+  cf = cf[:idx]
 
 params['cache'] = '%s/{}_cache'.format(cf)
 params_json = json.dumps(params)
