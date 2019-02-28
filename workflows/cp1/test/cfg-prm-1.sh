@@ -2,12 +2,14 @@
 
 # mlrMBO settings
 
-# Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-5}
+# Total runs/points/models per iteration
+PROPOSE_POINTS=${PROPOSE_POINTS:-3}
+# Total runs/points/models in first round
+DESIGN_SIZE=${DESIGN_SIZE:-3}
+
 MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-1}
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-180}
-DESIGN_SIZE=${DESIGN_SIZE:-5}
 
 
 export PREPROP_RNASEQ="combat"

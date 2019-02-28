@@ -4,18 +4,18 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-12}
+export PROCS=${PROCS:-7}
 
 # Number of processes to use for resident tasks,
 # i.e., the number of mlrMBO instances to run
-export TURBINE_RESIDENT_WORK_WORKERS=6
+export TURBINE_RESIDENT_WORK_WORKERS=2
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
 # For Theta:
-# export QUEUE=${QUEUE:-debug-flat-quad}
+export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
 export WALLTIME=${WALLTIME:-00:10:00}
