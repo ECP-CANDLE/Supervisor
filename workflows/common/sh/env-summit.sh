@@ -5,6 +5,7 @@
 SWIFT_IMPL=app
 
 # Load basic LD_LIBRARY_PATH before changing it:
+module load gcc/6.4.0
 module load spectrum-mpi
 
 ROOT=/gpfs/alpine/world-shared/med106
@@ -12,7 +13,7 @@ ROOT=/gpfs/alpine/world-shared/med106
 export PY=$ROOT/miniconda3
 export R=$ROOT/gcc-6.4.0/R-3.5.2/lib64/R/lib
 
-export LD_LIBRARY_PATH=$R/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$R:$LD_LIBRARY_PATH
 
 SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-02-27
 PATH=$SWIFT/stc/bin:$PATH
