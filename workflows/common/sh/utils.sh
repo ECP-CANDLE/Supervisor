@@ -394,10 +394,12 @@ queue_wait_lsf()
 
   while (( 1 ))
   do
-    date "+%Y/%m/%d %H:%M:%S"
-    if ! ( qstat | grep "$JOBID.*$STATE" )
+    echo -n $( date "+%Y-%m-%d %H:%M:%S" )
+    echo " waiting for job $JOBID ($STATE)"
+
+    if ! ( bjobs | grep -q "$JOBID.*$STATE" )
     then
-      if [[ $STATE == "PD" ]]
+      if [[ $STATE == "PEND" ]]
       then
         echo "Job $JOBID is not pending."
         STATE="RUN"
@@ -407,7 +409,7 @@ queue_wait_lsf()
         break
       fi
     fi
-    sleep $DELAY
+    read -t $DELAY || true
     (( ++ DELAY ))
     if (( DELAY > DELAY_MAX ))
     then
