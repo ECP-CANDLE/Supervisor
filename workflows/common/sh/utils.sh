@@ -301,7 +301,7 @@ queue_wait_slurm()
 
   while (( 1 ))
   do
-    date "+%Y/%m/%d %H:%M:%S"
+    date "+%Y-%m-%d %H:%M:%S"
     if ! ( squeue | grep "$JOBID.*$STATE" )
     then
       if [[ $STATE == "PD" ]]
@@ -353,7 +353,7 @@ queue_wait_pbs()
 
   while (( 1 ))
   do
-    date "+%Y/%m/%d %H:%M:%S"
+    date "+%Y-%m-%d %H:%M:%S"
     if ! ( qstat | grep "$JOBID.*$STATE" )
     then
       if [[ $STATE == "PD" ]]
