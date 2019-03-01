@@ -138,6 +138,8 @@ OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
+log_path PYTHONPATH
+
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
 then

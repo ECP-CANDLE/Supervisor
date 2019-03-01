@@ -92,6 +92,9 @@ get_expid()
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
 # EXPID is exported into the environment
+# TURBINE_OUTPUT is canonicalized, because it may be soft-linked
+#    to another filesystem (e.g., on Summit), and must be accessible
+#    from the compute nodes without accessing the soft-links
 {
   if (( ${#} < 1 ))
   then
@@ -123,6 +126,13 @@ get_expid()
   else
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
+  TO=$( readlink --canonicalize $TURBINE_OUTPUT )
+  if [[ $TO == "" ]]
+  then
+    echo "Could not canonicalize: $TURBINE_OUTPUT"
+    exit 1
+  fi
+  TURBINE_OUTPUT=$TO
 }
 
 get_cfg_sys()
@@ -262,6 +272,9 @@ queue_wait_site()
   elif [[ $SITE == "titan" ]]
   then
     queue_wait_pbs $JOBID
+  elif [[ $SITE == "summit" ]]
+  then
+    queue_wait_lsf $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1
@@ -288,7 +301,7 @@ queue_wait_slurm()
 
   while (( 1 ))
   do
-    date "+%Y/%m/%d %H:%M:%S"
+    date "+%Y-%m-%d %H:%M:%S"
     if ! ( squeue | grep "$JOBID.*$STATE" )
     then
       if [[ $STATE == "PD" ]]
@@ -340,7 +353,7 @@ queue_wait_pbs()
 
   while (( 1 ))
   do
-    date "+%Y/%m/%d %H:%M:%S"
+    date "+%Y-%m-%d %H:%M:%S"
     if ! ( qstat | grep "$JOBID.*$STATE" )
     then
       if [[ $STATE == "PD" ]]
@@ -361,9 +374,50 @@ queue_wait_pbs()
     fi
   done
   echo "Job $JOBID is not running."
-
 }
 
+queue_wait_lsf()
+{
+  if (( ${#} != 1 ))
+  then
+    echo "usage: queue_wait_lsf JOBID"
+    return 1
+  fi
+
+  local JOBID=$1
+
+  local DELAY_MIN=30
+  local DELAY_MAX=600
+  local DELAY=$DELAY_MIN
+
+  local STATE="PEND"
+
+  while (( 1 ))
+  do
+    echo -n $( date "+%Y-%m-%d %H:%M:%S" )
+    echo " waiting for job $JOBID ($STATE)"
+
+    if ! ( bjobs | grep -q "$JOBID.*$STATE" )
+    then
+      if [[ $STATE == "PEND" ]]
+      then
+        echo "Job $JOBID is not pending."
+        STATE="RUN"
+        DELAY=$DELAY_MIN
+      elif [[ $STATE == "RUN" ]]
+      then
+        break
+      fi
+    fi
+    read -t $DELAY || true
+    (( ++ DELAY ))
+    if (( DELAY > DELAY_MAX ))
+    then
+      DELAY=$DELAY_MAX
+    fi
+  done
+  echo "Job $JOBID is not running."
+}
 
 check_output()
 {
