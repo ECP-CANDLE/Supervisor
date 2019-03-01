@@ -25,6 +25,7 @@ printf("TURBINE_OUTPUT: " + turbine_output);
 
 string db_file = argv("db_file");
 string cache_dir = argv("cache_dir");
+string xcorr_data_dir = argv("xcorr_data_dir");
 
 
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
@@ -132,6 +133,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
 
 (void v) loop(int init_prio, int modulo_prio, location ME, string feature_file, string train_source) {
 
+  int mlr_instance_id = abs_integer(init_prio);
   for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
@@ -147,7 +149,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
       // e.g. finals is a ";" separated string and we want each
       // element on its own line:
       // multi_line_finals = join(split(finals, ";"), "\\n");
-      string fname = "%s/final_res.Rds" % (turbine_output);
+      string fname = "%s/%i_final_res.Rds" % (turbine_output, mlr_instance_id);
       printf("See results in %s", fname) =>
       // printf("Results: %s", finals) =>
       v = propagate(finals) =>
@@ -175,7 +177,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             //printf("Updated Params: %s", updated_param);
             // use init_prio as the id of this mlrMBO
             results[j] = obj_prio(updated_param,
-                             "%00i_%00i_%000i_%0000i" % (abs_integer(init_prio), restart_number,i,j), prio);
+                             "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
         }
         string result = join(results, ";");
         // printf(result);
@@ -236,7 +238,7 @@ main() {
           printf("Study1: %s, Study2: %s, cc: %d, ccc: %d",
                 study1, study2, cutoff[0], cutoff[1]);
           fname = "%s/data/%s_%s_%d_%d_features.txt" %
-            (turbine_output, study1, study2, cutoff[0], cutoff[1]);
+            (xcorr_data_dir, study1, study2, cutoff[0], cutoff[1]);
 
           string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
           int h = hash(record_id);
