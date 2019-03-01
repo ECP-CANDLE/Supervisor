@@ -237,8 +237,9 @@ main() {
         {
           printf("Study1: %s, Study2: %s, cc: %d, ccc: %d",
                 study1, study2, cutoff[0], cutoff[1]);
-          fname = "%s/data/%s_%s_%d_%d_features.txt" %
+          fname = "%s/%s_%s_%d_%d_features.txt" %
             (xcorr_data_dir, study1, study2, cutoff[0], cutoff[1]);
+	  printf(fname);
 
           string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
           int h = hash(record_id);
