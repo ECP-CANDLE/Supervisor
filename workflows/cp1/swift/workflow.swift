@@ -174,7 +174,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         foreach param, j in param_array
         {
             param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq,
-                cache_dir);
+                gpus, cache_dir);
             updated_param = python_persist(param_code, "params_json");
             // TODO log run with record_id in DB
             //printf("Updated Params: %s", updated_param);
