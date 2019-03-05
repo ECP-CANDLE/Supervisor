@@ -21,6 +21,8 @@ export QUEUE=default
 
 export WALLTIME=${WALLTIME:-00:30}
 
+export GPU_STRING=${GPU_STRING:-0 1 2 3 4 5}
+
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeout

@@ -26,7 +26,7 @@ printf("TURBINE_OUTPUT: " + turbine_output);
 string db_file = argv("db_file");
 string cache_dir = argv("cache_dir");
 string xcorr_data_dir = argv("xcorr_data_dir");
-
+string gpus = argv("gpus", "");
 
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
@@ -68,6 +68,9 @@ params = json.loads('%s')
 params['cell_feature_subset_path'] = '%s'
 params['train_sources'] = '%s'
 params['preprocess_rnaseq'] = '%s'
+gpus = '%s'
+if len(gpus) > 0:
+  params['gpus'] = gpus
 
 import os
 cf = os.path.basename(params['cell_feature_subset_path'])

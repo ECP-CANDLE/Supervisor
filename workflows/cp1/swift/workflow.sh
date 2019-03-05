@@ -113,6 +113,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -db_file=$DB_FILE
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
+                -gpus="$GPU_STRING"
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
