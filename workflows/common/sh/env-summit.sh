@@ -15,7 +15,7 @@ export R=$ROOT/gcc-6.4.0/R-3.5.2/lib64/R/lib
 
 export LD_LIBRARY_PATH=$R:$LD_LIBRARY_PATH
 
-SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-02-27
+SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-03-05
 PATH=$SWIFT/stc/bin:$PATH
 
 log_path PATH
