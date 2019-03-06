@@ -19,9 +19,12 @@ export PPN=${PPN:-1}
 # export QUEUE=R.candle
 export QUEUE=default 
 
-export WALLTIME=${WALLTIME:-00:30}
+export WALLTIME=${WALLTIME:-01:59}
 
-export GPU_STRING=${GPU_STRING:-}
+# command separated list of gpu ids
+export GPU_STRING=${GPU_STRING:-0,1,2,3,4,5}
+#export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
+export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 
 #export PROJECT=Candle_ECP
 

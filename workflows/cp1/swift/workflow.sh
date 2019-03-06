@@ -111,9 +111,9 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 -db_file=$DB_FILE
+		-gpus=$GPU_STRING
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
-                -gpus="$GPU_STRING"
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
@@ -151,6 +151,9 @@ fi
 # This should be moved to one or more specific site files.
 # It does not work on workstations, for example.  -Justin 2018/04/18
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
+
+#echo ${CMD_LINE_ARGS[@]}
+echo "GPUS: $GPU_STRING"
 
 swift-t -n $PROCS \
         ${MACHINE:-} \

@@ -69,8 +69,8 @@ params['cell_feature_subset_path'] = '%s'
 params['train_sources'] = '%s'
 params['preprocess_rnaseq'] = '%s'
 gpus = '%s'
-if len(gpus) > 0:
-  params['gpus'] = gpus
+if len(gpus) > 0:   
+  params['gpus'] = gpus.replace(',', ' ')
 
 import os
 cf = os.path.basename(params['cell_feature_subset_path'])
