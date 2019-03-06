@@ -134,9 +134,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   record_id = python_persist(log_code, "str(record_id)");
 }
 
-(void v) loop(int init_prio, int modulo_prio, location ME, string feature_file, string train_source) {
-
-  int mlr_instance_id = abs_integer(init_prio);
+(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file, string train_source) {
   for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
@@ -147,11 +145,6 @@ uno_xcorr.coxen_feature_selection(study1, study2,
     if (params == "DONE")
     {
       string finals =  EQR_get(ME);
-      // TODO if appropriate
-      // split finals string and join with "\\n"
-      // e.g. finals is a ";" separated string and we want each
-      // element on its own line:
-      // multi_line_finals = join(split(finals, ";"), "\\n");
       string fname = "%s/%i_final_res.Rds" % (turbine_output, mlr_instance_id);
       printf("See results in %s", fname) =>
       // printf("Results: %s", finals) =>
@@ -176,11 +169,12 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq,
                 gpus, cache_dir);
             updated_param = python_persist(param_code, "params_json");
-            // TODO log run with record_id in DB
+            // TODO DB: insert updated_param with mlr_instance_id and record 
             //printf("Updated Params: %s", updated_param);
             // use init_prio as the id of this mlrMBO
             results[j] = obj_prio(updated_param,
                              "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
+            // TODO DB: insert result with record_id
         }
         string result = join(results, ";");
         // printf(result);
@@ -209,18 +203,19 @@ restart.file = '%s'
 
 (void o) start(int init_prio, int modulo_prio, int ME_rank, string record_id, string feature_file, string study1) {
     location ME = locationFromRank(ME_rank);
-
+    int mlr_instance_id = abs_integer(init_prio);
     // algo_params is the string of parameters used to initialize the
     // R algorithm. We pass these as R code: a comma separated string
     // of variable=value assignments.
     string algo_params = algo_params_template %
         (param_set, max_budget, max_iterations, design_size,
          propose_points, restart_file);
+    // DB: insert algo params with mlr_instance_id
     string algorithm = emews_root+"/../common/R/"+r_file;
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
-    loop(init_prio, modulo_prio, ME, feature_file, study1) => {
+    loop(init_prio, modulo_prio, mlr_instance_id, record_id, ME, feature_file, study1) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
         o = propagate();

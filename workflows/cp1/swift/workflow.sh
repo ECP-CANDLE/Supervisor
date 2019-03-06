@@ -102,6 +102,14 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
+if [ -z ${GPU_STRING+x} ]; 
+then
+  GPU_ARG=""
+else
+  GPU_ARG="-gpus=$GPU_STRING"
+fi
+
+
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -111,7 +119,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 -db_file=$DB_FILE
-		-gpus=$GPU_STRING
+                $GPU_ARG
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
                 $RESTART_FILE_ARG
@@ -153,7 +161,6 @@ fi
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 #echo ${CMD_LINE_ARGS[@]}
-echo "GPUS: $GPU_STRING"
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
