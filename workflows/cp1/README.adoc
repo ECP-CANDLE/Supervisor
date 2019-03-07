@@ -36,6 +36,7 @@ The workflow needs the database file (cp1.db) and the following directories in S
 
 * cache
 * experiments
+* xcorr_data
 
 One solution is to symlink them from a writable location such as /gpfs/alpine/med106/scratch.
 For example,
@@ -48,6 +49,7 @@ lrwxrwxrwx 1 ncollier ncollier 46 Feb 28 17:35 cp1.db -> /gpfs/alpine/med106/scr
 ...
 lrwxrwxrwx 1 ncollier ncollier   46 Mar  1 10:35 cache -> /gpfs/alpine/med106/scratch/ncollier/uno_cache
 lrwxrwxrwx 1 ncollier ncollier   48 Feb 28 16:51 experiments -> /gpfs/alpine/med106/scratch/ncollier/experiments
+lrwxrwxrwx 1 ncollier ncollier   47 Mar  1 12:38 xcorr_data -> /gpfs/alpine/med106/scratch/ncollier/xcorr_data
 ----
 
 

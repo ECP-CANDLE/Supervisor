@@ -20,6 +20,11 @@ export QUEUE=${QUEUE:-debug-flat-quad}
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
+# command separated list of gpu ids
+# export GPU_STRING=${GPU_STRING:-0}
+#export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
+#export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeout

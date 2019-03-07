@@ -102,6 +102,14 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
+if [ -z ${GPU_STRING+x} ]; 
+then
+  GPU_ARG=""
+else
+  GPU_ARG="-gpus=$GPU_STRING"
+fi
+
+
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -111,7 +119,9 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
                 -db_file=$DB_FILE
+                $GPU_ARG
                 -cache_dir=$CACHE_DIR
+                -xcorr_data_dir=$XCORR_DATA_DIR
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
@@ -129,6 +139,7 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 mkdir -pv $CACHE_DIR
+mkdir -pv $XCORR_DATA_DIR
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
@@ -148,6 +159,8 @@ fi
 # This should be moved to one or more specific site files.
 # It does not work on workstations, for example.  -Justin 2018/04/18
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
+
+#echo ${CMD_LINE_ARGS[@]}
 
 swift-t -n $PROCS \
         ${MACHINE:-} \

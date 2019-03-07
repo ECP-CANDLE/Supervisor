@@ -275,6 +275,9 @@ queue_wait_site()
   elif [[ $SITE == "summit" ]]
   then
     queue_wait_lsf $JOBID
+  elif [[ $SITE == "pascal" ]]
+  then
+    queue_wait_slurm $JOBID
   else
     echo "queue_wait(): unknown site: $SITE"
     return 1
