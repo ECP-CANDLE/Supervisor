@@ -65,21 +65,54 @@ import json
 
 params = json.loads('%s')
 # --cell_feature_subset_path $FEATURES --train_sources $STUDY1 --preprocess_rnaseq $PREPROP_RNASEQ
-params['cell_feature_subset_path'] = '%s'
 params['train_sources'] = '%s'
 params['preprocess_rnaseq'] = '%s'
 gpus = '%s'
 if len(gpus) > 0:   
   params['gpus'] = gpus.replace(',', ' ')
 
-import os
-cf = os.path.basename(params['cell_feature_subset_path'])
-idx = cf.rfind('.')
-if idx != -1:
-  cf = cf[:idx]
+
+cell_feature_subset_path = '%s'
+if len(cell_feature_subset_path) > 0:
+  params['cell_feature_subset_path'] = cell_feature_subset_path
+  import os
+  cf = os.path.basename(params['cell_feature_subset_path'])
+  idx = cf.rfind('.')
+  if idx != -1:
+    cf = cf[:idx]
+else:
+  cf = "all_features"
+  params['use_landmark_genes'] = True
 
 params['cache'] = '%s/{}_cache'.format(cf)
 params_json = json.dumps(params)
+""";
+
+string log_corr_template =
+"""
+from xcorr_db import xcorr_db, setup_db
+
+global DB
+DB = setup_db('%s')
+
+feature_file = '%s'
+if len(feature_file) > 0:
+  features = DB.scan_features_file(feature_file)
+else:
+  # if no feature file, then use all the features
+  id_to_names, _ = DB.read_feature_names()
+  features = id_to_names.values()
+
+study1 = '%s'
+study2 = '%s'
+if len(study2) == 0:
+  studies = [study1]
+else:
+  studies = [study1, study2]
+
+record_id = DB.insert_xcorr_record(studies=studies,
+                       features=features,
+                       cutoff_corr=%d, cutoff_xcorr=%d)
 """;
 
 
@@ -88,19 +121,6 @@ compute_feature_correlation(string study1, string study2,
                             int corr_cutoff, int xcorr_cutoff,
                             string features_file)
 {
-  log_corr_template =
-"""
-from xcorr_db import xcorr_db, setup_db
-
-global DB
-DB = setup_db('%s')
-
-features = DB.scan_features_file('%s')
-record_id = DB.insert_xcorr_record(studies=[ '%s', '%s' ],
-                       features=features,
-                       cutoff_corr=%d, cutoff_xcorr=%d)
-""";
-
   xcorr_template =
 """
 rna_seq_data = '%s'
@@ -134,7 +154,9 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   record_id = python_persist(log_code, "str(record_id)");
 }
 
-(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file, string train_source) {
+(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file, 
+    string train_source)
+{
   for (boolean b = true, int i = 1;
        b;
        b=c, i = i + 1)
@@ -166,14 +188,14 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         string results[];
         foreach param, j in param_array
         {
-            param_code = update_param_template % (param, feature_file, train_source, preprocess_rnaseq,
-                gpus, cache_dir);
+            param_code = update_param_template % (param, train_source, preprocess_rnaseq,
+                gpus, feature_file, cache_dir);
             updated_param = python_persist(param_code, "params_json");
             // TODO DB: insert updated_param with mlr_instance_id and record 
-            //printf("Updated Params: %s", updated_param);
-            // use init_prio as the id of this mlrMBO
-            results[j] = obj_prio(updated_param,
-                             "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
+            printf("Updated Params: %s", updated_param);
+            results[j] = "0.5";
+            //results[j] = obj_prio(updated_param,
+            //                 "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
             // TODO DB: insert result with record_id
         }
         string result = join(results, ";");
@@ -237,7 +259,7 @@ main() {
                 study1, study2, cutoff[0], cutoff[1]);
           fname = "%s/%s_%s_%d_%d_features.txt" %
             (xcorr_data_dir, study1, study2, cutoff[0], cutoff[1]);
-	  printf(fname);
+          printf(fname);
 
           string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
           int h = hash(record_id);
@@ -245,6 +267,12 @@ main() {
         }
       }
     }
+
+    // for each of the studies, run against full features, no xcorr
+    log_code = log_corr_template % (db_file, "", study1, "", -1, -1);
+    record_id = python_persist(log_code, "str(record_id)");
+    int h = hash(record_id);
+    params[h] = [record_id, "", study1];
   }
 
   int ME_ranks[];
@@ -261,7 +289,7 @@ main() {
   {
     string ps[] = params[hash_index];
     int rank = ME_ranks[r];
-    // rank, record_id, feature file name, study1 name
+    // initial priority, modulo priority, rank, record_id, feature file name, study1 name
     start(-r - 1, modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
 }
