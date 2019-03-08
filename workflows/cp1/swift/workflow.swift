@@ -194,9 +194,9 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             updated_param = python_persist(param_code, "params_json");
             // TODO DB: insert updated_param with mlr_instance_id and record 
             printf("Updated Params: %s", updated_param);
-            results[j] = "0.5";
-            //results[j] = obj_prio(updated_param,
-            //                 "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
+            //results[j] = "0.5";
+            results[j] = obj_prio(updated_param,
+                             "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
             // TODO DB: insert result with record_id
         }
         string result = join(results, ";");

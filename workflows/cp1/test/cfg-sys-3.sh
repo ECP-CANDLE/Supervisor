@@ -4,11 +4,11 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-7}
+export PROCS=${PROCS:-12}
 
 # Number of processes to use for resident tasks,
 # i.e., the number of mlrMBO instances to run
-export TURBINE_RESIDENT_WORK_WORKERS=2
+export TURBINE_RESIDENT_WORK_WORKERS=4
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
