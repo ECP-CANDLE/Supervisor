@@ -195,7 +195,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             printf("Updated Params: %s", updated_param);
             //results[j] = "0.5";
             results[j] = obj_prio(updated_param,
-            //                 "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
+                             "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
             // TODO DB: insert result with record_id
         }
         string result = join(results, ";");
