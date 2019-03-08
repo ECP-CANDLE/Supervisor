@@ -193,7 +193,9 @@ uno_xcorr.coxen_feature_selection(study1, study2,
                 gpus, feature_file, cache_dir);
             updated_param = python_persist(param_code, "params_json");
             // TODO DB: insert updated_param with mlr_instance_id and record 
-            printf("Updated Params: %s", updated_param);
+            //printf("Updated Params: %s", updated_param);
+            //printf("XXX %s: %i", feature_file, prio);
+
             //results[j] = "0.5";
             results[j] = obj_prio(updated_param,
                              "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
@@ -245,13 +247,31 @@ restart.file = '%s'
     }
 }
 
+(int keys[]) sort_keys(string params[][]) {
+  sort_code =
+"""
+key_string = '%s'
+keys = [int(x) for x in key_string.split(',')]
+keys.sort()
+result = ",".join([str(x) for x in keys])
+""";
+
+  string k[] = keys_string(params);
+  string code = sort_code % (join(k, ","));
+  result = python_persist(code, "result");
+  foreach val, i in split(result, ",")
+  {
+    keys[i] = string2int(val);
+  }
+}
+
 main() {
   string params[][];
-  foreach study1 in studies
+  
+  foreach study1, i in studies
   {
     foreach study2 in studies
     {
-
       if (study1 != study2)
       {
         foreach cutoff in cutoffs
@@ -263,17 +283,18 @@ main() {
           printf(fname);
 
           string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
-          int h = hash(record_id);
+          int h = string2int(record_id);
           params[h] = [record_id, fname, study1];
         }
       }
     }
 
-    // for each of the studies, run against full features, no xcorr
-    log_code = log_corr_template % (db_file, "", study1, "", -1, -1);
-    record_id = python_persist(log_code, "str(record_id)");
-    int h = hash(record_id);
-    params[h] = [record_id, "", study1];
+     // for each of the studies, run against full features, no xcorr
+    string log_code = log_corr_template % (db_file, "", study1, "", -1, -1);
+    string record_id = python_persist(log_code, "str(record_id)");
+    // give full features key value guaranteed to be lower than the record_ids 
+    // of the xcorr studies
+    params[-(i + 1)] = [record_id, "", study1];
   }
 
   int ME_ranks[];
@@ -283,14 +304,14 @@ main() {
   }
 
   assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
-  int keys[] = keys_integer(params);
+  int keys[] = sort_keys(params);
 
   int modulo_prio = size(ME_ranks);
-  foreach hash_index, r in keys
+  foreach idx, r in keys
   {
-    string ps[] = params[hash_index];
+    string ps[] = params[idx];
     int rank = ME_ranks[r];
     // initial priority, modulo priority, rank, record_id, feature file name, study1 name
-    start(-r - 1, modulo_prio, rank, ps[0], ps[1], ps[2]);
+    start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
 }
