@@ -8,7 +8,7 @@
 create table if not exists hpo_ids(
        rowid integer primary key,
        /* creation time */
-       time timestamp,
+       time timestamp
 );
 
 create table if not exists hpo_hyperparam_defns(
