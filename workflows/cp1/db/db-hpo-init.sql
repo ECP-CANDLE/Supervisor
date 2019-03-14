@@ -6,7 +6,7 @@
 
 /* The main table, one row for each HPO instance */
 create table if not exists hpo_ids(
-       rowid integer primary key,
+       hpo_id integer primary key,
        /* creation time */
        time timestamp
 );
