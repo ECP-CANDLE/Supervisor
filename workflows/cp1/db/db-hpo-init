@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# DB HPO INIT
+# Shell UI wrapper for db-hpo-init.py
+
+export THIS=$( readlink --canonicalize-existing $( dirname $0 ) )
+WORKFLOWS=$( readlink --canonicalize-existing $THIS/../.. )
+XCORR=$WORKFLOWS/xcorr
+
+export PYTHONPATH=$XCORR
+python $THIS/db-hpo-init.py $*
