@@ -41,9 +41,9 @@ create table if not exists hpo_samples(
        /* ID in table hpo_ids */
        hpo_id integer,
        /* creation time */
-       creation timestamp,
+       created timestamp,
        /* completion time */
-       completion timestamp,
+       completed timestamp,
        /* params: for categoricals, a comma-separated list of value_ids */
        hyperparams text,
        /* the sample value, e.g., val_loss */
