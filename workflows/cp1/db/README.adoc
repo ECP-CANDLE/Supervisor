@@ -35,7 +35,7 @@ Populates the tables for an HPO instance.
 +
 Accepts the HPO ID and a YAML file containing the hyperparameter definitions.
 +
-Creates entries in +hpo_ids+, +hpo_hyperparam_defns+, and +hpo_hyperparam_values+ for this HPO instance.  After this script, these 3 tables are not change with respect to this HPO ID.
+Creates entries in +hpo_ids+, +hpo_hyperparam_defns+, and +hpo_hyperparam_values+ for this HPO instance.  After this script, these 3 tables are not changed with respect to this HPO ID.
 
 db-hpo-list.py::
 Queries the DB to produce human-readable reports.
