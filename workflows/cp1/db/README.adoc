@@ -39,6 +39,8 @@ Creates entries in +hpo_ids+, +hpo_hyperparam_defns+, and +hpo_hyperparam_values
 
 db-hpo-list.py::
 Queries the DB to produce human-readable reports.
++
+See +db-hpo-list.py --help+ for usage.
 
 db-hpo-sample.py::
 (Not yet implemented)
