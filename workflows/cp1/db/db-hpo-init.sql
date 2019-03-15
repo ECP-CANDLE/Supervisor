@@ -47,5 +47,6 @@ create table if not exists hpo_samples(
        /* params: for categoricals, a comma-separated list of value_ids */
        hyperparams text,
        /* the sample value, e.g., val_loss */
-       value real
+       value real,
+       foreign key (hpo_id) references hpo_ids(hpo_id)
 );
