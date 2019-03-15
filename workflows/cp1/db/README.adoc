@@ -7,21 +7,21 @@ Challenge Problem 1 is just using categorical hyperparameters, which simplifies 
 
 == Tables
 
-=== +hpo_ids+ HPO IDs
+=== +hpo_ids+ -- HPO IDs
 
 Each HPO instance (e.g., an mlrMBO run) has an HPO ID.  This is the same as the EMEWS experiment ID.  E.g., +X042+ will have +hpo_id=42+ .
 
-=== +hpo_hyperparam_defns+ Hyperparameter definitions
+=== +hpo_hyperparam_defns+ -- Hyperparameter definitions
 
 Within an HPO instance, each hyperparameter has a row containing its +param_id+ and a +name+ (e.g., "activation" or "dense_feature_layers").
 
 In the future, this table may be extended to describe non-categorical hyperparameters.
 
-=== +hpo_hyperparam_values+ Hyperparameter values
+=== +hpo_hyperparam_values+ -- Hyperparameter values
 
 Each possible hyperparameter value has a row in this table.  For hyperparameter name "activation", there are three rows "relu", "tanh", and "sigmoid".  Each row has a unique integer +value_id+.
 
-=== +hpo_samples+ Hyperparameter sample results
+=== +hpo_samples+ -- Hyperparameter sample results
 
 Each sample (a model training run) will consume a unique set of hyperparameters and produce a row in this table.  The string +hyperparams+ contains a comma-separated list of +value_id+s that point to table +hpo_hyperparam_values+.
 
