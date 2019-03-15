@@ -41,8 +41,8 @@ def insert_hyperparam_defns(hpo_id, yamlfile):
         for p in values:
             print(" " + p)
             DB.insert(table="hpo_hyperparam_values",
-                      names=["hpo_id","param_id","value"],
-                      values=[q(hpo_id),q(param_id),q(p)])
+                      names=["param_id","value"],
+                      values=[q(param_id),q(p)])
 
 def usage():
     print("usage: db-hpo-setup <hpo_id> <yaml>")
