@@ -46,5 +46,3 @@ turbine-directory.txt
 
 # IDE
 .vscode
-*.DS_Store
-*._*
