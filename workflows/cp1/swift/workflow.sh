@@ -20,7 +20,7 @@ export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
 XCORR_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../xcorr ; /bin/pwd)
-export XCORR_ROOT=${XCORR_ROOT:-${XCORR_DEFAULT}}
+export XCORR_ROOT=${XCORR_ROOT:-$XCORR_DEFAULT}
 
 SCRIPT_NAME=$(basename $0)
 
@@ -61,11 +61,12 @@ fi
 
 echo "Running "$MODEL_NAME "workflow"
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
-
 source_site env   $SITE
 source_site sched $SITE
+
+# Set PYTHONPATH for BENCHMARK related stuff
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
+export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 
 START=$(( PROCS - TURBINE_RESIDENT_WORK_WORKERS - 1 ))
 END=$(( START + TURBINE_RESIDENT_WORK_WORKERS - 1 ))
@@ -101,6 +102,14 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
+if [ -z ${GPU_STRING+x} ]; 
+then
+  GPU_ARG=""
+else
+  GPU_ARG="-gpus=$GPU_STRING"
+fi
+
+
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
                 -ds=$DESIGN_SIZE
@@ -109,6 +118,10 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
+                -db_file=$DB_FILE
+                $GPU_ARG
+                -cache_dir=$CACHE_DIR
+                -xcorr_data_dir=$XCORR_DATA_DIR
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
@@ -125,12 +138,16 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
+mkdir -pv $CACHE_DIR
+mkdir -pv $XCORR_DATA_DIR
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+
+log_path PYTHONPATH
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
@@ -143,6 +160,8 @@ fi
 # It does not work on workstations, for example.  -Justin 2018/04/18
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
 
+#echo ${CMD_LINE_ARGS[@]}
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -154,6 +173,7 @@ swift-t -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e XCORR_ROOT \
+        -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \

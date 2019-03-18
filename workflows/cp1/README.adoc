@@ -27,6 +27,32 @@ $ cd test
 $ ./test-1.sh theta -a
 ----
 
+See Summit Notes below for moving the database to a compute node writable location.
+
+=== Summit Notes
+
+Summit's project directories (e.g. /ccs/proj/med106/) are not writable from the compute nodes.
+The workflow needs the database file (cp1.db) and the following directories in Supervisor/workflows/cp1 to be writable.
+
+* cache
+* experiments
+* xcorr_data
+
+One solution is to symlink them from a writable location such as /gpfs/alpine/med106/scratch.
+For example,
+
+----
+$ pwd
+/ccs/proj/med106/ncollier/repos/Supervisor/workflows/cp1
+$ ls -l
+lrwxrwxrwx 1 ncollier ncollier 46 Feb 28 17:35 cp1.db -> /gpfs/alpine/med106/scratch/ncollier/db/cp1.db
+...
+lrwxrwxrwx 1 ncollier ncollier   46 Mar  1 10:35 cache -> /gpfs/alpine/med106/scratch/ncollier/uno_cache
+lrwxrwxrwx 1 ncollier ncollier   48 Feb 28 16:51 experiments -> /gpfs/alpine/med106/scratch/ncollier/experiments
+lrwxrwxrwx 1 ncollier ncollier   47 Mar  1 12:38 xcorr_data -> /gpfs/alpine/med106/scratch/ncollier/xcorr_data
+----
+
+
 === More Details
 
  TODO

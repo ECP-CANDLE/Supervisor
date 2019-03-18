@@ -15,15 +15,16 @@ export TURBINE_RESIDENT_WORK_WORKERS=4
 export PPN=${PPN:-1}
 
 # For Theta:
-export QUEUE=${QUEUE:-debug-flat-quad}
+# export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
+export QUEUE=default 
 
-export WALLTIME=${WALLTIME:-00:10:00}
+export WALLTIME=${WALLTIME:-01:59}
 
 # command separated list of gpu ids
-# export GPU_STRING=${GPU_STRING:-0}
+export GPU_STRING=${GPU_STRING:-0,1,2,3,4,5}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
-#export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 
 #export PROJECT=Candle_ECP
 

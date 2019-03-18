@@ -148,11 +148,11 @@ if __name__ == '__main__':
     # so we need to create a synthetic argv.
     # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
     # sys.argv  = ['nt3_tc1']
-    sys.argv = ['p1b1']
+    sys.argv = ['null']
 
     # Call to Benchmark!
     logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
-    # print("sys.argv=" + str(sys.argv))
+    print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
 
     runner_utils.write_output(result, instance_directory)

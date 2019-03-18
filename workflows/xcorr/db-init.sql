@@ -5,7 +5,7 @@
 */
 
 /* The main table, one row for each training run */
-create table records(
+create table if not exists records(
        rowid integer primary key,
        time timestamp,
        /* cutoff for the correlation */
@@ -17,7 +17,7 @@ create table records(
 /* A given record will have multiple entries in this table,
    one for each feature used
 */
-create table features(
+create table if not exists features(
        record_id  integer, /* the rowid in table records */
        feature_id integer  /* the rowid in table feature_names */
 );
@@ -25,19 +25,19 @@ create table features(
 /* A given record will have multiple entries in this table,
    one for each study used
 */
-create table studies(
+create table if not exists studies(
        record_id integer, /* the rowid in table records */
        study_id  integer  /* the rowid in table study_names */
 );
 
 /* Maps feature IDs (the rowid) to feature names */
-create table feature_names(
+create table if not exists feature_names(
        rowid integer primary key,
        name text
 );
 
 /* Maps study IDs (the rowid) to study names */
-create table study_names(
+create table if not exists study_names(
        rowid integer primary key,
        name text
 );

@@ -14,7 +14,8 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
-export WALLTIME=${WALLTIME:-00:10:00}
+# export WALLTIME=${WALLTIME:-00:10:00}
+export WALLTIME=10
 
 #export PROJECT=Candle_ECP
 
