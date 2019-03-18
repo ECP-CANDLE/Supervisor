@@ -126,6 +126,7 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+# See Supervisor/templates/README.md for explanation of DEFAULT_PARAMS_FILE below
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -139,7 +140,7 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
-        -e DEFAULT_PARAMS_FILE \ # this is necessary in order to use an arbitrary model (as opposed to one of the benchmarks)
+        -e DEFAULT_PARAMS_FILE \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \

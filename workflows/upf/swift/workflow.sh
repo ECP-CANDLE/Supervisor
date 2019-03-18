@@ -79,6 +79,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 export UPF
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
 
+# See Supervisor/templates/README.md for explanation of DEFAULT_PARAMS_FILE below
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -92,7 +93,7 @@ swift-t -n $PROCS \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME \
         -e OBJ_RETURN \
-        -e DEFAULT_PARAMS_FILE \ # this is necessary in order to use an arbitrary model (as opposed to one of the benchmarks)
+        -e DEFAULT_PARAMS_FILE \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         $( python_envs ) \

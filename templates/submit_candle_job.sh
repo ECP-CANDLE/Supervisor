@@ -5,12 +5,12 @@ export CANDLE_DIR="/data/BIDS-HPC/public/candle"
 export SITE="biowulf"
 
 # Job specification
-export EXPERIMENTS="/home/weismanal/notebook/2019-02-28/experiments"
+export EXPERIMENTS="/home/weismanal/notebook/2019-02-28/experiments" # ensure this directory exists
 export MODEL_NAME="my_test_unet_using_upf"
 export OBJ_RETURN="val_dice_coef"
 
 # Scheduler settings
-export PROCS="5" # remember that PROCS-1 are actually used for UPF jobs (it's PROCS-2 for mlrMBO)
+export PROCS="5" # remember that PROCS-2 are actually used for computation
 export PPN="1"
 export WALLTIME="04:00:00"
 export GPU_TYPE="k80" # the choices on Biowulf are p100, k80, v100, k20x
