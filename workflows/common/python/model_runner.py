@@ -16,6 +16,7 @@ logger = None
 
 print("MODEL RUNNER...")
 
+# Adding the following line in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
@@ -98,7 +99,7 @@ def run(hyper_parameter_map, obj_return):
                 result = 999999999
             else:
                 result = val_loss[-1]
-        elif(obj_return == "val_corr" or obj_return == "val_dice_coef"):
+        elif(obj_return == "val_corr" or obj_return == "val_dice_coef"): # allow for the return variable to be the val_dice_coef, which is sometimes used by arbitrary models instead of val_corr
             if(math.isnan(val_loss[-1])):
                 result = 999999999
             else:

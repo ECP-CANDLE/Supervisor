@@ -61,6 +61,7 @@ OUTPUT=$TURBINE_OUTPUT/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 
 SCRIPT=$( basename $0 .sh )
+# Note that the following line is essentially hardcoding a gParameter (learning_rate) that may or may not be an actual model parameter
 #check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"

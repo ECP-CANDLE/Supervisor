@@ -1,3 +1,4 @@
+# This is based off of nt3_hps_exp_01.R
 
 # NT3 Hyperparameter Search - Test 1
 # These parameters should stay small for short tests
@@ -7,7 +8,8 @@
 # the parameter names should match names of the arguments expected by the benchmark
 
 param.set <- makeParamSet(
-#  makeDiscreteParam("batch_size", values = c(16, 32)),
+#  makeDiscreteParam("batch_size", values = c(16, 32, 64, 128, 256, 512)),
+  makeDiscreteParam("batch_size", values = c(16)),
   makeIntegerParam("epochs", lower = 2, upper = 5),
 #  makeDiscreteParam("activation", values = c("softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear")),
 #  makeDiscreteParam("dense", values = c("500 100 50", "1000 500 100 50", "2000 1000 500 100 50", "2000 1000 1000 500 100 50", "2000 1000 1000 1000 500 100 50")),

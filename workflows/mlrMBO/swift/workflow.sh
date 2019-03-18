@@ -139,7 +139,7 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
-        -e DEFAULT_PARAMS_FILE \
+        -e DEFAULT_PARAMS_FILE \ # this is necessary in order to use an arbitrary model (as opposed to one of the benchmarks)
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \

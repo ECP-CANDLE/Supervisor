@@ -92,7 +92,7 @@ swift-t -n $PROCS \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME \
         -e OBJ_RETURN \
-        -e DEFAULT_PARAMS_FILE \
+        -e DEFAULT_PARAMS_FILE \ # this is necessary in order to use an arbitrary model (as opposed to one of the benchmarks)
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         $( python_envs ) \
