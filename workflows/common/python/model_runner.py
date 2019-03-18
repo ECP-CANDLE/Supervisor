@@ -16,8 +16,8 @@ logger = None
 
 print("MODEL RUNNER...")
 
-#sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
+sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
 print("sys.path:")
 print(sys.path)
@@ -98,7 +98,7 @@ def run(hyper_parameter_map, obj_return):
                 result = 999999999
             else:
                 result = val_loss[-1]
-        elif(obj_return == "val_corr"):
+        elif(obj_return == "val_corr" or obj_return == "val_dice_coef"):
             if(math.isnan(val_loss[-1])):
                 result = 999999999
             else:

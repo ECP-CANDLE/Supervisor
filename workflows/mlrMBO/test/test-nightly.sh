@@ -21,6 +21,14 @@ else
         exit 1
 fi
 
+
+export DEFAULT_PARAMS_FILE="hello_andrew"
+export QUEUE=gpu
+export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE:-p100}:1 --mem=${MEM_PER_NODE:-50G}"
+export PROCS=8
+export WALLTIME=04:00:00
+
+
 export MODEL_NAME=$1
 SITE=$2
 

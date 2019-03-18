@@ -1,0 +1,12 @@
+[Global Params]
+backbone = 'resnet152'
+batch_size = 8
+encoder = 'imagenet11k'
+epochs = 250
+images = '/home/weismanal/links/1-pre-processing/roi1+roi2/both_rois_images_combined_5000-ready_for_unet.npy'
+labels = '/home/weismanal/links/1-pre-processing/roi1+roi2/both_rois_masks_combined_5000-ready_for_unet.npy'
+lr = '1e-5'
+obj_return = 'val_loss'
+initialize = 'old_model_weights.h5'
+predict = False
+segmentation_models_repo = '/home/weismanal/checkouts/segmentation_models'

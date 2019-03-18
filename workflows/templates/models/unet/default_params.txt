@@ -1,0 +1,17 @@
+[Global Params]
+activation = 'relu'
+batch_norm = False
+batch_size = 2
+conv_size = 5
+dropout = None
+epochs = 139
+images = '/home/weismanal/links/1-pre-processing/roi1+roi2/both_rois_images_combined_5000-ready_for_unet.npy'
+initialize = '/home/weismanal/notebook/2019-01-23/continuing_original_unet/model_weights.h5'
+labels = '/home/weismanal/links/1-pre-processing/roi1+roi2/both_rois_masks_combined_5000-ready_for_unet.npy'
+last_act = 'sigmoid'
+loss_func = 'dice'
+lr = '1e-5'
+nlayers = 5
+num_filters = 64
+obj_return = 'val_loss'
+predict = False

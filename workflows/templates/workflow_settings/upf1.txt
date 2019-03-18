@@ -1,0 +1,1 @@
+{"id": "mytest", "batch_size": 2048, "learning_rate": 0.00001}

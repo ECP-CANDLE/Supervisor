@@ -1,0 +1,8 @@
+{"id": "hpset_10", "nlayers": 4, "conv_size": 5, "activation": "tanh", "num_filters": 16, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_10/model_weights.h5", "epochs": 981}
+{"id": "hpset_11", "nlayers": 4, "conv_size": 5, "activation": "tanh", "num_filters": 32, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_11/model_weights.h5", "epochs": 427}
+{"id": "hpset_16", "nlayers": 5, "conv_size": 3, "activation": "tanh", "num_filters": 16, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_16/model_weights.h5", "epochs": 1371}
+{"id": "hpset_17", "nlayers": 5, "conv_size": 3, "activation": "tanh", "num_filters": 32, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_17/model_weights.h5", "epochs": 847}
+{"id": "hpset_22", "nlayers": 5, "conv_size": 5, "activation": "tanh", "num_filters": 16, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_22/model_weights.h5", "epochs": 778}
+{"id": "hpset_23", "nlayers": 5, "conv_size": 5, "activation": "tanh", "num_filters": 32, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_23/model_weights.h5", "epochs": 315}
+{"id": "hpset_28", "nlayers": 6, "conv_size": 3, "activation": "tanh", "num_filters": 16, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_28/model_weights.h5", "epochs": 1183}
+{"id": "hpset_34", "nlayers": 6, "conv_size": 5, "activation": "tanh", "num_filters": 16, "initialize": "/home/weismanal/notebook/2019-01-20/upf_kedar_full/experiments/X008/run/hpset_34/model_weights.h5", "epochs": 561}
