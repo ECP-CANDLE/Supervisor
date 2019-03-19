@@ -1,0 +1,25 @@
+{"study1": "CCLE", "study2" : "CTRP", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CCLE", "study2" : "gCSI", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CCLE", "study2" : "GDSC", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CCLE", "study2" : "NCI60", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CTRP", "study2" : "CCLE", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CTRP", "study2" : "gCSI", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CTRP", "study2" : "GDSC", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CTRP", "study2" : "NCI60", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "gCSI", "study2" : "CCLE", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "gCSI", "study2" : "CTRP", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "gCSI", "study2" : "GDSC", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "gCSI", "study2" : "NCI60", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "GDSC", "study2" : "CCLE", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "GDSC", "study2" : "CTRP", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "GDSC", "study2" : "gCSI", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "GDSC", "study2" : "NCI60", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "NCI60", "study2" : "CCLE", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "NCI60", "study2" : "CTRP", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "NCI60", "study2" : "gCSI", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "NCI60", "study2" : "GDSC", "cutoff" : "200_100", "epochs": 1, "batch_size": 3072}
+{"study1": "CCLE", "epochs": 1, "batch_size": 3072}
+{"study1": "CTRP", "epochs": 1, "batch_size": 3072}
+{"study1": "gCSI", "epochs": 1, "batch_size": 3072}
+{"study1": "GDSC", "epochs": 1, "batch_size": 3072}
+{"study1": "NCI60", "epochs": 1, "batch_size": 3072}
