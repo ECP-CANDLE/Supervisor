@@ -56,7 +56,8 @@ if 'study2' in vals:
 else:
   params['use_landmark_genes'] = True
   params['cache'] = '{}/{}_cache'.format(cache_dir, study1)
-  params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
+
+params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
 
 gpus = '%s'
 if len(gpus) > 0:
