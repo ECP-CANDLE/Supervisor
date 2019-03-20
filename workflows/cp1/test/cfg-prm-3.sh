@@ -7,15 +7,17 @@ PROPOSE_POINTS=${PROPOSE_POINTS:-3}
 # Total runs/points/models in first round
 DESIGN_SIZE=${DESIGN_SIZE:-3}
 
-MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-3}
+#MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRENT_EVALUATIONS:-3}
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-30}
 
 CACHE_DIR=$EMEWS_PROJECT_ROOT/cache
-DB_FILE=$EMEWS_PROJECT_ROOT/cp1.db
 XCORR_DATA_DIR=$EMEWS_PROJECT_ROOT/xcorr_data
 
 export PREPROP_RNASEQ="combat"
+
+export RNA_SEQ_DATA=$BENCHMARKS_ROOT/Data/Pilot1/combined_rnaseq_data_$PREPROP_RNASEQ
+export DRUG_REPSONSE_DATA=$BENCHMARKS_ROOT/Data/Pilot1/rescaled_combined_single_drug_growth
 
 # TODO: move the following code to a utility library-
 #       this is a configuration file

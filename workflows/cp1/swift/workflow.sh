@@ -109,6 +109,9 @@ else
   GPU_ARG="-gpus=$GPU_STRING"
 fi
 
+mkdir -pv $TURBINE_OUTPUT
+cp $EMEWS_PROJECT_ROOT/data/xcorr.db $TURBINE_OUTPUT/cp1.db
+DB_FILE=$TURBINE_OUTPUT/cp1.db
 
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
@@ -122,6 +125,8 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 $GPU_ARG
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
+                -rna_seq_data=$RNA_SEQ_DATA
+                -drug_response_data=$DRUG_REPSONSE_DATA
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG

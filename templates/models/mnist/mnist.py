@@ -1,6 +1,11 @@
 # add candle_keras library in path
-import os
+candle_lib = '/data/BIDS-HPC/public/candle/Candle/common'
 import sys
+sys.path.append(candle_lib)
+
+
+import os
+#import sys
 file_path = os.path.dirname(os.path.realpath(__file__))
 lib_path = os.path.abspath(os.path.join(file_path, '..', '..', 'common'))
 sys.path.append(lib_path)

@@ -81,7 +81,7 @@ mkdir -pv $TURBINE_OUTPUT
 
 #Store scripts to provenance
 #copy the configuration files to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/common/R/$R_FILE $UPF_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $UPF_FILE $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 UF=$(basename $UPF_FILE)
 WORKING_UPF_FILE="$TURBINE_OUTPUT/$UF"

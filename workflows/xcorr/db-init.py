@@ -20,6 +20,7 @@ def insert_feature_names():
     into the features table
     """
     datafile = "test_data/combined_rnaseq_data_lincs1000_combat"
+    #datafile = "test_data/combined_rnaseq_data_combat"
 
     with open(datafile) as fp:
         line = fp.readline()

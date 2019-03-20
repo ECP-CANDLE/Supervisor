@@ -56,7 +56,15 @@ if 'study2' in vals:
 else:
   params['use_landmark_genes'] = True
   params['cache'] = '{}/{}_cache'.format(cache_dir, study1)
-  params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
+
+params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
+
+gpus = '%s'
+if len(gpus) > 0:
+  params['gpus'] = gpus.replace(',', ' ')
+
+params['save_path'] = '%s'
+params['cp'] = True
 
 
 params_json = json.dumps(params)
@@ -67,9 +75,9 @@ main() {
   file json_input = input(argv("f"));
   string lines[] = file_lines(json_input);
   foreach params,i in lines {
-    string instance = "%s/instance_%i/" % (turbine_output, i+1);
+    string instance = "%s/run/%i/" % (turbine_output, i+1);
     //make_dir(instance) => {
-    param_code = update_param_template % (params, xcorr_data_dir, cache_dir);
+    param_code = update_param_template % (params, cache_dir, xcorr_data_dir, gpus, instance);
       updated_param = python_persist(param_code, "params_json");
     obj(updated_param, int2string(i));
     //}

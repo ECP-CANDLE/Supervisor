@@ -13,7 +13,7 @@ param.set <- makeParamSet(
 
   #makeDiscreteParam("optimizer", values=c("adam", "sgd", "rmsprop")),
 
-  #makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
+  makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
 
   #makeDiscreteParam("reduce_lr", values=c(1, 0)),
 
