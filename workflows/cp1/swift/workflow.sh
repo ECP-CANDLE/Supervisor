@@ -109,9 +109,11 @@ else
   GPU_ARG="-gpus=$GPU_STRING"
 fi
 
-mkdir -pv $TURBINE_OUTPUT
-cp $EMEWS_PROJECT_ROOT/data/xcorr.db $TURBINE_OUTPUT/cp1.db
 DB_FILE=$TURBINE_OUTPUT/cp1.db
+if [[ ! -f DB_FILE ]]
+then
+  cp -v $EMEWS_PROJECT_ROOT/data/initial.db $TURBINE_OUTPUT/cp1.db
+fi
 
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -mb=$MAX_BUDGET
