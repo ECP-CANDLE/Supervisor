@@ -126,6 +126,7 @@ get_expid()
   else
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
+  mkdir -pv $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then
