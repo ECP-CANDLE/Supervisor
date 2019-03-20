@@ -57,7 +57,7 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
