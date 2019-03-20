@@ -74,7 +74,7 @@ main() {
   file json_input = input(argv("f"));
   string lines[] = file_lines(json_input);
   foreach params,i in lines {
-    string instance = "%s/run/%i/" % (turbine_output, i+1);
+    string instance = "%s/run/%i/" % (turbine_output, i);
     //make_dir(instance) => {
     param_code = update_param_template % (params, cache_dir, xcorr_data_dir, gpus, instance);
       updated_param = python_persist(param_code, "params_json");

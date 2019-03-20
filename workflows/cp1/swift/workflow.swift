@@ -297,21 +297,21 @@ main() {
     params[-(i + 1)] = [record_id, "", study1];
   }
 
-  int ME_ranks[];
-  foreach r_rank, i in r_ranks
-  {
-    ME_ranks[i] = toint(r_rank);
-  }
+  // int ME_ranks[];
+  // foreach r_rank, i in r_ranks
+  // {
+  //   ME_ranks[i] = toint(r_rank);
+  // }
 
-  assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
-  int keys[] = sort_keys(params);
+  // assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
+  // int keys[] = sort_keys(params);
 
-  int modulo_prio = size(ME_ranks);
-  foreach idx, r in keys
-  {
-    string ps[] = params[idx];
-    int rank = ME_ranks[r];
-    // initial priority, modulo priority, rank, record_id, feature file name, study1 name
-    start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
-  }
+  // int modulo_prio = size(ME_ranks);
+  // foreach idx, r in keys
+  // {
+  //   string ps[] = params[idx];
+  //   int rank = ME_ranks[r];
+  //   // initial priority, modulo priority, rank, record_id, feature file name, study1 name
+  //   start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
+  // }
 }
