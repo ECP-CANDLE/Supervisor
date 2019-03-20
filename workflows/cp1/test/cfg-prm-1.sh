@@ -16,6 +16,9 @@ XCORR_DATA_DIR=$EMEWS_PROJECT_ROOT/xcorr_data
 
 export PREPROP_RNASEQ="combat"
 
+export RNA_SEQ_DATA=$BENCHMARKS_ROOT/Data/Pilot1/combined_rnaseq_data_$PREPROP_RNASEQ
+export DRUG_REPSONSE_DATA=$BENCHMARKS_ROOT/Data/Pilot1/rescaled_combined_single_drug_growth
+
 # TODO: move the following code to a utility library-
 #       this is a configuration file
 # Set the R data file for running

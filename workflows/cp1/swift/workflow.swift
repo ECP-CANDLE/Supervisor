@@ -51,9 +51,9 @@ if (restart_file != "DISABLED") {
 
 // for subset of studies, comment '#' out study name in studies.txt
 string studies[] = file_lines(input(emews_root + "/data/studies.txt"));
-string rna_seq_data = "%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
-string drug_response_data = xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[200, 100]]; //,
+string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
+string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
+int cutoffs[][] = [[2000, 1000]]; //,
                  //  [100, 50],
                  //  [400, 200],
                   //  [200, 50],
