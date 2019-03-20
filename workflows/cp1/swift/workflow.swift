@@ -303,7 +303,10 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
+  printf("size(ME_ranks)=%i", size(ME_ranks));
+  printf("size(params)  =%i", size(params));
+  assert(size(ME_ranks) == size(params),
+         "Number of ME ranks must equal number of xcorrs");
   int keys[] = sort_keys(params);
 
   int modulo_prio = size(ME_ranks);
