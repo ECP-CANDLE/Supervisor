@@ -2,7 +2,6 @@
 # ENV SPACK
 # Language settings for a Spack-based installations
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
-# Modify to specify the location of SWIFT_T installation
 
 if [[ ${ZSH_VERSION:-} != "" ]]
 then
@@ -26,7 +25,6 @@ export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
 # Add Turbine's Python to PATH
-turbine -v
 TURBINE_PY_LIB=$( turbine -v | \
                     sed -n 's/\( using Python: \)\(.*\) \(.*\)/\2/p' )
 if [[ ! -d "$TURBINE_PY_LIB" ]]
@@ -65,5 +63,5 @@ export LOCAL=1
 export CRAY=0
 
 # Cf. utils.sh
-log_path LD_LIBRARY_PATH
-log_path PYTHONPATH
+# log_path LD_LIBRARY_PATH
+# log_path PYTHONPATH
