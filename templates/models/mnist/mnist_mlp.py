@@ -1,5 +1,4 @@
 import mnist
-import candle_keras as candle
 import os
 
 from keras.callbacks import CSVLogger
@@ -12,6 +11,8 @@ def initialize_parameters():
         prog='mnist_mlp',
         desc='MNIST example'
     )
+
+    import candle_keras as candle
 
     # Initialize parameters
     gParameters = candle.initialize_parameters(mnist_common)
