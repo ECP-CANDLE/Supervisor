@@ -58,6 +58,11 @@ else:
   params['cache'] = '{}/{}_cache'.format(cache_dir, study1)
   params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
 
+gpus = '%s'
+if len(gpus) > 0:
+  params['gpus'] = gpus.replace(',', ' ')
+
+
 
 params_json = json.dumps(params)
 """;
@@ -69,7 +74,7 @@ main() {
   foreach params,i in lines {
     string instance = "%s/instance_%i/" % (turbine_output, i+1);
     //make_dir(instance) => {
-    param_code = update_param_template % (params, xcorr_data_dir, cache_dir);
+    param_code = update_param_template % (params, cache_dir, xcorr_data_dir, gpus);
       updated_param = python_persist(param_code, "params_json");
     obj(updated_param, int2string(i));
     //}
