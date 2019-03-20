@@ -102,7 +102,7 @@ fi
 
 R_FILE_ARG="--r_file=$R_FILE"
 
-if [ -z ${GPU_STRING+x} ]; 
+if [ -z ${GPU_STRING+x} ];
 then
   GPU_ARG=""
 else
@@ -154,7 +154,7 @@ OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
-log_path PYTHONPATH
+# log_path PYTHONPATH
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
@@ -162,10 +162,6 @@ then
   WAIT_ARG="-t w"
   echo "Turbine will wait for job completion."
 fi
-
-# This should be moved to one or more specific site files.
-# It does not work on workstations, for example.  -Justin 2018/04/18
-# export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 #echo ${CMD_LINE_ARGS[@]}
 
