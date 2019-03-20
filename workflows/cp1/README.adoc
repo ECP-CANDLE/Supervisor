@@ -7,6 +7,12 @@ Currently, this uses a mix of xcorr and cp1.
 
 Run the workflow in +workflows/cp1+
 
+=== Data
+
+
+
+=== Execution
+
 ----
 $ cd test
 # edit cfg-* as necessary
