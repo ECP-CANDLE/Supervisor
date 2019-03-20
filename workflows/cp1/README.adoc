@@ -5,7 +5,7 @@ Currently, this uses a mix of xcorr and cp1.
 
 == Quick Start
 
-Run the workflow in `workflows/cp1`
+Run the workflow in +workflows/cp1+
 
 ----
 $ cd test
