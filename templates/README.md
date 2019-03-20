@@ -1,4 +1,6 @@
-# Summary
+# How to use the CANDLE templates to run an arbitrary workflow on an arbitrary model
+
+## Summary
 
 In a nutshell:
 
@@ -6,7 +8,7 @@ In a nutshell:
 2. Modify the variables in this script as appropriate, using the files in the `$CANDLE_DIR/Supervisor/templates` directory as templates.
 3. Run the script from a submit node like `./submit_candle_job.sh`.
 
-# How-to
+## How-to
 
 In more detail, here are the steps required for running an arbitrary workflow on an arbitrary model using CANDLE:
 
@@ -20,7 +22,7 @@ In more detail, here are the steps required for running an arbitrary workflow on
 4. Adjust any other variables in the submission script such as the output directory (specified by `$EXPERIMENTS`), the scheduler settings, etc.
 5. Run the script from a submit node like `./submit_candle_job.sh`.
 
-# Background
+## Background
 
 In general, it would be nice to allow for an arbitrary model (U-Net, ResNet, etc.) to be run using an arbitrary workflow (UPF, mlrMBO, etc.), all in an external working directory.  For example, here is a sample submission script:
 
@@ -45,7 +47,7 @@ export MEM_PER_NODE="20G"
 
 # Model specification
 export MODEL_PYTHON_DIR="/home/weismanal/notebook/2019-02-28/unet"
-export MODEL_PYTHON_SCRIPT="customizable_unet"
+export MODEL_PYTHON_SCRIPT="my_specialized_unet"
 export DEFAULT_PARAMS_FILE="/home/weismanal/notebook/2019-02-28/unet/default_params.txt"
 
 # Workflow specification
@@ -53,8 +55,7 @@ export WORKFLOW_TYPE="upf"
 export WORKFLOW_SETTINGS_FILE="/home/weismanal/notebook/2019-02-28/unet/upf1.txt"
 
 # Call the workflow
-export EMEWS_PROJECT_ROOT="$CANDLE_DIR/Supervisor/workflows/$WORKFLOW_TYPE"
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CANDLE_DIR/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh $WORKFLOW_SETTINGS_FILE
+$CANDLE_DIR/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh $SITE -a $CANDLE_DIR/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh $WORKFLOW_SETTINGS_FILE
 ```
 
 When this script is run (no arguments accepted) on a Biowulf submit node, the necessarily [CANDLE-compliant](https://ecp-candle.github.io/Candle/html/tutorials/writing_candle_code.html) file `$MODEL_PYTHON_DIR/$MODEL_PYTHON_SCRIPT.py` will be run using the default parameters specified in `$DEFAULT_PARAMS_FILE`.  The CANDLE workflow used will be UPF (specified by `$WORKFLOW_TYPE`) and will be run using the parameters specified in `$WORKFLOW_SETTINGS_FILE`.  The results of the job will be output in `$EXPERIMENTS`.  Note that we can choose a different workflow by simply changing the value of the `$WORKFLOW_TYPE` variable, e.g.,
@@ -63,7 +64,7 @@ When this script is run (no arguments accepted) on a Biowulf submit node, the ne
 export WORKFLOW_TYPE="mlrMBO"
 ```
 
-In the sample submission script above, the Python script containing the model (customizable_unet.py), the default model parameters (default_params.txt), and the unrolled parameter file (upf1.txt) are all specified in the "unet" subdirectory of the working directory "/home/weismanal/notebook/2019-02-28".  However, often a model, its default parameters, and a workflow's settings can be reused.
+In the sample submission script above, the Python script containing the model (my_specialized_unet.py), the default model parameters (default_params.txt), and the unrolled parameter file (upf1.txt) are all specified in the "unet" subdirectory of the working directory "/home/weismanal/notebook/2019-02-28".  However, often a model, its default parameters, and a workflow's settings can be reused.
 
 Thus, we provide templates of these three types of files in the `$CANDLE_DIR/Supervisor/templates` directory, the current structure of which is:
 
@@ -83,7 +84,7 @@ We could modify the submission script above to utilize these templates by making
 ```bash
 # Old model specification
 export MODEL_PYTHON_DIR="/home/weismanal/notebook/2019-02-28/unet"
-export MODEL_PYTHON_SCRIPT="customizable_unet"
+export MODEL_PYTHON_SCRIPT="my_specialized_unet"
 # New model specification
 export MODEL_PYTHON_DIR="$CANDLE_DIR/Supervisor/templates/models"
 export MODEL_PYTHON_SCRIPT="unet"
@@ -99,9 +100,11 @@ export WORKFLOW_SETTINGS_FILE="/home/weismanal/notebook/2019-02-28/unet/upf1.txt
 export WORKFLOW_SETTINGS_FILE="$CANDLE_DIR/Supervisor/templates/workflow_settings/upf1.txt"
 ```
 
-Indeed, the submission script modified as above is what we provide as our template submission script located  at `$CANDLE_DIR/Supervisor/templates/submit_candle_job.sh`.
+The template submission script located  at `$CANDLE_DIR/Supervisor/templates/submit_candle_job.sh` utilizes all three of these types of templates and should just work (running an HPO on the MNIST dataset) as long as the `$CANDLE_DIR` and `$SITE` variables are set correctly.
 
-# Note on CANDLE-compliance
+## Notes
+
+### A note on CANDLE-compliance
 
 Rather than hardcoding the default parameters file in the candle.Benchmark instantiation in the initialize_parameters() function of the [CANDLE-compliant](https://ecp-candle.github.io/Candle/html/tutorials/writing_candle_code.html) model, we should allow an arbitrary set of default parameters by allowing them to be set by the `$DEFAULT_PARAMS_FILE` environment variable, e.g.,
 
@@ -115,3 +118,7 @@ mymodel_common = candle.Benchmark(file_path, os.getenv("DEFAULT_PARAMS_FILE"), '
 I'd recommend this be added to the standard method for making a model [CANDLE-compliant](https://ecp-candle.github.io/Candle/html/tutorials/writing_candle_code.html).
 
 Note further that `$DEFAULT_PARAMS_FILE` must be a full pathname.  Otherwise, if we just used the filename "default_params.txt" hardcoded into the `$MODEL_PYTHON_SCRIPT`, the script would look for this global parameter file in the same directory that it's in (i.e., `$MODEL_PYTHON_DIR`), but that would preclude using a `$MODEL_PYTHON_SCRIPT` that's a symbolic link.  In that case, we'd have to always copy the `$MODEL_PYTHON_SCRIPT` to the current working directory, which is inefficient because this leads to unnecessary duplication of code.
+
+### `$CANDLE_DIR` settings at different sites
+
+* Biowulf: `/data/BIDS-HPC/public/candle`
