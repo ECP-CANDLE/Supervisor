@@ -117,7 +117,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
