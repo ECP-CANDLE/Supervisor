@@ -52,12 +52,14 @@ if 'study2' in vals:
   prefix = '{}_{}_{}_features'.format(study1, study2, cutoff)
   params['cell_feature_subset_path'] = '%s/{}.txt'.format(prefix)
   params['cache'] = '{}/{}_cache'.format(cache_dir, prefix)
+  export_name = '{}_{}'.format(study1, study2)
 
 else:
   params['use_landmark_genes'] = True
   params['cache'] = '{}/{}_cache'.format(cache_dir, study1)
+  export_name = study1
 
-params['export_data'] = '{}/{}.h5'.format(cache_dir, study1)
+params['export_data'] = '{}/{}.h5'.format(cache_dir, export_name)
 
 gpus = '%s'
 if len(gpus) > 0:
