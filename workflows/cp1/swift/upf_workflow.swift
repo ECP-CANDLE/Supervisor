@@ -59,7 +59,11 @@ else:
   params['cache'] = '{}/{}_cache'.format(cache_dir, study1)
   export_name = study1
 
-params['export_data'] = '{}/{}.h5'.format(cache_dir, export_name)
+export_key = 'export_data'
+if 'use_exported' in vals and vals['use_exported'] == 1:
+  export_key = 'use_exported_data'
+
+params[export_key] = '{}/{}.h5'.format(cache_dir, export_name)
 
 gpus = '%s'
 if len(gpus) > 0:
