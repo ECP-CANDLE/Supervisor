@@ -49,8 +49,9 @@ if (restart_file != "DISABLED") {
 }
 
 
-// for subset of studies, comment '#' out study name in studies.txt
-string studies[] = file_lines(input(emews_root + "/data/studies.txt"));
+// for subset of studies, comment '#' out study name in studiesN.txt
+string studies1[] = file_lines(input(emews_root + "/data/studies1.txt"));
+string studies2[] = file_lines(input(emews_root + "/data/studies2.txt"));
 string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
 string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
 int cutoffs[][] = [[200, 100]]; //,
@@ -242,7 +243,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
             string run_dir = "%s/run/%s" % (turbine_output, run_id);
             string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
-            results[j] = obj_prio(updated_param, run_id, prio)
+            results[j] = obj_prio(updated_param, run_id, prio);
             //results[j] = "0.234234";
             update_hpo_run(run_db_id, results[j]);
             // TODO DB: insert result with record_id
@@ -315,9 +316,9 @@ result = ",".join([str(x) for x in keys])
 main() {
   string params[][];
 
-  foreach study1, i in studies
+  foreach study1, i in studies1
   {
-    foreach study2 in studies
+    foreach study2 in studies2
     {
       if (study1 != study2)
       {
