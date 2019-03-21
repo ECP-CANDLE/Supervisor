@@ -53,7 +53,7 @@ if (restart_file != "DISABLED") {
 string studies[] = file_lines(input(emews_root + "/data/studies.txt"));
 string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
 string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[2000, 1000]]; //,
+int cutoffs[][] = [[200, 100]]; //,
                  //  [100, 50],
                  //  [400, 200],
                   //  [200, 50],
@@ -117,6 +117,52 @@ record_id = DB.insert_xcorr_record(studies=studies,
 """;
 
 
+(string hpo_id) insert_hpo(string xcorr_record_id) 
+{
+  hpo_template =
+"""
+from xcorr_db import xcorr_db, setup_db
+
+global DB
+DB = setup_db('%s')
+hpo_id = DB.insert_hpo_record(%s)
+""";
+
+  code = hpo_template % (db_file, xcorr_record_id);
+  hpo_id = python_persist(code, "str(hpo_id)");
+}
+
+(string run_id) insert_hpo_run(string hpo_id, string param_string, string run_directory) 
+{
+  run_template =
+"""
+from xcorr_db import xcorr_db, setup_db
+
+global DB
+DB = setup_db('%s')
+run_id = DB.insert_hpo_run(%s, '%s', '%s')
+""";
+
+  code = run_template % (db_file, hpo_id, param_string, run_directory);
+  run_id = python_persist(code, "str(run_id)");
+}
+
+(void o) update_hpo_run(string run_id, string result) 
+{
+  update_template =
+"""
+from xcorr_db import xcorr_db, setup_db
+
+global DB
+DB = setup_db('%s')
+hpo_id = DB.update_hpo_run(%s, %s)
+""";
+
+  code = update_template % (db_file, run_id, result);
+  python_persist(code, "'ignore'") =>
+  o = propagate();
+}
+
 (string record_id)
 compute_feature_correlation(string study1, string study2,
                             int corr_cutoff, int xcorr_cutoff,
@@ -153,7 +199,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   record_id = python_persist(log_code, "str(record_id)");
 }
 
-(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file,
+(void v) loop(string hpo_db_id, int init_prio, int modulo_prio, int mlr_instance_id, location ME, string feature_file,
     string train_source)
 {
   for (boolean b = true, int i = 1;
@@ -189,14 +235,16 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         {
             param_code = update_param_template % (param, train_source, preprocess_rnaseq,
                 gpus, feature_file, cache_dir);
-            updated_param = python_persist(param_code, "params_json");
+            string updated_param = python_persist(param_code, "params_json");
             // TODO DB: insert updated_param with mlr_instance_id and record
             //printf("Updated Params: %s", updated_param);
             //printf("XXX %s: %i", feature_file, prio);
-
-            //results[j] = "0.5";
-            results[j] = obj_prio(updated_param,
-                             "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j), prio);
+            string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
+            string run_dir = "%s/run/%s" % (turbine_output, run_id);
+            string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
+            results[j] = obj_prio(updated_param, run_id, prio)
+            //results[j] = "0.234234";
+            update_hpo_run(run_db_id, results[j]);
             // TODO DB: insert result with record_id
         }
         string result = join(results, ";");
@@ -235,10 +283,11 @@ restart.file = '%s'
          propose_points, restart_file);
     // DB: insert algo params with mlr_instance_id
     string algorithm = emews_root+"/../common/R/"+r_file;
+    string hpo_db_id = insert_hpo(record_id) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
-    loop(init_prio, modulo_prio, mlr_instance_id, record_id, ME, feature_file, study1) => {
+    loop(hpo_db_id, init_prio, modulo_prio, mlr_instance_id, ME, feature_file, study1) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
         o = propagate();
