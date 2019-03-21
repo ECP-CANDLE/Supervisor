@@ -109,6 +109,9 @@ else
   GPU_ARG="-gpus=$GPU_STRING"
 fi
 
+
+mkdir -pv $TURBINE_OUTPUT
+
 DB_FILE=$TURBINE_OUTPUT/cp1.db
 if [[ ! -f DB_FILE ]]
 then

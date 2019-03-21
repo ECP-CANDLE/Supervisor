@@ -14,7 +14,6 @@ def setup_db(db_file):
         print('rank %s Connecting to DB...' % rank)
         global DB
         DB = xcorr_db(db_file)
-        DB.connect()
         DB.read_feature_names()
         DB.read_study_names()
     return DB
@@ -44,6 +43,7 @@ class xcorr_db:
     def connect(self):
         self.conn = sqlite3.connect(self.db_file)
         self.cursor = self.conn.cursor()
+        self.cursor.execute("PRAGMA busy_timeout = 30000")
 
     def insert_xcorr_record(self, studies, features,
                             cutoff_corr, cutoff_xcorr):
@@ -87,29 +87,34 @@ class xcorr_db:
         return results
 
     def read_feature_names(self):
-        cmd = "select rowid, name from feature_names;"
-        self.cursor.execute(cmd)
-        self.feature_id2name = {}
-        self.feature_name2id = {}
-        while True:
-            row = self.cursor.fetchone()
-            if row == None: break
-            rowid, name = row[0:2]
-            self.feature_id2name[rowid] = name
-            self.feature_name2id[name]  = rowid
+        self.connect()
+        with self.conn:
+            cmd = "select rowid, name from feature_names;"
+            self.cursor.execute(cmd)
+            self.feature_id2name = {}
+            self.feature_name2id = {}
+            while True:
+                row = self.cursor.fetchone()
+                if row == None: break
+                rowid, name = row[0:2]
+                self.feature_id2name[rowid] = name
+                self.feature_name2id[name]  = rowid
+
         return self.feature_id2name, self.feature_name2id
 
     def read_study_names(self):
-        cmd = "select rowid, name from study_names;"
-        self.cursor.execute(cmd)
-        self.study_id2name = {}
-        self.study_name2id = {}
-        while True:
-            row = self.cursor.fetchone()
-            if row == None: break
-            rowid, name = row[0:2]
-            self.study_id2name[rowid] = name
-            self.study_name2id[name]  = rowid
+        self.connect()
+        with self.conn:
+            cmd = "select rowid, name from study_names;"
+            self.cursor.execute(cmd)
+            self.study_id2name = {}
+            self.study_name2id = {}
+            while True:
+                row = self.cursor.fetchone()
+                if row == None: break
+                rowid, name = row[0:2]
+                self.study_id2name[rowid] = name
+                self.study_name2id[name]  = rowid
         return self.study_id2name, self.study_name2id
 
     def insert(self, table, names, values):
@@ -126,7 +131,7 @@ class xcorr_db:
         self.cursor.execute(cmd)
 
     def executescript(self, cmds):
-        self.cursor.executescript(cmds);
+        self.cursor.executescript(cmds)
 
     def commit(self):
         self.conn.commit()
@@ -142,9 +147,9 @@ class xcorr_db:
     def __del__(self):
         if not self.autoclose:
             return
-        self.conn.commit()
-        self.conn.close()
-        self.log("DB auto-closed.");
+        #self.conn.commit()
+        #self.conn.close()
+        self.log("DB auto-closed.")
 
 
 def q(s):
