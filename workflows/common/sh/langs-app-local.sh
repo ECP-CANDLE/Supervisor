@@ -1,3 +1,6 @@
+
+# LANGS APP LOCAL
+
 PYTHONHOME=${PYTHONHOME:-"/usr/"}
 export PYTHONHOME
 PYTHON=${PYTHON:-python}

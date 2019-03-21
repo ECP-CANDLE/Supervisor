@@ -26,8 +26,9 @@ class xcorr_db:
         Also caches dicts that convert between names and ids for the
         features and studies tables
         """
-        self.conn = sqlite3.connect(db_file)
-        self.cursor = self.conn.cursor()
+        #self.conn = sqlite3.connect(db_file)
+        #self.cursor = self.conn.cursor()
+        self.db_file = db_file
         self.feature_id2name = None
         self.feature_name2id = None
         self.study_id2name   = None
@@ -39,6 +40,11 @@ class xcorr_db:
             self.logger = logging.getLogger("xcorr_db")
             self.logger.setLevel(logging.DEBUG)
 
+    def connect(self):
+        self.conn = sqlite3.connect(self.db_file)
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("PRAGMA busy_timeout = 30000")
+
     def insert_xcorr_record(self, studies, features,
                             cutoff_corr, cutoff_xcorr):
         """
@@ -49,17 +55,20 @@ class xcorr_db:
         names  = [ "time",    "cutoff_corr",    "cutoff_xcorr" ]
         values = [  q(ts), str(cutoff_corr), str(cutoff_xcorr) ]
         record_id = self.insert("records", names, values)
-        for feature in features:
-            feature_id = str(self.feature_name2id[feature])
-            self.insert(table="features",
-                        names=[ "record_id", "feature_id"],
-                        values=[ record_id ,  feature_id ])
-        for study in studies:
-            study_id = str(self.study_name2id[study])
-            self.insert(table="studies",
-                        names=[ "record_id", "study_id"],
-                        values=[ record_id ,  study_id ])
-        self.commit()
+
+        self.connect()
+        with self.conn:
+            for feature in features:
+                feature_id = str(self.feature_name2id[feature])
+                self.insert(table="features",
+                            names=[ "record_id", "feature_id"],
+                            values=[ record_id ,  feature_id ])
+            for study in studies:
+                study_id = str(self.study_name2id[study])
+                self.insert(table="studies",
+                            names=[ "record_id", "study_id"],
+                            values=[ record_id ,  study_id ])
+            self.commit()
         self.log("inserted record: " + record_id)
         return record_id
 
@@ -78,29 +87,34 @@ class xcorr_db:
         return results
 
     def read_feature_names(self):
-        cmd = "select rowid, name from feature_names;"
-        self.cursor.execute(cmd)
-        self.feature_id2name = {}
-        self.feature_name2id = {}
-        while True:
-            row = self.cursor.fetchone()
-            if row == None: break
-            rowid, name = row[0:2]
-            self.feature_id2name[rowid] = name
-            self.feature_name2id[name]  = rowid
+        self.connect()
+        with self.conn:
+            cmd = "select rowid, name from feature_names;"
+            self.cursor.execute(cmd)
+            self.feature_id2name = {}
+            self.feature_name2id = {}
+            while True:
+                row = self.cursor.fetchone()
+                if row == None: break
+                rowid, name = row[0:2]
+                self.feature_id2name[rowid] = name
+                self.feature_name2id[name]  = rowid
+
         return self.feature_id2name, self.feature_name2id
 
     def read_study_names(self):
-        cmd = "select rowid, name from study_names;"
-        self.cursor.execute(cmd)
-        self.study_id2name = {}
-        self.study_name2id = {}
-        while True:
-            row = self.cursor.fetchone()
-            if row == None: break
-            rowid, name = row[0:2]
-            self.study_id2name[rowid] = name
-            self.study_name2id[name]  = rowid
+        self.connect()
+        with self.conn:
+            cmd = "select rowid, name from study_names;"
+            self.cursor.execute(cmd)
+            self.study_id2name = {}
+            self.study_name2id = {}
+            while True:
+                row = self.cursor.fetchone()
+                if row == None: break
+                rowid, name = row[0:2]
+                self.study_id2name[rowid] = name
+                self.study_name2id[name]  = rowid
         return self.study_id2name, self.study_name2id
 
     def insert(self, table, names, values):
@@ -117,7 +131,7 @@ class xcorr_db:
         self.cursor.execute(cmd)
 
     def executescript(self, cmds):
-        self.cursor.executescript(cmds);
+        self.cursor.executescript(cmds)
 
     def commit(self):
         self.conn.commit()
@@ -133,9 +147,9 @@ class xcorr_db:
     def __del__(self):
         if not self.autoclose:
             return
-        self.conn.commit()
-        self.conn.close()
-        self.log("DB auto-closed.");
+        #self.conn.commit()
+        #self.conn.close()
+        self.log("DB auto-closed.")
 
 
 def q(s):

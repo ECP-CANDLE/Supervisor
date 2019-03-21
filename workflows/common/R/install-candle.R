@@ -13,6 +13,7 @@ install.packages("RInside", Ncpus=4)
 # Force Plotly 4.5.6 - not latest! Do not want shiny/httpuv, it does not work on Cooley!
 install.packages("https://cran.r-project.org/src/contrib/Archive/plotly/plotly_4.5.6.tar.gz")
 install.packages("smoof", Ncpus=4)
+# mlrMBO may need APT packages libxml2-dev libssl-dev
 install.packages("mlrMBO", Ncpus=4)
 install.packages("rgenoud", Ncpus=4)
 install.packages("DiceKriging", Ncpus=4)

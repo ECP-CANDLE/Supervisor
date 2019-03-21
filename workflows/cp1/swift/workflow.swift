@@ -51,9 +51,9 @@ if (restart_file != "DISABLED") {
 
 // for subset of studies, comment '#' out study name in studies.txt
 string studies[] = file_lines(input(emews_root + "/data/studies.txt"));
-string rna_seq_data = "%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
-string drug_response_data = xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[200, 100]]; //,
+string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
+string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
+int cutoffs[][] = [[2000, 1000]]; //,
                  //  [100, 50],
                  //  [400, 200],
                   //  [200, 50],
@@ -69,7 +69,7 @@ params = json.loads('%s')
 params['train_sources'] = '%s'
 params['preprocess_rnaseq'] = '%s'
 gpus = '%s'
-if len(gpus) > 0:   
+if len(gpus) > 0:
   params['gpus'] = gpus.replace(',', ' ')
 
 
@@ -145,7 +145,6 @@ uno_xcorr.coxen_feature_selection(study1, study2,
 
   log_code = log_corr_template % (db_file, features_file, study1, study2,
                                   corr_cutoff, xcorr_cutoff);
-
   xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
                                  study1, study2,
                                  corr_cutoff, xcorr_cutoff,
@@ -155,7 +154,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   record_id = python_persist(log_code, "str(record_id)");
 }
 
-(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file, 
+(void v) loop(int init_prio, int modulo_prio, int mlr_instance_id, string record_id, location ME, string feature_file,
     string train_source)
 {
   for (boolean b = true, int i = 1;
@@ -192,7 +191,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             param_code = update_param_template % (param, train_source, preprocess_rnaseq,
                 gpus, feature_file, cache_dir);
             updated_param = python_persist(param_code, "params_json");
-            // TODO DB: insert updated_param with mlr_instance_id and record 
+            // TODO DB: insert updated_param with mlr_instance_id and record
             //printf("Updated Params: %s", updated_param);
             //printf("XXX %s: %i", feature_file, prio);
 
@@ -267,7 +266,7 @@ result = ",".join([str(x) for x in keys])
 
 main() {
   string params[][];
-  
+
   foreach study1, i in studies
   {
     foreach study2 in studies
@@ -292,7 +291,7 @@ main() {
      // for each of the studies, run against full features, no xcorr
     string log_code = log_corr_template % (db_file, "", study1, "", -1, -1);
     string record_id = python_persist(log_code, "str(record_id)");
-    // give full features key value guaranteed to be lower than the record_ids 
+    // give full features key value guaranteed to be lower than the record_ids
     // of the xcorr studies
     params[-(i + 1)] = [record_id, "", study1];
   }
@@ -314,4 +313,5 @@ main() {
     // initial priority, modulo priority, rank, record_id, feature file name, study1 name
     start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
+
 }

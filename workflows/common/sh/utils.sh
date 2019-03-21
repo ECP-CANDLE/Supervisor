@@ -108,24 +108,25 @@ get_expid()
 
   if [ $EXPID = "-a" ]
   then
-    local i=0
-    # Exponential search for free number
-    while (( 1 ))
+    shift
+    local i=0 EXPS E
+    # Search for free number
+    EXPS=( $( ls $EXPERIMENTS ) )
+    for E in ${EXPS[@]}
     do
       EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
-      if [[ -d $EXPERIMENTS/$EXPID ]]
+      if [[ $E == $EXPID ]]
       then
-        i=$(( i + i*RANDOM/32767 + 1 ))
-      else
-        break
+        i=$(( i + 1 ))
       fi
     done
-    shift
+    EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
+  mkdir -pv $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then

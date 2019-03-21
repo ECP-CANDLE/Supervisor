@@ -5,34 +5,25 @@ Currently, this uses a mix of xcorr and cp1.
 
 == Quick Start
 
-Setup the Data in `workflows/xcorr`
+Run the workflow in +workflows/cp1+
+
+=== Data
+
+
+
+=== Execution
 
 ----
-$ cd ../xcorr
-# Need -k to keep the compressed file
-$ bunzip2 -k test_data/combined_rnaseq_data_lincs1000_combat.bz2
-# Create the DB
-$ python db-init.py
-# Is it there?
-$ ls xcorr.db
-xcorr.db
-----
-
-Copy the DB and run the workflow in `workflows/cp1`
-
-----
-$ cp ../xcorr/xcorr.db cp1.db
 $ cd test
 # edit cfg-* as necessary
 $ ./test-1.sh theta -a
 ----
 
-See Summit Notes below for moving the database to a compute node writable location.
 
 === Summit Notes
 
 Summit's project directories (e.g. /ccs/proj/med106/) are not writable from the compute nodes.
-The workflow needs the database file (cp1.db) and the following directories in Supervisor/workflows/cp1 to be writable.
+The workflow needs the following directories in Supervisor/workflows/cp1 to be writable.
 
 * cache
 * experiments
@@ -45,8 +36,6 @@ For example,
 $ pwd
 /ccs/proj/med106/ncollier/repos/Supervisor/workflows/cp1
 $ ls -l
-lrwxrwxrwx 1 ncollier ncollier 46 Feb 28 17:35 cp1.db -> /gpfs/alpine/med106/scratch/ncollier/db/cp1.db
-...
 lrwxrwxrwx 1 ncollier ncollier   46 Mar  1 10:35 cache -> /gpfs/alpine/med106/scratch/ncollier/uno_cache
 lrwxrwxrwx 1 ncollier ncollier   48 Feb 28 16:51 experiments -> /gpfs/alpine/med106/scratch/ncollier/experiments
 lrwxrwxrwx 1 ncollier ncollier   47 Mar  1 12:38 xcorr_data -> /gpfs/alpine/med106/scratch/ncollier/xcorr_data
