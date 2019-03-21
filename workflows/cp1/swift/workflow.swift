@@ -53,7 +53,7 @@ if (restart_file != "DISABLED") {
 string studies[] = file_lines(input(emews_root + "/data/studies.txt"));
 string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
 string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[2000, 1000]]; //,
+int cutoffs[][] = [[200, 100]]; //,
                  //  [100, 50],
                  //  [400, 200],
                   //  [200, 50],
@@ -146,12 +146,12 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   log_code = log_corr_template % (db_file, features_file, study1, study2,
                                   corr_cutoff, xcorr_cutoff);
 
-  xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
-                                 study1, study2,
-                                 corr_cutoff, xcorr_cutoff,
-                                 features_file);
+  // xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
+  //                                study1, study2,
+  //                                corr_cutoff, xcorr_cutoff,
+  //                                features_file);
 
-  python_persist(xcorr_code) =>
+  // python_persist(xcorr_code) =>
   record_id = python_persist(log_code, "str(record_id)");
 }
 
@@ -297,24 +297,23 @@ main() {
     params[-(i + 1)] = [record_id, "", study1];
   }
 
-  int ME_ranks[];
-  foreach r_rank, i in r_ranks
-  {
-    ME_ranks[i] = toint(r_rank);
-  }
 
-  printf("size(ME_ranks)=%i", size(ME_ranks));
-  printf("size(params)  =%i", size(params));
-  assert(size(ME_ranks) == size(params),
-         "Number of ME ranks must equal number of xcorrs");
-  int keys[] = sort_keys(params);
+  // int ME_ranks[];
+  // foreach r_rank, i in r_ranks
+  // {
+  //   ME_ranks[i] = toint(r_rank);
+  // }
 
-  int modulo_prio = size(ME_ranks);
-  foreach idx, r in keys
-  {
-    string ps[] = params[idx];
-    int rank = ME_ranks[r];
-    // initial priority, modulo priority, rank, record_id, feature file name, study1 name
-    start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
-  }
+  // assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
+  // int keys[] = sort_keys(params);
+
+  // int modulo_prio = size(ME_ranks);
+  // foreach idx, r in keys
+  // {
+  //   string ps[] = params[idx];
+  //   int rank = ME_ranks[r];
+  //   // initial priority, modulo priority, rank, record_id, feature file name, study1 name
+  //   start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
+  // }
+
 }
