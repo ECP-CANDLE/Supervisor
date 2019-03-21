@@ -145,12 +145,11 @@ uno_xcorr.coxen_feature_selection(study1, study2,
 
   log_code = log_corr_template % (db_file, features_file, study1, study2,
                                   corr_cutoff, xcorr_cutoff);
-  xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
-                                 study1, study2,
-                                 corr_cutoff, xcorr_cutoff,
-                                 features_file);
-
-  python_persist(xcorr_code) =>
+  // xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
+  //                                study1, study2,
+  //                                corr_cutoff, xcorr_cutoff,
+  //                                features_file);
+  // python_persist(xcorr_code) =>
   record_id = python_persist(log_code, "str(record_id)");
 }
 
