@@ -4,7 +4,7 @@
 #SBATCH --mem=20G
 #SBATCH --gres=gpu:k80:1
 #SBATCH --time=00:05:00
-#SBATCH --job-name=mnist_upf_test_no_candle
+#SBATCH --job-name=mnist_test_no_candle
 
 # Set up environment
 module load python/3.6

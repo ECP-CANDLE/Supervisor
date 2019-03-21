@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from keras import backend as K
 import os
 
