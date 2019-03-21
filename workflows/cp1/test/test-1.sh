@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# MLRMBO TEST 1
+# CP1 TEST 1
 
 usage()
 {
