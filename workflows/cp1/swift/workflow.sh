@@ -150,6 +150,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 mkdir -pv $CACHE_DIR
 mkdir -pv $XCORR_DATA_DIR
+mkdir -pv $TURBINE_OUTPUT/hpo_log
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}

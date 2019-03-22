@@ -245,33 +245,40 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         int prio = init_prio - i * modulo_prio;
         string param_array[] = split(params, ";");
         string results[];
+        string hpo_runs[];
         foreach param, j in param_array
         {
-            string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
-            string run_dir = "%s/run/%s" % (turbine_output, run_id);
+          string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
+          string run_dir = "%s/run/%s" % (turbine_output, run_id);
+          int idx = (i * size(param_array)) + j;
 
-            param_code = update_param_template % (param, train_source, preprocess_rnaseq,
-                gpus, feature_file, cache_dir, run_dir);
-            string updated_param = python_persist(param_code, "params_json");
-            // TODO DB: insert updated_param with mlr_instance_id and record
-            //printf("Updated Params: %s", updated_param);
-            //printf("XXX %s: %i", feature_file, prio);
-            
-            string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
-            string result  = obj_prio(updated_param, run_id, prio);
-	    if (result == "inf") {
-	      results[j] = "999999999";
-	    } else {
-	      results[j] = result;
-	    }
+          param_code = update_param_template % (param, train_source, preprocess_rnaseq,
+              gpus, feature_file, cache_dir, run_dir);
+          string updated_param = python_persist(param_code, "params_json");
+          // TODO DB: insert updated_param with mlr_instance_id and record
+          //printf("Updated Params: %s", updated_param);
+          //printf("XXX %s: %i", feature_file, prio);
+          //string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
+          string result  = obj_prio(updated_param, run_id, prio);
+          //result = "0.234";
+          hpo_runs[j] = "%i|%s|%s|%s|%f|%s" % (idx, hpo_db_id, updated_param, run_dir, clock(), result);
+
+          if (result == "inf") {
+            results[j] = "999999999";
+          } else {
+            results[j] = result;
+          }
 	    
-            //results[j] = "0.234234";
-            update_hpo_run(run_db_id, results[j]);
-            // TODO DB: insert result with record_id
-        }
-        string result = join(results, ";");
-        // printf(result);
-        EQR_put(ME, result) => c = true;
+          // update_hpo_run(run_db_id, results[j]);
+          // TODO DB: insert result with record_id
+      }
+      string out_string = join(hpo_runs,"\n");
+      fname = "%s/hpo_log/%00i_%00i_hpo_runs.txt" % (turbine_output, mlr_instance_id, i);
+      file out <fname> = write(out_string);
+
+      string result = join(results, ";");
+      // printf(result);
+      EQR_put(ME, result) => c = true;
     }
   }
 }
