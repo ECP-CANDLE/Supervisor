@@ -63,7 +63,7 @@ int cutoffs[][] = [[200, 100]]; //,
 
 string update_param_template =
 """
-# param, train_source, preprocess_rnaseq, gpus, feature_file, cache_dir
+# template vals: param string, train_source, preprocess_rnaseq, gpus, feature_file, cache_dir, run_dir
 import json
 
 params = json.loads('%s')
@@ -89,13 +89,16 @@ else:
   params['use_landmark_genes'] = True
 
 cache_dir = '%s'
-params['use_exported'] ='%s/{}.h5'.format(ex_data_f)
+params['use_exported_data'] ='%s/{}.h5'.format(ex_data_f)
 
 params['warmup_lr'] = True
 params['reduce_lr'] = True
 
 params['no_feature_source'] = True                                                                                                                                      
-params['no_response_source'] = True       
+params['no_response_source'] = True
+
+params['save_path'] = '%s'
+params['cp'] = True
 
 params_json = json.dumps(params)
 """;
@@ -244,14 +247,16 @@ uno_xcorr.coxen_feature_selection(study1, study2,
         string results[];
         foreach param, j in param_array
         {
+            string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
+            string run_dir = "%s/run/%s" % (turbine_output, run_id);
+
             param_code = update_param_template % (param, train_source, preprocess_rnaseq,
-                gpus, feature_file, cache_dir);
+                gpus, feature_file, cache_dir, run_dir);
             string updated_param = python_persist(param_code, "params_json");
             // TODO DB: insert updated_param with mlr_instance_id and record
             //printf("Updated Params: %s", updated_param);
             //printf("XXX %s: %i", feature_file, prio);
-            string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
-            string run_dir = "%s/run/%s" % (turbine_output, run_id);
+            
             string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
             results[j] = obj_prio(updated_param, run_id, prio);
             //results[j] = "0.234234";
