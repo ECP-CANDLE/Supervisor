@@ -258,7 +258,13 @@ uno_xcorr.coxen_feature_selection(study1, study2,
             //printf("XXX %s: %i", feature_file, prio);
             
             string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
-            results[j] = obj_prio(updated_param, run_id, prio);
+            string result  = obj_prio(updated_param, run_id, prio);
+	    if (result == "inf") {
+	      results[j] = "999999999";
+	    } else {
+	      results[j] = result;
+	    }
+	    
             //results[j] = "0.234234";
             update_hpo_run(run_db_id, results[j]);
             // TODO DB: insert result with record_id
