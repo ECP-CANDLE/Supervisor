@@ -54,7 +54,7 @@ string studies1[] = file_lines(input(emews_root + "/data/studies1.txt"));
 string studies2[] = file_lines(input(emews_root + "/data/studies2.txt"));
 string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
 string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
-int cutoffs[][] = [[200, 100]]; //,
+int cutoffs[][] = [[2000, 1000]]; //,
                  //  [100, 50],
                  //  [400, 200],
                   //  [200, 50],
@@ -82,19 +82,19 @@ if len(cell_feature_subset_path) > 0:
   # GDSC_NCI60_2000_1000.h5 
   import os
   ex_data_f = os.path.basename(params['cell_feature_subset_path'])
-  idx = cf.rfind('_features')
-  ex_data_f = cf[:idx]
+  idx = ex_data_f.rfind('_features')
+  ex_data_f = ex_data_f[:idx]
 else:
   ex_data_f = params['train_sources']
   params['use_landmark_genes'] = True
 
 cache_dir = '%s'
-params['use_exported_data'] ='%s/{}.h5'.format(ex_data_f)
+params['use_exported_data'] ='{}/{}.h5'.format(cache_dir, ex_data_f)
 
 params['warmup_lr'] = True
 params['reduce_lr'] = True
 
-params['no_feature_source'] = True                                                                                                                                      
+params['no_feature_source'] = True
 params['no_response_source'] = True
 
 params['save_path'] = '%s'
