@@ -63,6 +63,7 @@ int cutoffs[][] = [[200, 100]]; //,
 
 string update_param_template =
 """
+# param, train_source, preprocess_rnaseq, gpus, feature_file, cache_dir
 import json
 
 params = json.loads('%s')
@@ -77,16 +78,25 @@ if len(gpus) > 0:
 cell_feature_subset_path = '%s'
 if len(cell_feature_subset_path) > 0:
   params['cell_feature_subset_path'] = cell_feature_subset_path
+  # GDSC_NCI60_1600_800_features.txt
+  # GDSC_NCI60_2000_1000.h5 
   import os
-  cf = os.path.basename(params['cell_feature_subset_path'])
-  idx = cf.rfind('.')
-  if idx != -1:
-    cf = cf[:idx]
+  ex_data_f = os.path.basename(params['cell_feature_subset_path'])
+  idx = cf.rfind('_features')
+  ex_data_f = cf[:idx]
 else:
-  cf = "all_features"
+  ex_data_f = params['train_sources']
   params['use_landmark_genes'] = True
 
-params['cache'] = '%s/{}_cache'.format(cf)
+cache_dir = '%s'
+params['use_exported'] ='%s/{}.h5'.format(ex_data_f)
+
+params['warmup_lr'] = True
+params['reduce_lr'] = True
+
+params['no_feature_source'] = True                                                                                                                                      
+params['no_response_source'] = True       
+
 params_json = json.dumps(params)
 """;
 
