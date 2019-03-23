@@ -160,6 +160,8 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 # log_path PYTHONPATH
 
+WORKFLOW_SWIFT={$WORKFLOW_SWIFT:-workflow.swift}
+
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
 then
@@ -195,4 +197,4 @@ swift-t -n $PROCS \
         -e IGNORE_ERRORS \
         -e PREPROP_RNASEQ \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
