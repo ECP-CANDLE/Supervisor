@@ -32,7 +32,7 @@ int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 string site = argv("site");
 
-string update_param_template =
+string update_param_template_old =
 """
 import json
 
@@ -76,27 +76,49 @@ if len(gpus) > 0:
 params['save_path'] = '%s'
 params['cp'] = True
 
+params_json = json.dumps(params)
+""";
 
 
+string update_param_template =
+"""
+import json
+
+params = json.loads('%s')
+params['save_path'] = '%s'
 
 params_json = json.dumps(params)
 """;
 
+
+write_lines(string lines[], string f) {
+  string lines_string = join(lines,"\n");
+  fname = "%s/%s" % (turbine_output, f);
+  file out <fname> = write(lines_string);
+
+}
 
 main() {
   //printf("hello");
   file json_input = input(argv("f"));
   //printf(argv("f"));
   string lines[] = file_lines(json_input);
+  string inputs[];
+  string results[];
   foreach params,i in lines {
-    printf(params);
     string instance = "%s/run/%i/" % (turbine_output, i);
     //make_dir(instance) => {
-    param_code = update_param_template % (params, cache_dir, xcorr_data_dir, gpus, instance);
+    string param_code = update_param_template % (params, instance);
     //printf(param_code);
-      updated_param = python_persist(param_code, "params_json");
-    obj(updated_param, int2string(i));
+    
+    updated_param = python_persist(param_code, "params_json");
+    inputs[i] = "%i|%f|%s" % (i, clock(), updated_param);
+    string result = obj(updated_param, int2string(i)) =>
+    results[i] = "%i|%f|%s" % (i, clock(), result);
     //}
   }
+
+  write_lines(inputs, "inputs.txt");
+  write_lines(results, "results.txt");
 }
 
