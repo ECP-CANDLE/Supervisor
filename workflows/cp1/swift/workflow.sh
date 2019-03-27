@@ -160,7 +160,8 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 # log_path PYTHONPATH
 
-WORKFLOW_SWIFT={$WORKFLOW_SWIFT:-workflow.swift}
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
