@@ -36,10 +36,10 @@ string site = argv("site");
 /**
    Swift/T app function that runs the Benchmark
 */
-app (void o) run_model (string model_sh, string instance_dir, string data_file, string model_file, string weights_file)
+app (void o) run_model (string model_sh, string instance_dir, string data_file, string model_file)
 {
-  //              1            2         3          4
-  "bash" model_sh instance_dir data_file model_file weights_file;
+  //              1            2         3          
+  "bash" model_sh instance_dir data_file model_file;
 }
 
 
@@ -54,10 +54,10 @@ main() {
     string instance = "%s/run/%i/" % (turbine_output, i);
     string ps[] = split(params, ",");
     string save_path = ps[1];
-    file model[] = glob(save_path + "*.json");
-    file weights[] = glob(save_path + "weights.h");
+    file model[] = glob(save_path + "*.model.h5");
+    //file weights[] = glob(save_path + "weights.h");
     string data_file = cache_dir + "/" + ps[0];
-    run_model(model_sh, instance, data_file, filename(model[0]), filename(weights[0]));
+    run_model(model_sh, instance, data_file, filename(model[0]));
     //run_model(model_sh, instance, data_file, "foo.json", "foo.weights.h5");
   }
 }
