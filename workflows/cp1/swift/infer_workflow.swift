@@ -58,6 +58,7 @@ main() {
     //file weights[] = glob(save_path + "weights.h");
     string data_file = cache_dir + "/" + ps[0];
     run_model(model_sh, instance, data_file, filename(model[0]));
+    printf("RUN MODEL: %s, %s, %s, %s" % (model_sh, instance, data_file, filename(model[0])));
     //run_model(model_sh, instance, data_file, "foo.json", "foo.weights.h5");
   }
 }

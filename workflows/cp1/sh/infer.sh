@@ -40,10 +40,11 @@ echo
 echo "USING PYTHON:"
 which python
 
+DATA="--data=$DATA_FILE"
+MODEL="--model=$MODEL_FILE"
+
 # python uno_infer.py --data CTRP_CCLE_2000_1000_test.h5 --model_file model.h5 --weights_file weights.h5
-arg_array=( "$BENCHMARKS_ROOT/Pilot1/Uno/uno_infer.py"
-            "--data $DATA_FILE"
-            "--model_file $MODEL_FILE")
+arg_array=( "$BENCHMARKS_ROOT/Pilot1/Uno/uno_infer.py" "$DATA" "$MODEL" )
 MODEL_CMD="python -u ${arg_array[@]}"
 
 echo MODEL_CMD: $MODEL_CMD
