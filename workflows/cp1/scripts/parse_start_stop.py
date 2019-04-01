@@ -2,6 +2,7 @@ import sys
 import csv
 import subprocess
 import datetime
+import os
 
 TIME_FORMAT='%Y/%m/%d %H:%M:%S'
 START = 0
@@ -61,20 +62,22 @@ def write_results(results):
             for i in r:
                 f_out.write('{} {}\n'.format(i[0], i[1]))
 
-def main(hpos_file):
+def main(hpos_file, out_file):
     results = {}
-    with open('timings.txt', 'w') as f_out:
+    with open(out_file, 'w') as f_out:
         with open(hpos_file) as f_in:
             reader = csv.reader(f_in, delimiter='|')
             for i, row in enumerate(reader):
                 if i % 1000 == 0:
                     print('ROW: {}'.format(i))
-                hpo_id = row[1]
+                # hpo_id = row[1]
                 run_dir = row[3]
+                rd = os.path.basename(run_dir)
+                hpo_id = rd[:rd.find('_')]
                 result = grep('{}/model.log'.format(run_dir))
                 for r in result:
                     f_out.write('{},{},{}\n'.format(hpo_id, r[0], r[1]))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
