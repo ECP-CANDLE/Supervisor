@@ -3,6 +3,8 @@ import csv
 import subprocess
 import datetime
 
+from operator import itemgetter
+
 TIME_FORMAT='%Y/%m/%d %H:%M:%S'
 START = 0
 STOP = 1
@@ -13,14 +15,15 @@ def create_counts(timings_file):
         reader = csv.reader(f_in)
         for row in reader:
             hpo_id = row[0]
+            line = [float(row[1]), int(row[2])]
             if hpo_id in hpos:
-                hpos[hpo_id].append(row[1:])
+                hpos[hpo_id].append(line)
             else:
-                hpos[hpo_id] = [row[1:]]
-            hpos['all'].append(row[1:])
+                hpos[hpo_id] = [line]
+            hpos['all'].append(line)
 
     for k in hpos:
-        sorted(hpos[k], itemgetter(0))
+        hpos[k] = sorted(hpos[k], key=itemgetter(0))
 
     counts = {'all' : []}
     for k in hpos:
@@ -35,6 +38,13 @@ def create_counts(timings_file):
                 counts[k].append([ts, count])
             else:
                 counts[k] = [[ts, count]]
+    
+    for k in counts:
+        with open('{}_counts.csv'.format(k), 'w') as f_out:
+            writer = csv.writer(f_out)
+            for item in counts[k]:
+                writer.writerow(item)
+
 
 
 def grep(model_log):
@@ -53,13 +63,6 @@ def grep(model_log):
     
     return result
 
-def write_results(results):
-    with open('timings.txt', 'w') as f_out:
-        
-        result = results[hpo_id]
-        for r in result:
-            for i in r:
-                f_out.write('{} {}\n'.format(i[0], i[1]))
 
 def main(hpos_file):
     results = {}
@@ -77,4 +80,4 @@ def main(hpos_file):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    create_counts(sys.argv[1])
