@@ -42,6 +42,13 @@ app (void o) run_model (string model_sh, string instance_dir, string data_file, 
   "bash" model_sh instance_dir data_file model_file;
 }
 
+write_lines(string lines[], string f) {
+  string lines_string = join(lines,"\n");
+  fname = "%s/%s" % (turbine_output, f);
+  file out <fname> = write(lines_string);
+}
+
+
 
 //python uno_infer.py --data CTRP_CCLE_2000_1000_test.h5 --model_file model.h5 --weights_file weights.h5
 
