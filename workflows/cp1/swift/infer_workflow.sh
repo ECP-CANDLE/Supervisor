@@ -86,6 +86,7 @@ CMD_LINE_ARGS=( -exp_id=$EXPID
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
                 -f=$WORKING_UPF_FILE
+                -n_pred=$N_PRED
               )
 
 USER_VARS=( $CMD_LINE_ARGS )

@@ -32,14 +32,15 @@ string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 string site = argv("site");
+string n_pred = argv("n_pred");
 
 /**
    Swift/T app function that runs the Benchmark
 */
 app (void o) run_model (string model_sh, string instance_dir, string data_file, string model_file)
 {
-  //              1            2         3          
-  "bash" model_sh instance_dir data_file model_file;
+  //              1            2         3          4
+  "bash" model_sh instance_dir data_file model_file n_pred;
 }
 
 write_lines(string lines[], string f) {
@@ -65,10 +66,10 @@ main() {
     file model[] = glob(save_path + "*.model.h5");
     //file weights[] = glob(save_path + "weights.h");
     string data_file = cache_dir + "/" + ps[0];
-    // model class|data file|model|instance_dir
-    inputs[i] = "%s|%s|%s|%s" % (ps[2], data_file, filename(model[0]), instance);
+    // model class|data file|model|instance_dir|n_pred
+    inputs[i] = "%s|%s|%s|%s|%s" % (ps[2], data_file, filename(model[0]), instance, n_pred);
     run_model(model_sh, instance, data_file, filename(model[0]));
-    printf("RUN MODEL: %s, %s, %s, %s" % (model_sh, instance, data_file, filename(model[0])));
+    printf("RUN MODEL: %s, %s, %s, %s, %s" % (model_sh, instance, data_file, filename(model[0]), n_pred));
     //run_model(model_sh, instance, data_file, "foo.json", "foo.weights.h5");
   }
 
