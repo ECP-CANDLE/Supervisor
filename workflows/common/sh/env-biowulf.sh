@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # LANGS BIOWULF
 # Language settings for non-Singularity Biowulf (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
