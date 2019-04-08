@@ -7,19 +7,25 @@ set -eu
 
 usage()
 {
-  echo "Usage: infer.sh INSTANCE_DIRECTORY DATA_FILE MODEL_FILE NUM_PREDICTIONS"
+  echo "Usage: infer.sh INSTANCE_DIRECTORY DATA_FILE MODEL_FILE NUM_PREDICTIONS RUN_ID"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
 INSTANCE_DIRECTORY=$1 
-DATA_FILE="$2"
+DF="$2"
 MODEL_FILE="$3"
 N_PRED=$4
+RUN_ID=$5
+
+FNAME=$( basename $DF )
+DATA_FILE=/mnt/bb/$USER/${RUN_ID}_${FNAME}
+
+cp -u $DF $DATA_FILE
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY

@@ -43,6 +43,8 @@ def create_params_map(training_file):
         for r in reader:
             params = json.loads(r[2])
             save_path = params['save_path']
+            if save_path[-1] == '/':
+                save_path = save_path[:-1]
             param_map[save_path] = params
     
     return param_map
@@ -53,10 +55,10 @@ def main(infer_log, training_file, out_file):
     with open(out_file, 'w') as f_out:
         writer = csv.writer(f_out)
         writer.writerow(['infer_id', 'model_class', 'instance_directory', 'params', 'model_path',
-            'mse_mean', 'mse_min', 'mse_max', 'mse_std',
-            'mae_mean', 'mae_min', 'mae_max', 'mae_std',
-            'r2_mean', 'r2_min', 'r2_max', 'r2_std',
-            'corr_mean', 'corr_min', 'corr_max', 'corr_std'])
+            'mse_mean', 'mse_std', 'mse_min', 'mse_max',
+            'mae_mean', 'mae_std', 'mae_min', 'mae_max',
+            'r2_mean', 'r2_std', 'r2_min', 'r2_max',
+            'corr_mean', 'corr_std', 'corr_min', 'corr_max'])
         with open(infer_log) as f_in:
             reader = csv.reader(f_in, delimiter='|')
             # model class|data file|model|instance_dir
@@ -67,10 +69,14 @@ def main(infer_log, training_file, out_file):
                 instance_dir = row[3]
                 model_dir = path.dirname(row[2])
                 params = param_map[model_dir]
-                result = [i, model_class, instance_dir, params, row[2]] + grep('{}/infer.log'.format(instance_dir))
-                writer.writerow(result)
+                stats = grep('{}/infer.log'.format(instance_dir))
+                if not np.isnan(stats[0]):
+                    result = [i, model_class, instance_dir, params, row[2]] + stats
+                    writer.writerow(result)
+                else:
+                    print("{}|{}|{}|{}".format(row[0], row[1], row[2], row[3], row[4]))
 
 
 if __name__ == '__main__':
-    # inference directory, training file, output file, 
+    # inference log file (e.g. infer_all_4/log.txt), training file (e.g. full_training_2/inputs.txt), output file, 
     main(sys.argv[1], sys.argv[2], sys.argv[3])
