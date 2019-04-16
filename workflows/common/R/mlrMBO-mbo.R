@@ -74,7 +74,7 @@
     surr.rf = makeLearner("regr.randomForest", 
                       predict.type = "se", 
                       fix.factors.prediction = TRUE,
-                      se.method = "bootstrap", 
+                      se.method = "jackknife", 
                       se.boot = 2)
     ctrl = makeMBOControl(n.objectives = 1, 
                           propose.points = propose.points,
@@ -121,13 +121,54 @@
     }
 
     if (is.null(chkpntResults)){
-        design = generateDesign(n = design.size, par.set = getParamSet(obj.fun))
+
+      par.set = getParamSet(obj.fun)
+
+      ## represent each discrete value once
+      # get the maximum number of variables
+      max_val_discrete = 0
+      index=0
+
+      for (v in par.set$pars) {
+        if (v$type == "discrete"){
+          index=index+1
+          i = 0
+          for (val in v$values){
+            i=i+1
+          }
+          if (max_val_discrete < i){
+            max_val_discrete = i
+          }
+        }
+      }
+      # each discrete variable should be represented once, else optimization will fail
+      # this checks if design size is less than max number of discrete values
+      print(paste0("design size=", design.size, " must be greater or equal to maximum discrete values=", max_val_discrete))
+      if (design.size < max_val_discrete){
+        print("Aborting! design.size is less than the discrete parameters specified")
+        quit()
+      }
+
+      design = generateDesign(n = design.size, par.set)
+
+      # this loop modifies the top max_val_discrete designs (design) to have each discrete value represented once
+      i = 0
+      for (v in par.set$pars){
+        i=i+1
+        if (v$type == "discrete"){
+          index=0
+          for (val in v$values){
+            index=index+1
+            design[[i]][index] = val
+          }
+        }
+      }
     } else {
       	design = chkpntResults
     }
-    #  print(paste("design:", design))
+    # print(paste("design:", design))
     configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
-    res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+    res = mbo(obj.fun, design = design, learner = NULL, control = ctrl, show.info = TRUE)
     return(res)
   }
 
