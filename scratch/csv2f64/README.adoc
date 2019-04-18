@@ -3,6 +3,8 @@
 
 Converts CSV file to simple list of doubles
 
+To support collaboration with ECP CODAR, SZ compression (Cappello and Di)
+
 === Usage:
 
 ----
