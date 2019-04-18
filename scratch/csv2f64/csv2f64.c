@@ -88,14 +88,14 @@ convert_fps(FILE* fp_i, FILE* fp_o)
   int w = 0; // word start
   bool data_on_line = false; // is there good data on this line?
   bool b;
+  int i = 0;
   while (true)
   {
     b = read_text(&chars[offset], bytes_c-offset, fp_i, &actual_r);
     CHECK(b, "read_text() failed!");
     if (actual_r == 0) break;
     length = offset + actual_r;
-
-    for (int i = 0; i < length; i++)
+    for (i = 0; i < length; i++)
     {
       // printf("chars[i=%i]='%c'\n", i, chars[i]);
       if (chars[i] == ' ' || chars[i] == '\t') continue; // ignore WS
@@ -122,10 +122,15 @@ convert_fps(FILE* fp_i, FILE* fp_o)
     // printf("char start: '%s'\n", chars);
     w = 0;
   }
+
+  // Write out any data left in the buffer
   size_t actual_w = fwrite(floats, sizeof(double), f, fp_o);
   CHECK(actual_w == f, "write failed!\n");
 
-  MESSAGE("converted: rows: %i cols: %i", rows, cols);
+  // Fix row and column counts
+  if (i == 0 || chars[i-1] == '\n') rows--; // file ended on newline
+  if (cols_last == -1) cols_last = 0; // file was empty
+  MESSAGE("converted: rows: %i cols: %i", rows, cols_last);
 
   free(chars);
   free(floats);
