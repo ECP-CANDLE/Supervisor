@@ -61,6 +61,9 @@ convert(const char* input, const char* output)
   return result;
 }
 
+static inline bool read_text(char* data, size_t count, FILE* fp,
+			     size_t* actual_r);
+
 static bool
 convert_fps(FILE* fp_i, FILE* fp_o)
 {
@@ -71,27 +74,25 @@ convert_fps(FILE* fp_i, FILE* fp_o)
   double* floats = malloc(bytes_f);
   CHECK(floats != NULL, "could not allocate memory: %zi", bytes_f);
 
-  int cols_last = -1;
-  int cols = 1;
-  int rows = 1;
+  int cols_last = -1; // number of columns in last row
+  int cols = 1; // current column counter
+  int rows = 1; // current row counter
   int f = 0; // index in floats[]
-  int n = 0; // starting offset in chars due to chars from last read
-  size_t actual_r = 0;
-  size_t actual_w = 0;
-  int length = 0; // the length of our current data (n+actual_r)
+  int offset = 0; // starting offset in chars due to chars from last read
+  size_t actual_r = 0; // actual number of items read at last fread
+  size_t actual_w = 0; // actual number of items written at last fwrite
+  int length = 0; // the length of our current data (offset+actual_r)
   int w = 0; // word start
   bool data_on_line = false;
+  bool b;
   while (true)
   {
-    actual_r = fread(&chars[n], sizeof(char), bytes_c-n, fp_i);
-    printf("actual_r: %zi\n", actual_r);
-    if (actual_r == 0)
-    {
-      CHECK(!ferror(fp_i), "read failed!");
-      break;
-    }
+    // Read text
+    b = read_text(&chars[offset], bytes_c-offset, fp_i, &actual_r);
+    CHECK(b, "read_text() failed!");
+    if (actual_r == 0) break;
+    length = offset + actual_r;
 
-    length = n + actual_r;
     for (int i = 0; i < length; i++)
     {
       printf("chars[i=%i]='%c'\n", i, chars[i]);
@@ -102,7 +103,7 @@ convert_fps(FILE* fp_i, FILE* fp_o)
       {
         if (i == w)
           // Word length is 0 and not blank line - error
-          FAIL("bad text on line: %i column: %i", rows, i-n+1);
+          FAIL("bad text on line: %i column: %i", rows, i-offset+1);
         errno = 0;
         printf("chars[w=%i]=%c\n", w, chars[w]);
         double d = strtod(&chars[w], NULL);
@@ -114,7 +115,7 @@ convert_fps(FILE* fp_i, FILE* fp_o)
         if (f == buffer_size)
         {
           actual_w = fwrite(floats, sizeof(double), buffer_size, fp_o);
-          CHECK(actual_w == buffer_size, "write failed!\n");
+          CHECK(actual_w == buffer_size, "write failed!\offset");
           f = 0;
         }
       }
@@ -132,11 +133,12 @@ convert_fps(FILE* fp_i, FILE* fp_o)
         data_on_line = false;
       }
     }
-    // Out of space in chars
+    // Out of space in chars: copy remaining data (partial words)
+    // to front of buffer
     printf("copy: w=%i\n", w);
-    n = length - w;
-    memcpy(chars, &chars[w], n);
-    chars[n] = '\0';
+    offset = length - w;
+    memcpy(chars, &chars[w], offset);
+    chars[offset] = '\0';
     printf("char start: '%s'\n", chars);
     w = 0;
   }
@@ -147,5 +149,16 @@ convert_fps(FILE* fp_i, FILE* fp_o)
 
   free(chars);
   free(floats);
+  return true;
+}
+
+static inline bool
+read_text(char* data, size_t count, FILE* fp, size_t* actual_r)
+{
+  size_t actual = fread(data, sizeof(char), count, fp);
+  printf("actual_r: %zi\n", actual);
+  if (actual == 0)
+    CHECK(!ferror(fp), "read failed!");
+  *actual_r = actual;
   return true;
 }

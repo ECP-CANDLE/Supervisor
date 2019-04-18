@@ -14,4 +14,4 @@ set -x
 make
 ./csv2f64 $CSV $DAT
 cat $CSV
-od -t f8 -w24 $DAT
+od -t f8 -w24 --output-duplicates $DAT

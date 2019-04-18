@@ -1,4 +1,6 @@
 
+all: csv2f64
+
 CC = gcc
 CFLAGS = -Wall
 
