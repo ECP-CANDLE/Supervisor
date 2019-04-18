@@ -9,7 +9,7 @@
 
 #include "util.h"
 
-const int buffer_size = 8;
+const int buffer_size = 1024*1024;
 
 static void usage(void);
 static bool convert(const char* input, const char* output);
@@ -63,9 +63,10 @@ convert(const char* input, const char* output)
 
 static inline bool read_text(char* data, size_t count, FILE* fp,
 			     size_t* actual_r);
-
 static inline bool convert_word(int rows, const char* word_start,
 				double* floats, int* f, FILE* fp);
+static inline bool update_rows_cols(char c, int* cols, int* cols_last,
+				    int* rows, bool* data_on_line);
 
 static bool
 convert_fps(FILE* fp_i, FILE* fp_o)
@@ -109,19 +110,8 @@ convert_fps(FILE* fp_i, FILE* fp_o)
         b = convert_word(rows, &chars[w], floats, &f, fp_o);
         w = i+1;
       }
-      if (chars[i] == ',')
-        cols++;
-      if (chars[i] == '\n')
-      {
-        rows++;
-        // printf("cols=%i cols_last=%i\n", cols, cols_last);
-        CHECK(cols == cols_last || cols_last == -1,
-              "bad column count on line: %i cols=%i cols_last=%i",
-              rows, cols, cols_last);
-        cols_last = cols;
-        cols = 1;
-        data_on_line = false;
-      }
+      b = update_rows_cols(chars[i], &cols, &cols_last, &rows, &data_on_line);
+      CHECK(b, "bad input!");
     }
     // Out of space in chars: copy remaining data (partial words)
     // to front of buffer
@@ -135,14 +125,17 @@ convert_fps(FILE* fp_i, FILE* fp_o)
   size_t actual_w = fwrite(floats, sizeof(double), f, fp_o);
   CHECK(actual_w == f, "write failed!\n");
 
-  // printf("rows: %i cols: %i\n", rows, cols);
+  MESSAGE("converted: rows: %i cols: %i", rows, cols);
 
   free(chars);
   free(floats);
   return true;
 }
 
-/** Read the next chunk of CSV text */
+/** Read the next chunk of CSV text
+    @param actual_r: OUT actual characters read
+    @return True on success, else false
+ */
 static inline bool
 read_text(char* data, size_t count, FILE* fp, size_t* actual_r)
 {
@@ -154,9 +147,14 @@ read_text(char* data, size_t count, FILE* fp, size_t* actual_r)
   return true;
 }
 
-/** Convert the word (word_start) into a double and possibly write it out */
+/** Convert the word (word_start) into a double and possibly write it out
+    @param floats IN/OUT Where to add the converted double
+    @param f IN/OUT The working index into floats
+    @return True on success, else false
+*/
 static inline bool
-convert_word(int rows, const char* word_start, double* floats, int* f, FILE* fp)
+convert_word(int rows, const char* word_start,
+	     double* floats, int* f, FILE* fp)
 {
   int fi = *f;
   errno = 0;
@@ -167,10 +165,34 @@ convert_word(int rows, const char* word_start, double* floats, int* f, FILE* fp)
 
   if (fi == buffer_size)
   {
-    size_t actual_w = fwrite(floats, sizeof(double), buffer_size, fp);
-    CHECK(actual_w == buffer_size, "write failed!");
+    size_t actual = fwrite(floats, sizeof(double), buffer_size, fp);
+    CHECK(actual == buffer_size, "write failed!");
     fi = 0;
   }
   *f = fi;
+  return true;
+}
+
+/** Update the row and column counters
+    All pointer parameters are IN/OUT
+    @return True on success, else false
+ */
+static inline bool
+update_rows_cols(char c, int* cols, int* cols_last,
+		 int* rows, bool* data_on_line)
+{
+  if (c == ',')
+    (*cols)++;
+  if (c == '\n')
+  {
+    (*rows)++;
+    // printf("cols=%i cols_last=%i\n", cols, cols_last);
+    CHECK(*cols == *cols_last || *cols_last == -1,
+          "bad column count on line: %i cols=%i cols_last=%i",
+          *rows, *cols, *cols_last);
+    *cols_last = *cols;
+    *cols = 1;
+    *data_on_line = false;
+  }
   return true;
 }
