@@ -1,6 +1,11 @@
 
 #pragma once
 
+#include <stdarg.h>
+
+#define MESSAGE(format, args...)                \
+  printf("%s: " format "\n", program_name, ## args);
+
 #define CHECK(condition, format, args...)         \
   do {                                            \
     if (!(condition)) {                           \
@@ -10,6 +15,6 @@
 
 #define FAIL(format, args...)                   \
   do {                                          \
-    printf("csv2f64: " format "\n", ## args);   \
+    MESSAGE(format, ## args);                   \
     return false;                               \
   } while (0);
