@@ -1,0 +1,15 @@
+
+== csv2f64
+
+Converts CSV file to simple list of doubles
+
+=== Usage:
+
+----
+$ ./csv2f64 nt_train2-10.csv nt_train2-10.dat
+csv2f64: converted: rows: 10 cols: 60484
+----
+
+=== Debugging statements
+
+Are found on branch 'sz'.
