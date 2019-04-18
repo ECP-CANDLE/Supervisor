@@ -64,6 +64,9 @@ convert(const char* input, const char* output)
 static inline bool read_text(char* data, size_t count, FILE* fp,
 			     size_t* actual_r);
 
+static inline bool convert_word(int rows, const char* word_start,
+				double* floats, int* f, FILE* fp);
+
 static bool
 convert_fps(FILE* fp_i, FILE* fp_o)
 {
@@ -80,14 +83,12 @@ convert_fps(FILE* fp_i, FILE* fp_o)
   int f = 0; // index in floats[]
   int offset = 0; // starting offset in chars due to chars from last read
   size_t actual_r = 0; // actual number of items read at last fread
-  size_t actual_w = 0; // actual number of items written at last fwrite
   int length = 0; // the length of our current data (offset+actual_r)
   int w = 0; // word start
-  bool data_on_line = false;
+  bool data_on_line = false; // is there good data on this line?
   bool b;
   while (true)
   {
-    // Read text
     b = read_text(&chars[offset], bytes_c-offset, fp_i, &actual_r);
     CHECK(b, "read_text() failed!");
     if (actual_r == 0) break;
@@ -95,36 +96,25 @@ convert_fps(FILE* fp_i, FILE* fp_o)
 
     for (int i = 0; i < length; i++)
     {
-      printf("chars[i=%i]='%c'\n", i, chars[i]);
-      if (chars[i] == ' ' || chars[i] == '\t') continue;
+      // printf("chars[i=%i]='%c'\n", i, chars[i]);
+      if (chars[i] == ' ' || chars[i] == '\t') continue; // ignore WS
       if (chars[i] == '\n' && ! data_on_line) continue; // blank line
-      data_on_line = true;
-      if (chars[i] == ',' || chars[i] == '\n')
+      data_on_line = true; // found good data - not a blank line
+      if (chars[i] == ',' || chars[i] == '\n') // end of word
       {
         if (i == w)
-          // Word length is 0 and not blank line - error
+          // Word length is 0 and not blank line - fail
           FAIL("bad text on line: %i column: %i", rows, i-offset+1);
-        errno = 0;
-        printf("chars[w=%i]=%c\n", w, chars[w]);
-        double d = strtod(&chars[w], NULL);
-        CHECK(errno == 0, "bad number on line: %i", rows);
-        floats[f] = d;
-        printf("f[%i]=%f\n", f, floats[f]);
-        f++;
+        // printf("chars[w=%i]=%c\n", w, chars[w]);
+        b = convert_word(rows, &chars[w], floats, &f, fp_o);
         w = i+1;
-        if (f == buffer_size)
-        {
-          actual_w = fwrite(floats, sizeof(double), buffer_size, fp_o);
-          CHECK(actual_w == buffer_size, "write failed!\offset");
-          f = 0;
-        }
       }
       if (chars[i] == ',')
         cols++;
       if (chars[i] == '\n')
       {
         rows++;
-        printf("cols=%i cols_last=%i\n", cols, cols_last);
+        // printf("cols=%i cols_last=%i\n", cols, cols_last);
         CHECK(cols == cols_last || cols_last == -1,
               "bad column count on line: %i cols=%i cols_last=%i",
               rows, cols, cols_last);
@@ -135,30 +125,52 @@ convert_fps(FILE* fp_i, FILE* fp_o)
     }
     // Out of space in chars: copy remaining data (partial words)
     // to front of buffer
-    printf("copy: w=%i\n", w);
+    // printf("copy: w=%i\n", w);
     offset = length - w;
     memcpy(chars, &chars[w], offset);
-    chars[offset] = '\0';
-    printf("char start: '%s'\n", chars);
+    // chars[offset] = '\0';
+    // printf("char start: '%s'\n", chars);
     w = 0;
   }
-  actual_w = fwrite(floats, sizeof(double), f, fp_o);
+  size_t actual_w = fwrite(floats, sizeof(double), f, fp_o);
   CHECK(actual_w == f, "write failed!\n");
 
-  printf("rows: %i cols: %i\n", rows, cols);
+  // printf("rows: %i cols: %i\n", rows, cols);
 
   free(chars);
   free(floats);
   return true;
 }
 
+/** Read the next chunk of CSV text */
 static inline bool
 read_text(char* data, size_t count, FILE* fp, size_t* actual_r)
 {
   size_t actual = fread(data, sizeof(char), count, fp);
-  printf("actual_r: %zi\n", actual);
+  // printf("actual_r: %zi\n", actual);
   if (actual == 0)
     CHECK(!ferror(fp), "read failed!");
   *actual_r = actual;
+  return true;
+}
+
+/** Convert the word (word_start) into a double and possibly write it out */
+static inline bool
+convert_word(int rows, const char* word_start, double* floats, int* f, FILE* fp)
+{
+  int fi = *f;
+  errno = 0;
+  floats[fi] = strtod(word_start, NULL);
+  CHECK(errno == 0, "bad number on line: %i", rows);
+  // printf("f[%i]=%f\n", fi, floats[fi]);
+  fi++;
+
+  if (fi == buffer_size)
+  {
+    size_t actual_w = fwrite(floats, sizeof(double), buffer_size, fp);
+    CHECK(actual_w == buffer_size, "write failed!");
+    fi = 0;
+  }
+  *f = fi;
   return true;
 }
