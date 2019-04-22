@@ -1,0 +1,5 @@
+# The main executable:
+csv2f64
+# Cygwin stuff:
+*.exe
+*.stackdump
