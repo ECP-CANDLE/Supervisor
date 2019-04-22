@@ -7,11 +7,10 @@
 #SBATCH --job-name=mnist_test_no_candle
 
 # Set up environment
-module load python/3.6
-CANDLE_DIR=/data/BIDS-HPC/public/candle
+module load python/3.6 candle
 
 # Set the file that the Python script below will read in order to determine the model parameters
-export DEFAULT_PARAMS_FILE="$CANDLE_DIR/Supervisor/templates/model_params/mnist1.txt"
+export DEFAULT_PARAMS_FILE="$CANDLE/Supervisor/templates/model_params/mnist1.txt"
 
 # Run the model
-python $CANDLE_DIR/Supervisor/templates/models/mnist/mnist_mlp.py
+python $CANDLE/Supervisor/templates/models/mnist/mnist_mlp.py

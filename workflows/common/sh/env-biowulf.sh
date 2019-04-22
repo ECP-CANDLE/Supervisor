@@ -5,7 +5,7 @@
 # Assumes WORKFLOWS_ROOT is set
 
 # Modules; this and following R block are what was needed to successfully at least COMPILE Swift/T
-module load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 python/3.6 ant/1.10.3 java/1.8.0_181
+module -q load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 python/3.6 ant/1.10.3 java/1.8.0_181
 
 # Load R paths manually since we can't load the module on the Biowulf submit nodes
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
@@ -18,7 +18,7 @@ export R_LIBS_USER=~/R/%v/library
 #export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
 
 # Other additions
-CANDLE=/data/BIDS-HPC/public/candle
+#CANDLE=/data/BIDS-HPC/public/candle # removing because setting this using the candle module
 export R_LIBS=$CANDLE/R/libs/ # these are the libraries I installed via workflows/common/R/install-candle.sh
 export PATH=$PATH:$CANDLE/swift-t-install/stc/bin
 export PATH=$PATH:$CANDLE/swift-t-install/turbine/bin

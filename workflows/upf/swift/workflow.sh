@@ -81,9 +81,8 @@ export UPF
 
 # See Supervisor/templates/README.md for explanation of DEFAULT_PARAMS_FILE below
 export TURBINE_OUTPUT_SOFTLINK="last-exp"
-mkdir $TURBINE_OUTPUT/tic_file
 swift-t -n $PROCS \
-        -o $TURBINE_OUTPUT/tic_file/workflow.tic \
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
