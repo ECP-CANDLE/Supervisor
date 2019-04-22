@@ -112,14 +112,16 @@ get_expid()
     local i=0 EXPS E
     # Search for free number
     EXPS=( $( ls $EXPERIMENTS ) )
-    for E in ${EXPS[@]}
-    do
-      EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
-      if [[ $E == $EXPID ]]
-      then
-        i=$(( i + 1 ))
-      fi
-    done
+    if [ ${#EXPS[@]} -ne 0 ]; then
+      for E in ${EXPS[@]}
+      do
+        EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+        if [[ $E == $EXPID ]]
+        then
+          i=$(( i + 1 ))
+        fi
+      done
+    fi
     EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
