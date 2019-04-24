@@ -4,6 +4,7 @@
   Main cross-correlation workflow
 */
 
+import assert;
 import files;
 import io;
 import python;
