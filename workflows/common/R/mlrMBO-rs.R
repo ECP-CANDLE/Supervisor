@@ -118,7 +118,46 @@
     }
 
     if (is.null(chkpntResults)){
-      design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
+      par.set = getParamSet(obj.fun)
+      
+      ## represent each discrete value once
+      # get the maximum number of variables
+      max_val_discrete = 0
+      index=0
+
+      for (v in par.set$pars) {
+        if (v$type == "discrete"){
+          index=index+1
+          i = 0
+          for (val in v$values){
+            i=i+1
+          }
+          if (max_val_discrete < i){
+            max_val_discrete = i
+          }
+        }
+      }
+      # each discrete variable should be represented once, else optimization will fail
+      # this checks if design size is less than max number of discrete values
+      if (design.size < max_val_discrete){
+        print("Aborting! design.size is less than the discrete parameters specified")
+        quit()
+      }
+
+      design = generateDesign(n = max.budget, par.set)
+
+      # this loop modifies the top max_val_discrete designs (design) to have each discrete value represented once
+      i = 0
+      for (v in par.set$pars){
+        i=i+1
+        if (v$type == "discrete"){
+          index=0
+          for (val in v$values){
+            index=index+1
+            design[[i]][index] = val
+          }
+        }
+      }
     } else {
       design = chkpntResults
     }

@@ -39,7 +39,7 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 # export MODEL_PYTHON_DIR=$HOME/proj/candle_tutorials/Topics/1_migrating_your_DNN_to_candle
 
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
-export R_FILE=mlrMBO-mbo.R
+export R_FILE=mlrMBO-ils.R
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
