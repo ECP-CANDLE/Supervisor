@@ -44,6 +44,8 @@ exec 2>&1
 cd $INSTANCE_DIRECTORY
 
 echo "MODEL.SH START:"
+echo "MODEL.SH START TIME: $(date +%s)"
+echo "HOST: $(hostname)"
 echo "MODEL_NAME: $MODEL_NAME"
 echo "RUNID: $RUNID"
 
@@ -92,6 +94,7 @@ else
   fi
 fi
 
+echo "MODEL.SH END TIME: $(date +%s)"
 echo "MODEL.SH END: SUCCESS"
 exit 0 # Success
 

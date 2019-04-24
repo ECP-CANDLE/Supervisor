@@ -2,6 +2,7 @@
 
 module load candle
 
+
 #### MODIFY ONLY BELOW ####################################################################
 # Model specification
 export MODEL_PYTHON_DIR="$CANDLE/Supervisor/templates/models/mnist"
@@ -18,7 +19,7 @@ export MODEL_NAME="mnist_upf_test"
 export OBJ_RETURN="val_loss"
 
 # Scheduler settings
-export PROCS="4" # remember that PROCS-2 are actually used for computation
+export PROCS="4" # note that PROCS-1 and PROCS-2 are actually used for UPF and mlrMBO computations, respectively
 export PPN="1"
 export WALLTIME="00:10:00"
 export GPU_TYPE="k80" # the choices on Biowulf are p100, k80, v100, k20x
