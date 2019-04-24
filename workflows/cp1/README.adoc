@@ -24,6 +24,11 @@ $ cd test
 $ ./test-1.sh theta -a
 ----
 
+=== Doing a small run
+
+. Edit data/studies[12].txt to select two different studies (one pair)
+. Edit your cfg-sys file to set TURBINE_RESIDENT_WORK_WORKERS to the number of pairs
+
 
 === Summit Notes
 
