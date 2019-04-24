@@ -9,7 +9,12 @@ Run the workflow in +workflows/cp1+
 
 === Data
 
+----
+$ wget http://www.mcs.anl.gov/~wozniak/candle-cp1-data.tgz
+$ tar xfz candle-cp1-data.tgz
+----
 
+This will create a directory called xcorr_data
 
 === Execution
 
