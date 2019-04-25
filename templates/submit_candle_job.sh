@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Always load the candle module
 module load candle
 
 
 #### MODIFY ONLY BELOW ####################################################################
+# Load desired Python version or Conda environment
+# Load other custom environment settings here
+module load python/3.6
+
 # Model specification
 export MODEL_PYTHON_DIR="$CANDLE/Supervisor/templates/models/mnist"
 export MODEL_PYTHON_SCRIPT="mnist_mlp"
