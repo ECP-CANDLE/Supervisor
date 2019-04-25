@@ -1,7 +1,6 @@
 
 # MODEL RUNNER PY
 
-# Currently only supports NT3_TC1 # Not true? -Justin 2018/02/28
 # See __main__ section for usage
 
 import sys

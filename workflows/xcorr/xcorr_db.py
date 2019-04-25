@@ -45,6 +45,33 @@ class xcorr_db:
         self.cursor = self.conn.cursor()
         self.cursor.execute("PRAGMA busy_timeout = 30000")
 
+    # provisional for cp1 runs
+    def insert_hpo_record(self, record_id):
+        ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.connect()
+        with self.conn:
+            hpo_id = self.insert(table='hpos', names=['xcorr_record_id', 'time'],
+                values = [str(record_id), q(ts)])
+            self.commit()
+        return hpo_id
+
+    def insert_hpo_run(self, hpo_id, param_string, run_directory):
+        ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.connect()
+        with self.conn:
+            run_id = self.insert(table='hpo_runs', names=['hpoid', 'params', 'run_directory', 'start'],
+                values = [str(hpo_id), q(param_string), q(run_directory), q(ts)])
+            self.commit()
+        return run_id
+
+    def update_hpo_run(self, run_id, result):
+        ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        sql = "update hpo_runs set obj_result = ?, end = ? where runid = ?"
+        self.connect()
+        with self.conn:
+            self.cursor.execute(sql, (result, ts, run_id))
+            self.commit()
+
     def insert_xcorr_record(self, studies, features,
                             cutoff_corr, cutoff_xcorr):
         """
@@ -54,10 +81,10 @@ class xcorr_db:
         ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         names  = [ "time",    "cutoff_corr",    "cutoff_xcorr" ]
         values = [  q(ts), str(cutoff_corr), str(cutoff_xcorr) ]
-        record_id = self.insert("records", names, values)
 
         self.connect()
         with self.conn:
+            record_id = self.insert("records", names, values)
             for feature in features:
                 feature_id = str(self.feature_name2id[feature])
                 self.insert(table="features",
@@ -121,7 +148,7 @@ class xcorr_db:
         """ Do a SQL insert """
         names_tpl  = sql_tuple(names)
         values_tpl = sql_tuple(values)
-        cmd = "insert into %s %s values %s;" % (table, names_tpl, values_tpl)
+        cmd = "insert into {} {} values {};".format(table, names_tpl, values_tpl)
         self.execute(cmd)
         rowid = str(self.cursor.lastrowid)
         return rowid
