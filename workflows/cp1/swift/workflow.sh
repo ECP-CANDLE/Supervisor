@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-# MLRMBO WORKFLOW
-# Main entry point for mlrMBO workflow
+# CP1 WORKFLOW
+# Main entry point for CP1 workflow
 # See README.md for more information
 
 # Autodetect this workflow directory
