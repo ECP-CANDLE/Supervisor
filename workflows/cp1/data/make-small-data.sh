@@ -6,6 +6,7 @@ set -eu
 # See the README for data provenance
 
 # INPUT:  data/studies*.txt
+#         data/combined_rnaseq_data_combat
 # OUTPUT: data/features-small.txt
 #         data/rnaseq-small.txt
 
