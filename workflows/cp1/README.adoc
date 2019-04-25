@@ -9,6 +9,8 @@ Run the workflow in +workflows/cp1+
 
 === Data
 
+TODO: Describe studies files
+
 ----
 $ wget http://www.mcs.anl.gov/~wozniak/candle-cp1-data.tgz
 $ tar xfz candle-cp1-data.tgz
@@ -19,6 +21,19 @@ This will create a directory called xcorr_data
 This data was retrieved by Wozniak from Summit directory +
 /gpfs/alpine/med106/scratch/ncollier/xcorr_data +
 on April 24, 2019.
+
+==== Big data
+
+The full RNA sequence data set is here:
+
+----
+$ cd data
+$ wget http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/combined_rnaseq_data_combat
+----
+
+==== Small data
+
+Use the script data/make-small-data.sh
 
 === Execution
 
