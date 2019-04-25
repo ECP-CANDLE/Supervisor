@@ -16,6 +16,10 @@ $ tar xfz candle-cp1-data.tgz
 
 This will create a directory called xcorr_data
 
+This data was retrieved by Wozniak from Summit directory +
+/gpfs/alpine/med106/scratch/ncollier/xcorr_data +
+on April 24, 2019.
+
 === Execution
 
 ----
