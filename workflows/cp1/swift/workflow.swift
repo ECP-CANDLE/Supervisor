@@ -217,9 +217,9 @@ uno_xcorr.coxen_feature_selection(study1, study2,
 (void v) loop(string hpo_db_id, int init_prio, int modulo_prio, int mlr_instance_id, location ME, string feature_file,
     string train_source)
 {
-  for (boolean b = true, int i = 1;
+  for (boolean b = true, int iteration = 1;
        b;
-       b=c, i = i + 1)
+       b=c, iteration = iteration + 1)
   {
     string params =  EQR_get(ME);
     boolean c;
@@ -243,17 +243,19 @@ uno_xcorr.coxen_feature_selection(study1, study2,
     }
     else
     {
-        int prio = init_prio - i * modulo_prio;
+        int prio = init_prio - iteration * modulo_prio;
         string param_array[] = split(params, ";");
         string results[];
         string hpo_runs[];
-        foreach param, j in param_array
+        foreach param, sample in param_array
         {
-          string run_id = "%00i_%00i_%000i_%0000i" % (mlr_instance_id, restart_number,i,j);
+          string run_id = "%00i_%00i_%000i_%0000i" %
+            (mlr_instance_id, restart_number,iteration,sample);
           string run_dir = "%s/run/%s" % (turbine_output, run_id);
-          int idx = (i * size(param_array)) + j;
+          int idx = (iteration * size(param_array)) + sample;
 
-          param_code = update_param_template % (param, train_source, preprocess_rnaseq,
+          param_code = update_param_template %
+            (param, train_source, preprocess_rnaseq,
               gpus, feature_file, cache_dir, run_dir);
           string updated_param = python_persist(param_code, "params_json");
           // TODO DB: insert updated_param with mlr_instance_id and record
@@ -262,19 +264,20 @@ uno_xcorr.coxen_feature_selection(study1, study2,
           //string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
           string result  = obj_prio(updated_param, run_id, prio);
           //result = "0.234";
-          hpo_runs[j] = "%i|%s|%s|%s|%f|%s" % (idx, hpo_db_id, updated_param, run_dir, clock(), result);
+          hpo_runs[sample] = "%i|%s|%s|%s|%f|%s" % (idx, hpo_db_id, updated_param, run_dir, clock(), result);
 
           if (result == "inf") {
-            results[j] = "999999999";
+            results[sample] = "999999999";
           } else {
-            results[j] = result;
+            results[sample] = result;
           }
-	    
+
           // update_hpo_run(run_db_id, results[j]);
           // TODO DB: insert result with record_id
       }
       string out_string = join(hpo_runs,"\n");
-      fname = "%s/hpo_log/%00i_%00i_hpo_runs.txt" % (turbine_output, mlr_instance_id, i);
+      fname = "%s/hpo_log/%00i_%00i_hpo_runs.txt" %
+        (turbine_output, mlr_instance_id, iteration);
       file out <fname> = write(out_string);
 
       string result = join(results, ";");
@@ -302,7 +305,7 @@ restart.file = '%s'
 //   o = propagate();
 // }
 
-(void o) start(int init_prio, int modulo_prio, int ME_rank, string record_id, string feature_file, string study1) {
+(int done) start(int init_prio, int modulo_prio, int ME_rank, string record_id, string feature_file, string study1) {
     location ME = locationFromRank(ME_rank);
     int mlr_instance_id = abs_integer(init_prio);
     // algo_params is the string of parameters used to initialize the
@@ -320,7 +323,7 @@ restart.file = '%s'
     loop(hpo_db_id, init_prio, modulo_prio, mlr_instance_id, ME, feature_file, study1) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
-        o = propagate();
+        done = 1;
     }
 }
 

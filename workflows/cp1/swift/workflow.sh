@@ -45,8 +45,6 @@ then
   exit 1
 fi
 
-
-
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
