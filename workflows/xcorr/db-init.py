@@ -8,8 +8,17 @@ from xcorr_db import xcorr_db, q
 
 from pathlib import Path
 THIS = Path(sys.argv[0]).parent.resolve()
+DB = None
 
-DB = xcorr_db('xcorr.db')
+def get_args(argv):
+    import argparse
+    parser = argparse.ArgumentParser(description=
+                                     'Setup the DB for XCORR.')
+    parser.add_argument('db_filename',       help='The DB file name')
+    parser.add_argument('features_filename', help='The features file name')
+    parser.add_argument('studies_filename',  help='The studies file name')
+    args = parser.parse_args()
+    return args
 
 def create_tables():
     """ Set up the tables defined in the SQL file """
@@ -19,33 +28,35 @@ def create_tables():
     DB.executescript(sqlcode)
     DB.commit()
 
-def insert_feature_names():
+def insert_feature_names(features_file):
     """
     Copy features from the header of this datafile
     into the features table
     """
-    global THIS
-    datafile = str(THIS)+"/test_data/combined_rnaseq_data_lincs1000_combat"
+    #global THIS
+    # datafile = str(THIS)+"/test_data/combined_rnaseq_data_lincs1000_combat"
     #datafile = "test_data/combined_rnaseq_data_combat"
 
-    with open(datafile) as fp:
+    with open(features_file) as fp:
         line = fp.readline()
 
     feature_names = line.split("\t")
-    del feature_names[0] # Remove first token "Sample"
+    # This token was in combined_rnaseq_data_lincs1000_combat :
+    # del feature_names[0] # Remove first token "Sample"
 
     for name in feature_names:
         if name == "": continue
         name = name.strip()
+        name = name.replace("rnaseq.", "")
         DB.insert(table="feature_names",
                   names=["name"],
                   values=[q(name)])
 
-def insert_study_names():
+def insert_study_names(studies_file):
     """ Copy study names from studies.txt into the DB """
-    global THIS
+    # global THIS
     studies = []
-    with open(str(THIS)+"/studies.txt") as fp:
+    with open(studies_file) as fp:
         while True:
             line = fp.readline()
             if line == "": break
@@ -68,9 +79,11 @@ def create_indices():
 # Catch and print all exceptions to improve visibility of success/failure
 success = False
 try:
+    args = get_args(sys.argv)
+    DB = xcorr_db(args.db_filename, log=True)
     create_tables()
-    insert_feature_names()
-    insert_study_names()
+    insert_feature_names(args.features_filename)
+    insert_study_names(args.studies_filename)
     create_indices()
     success = True
 except Exception as e:
