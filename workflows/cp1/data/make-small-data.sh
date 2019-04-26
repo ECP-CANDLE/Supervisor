@@ -60,7 +60,7 @@ do
           echo "rnaseq.$F"
         fi
       done > $FEATURES_LIST
-      echo "Created: FEATURES_LIST"
+      echo "Created: $FEATURES_LIST"
     fi
   done
 done
