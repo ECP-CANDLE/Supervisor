@@ -121,7 +121,7 @@ then
   python3 $XCORR_ROOT/db-init.py $DB_FILE \
           $FEATURES_FILE \
           <( cat $EMEWS_PROJECT_ROOT/data/studies[12].txt )
-  db/db-hpo-init $DB_FILE
+  $EMEWS_PROJECT_ROOT/db/db-hpo-init $DB_FILE
 fi
 
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
