@@ -7,6 +7,23 @@ Currently, this uses a mix of xcorr and cp1.
 
 Run the workflow in +workflows/cp1+
 
+TURBINE_RESIDENT_WORK_WORKERS (the number of ME ranks) must be equal to the number of study pairs (the number of XCORRs).
+
+==== Small runs
+
+. Run make-small-data as described below
+. Set cfg-sys-1.sh:TURBINE_RESIDENT_WORK_WORKERS=2
+
+----
+# Local execution, auto-create output directory
+$ test/test-dummy local -a
+----
+
+==== Production runs
+
+. Set the files to the production-size files
+
+
 === Data
 
 ==== Studies files
