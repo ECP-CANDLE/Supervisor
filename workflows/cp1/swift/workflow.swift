@@ -53,8 +53,8 @@ if (restart_file != "DISABLED") {
 // for subset of studies, comment '#' out study name in studiesN.txt
 string studies1[] = file_lines(input(emews_root + "/data/studies1.txt"));
 string studies2[] = file_lines(input(emews_root + "/data/studies2.txt"));
-string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
-string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
+// string rna_seq_data = argv("rna_seq_data"); //"%s/test_data/combined_rnaseq_data_lincs1000_%s.bz2" % (xcorr_root, preprocess_rnaseq);
+// string drug_response_data = argv("drug_response_data"); //xcorr_root + "/test_data/rescaled_combined_single_drug_growth_100K";
 int cutoffs[][] = [[2000, 1000]]; //,
                  //  [100, 50],
                  //  [400, 200],
@@ -80,7 +80,7 @@ cell_feature_subset_path = '%s'
 if len(cell_feature_subset_path) > 0:
   params['cell_feature_subset_path'] = cell_feature_subset_path
   # GDSC_NCI60_1600_800_features.txt
-  # GDSC_NCI60_2000_1000.h5 
+  # GDSC_NCI60_2000_1000.h5
   import os
   ex_data_f = os.path.basename(params['cell_feature_subset_path'])
   idx = ex_data_f.rfind('_features')
@@ -132,46 +132,45 @@ record_id = DB.insert_xcorr_record(studies=studies,
 """;
 
 
-(string hpo_id) insert_hpo(string xcorr_record_id) 
+(string hpo_id) insert_hpo_new(string xcorr_record_id)
 {
   hpo_template =
 """
 from xcorr_db import xcorr_db, setup_db
 
 global DB
-DB = setup_db('%s')
-hpo_id = DB.insert_hpo_record(%s)
+DB = setup_db('%s', log=True)
+hpo_id = DB.insert_hpo_new(%s)
 """;
 
   code = hpo_template % (db_file, xcorr_record_id);
   hpo_id = python_persist(code, "str(hpo_id)");
 }
 
-(string run_id) insert_hpo_run(string hpo_id, string param_string, string run_directory) 
+(string run_id) insert_hpo_sample(string hpo_id, string param_string,
+                                  string run_directory)
 {
   run_template =
 """
-from xcorr_db import xcorr_db, setup_db
-
+from xcorr_db import setup_db
 global DB
-DB = setup_db('%s')
-run_id = DB.insert_hpo_run(%s, '%s', '%s')
-""";
+DB = setup_db('%s', log=True)
+run_id = DB.insert_hpo_sample(%s, '%s', '%s')
+"""; // xcorr_db,
 
   code = run_template % (db_file, hpo_id, param_string, run_directory);
   run_id = python_persist(code, "str(run_id)");
 }
 
-(void o) update_hpo_run(string run_id, string result) 
+(void o) update_hpo_run(string run_id, string result)
 {
   update_template =
 """
-from xcorr_db import xcorr_db, setup_db
-
+from xcorr_db import setup_db
 global DB
 DB = setup_db('%s')
-hpo_id = DB.update_hpo_run(%s, %s)
-""";
+hpo_id = DB.update_hpo_sample(%s, %s)
+"""; // xcorr_db,
 
   code = update_template % (db_file, run_id, result);
   python_persist(code, "'ignore'") =>
@@ -183,6 +182,7 @@ compute_feature_correlation(string study1, string study2,
                             int corr_cutoff, int xcorr_cutoff,
                             string features_file)
 {
+  /*
   xcorr_template =
 """
 rna_seq_data = '%s'
@@ -203,7 +203,8 @@ uno_xcorr.coxen_feature_selection(study1, study2,
                                   cross_correlation_cutoff,
                                   output_file=features_file)
 """;
-
+*/
+  printf("features_file: %s", features_file) =>
   log_code = log_corr_template % (db_file, features_file, study1, study2,
                                   corr_cutoff, xcorr_cutoff);
   // xcorr_code = xcorr_template % (rna_seq_data, drug_response_data,
@@ -211,6 +212,7 @@ uno_xcorr.coxen_feature_selection(study1, study2,
   //                                corr_cutoff, xcorr_cutoff,
   //                                features_file);
   // python_persist(xcorr_code) =>
+  printf("log_code: %s", log_code) =>
   record_id = python_persist(log_code, "str(record_id)");
 }
 
@@ -261,8 +263,9 @@ uno_xcorr.coxen_feature_selection(study1, study2,
           // TODO DB: insert updated_param with mlr_instance_id and record
           //printf("Updated Params: %s", updated_param);
           //printf("XXX %s: %i", feature_file, prio);
-          //string run_db_id = insert_hpo_run(hpo_db_id, updated_param, run_dir) =>
-          string result  = obj_prio(updated_param, run_id, prio);
+          string run_db_id =
+            insert_hpo_sample(hpo_db_id, updated_param, run_dir) =>
+            string result  = obj_prio(updated_param, run_id, prio);
           //result = "0.234";
           hpo_runs[sample] = "%i|%s|%s|%s|%f|%s" % (idx, hpo_db_id, updated_param, run_dir, clock(), result);
 
@@ -316,11 +319,12 @@ restart.file = '%s'
          propose_points, restart_file);
     // DB: insert algo params with mlr_instance_id
     string algorithm = emews_root+"/../common/R/"+r_file;
-    string hpo_db_id = insert_hpo(record_id) =>
+    string hpo_db_id = insert_hpo_new(record_id) =>
     EQR_init_script(ME, algorithm) =>
     EQR_get(ME) =>
     EQR_put(ME, algo_params) =>
-    loop(hpo_db_id, init_prio, modulo_prio, mlr_instance_id, ME, feature_file, study1) => {
+    loop(hpo_db_id, init_prio, modulo_prio, mlr_instance_id, ME,
+         feature_file, study1) => {
         EQR_stop(ME) =>
         EQR_delete_R(ME);
         done = 1;
@@ -345,8 +349,20 @@ result = ",".join([str(x) for x in keys])
   }
 }
 
+start_lock_mgr()
+{
+  LOCK_MGR = locationFromRank(0);
+  @location=LOCK_MGR
+    python("""
+import _wlmpy
+_wlmpy.wlm_init(True, 1)
+""");
+}
+
 main() {
   string params[][];
+
+  start_lock_mgr();
 
   foreach study1, i in studies1
   {
@@ -358,11 +374,13 @@ main() {
         {
           printf("Study1: %s, Study2: %s, cc: %d, ccc: %d",
                 study1, study2, cutoff[0], cutoff[1]);
-          fname = "%s/%s_%s_%d_%d_features.txt" %
+          fname = "%s/%s_%s_%d_%d_features_small.txt" %
             (xcorr_data_dir, study1, study2, cutoff[0], cutoff[1]);
           printf(fname);
 
-          string record_id = compute_feature_correlation(study1, study2, cutoff[0], cutoff[1], fname);
+          string record_id =
+            compute_feature_correlation(study1, study2,
+                                        cutoff[0], cutoff[1], fname);
           int h = string2int(record_id);
           params[h] = [record_id, fname, study1];
         }
@@ -385,16 +403,28 @@ main() {
 
   printf("size(ME_ranks): %i", size(ME_ranks));
   printf("size(params):   %i", size(params));
-  assert(size(ME_ranks) == size(params), "Number of ME ranks must equal number of xcorrs");
+  assert(size(ME_ranks) == size(params),
+         "Number of ME ranks must equal number of xcorr pairs");
   int keys[] = sort_keys(params);
 
+  int all_done[];
   int modulo_prio = size(ME_ranks);
   foreach idx, r in keys
   {
     string ps[] = params[idx];
     int rank = ME_ranks[r];
     // initial priority, modulo priority, rank, record_id, feature file name, study1 name
-    start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
+    all_done[r] = start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
 
+  wait deep(all_done) {
+    foreach i in [1,turbine_workers()-size(ME_ranks)-1]
+    {
+      @location=locationFromRank(i)
+        python_persist(----
+import _wlmpy
+_wlmpy.wlm_shutdown(0)
+----);
+    }
+  }
 }
