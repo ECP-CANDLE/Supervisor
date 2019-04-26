@@ -23,6 +23,7 @@ TAB="$( echo -ne "\t" )" # Tab special character
 COLS=$(( $N_FEATURES + 1 )) # Include "Sample" token
 cut --delimiter="$TAB" --fields=1-$COLS $ORIG | \
   head --lines 1 > $FEATURES_SMALL
+echo "Created: $FEATURES_SMALL"
 
 # Use sed to remove comments, extract each unique study
 STUDIES=( $( sed 's/#.*//' data/studies*.txt | sort --unique ) )
@@ -35,6 +36,7 @@ do
   grep --max-count=$N_SAMPLES $STUDY $ORIG | \
     cut --delimiter="$TAB" --fields=1-$COLS
 done > $RNA_SMALL
+echo "Created: $RNA_SMALL"
 
 # Create CCLE_CTRP_2000_1000_features_dummy.txt
 #   with feature names
@@ -42,7 +44,8 @@ done > $RNA_SMALL
 #   create STUDY1_STUDY2_CUTOFF1_CUTOFF2_features_small.txt
 #   containing some random subset of the features
 FEATURES=( $( cut --delimiter="$TAB" --fields=2- $FEATURES_SMALL ) )
-echo ${FEATURES[@]}
+echo "Features: ${FEATURES[@]}"
+
 for STUDY1 in ${STUDIES[@]}
 do
   for STUDY2 in ${STUDIES[@]}
@@ -57,6 +60,9 @@ do
           echo "rnaseq.$F"
         fi
       done > $FEATURES_LIST
+      echo "Created: FEATURES_LIST"
     fi
   done
 done
+
+echo "SUCCESS"
