@@ -11,7 +11,8 @@ PRAGMA foreign_keys = ON;
    the same as the EMEWS experiment ID.
 */
 create table if not exists hpo_ids(
-       hpo_id integer primary key,
+       rowid integer primary key,
+       xcorr_record_id integer,
        /* creation time */
        time timestamp
 );
@@ -37,16 +38,35 @@ create table if not exists hpo_hyperparam_values(
        foreign key (param_id) references hpo_hyperparam_defns(param_id)
 );
 
+
+/* Collier
+
+CREATE TABLE hpo_runs (
+    runid integer primary key,
+    hpoid integer,
+    params text,
+    run_directory text,
+    obj_result real,
+    start timestamp,
+    end timestamp
+);
+*/
+
 create table if not exists hpo_samples(
+       rowid integer primary key,
        /* ID in table hpo_ids */
        hpo_id integer,
-       /* creation time */
+       /* creation time - not necessarily compute start time */
        created timestamp,
-       /* completion time */
+       /* completion time - not exactly compute stop time */
        completed timestamp,
        /* params: for categoricals, a comma-separated list of value_ids */
        hyperparams text,
+       /* the directory where the training ran */
+       run_directory text,
+       /* total run time in seconds */
+       run_time real,
        /* the sample value, e.g., val_loss */
-       value real,
+       obj_result real,
        foreign key (hpo_id) references hpo_ids(hpo_id)
 );
