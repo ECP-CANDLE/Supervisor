@@ -137,7 +137,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -cache_dir=$CACHE_DIR
                 -xcorr_data_dir=$XCORR_DATA_DIR
                 -rna_seq_data=$RNA_SEQ_DATA
-                -drug_response_data=$DRUG_REPSONSE_DATA
+                -drug_response_data=$DRUG_REPSONSE_DATA # ??? -Justin
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
                 $R_FILE_ARG
