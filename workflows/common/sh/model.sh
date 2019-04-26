@@ -81,7 +81,8 @@ else
     exit 0
   else
     echo "MODEL.SH: Error (CODE=$CODE) in $MODEL_CMD"
-    echo "TIMESTAMP:" $( date "+%Y/%m/%d %H:%M:%S" )
+    echo "TIMESTAMP:" $( date "+%Y-%m-%d %H:%M:%S" )
+    echo "which python: $( which python )"
     if (( ${IGNORE_ERRORS:-0} ))
     then
       echo "IGNORING ERROR."
