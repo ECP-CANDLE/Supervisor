@@ -9,7 +9,28 @@ Run the workflow in +workflows/cp1+
 
 === Data
 
-TODO: Describe studies files
+==== Studies files
+
+* data/studies[12].txt
++
+One study name per line.  This file can have # comments
+
+==== RNA files
+
+* combined_rnaseq_data_combat
+* data/rnaseq-small.txt
++ Each line starts with a STUDY.SUBJECT token followed by the RNA data +
+  for each feature
+
+==== Features files
+
+The list of feature names
+
+
+
+==== Cross-correlation data
+
+
 
 ----
 $ wget http://www.mcs.anl.gov/~wozniak/candle-cp1-data.tgz
