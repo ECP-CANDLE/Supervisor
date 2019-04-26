@@ -110,10 +110,18 @@ fi
 
 mkdir -pv $TURBINE_OUTPUT
 
-DB_FILE=$TURBINE_OUTPUT/cp1.db
+export DB_FILE=$TURBINE_OUTPUT/$EXPID.db
 if [[ ! -f DB_FILE ]]
 then
-  cp -v $EMEWS_PROJECT_ROOT/data/initial.db $TURBINE_OUTPUT/cp1.db
+  # cp -v $EMEWS_PROJECT_ROOT/data/initial.db $TURBINE_OUTPUT/cp1.db
+  echo "Running XCORR DB INIT on $( basename $DB_FILE ) ..."
+  # FEATURES_FILE=$EMEWS_PROJECT_ROOT/xcorr_data/combined_rnaseq_data_lincs1000_combat
+  # FEATURES_FILE=$EMEWS_PROJECT_ROOT/xcorr_data/dummy_features.txt
+  FEATURES_FILE=$EMEWS_PROJECT_ROOT/data/features-small.txt
+  python3 $XCORR_ROOT/db-init.py $DB_FILE \
+          $FEATURES_FILE \
+          <( cat data/studies[12].txt )
+  db/db-hpo-init $DB_FILE
 fi
 
 CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
