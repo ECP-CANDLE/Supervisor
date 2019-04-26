@@ -40,20 +40,6 @@ create table if not exists hpo_hyperparam_values(
        foreign key (param_id) references hpo_hyperparam_defns(param_id)
 );
 
-
-/* Collier
-
-CREATE TABLE hpo_runs (
-    runid integer primary key,
-    hpoid integer,
-    params text,
-    run_directory text,
-    obj_result real,
-    start timestamp,
-    end timestamp
-);
-*/
-
 create table if not exists hpo_samples(
        rowid integer primary key,
        /* ID in table hpo_ids */
