@@ -17,7 +17,8 @@ create table if not exists hpo_ids(
        time timestamp
 );
 
-/* Each HPO instance has multiple hyperparameters defined here */
+/* UNUSED YET
+   Each HPO instance has multiple hyperparameters defined here */
 create table if not exists hpo_hyperparam_defns(
        param_id integer primary key,
        /* reference to table hpo_ids */
@@ -27,7 +28,8 @@ create table if not exists hpo_hyperparam_defns(
        foreign key (hpo_id) references hpo_ids(hpo_id)
 );
 
-/* For each HPO instance there is a set of param_ids .
+/* UNUSED YET
+   For each HPO instance there is a set of param_ids .
    Each categorical param_id has a set of values in this table */
 create table if not exists hpo_hyperparam_values(
        value_id integer primary key,
@@ -60,11 +62,12 @@ create table if not exists hpo_samples(
        created timestamp,
        /* completion time - not exactly compute stop time */
        completed timestamp,
-       /* params: for categoricals, a comma-separated list of value_ids */
+       /* hyperparams: the JSON hyperparameters used by the model */
+       /* TODO: hyperparams: for categoricals, a comma-separated list of value_ids */
        hyperparams text,
        /* the directory where the training ran */
        run_directory text,
-       /* total run time in seconds */
+       /* UNUSED YET total run time in seconds */
        run_time real,
        /* the sample value, e.g., val_loss */
        obj_result real,
