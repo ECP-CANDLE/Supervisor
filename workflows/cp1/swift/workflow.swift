@@ -401,10 +401,10 @@ main() {
     ME_ranks[i] = toint(r_rank);
   }
 
-  printf("size(ME_ranks): %i", size(ME_ranks));
-  printf("size(params):   %i", size(params));
-  assert(size(ME_ranks) == size(params),
-         "Number of ME ranks must equal number of xcorr pairs");
+  printf("size(ME_ranks): %i", size(ME_ranks)) =>
+    printf("size(params):   %i", size(params)) =>
+    assert(size(ME_ranks) == size(params),
+           "Number of ME ranks must equal number of xcorr pairs");
   int keys[] = sort_keys(params);
 
   int all_done[];
