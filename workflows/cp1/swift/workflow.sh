@@ -178,6 +178,13 @@ fi
 
 #echo ${CMD_LINE_ARGS[@]}
 
+# Cf. utils.sh
+PYTHON_ENVS=$( python_envs )
+
+which swift-t
+swift-t -v
+
+set -x
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -186,11 +193,11 @@ swift-t -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
+        -e BENCHMARKS_ROOT \
         -e XCORR_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
-        $( python_envs ) \
+        $PYTHON_ENVS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
@@ -199,7 +206,6 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
-        -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         -e PREPROP_RNASEQ \
