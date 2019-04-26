@@ -120,7 +120,7 @@ then
   FEATURES_FILE=$EMEWS_PROJECT_ROOT/data/features-small.txt
   python3 $XCORR_ROOT/db-init.py $DB_FILE \
           $FEATURES_FILE \
-          <( cat data/studies[12].txt )
+          <( cat $EMEWS_PROJECT_ROOT/data/studies[12].txt )
   db/db-hpo-init $DB_FILE
 fi
 
