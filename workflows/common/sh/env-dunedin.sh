@@ -6,6 +6,8 @@
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
+PYTHONPATH+=$HOME/proj/swork/lock-mgr/lib
+PATH=/usb1/wozniak/Public/sfw/anaconda3/bin:$PATH
 
 # R
 # export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
@@ -13,7 +15,8 @@ PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 export R_HOME=/home/wozniak/Public/sfw/R-3.5.3/lib/R
 
 # Swift/T
-export PATH=$HOME/Public/sfw/swift-t/stc/bin:$PATH
+# export PATH=$HOME/Public/sfw/swift-t/stc/bin:$PATH
+export PATH=$HOME/sfw/swift-t/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
@@ -31,6 +34,7 @@ fi
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 LD_LIBRARY_PATH+=$R_HOME/lib
 
+show PYTHONPATH
 show LD_LIBRARY_PATH
 
 # For test output processing:
