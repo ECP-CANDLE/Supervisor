@@ -72,11 +72,10 @@ static inline bool read_doubles(double* data, size_t count, FILE* fp,
                                 size_t* actual_r);
 static inline bool format_double(int total_cols,
                                  double* floats, 
-                                 char* chars, int* offset,
+
+                                 char* chars,
+                                 int* offset,
                                  FILE* fp);
-static inline bool update_rows_cols(char c,
-                                    int total_cols, 
-				    int total_rows);
 
 static bool
 convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
@@ -102,7 +101,8 @@ convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
     if (actual_r == 0) break;
     for (i = 0; i < actual_r; i++)
     {
-      b = format_double(bytes_f, chars, &offset, fp_o);
+      b = format_double(total_cols, bytes_f, chars, bytes_c, &offset,
+                        &cols, fp_o);
       CHECK(b, "format_word() failed!");
     }
   }
@@ -143,47 +143,31 @@ read_doubles(double* data, size_t count, FILE* fp, size_t* actual_r)
 */
 static inline bool
 format_double(int total_cols, double* floats,
-	      char* chars, int* offset, FILE* fp)
+	      char* chars, int bytes_c, int* offset,
+	      int* cols, FILE* fp)
 {
+  char* c = &chars[*offset];
+  int max = 20;
+  char* format = "%f";
+  int actual_c = strfromd(c, max, format, fp);
+  assert(actual_c < max);
 
-  int strfromd(char *restrict str, size_t n,
-                     const char *restrict format, double fp);
+  *offset += *offset + actual_c;
 
-  int fi = *f;
-  errno = 0;
-  floats[fi] = strtod(word_start, NULL);
-  CHECK(errno == 0, "bad number on line: %i", rows);
-  fi++;
-
-  if (fi == buffer_size)
+  *cols = *cols + 1;
+  if (*cols == total_cols)
   {
-    size_t actual = fwrite(floats, sizeof(double), buffer_size, fp);
-    CHECK(actual == buffer_size, "write failed!");
-    fi = 0;
+    chars[*offset] = '\n';
+    *offset = *offset + 1;
   }
-  *f = fi;
+
+  if (*offset > bytes_c - max)
+  {
+    int actual_w = fwrite(chars, sizeof(char), offset, fp);
+    assert(actual_w == offset);
+    *offset = 0;
+  }
+
   return true;
 }
 
-/** Update the row and column counters
-    All pointer parameters are IN/OUT
-    @return True on success, else false
- */
-static inline bool
-update_rows_cols(char c, int* cols, int* cols_last,
-		 int* rows, bool* data_on_line)
-{
-  if (c == ',')
-    (*cols)++;
-  if (c == '\n')
-  {
-    (*rows)++;
-    CHECK(*cols == *cols_last || *cols_last == -1,
-          "bad column count on line: %i cols=%i cols_last=%i",
-          *rows, *cols, *cols_last);
-    *cols_last = *cols;
-    *cols = 1;
-    *data_on_line = false;
-  }
-  return true;
-}
