@@ -1,0 +1,13 @@
+
+= Challenge Problem: Leave Out
+
+== Quick start
+
+----
+$ test/test-1.sh
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=9 FILE_OUTPUT=/tmp/tcl_jmAASQ.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=6 LEAVEOUT_DRUG=7 FILE_OUTPUT=/tmp/tcl_LvVIrA.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=10 FILE_OUTPUT=/tmp/tcl_jDl1IG.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=10 LEAVEOUT_DRUG=4 FILE_OUTPUT=/tmp/tcl_iCvpXR.turbine
+...
+----
