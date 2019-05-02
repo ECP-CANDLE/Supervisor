@@ -102,7 +102,7 @@ convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
     if (actual_r == 0) break;
     for (i = 0; i < actual_r; i++)
     {
-      b = format_word(bytes_f, chars, &offset, fp_out);
+      b = format_double(bytes_f, chars, &offset, fp_o);
       CHECK(b, "format_word() failed!");
     }
   }
@@ -113,7 +113,7 @@ convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
     size_t actual_w = fwrite(&chars[offset], sizeof(char),
                              buffer_size-offset, fp_o);
     CHECK(actual_w == f, "write failed!\n");
-    fprintf(fp_out, "\n");
+    fprintf(fp_o, "\n");
     rows++;
   }
   
@@ -142,9 +142,13 @@ read_doubles(double* data, size_t count, FILE* fp, size_t* actual_r)
     @return True on success, else false
 */
 static inline bool
-convert_word(int rows, const char* word_start,
-	     double* floats, int* f, FILE* fp)
+format_double(int total_cols, double* floats,
+	      char* chars, int* offset, FILE* fp)
 {
+
+  int strfromd(char *restrict str, size_t n,
+                     const char *restrict format, double fp);
+
   int fi = *f;
   errno = 0;
   floats[fi] = strtod(word_start, NULL);
