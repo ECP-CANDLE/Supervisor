@@ -6,15 +6,16 @@
 import os, sys
 import yaml
 
-from xcorr_db import xcorr_db, q
+from xcorr_db import xcorr_db, qA
 
 import argparse
 parser = argparse.ArgumentParser(description="Setup the CPLO DB.")
 parser.add_argument("db", action="store", help="specify DB file")
+parser.add_argument("id", action="store", help="specify new CPLO ID")
 args = parser.parse_args()
 argv = vars(args)
 
-DB = xcorr_db(argv["db"], log=False)
+DB = xcorr_db(argv["db"], log=True)
 
 def create_tables(db_cplo_init_sql):
     """ Set up the tables defined in the SQL file """
@@ -24,6 +25,14 @@ def create_tables(db_cplo_init_sql):
         sqlcode = fp.read()
     DB.executescript(sqlcode)
     DB.commit()
+
+def insert_id(id):
+    global DB
+    import datetime
+    ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    DB.insert(table="cplo_ids",
+              names=["cplo_id","time"],
+              values=qA(id, ts))
 
 # def create_indices():
 #    """ Create indices after data insertion for speed """
@@ -36,6 +45,7 @@ try:
     this = os.getenv("THIS")
     db_cplo_init_sql = this + "/db-cplo-init.sql"
     create_tables(db_cplo_init_sql)
+    insert_id(argv["id"])
     success = True
 except Exception as e:
     import traceback

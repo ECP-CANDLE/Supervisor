@@ -100,13 +100,21 @@ else
   GPU_ARG="-gpus=$GPU_STRING"
 fi
 
-
 mkdir -pv $TURBINE_OUTPUT
 
-DB_FILE=$TURBINE_OUTPUT/cp1.db
+DB_FILE=$TURBINE_OUTPUT/cplo.db
 if [[ ! -f DB_FILE ]]
 then
-  echo TODO: cp -v $EMEWS_PROJECT_ROOT/data/initial.db $TURBINE_OUTPUT/cp1.db
+  if [[ ${CPLO_ID:-} == "" ]]
+  then
+    if [[ ${EXPID:0:1} == "X" ]]
+    then
+      CPLO_ID=${EXPID:1}
+    else
+      CPLO_ID=$EXPID
+    fi
+  fi
+  $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $CPLO_ID
 fi
 
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
