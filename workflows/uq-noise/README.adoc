@@ -1,0 +1,11 @@
+
+= UQ: Noise: Bad data injection at a range of rates
+
+== Quick start
+
+----
+$ test/test-1.sh
+...
+----
+
+== TODOs
