@@ -44,6 +44,9 @@ PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 source_site env   $SITE
 source_site sched   $SITE
 
+#which swift-t python # ANDREW: It's fine here
+export PYTHON_TO_RUN_DIR=$(dirname $(which python))
+
 if [[ ${EQR:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"

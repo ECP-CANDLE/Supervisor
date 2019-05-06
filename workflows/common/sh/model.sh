@@ -60,7 +60,16 @@ echo $PARAMS | print_json
 
 echo
 echo "USING PYTHON:"
+
+export PATH=$PYTHON_TO_RUN_DIR:$PATH
+
+echo $PATH
+
 which python
+
+#echo "USING TCLSH:"
+
+#which tclsh8.6
 
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
@@ -71,6 +80,9 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
 MODEL_CMD="python -u ${arg_array[@]}"
 # echo MODEL_CMD: $MODEL_CMD
 if $TIMEOUT_CMD python -u "${arg_array[@]}"
+#echo "Actually using Python: $PYTHON_TO_RUN"
+#if $TIMEOUT_CMD $PYTHON_TO_RUN -u "${arg_array[@]}"
+#if $TIMEOUT_CMD /data/weismanal/conda/envs/kds-tf1.12.2/bin/python -u "${arg_array[@]}"
 then
   : # Assume success so we can keep a failed exit code
 else
