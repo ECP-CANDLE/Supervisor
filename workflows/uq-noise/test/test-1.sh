@@ -21,7 +21,7 @@ else
         exit 1
 fi
 
-export MODEL_NAME=uno
+export MODEL_NAME=nt3
 SITE=$1
 
 # Self-configure
