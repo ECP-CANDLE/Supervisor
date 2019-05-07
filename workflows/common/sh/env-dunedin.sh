@@ -8,14 +8,17 @@ export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
 # R
-export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
+# export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
+# export R_HOME=/home/wozniak/Public/sfw/R-3.4.3/lib/R
+export R_HOME=/home/wozniak/Public/sfw/R-3.5.3/lib/R
 
 # Swift/T
 export PATH=$HOME/Public/sfw/swift-t/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
-EQR=/opt/EQ-R
+# EQR=/opt/EQ-R
+EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
 then

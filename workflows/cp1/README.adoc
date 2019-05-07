@@ -9,7 +9,12 @@ Run the workflow in +workflows/cp1+
 
 === Data
 
+----
+$ wget http://www.mcs.anl.gov/~wozniak/candle-cp1-data.tgz
+$ tar xfz candle-cp1-data.tgz
+----
 
+This will create a directory called xcorr_data
 
 === Execution
 
@@ -18,6 +23,11 @@ $ cd test
 # edit cfg-* as necessary
 $ ./test-1.sh theta -a
 ----
+
+=== Doing a small run
+
+. Edit data/studies[12].txt to select two different studies (one pair)
+. Edit your cfg-sys file to set TURBINE_RESIDENT_WORK_WORKERS to the number of pairs
 
 
 === Summit Notes

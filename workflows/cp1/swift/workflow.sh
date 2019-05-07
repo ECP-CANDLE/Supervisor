@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eu
 
-# MLRMBO WORKFLOW
-# Main entry point for mlrMBO workflow
+# CP1 WORKFLOW
+# Main entry point for CP1 workflow
 # See README.md for more information
 
 # Autodetect this workflow directory
@@ -44,8 +44,6 @@ then
   usage
   exit 1
 fi
-
-
 
 if ! {
   get_site    $1 # Sets SITE
@@ -150,6 +148,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 mkdir -pv $CACHE_DIR
 mkdir -pv $XCORR_DATA_DIR
+mkdir -pv $TURBINE_OUTPUT/hpo_log
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
@@ -158,6 +157,9 @@ OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 # log_path PYTHONPATH
+
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
@@ -194,4 +196,4 @@ swift-t -n $PROCS \
         -e IGNORE_ERRORS \
         -e PREPROP_RNASEQ \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}

@@ -127,7 +127,15 @@ fi
 
 #echo ${CMD_LINE_ARGS[@]}
 
-swift-t -n $PROCS \
+# stc -V -p -I $EQR -r $EQR \
+#         -I $OBJ_DIR \
+#         -i $OBJ_MODULE \
+#          $EMEWS_PROJECT_ROOT/swift/upf_workflow.swift $TURBINE_OUTPUT/foo.tic
+
+
+
+
+swift-t -V -n $PROCS -o workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \

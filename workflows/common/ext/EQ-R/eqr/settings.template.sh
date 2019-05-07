@@ -39,6 +39,11 @@ TCL_INCLUDE=/usr/local/include/tcl
 TCL_LIB=/usr/local/lib
 TCL_LIBRARY=tcl8.6
 
+# APT tcl-dev
+# TCL_INCLUDE=/usr/include/tcl8.6
+# TCL_LIB=/usr/lib/x86_64-linux-gnu
+# TCL_LIBRARY=tcl8.6
+
 # a local tcl
 # TCL_INCLUDE=$HOME/sfw/tcl-8.6.0/include
 # TCL_LIB=$HOME/sfw/tcl-8.6.0/lib

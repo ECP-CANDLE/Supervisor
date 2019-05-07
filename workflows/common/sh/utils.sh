@@ -501,7 +501,7 @@ check_directory_exists() {
 
 pad_keys() {
   # Pad 1st tokens
-  printf "%-15s" $1
+  printf "%-15s " $1
   shift
   echo ${*}
 }
