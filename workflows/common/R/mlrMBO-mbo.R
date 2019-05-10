@@ -68,14 +68,13 @@
                             max.iterations = 10,
                             design.size=10,
                             propose.points=10,
-                            restart.file) {
+                            restart.file,
+                            mlrMBOid = 1) {
 
     print("Using randomForest")
     surr.rf = makeLearner("regr.randomForest", 
                       predict.type = "se", 
-                      fix.factors.prediction = TRUE,
-                      se.method = "jackknife", 
-                      se.boot = 2)
+                      fix.factors.prediction = TRUE)
     ctrl = makeMBOControl(n.objectives = 1, 
                           propose.points = propose.points,
 			  impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax,
@@ -143,10 +142,13 @@
       }
       # each discrete variable should be represented once, else optimization will fail
       # this checks if design size is less than max number of discrete values
-      print(paste0("design size=", design.size, " must be greater or equal to maximum discrete values=", max_val_discrete))
+
       if (design.size < max_val_discrete){
         print("Aborting! design.size is less than the discrete parameters specified")
         quit()
+      }
+      else{
+         print(paste0("Test passed: design size=", design.size, " must be greater or equal to maximum discrete values=", max_val_discrete))
       }
 
       design = generateDesign(n = design.size, par.set)
@@ -208,8 +210,10 @@
   if (turbine_output != "") {
     setwd(turbine_output)
   }
+
+  res_file <- paste(c(mlrMBOid, "_final_res.Rds"), collapse = "")
   # This will be saved to experiment directory
-  saveRDS(final_res,file = "final_res.Rds")
+  saveRDS(final_res,file = res_file)
 
   setwd(wd)
   OUT_put("Look at final_res.Rds for final results.")
