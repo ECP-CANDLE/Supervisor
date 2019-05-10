@@ -77,6 +77,7 @@ def run(hyper_parameter_map, obj_return):
             cp_str = v
             v = list()
             v.append(cp_str)
+        logger.debug("PARAM OVERWRITE: " + str(k) + " = " + str(v))
         params[k] = v
 
     logger.debug("WRITE_PARAMS START")
