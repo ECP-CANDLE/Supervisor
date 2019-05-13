@@ -366,7 +366,7 @@ _wlmpy.wlm_init(True, 1)
 main() {
   string params[][];
 
-  start_lock_mgr();
+  // start_lock_mgr();
 
   foreach study1, i in studies1
   {
