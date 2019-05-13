@@ -349,6 +349,8 @@ result = ",".join([str(x) for x in keys])
   }
 }
 
+/*
+ // Start Workflow Lock Manager (WLM)
 start_lock_mgr()
 {
   LOCK_MGR = locationFromRank(0);
@@ -358,6 +360,7 @@ import _wlmpy
 _wlmpy.wlm_init(True, 1)
 """);
 }
+*/
 
 main() {
   string params[][];
@@ -417,6 +420,8 @@ main() {
     all_done[r] = start(-(r + 1), modulo_prio, rank, ps[0], ps[1], ps[2]);
   }
 
+  /*
+   // Shutdown Workflow Lock Manager (WLM)
   wait deep(all_done) {
     foreach i in [1,turbine_workers()-size(ME_ranks)-1]
     {
@@ -427,4 +432,5 @@ _wlmpy.wlm_shutdown(0)
 ----);
     }
   }
+  */
 }
