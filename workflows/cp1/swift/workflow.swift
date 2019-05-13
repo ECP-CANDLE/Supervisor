@@ -301,7 +301,7 @@ max.iterations = %d,
 design.size=%d,
 propose.points=%d,
 restart.file = '%s',
-hpo.id = '%s'
+hpo.id = %d
 """;
 
 // (void o) start(int ME_rank, string record_id, string feature_file, string study1) {
@@ -317,7 +317,7 @@ hpo.id = '%s'
     // of variable=value assignments.
     string algo_params = algo_params_template %
         (param_set, max_budget, max_iterations, design_size,
-         propose_points, restart_file, hpo_id);
+         propose_points, restart_file, ME_rank);
     // DB: insert algo params with mlr_instance_id
     string algorithm = emews_root+"/../common/R/"+r_file;
     string hpo_db_id = insert_hpo_new(record_id) =>

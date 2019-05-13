@@ -69,8 +69,9 @@
                             design.size=10,
                             propose.points=10,
                             restart.file,
-                            mlrMBOid = 1) {
+                            hpo.id = 1) {
 
+    assign("hpo.id", hpo.id, envir = .GlobalEnv)
     print("Using randomForest")
     surr.rf = makeLearner("regr.randomForest", 
                       predict.type = "se", 
@@ -211,7 +212,7 @@
     setwd(turbine_output)
   }
 
-  res_file <- paste(c(mlrMBOid, "_final_res.Rds"), collapse = "")
+  res_file <- paste(c(hpo.id, "_final_res.Rds"), collapse = "")
   # This will be saved to experiment directory
   saveRDS(final_res,file = res_file)
 
