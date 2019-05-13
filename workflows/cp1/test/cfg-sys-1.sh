@@ -8,7 +8,7 @@ export PROCS=${PROCS:-6}
 
 # Number of processes to use for resident tasks,
 # i.e., the number of mlrMBO instances to run
-export TURBINE_RESIDENT_WORK_WORKERS=4
+export TURBINE_RESIDENT_WORK_WORKERS=2
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node

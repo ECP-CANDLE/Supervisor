@@ -9,6 +9,7 @@ export LD_LIBRARY_PATH+=$SWIFT_T/turbine/lib:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
+PYTHONPATH+=$HOME/swift-work/lock-mgr/lib
 
 export PATH=$SWIFT_T/stc/bin:$PATH
 SWIFT_IMPL="app"
