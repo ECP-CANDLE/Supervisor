@@ -1,0 +1,3 @@
+Theta:
+X012 : epochs=7 : good data but flat plot
+X013 : epochs=10
