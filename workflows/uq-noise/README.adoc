@@ -20,9 +20,8 @@ $ test/test-1.sh
 Install pandas
 
 ----
-$ module load cray-python/2.7.15.1
-$ module load cray-python/3.6.1.1
-$ pip install --user pandas
+$ module load datascience/tensorflow-1.10
+$ module load datascience/keras-2.2.2
 ----
 
 ==== Submit
