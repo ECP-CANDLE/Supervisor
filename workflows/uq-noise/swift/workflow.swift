@@ -24,28 +24,12 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 printf("UQ NOISE WORKFLOW.SWIFT");
 printf("TURBINE_OUTPUT: " + turbine_output);
 
-string db_file = argv("db_file");
-string cache_dir = argv("cache_dir");
-string xcorr_data_dir = argv("xcorr_data_dir");
-string gpus = argv("gpus", "");
-
-// string restart_number = argv("restart_number", "1");
-string site = argv("site");
-
-float noise_step = 5.0; // Difference between noises
-float num_noises = 10; // Number of noise levels to try
-int num_trials = 10;
+float noise_step = 25.0; // Difference between noises
+float num_noises = 3; // Number of noise levels to try
+int num_trials = 1;
 
 float noise_levels[] = [0:num_noises];
 int trials[]       = [0:num_trials-1];
-
-// string results[][];
-/*
-app (file o) nt3(int trial, float noise)
-{
-  (emews_root/"swift/fake-nt3.sh") trial noise o ;
-}
-*/
 
 foreach level, i in noise_levels
 {
