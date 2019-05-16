@@ -24,6 +24,8 @@ elif [ "$MODEL_NAME" = "p1b2" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_nightly.R}
 elif [ "$MODEL_NAME" = "p2b1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_nightly.R}
+elif [ "$MODEL_NAME" = "dummy" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_nightly.R}
 elif [ "$PARAM_SET_FILE" != "" ]; then
     PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
 else
