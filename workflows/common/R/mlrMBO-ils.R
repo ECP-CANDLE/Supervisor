@@ -71,7 +71,8 @@
                             # design.size is ignored
                             design.size=10,
                             propose.points=10,
-                            restart.file) {
+                            restart.file,
+                            hpo.id = 1) {
 
     ptm <- proc.time()
 
@@ -335,8 +336,10 @@
   if (turbine_output != "") {
     setwd(turbine_output)
   }
+  
+  res_file <- paste(c(hpo.id, "_final_res.Rds"), collapse = "")
   # This will be saved to experiment directory
-  saveRDS(final_res,file = "final_res.Rds")
+  saveRDS(final_res,file = res_file)
 
   setwd(wd)
   OUT_put("Look at final_res.Rds for final results.")
