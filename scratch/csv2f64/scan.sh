@@ -11,6 +11,6 @@ fi
 CSV=$1
 
 echo -n "rows: "
-head -1 $CSV | tr ',' ' ' | awk '{ print NF; }'
+head -1 $CSV | tr ',' ' ' | wc -w
 echo -n "cols: "
 wc -l < $CSV
