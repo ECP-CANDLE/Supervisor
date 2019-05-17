@@ -1,0 +1,31 @@
+
+= Challenge Problem: Leave Out
+
+== Quick start
+
+----
+$ test/test-1.sh
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=9 FILE_OUTPUT=/tmp/tcl_jmAASQ.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=6 LEAVEOUT_DRUG=7 FILE_OUTPUT=/tmp/tcl_LvVIrA.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=10 FILE_OUTPUT=/tmp/tcl_jDl1IG.turbine
+FAKE-UNO.SH: LEAVEOUT_CELL_LINE=10 LEAVEOUT_DRUG=4 FILE_OUTPUT=/tmp/tcl_iCvpXR.turbine
+...
+----
+
+== TODOs
+
+From the Google doc:
+https://docs.google.com/document/d/1s2OyCdo4BywKtH2EeCorVf8rewahScmW3uxr8JT0mmY
+
+. Generate training data from subset of whole data set
+. Pass this training data into Uno
+. Record that input data subset and training run in the DB
+. Express the whole sweep as a workflow
+.. Step 1: Express as combination of leave-one-out, multiple phases
+.. Step 2: Use Cobalt job dependencies to handle multiple phases
+.. Step 3: Asynchronous interphase dependencies
+. Apply data parallelism in early phases?
+
+New TODOs:
+
+. Fill in fake-uno.sh with an actual call to Uno that runs it after leaving out the given data indices.

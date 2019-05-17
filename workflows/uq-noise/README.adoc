@@ -1,0 +1,40 @@
+
+= UQ: Noise: Bad data injection at a range of rates
+
+== Quick start
+
+----
+$ test/test-1.sh
+...
+----
+
+== TODOs
+
+
+== Sites
+
+=== Theta
+
+==== Setup
+
+Install pandas
+
+----
+$ module load datascience/tensorflow-1.10
+$ module load datascience/keras-2.2.2
+----
+
+==== Submit
+
+----
+$ PROJECT=CSC249ADOA01
+$ QUEUE=debug-cache-quad
+$ qsub -I -t 00:20:00 -n 1 -A $PROJECT -q $QUEUE
+----
+
+==== Run
+
+----
+$ export OMP_NUM_THREADS=62
+$ aprun -cc none python nt3_baseline_keras2.py
+----
