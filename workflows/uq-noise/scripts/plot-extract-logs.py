@@ -54,7 +54,7 @@ def parse_model_log(f, obj_return):
     if value == "NOTFOUND":
         print("NOTFOUND " + f)
     return (noise_level, value)
-                
+
 for d in os.walk(args.output):
     if "model.log" not in d[2]:
         continue
@@ -71,4 +71,4 @@ with open(args.data, "w") as fp:
         # print("noise=%i count=%i", noise, count)
         # print(values[noise])
         s = sum(values[noise])
-        fp.write("%8.4f %8.4f\n" % (noise, s/count))
+        fp.write("%8.4f %8.4f # count=%i\n" % (noise, s/count, count))
