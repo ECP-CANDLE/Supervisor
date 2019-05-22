@@ -35,7 +35,6 @@ export MEM_PER_NODE="20G"
 
 ################ MODIFY ONLY ABOVE; DO NOT MODIFY BELOW ####################################################################
 
-export MODULES_FOR_BUILD="python/3.6"
 export MODEL_PYTHON_DIR="$CANDLE/Supervisor/templates/scripts"
 export MODEL_PYTHON_SCRIPT="candle_compliant_wrapper"
 module load $MODULES_FOR_BUILD # load the module with which Swift/T was built
