@@ -33,4 +33,5 @@ export MEM_PER_NODE="20G"
 
 
 # Call the workflow; DO NOT MODIFY
+export MODULES_FOR_BUILD="python/3.6"
 $CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh $SITE -a $CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh $WORKFLOW_SETTINGS_FILE

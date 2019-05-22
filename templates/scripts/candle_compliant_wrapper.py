@@ -52,3 +52,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+    try:
+        from keras import backend as K
+        K.clear_session()
+    except AttributeError:
+        pass
