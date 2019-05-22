@@ -1,4 +1,3 @@
-#!/bin/bash
 
 # LANGS APP Singularity on Biowulf
 # Language settings for singularity app functions (Python, R, etc.)
