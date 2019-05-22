@@ -48,3 +48,4 @@ turbine-directory.txt
 .vscode
 ""
 ._*
+workflows/common/sh/env-biowulf.sh
