@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Always load the candle module
-module load candle/2019-04-04
+module load candle
 ################ MODIFY ONLY BELOW; DO NOT MODIFY ABOVE ####################################################################
 
 
