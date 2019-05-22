@@ -59,7 +59,7 @@ echo $PARAMS | print_json
 echo
 echo "USING PYTHON:"
 
-export PATH=$PYTHON_TO_RUN_DIR:$PATH
+#export PATH=$PYTHON_TO_RUN_DIR:$PATH
 
 echo $PATH
 
