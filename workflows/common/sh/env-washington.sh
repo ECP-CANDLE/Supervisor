@@ -4,7 +4,8 @@
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 
 # Python
-PY=/vol/ml/hsyoo/anaconda3
+# PY=/vol/ml/hsyoo/anaconda3
+PY=/home/wozniak/Public/sfw/anaconda3
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 PATH=$PY/bin:$PATH
@@ -12,12 +13,12 @@ PATH=$PY/bin:$PATH
 # R
 # export R_HOME=/home/wozniak/Public/sfw/R-3.4.1/lib/R
 # export R_HOME=/home/wozniak/Public/sfw/R-3.4.3/lib/R
-R=/home/wozniak/Public/sfw/R-3.5.3
+R=/homes/wozniak/Public/sfw/R-3.5.3
 export R_HOME=$R/lib/R
 PATH=$R/bin:$PATH
 
 # Swift/T
-export PATH=/home/wozniak/Public/sfw/swift-t/2019-05-23/stc/bin:$PATH
+export PATH=/homes/wozniak/Public/sfw/swift-t/2019-05-23/stc/bin:$PATH
 SWIFT_IMPL="app"
 
 # EMEWS Queues for R
