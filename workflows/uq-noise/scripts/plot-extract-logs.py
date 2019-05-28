@@ -63,7 +63,7 @@ for d in os.walk(args.output):
     dict_append(values, noise, value)
 
 noises = values.keys()
-noises.sort()
+noises = sorted(noises)
 
 with open(args.data, "w") as fp:
     for noise in noises:
