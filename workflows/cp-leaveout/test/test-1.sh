@@ -51,11 +51,11 @@ $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NA
 queue_wait
 
 # Check job output
-OUTPUT=$TURBINE_OUTPUT/output.txt
+OUTPUT=turbine-output/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 
 SCRIPT=$( basename $0 .sh )
-check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "RESULTS:" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
 

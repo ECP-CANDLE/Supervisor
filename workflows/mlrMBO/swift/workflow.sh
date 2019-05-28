@@ -140,7 +140,6 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
-        -e DEFAULT_PARAMS_FILE \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \

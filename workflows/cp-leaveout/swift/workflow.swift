@@ -31,9 +31,9 @@ string gpus = argv("gpus", "");
 // string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
-int N; // The width of the leave out row/column
+int N = 4; // The divisor of the leave out rows/columns
 
-int X[] = [0:N];
+int X[] = [0:0];
 int Y[] = [0:N];
 
 string results[][];
@@ -56,3 +56,6 @@ foreach punch_x in X
     results[punch_x][punch_y] = read(f);
   }
 }
+
+// The test*.sh scripts check for "RESULTS:"
+printf("RESULTS: %i", size(results));
