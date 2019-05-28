@@ -25,14 +25,16 @@ printf("TURBINE_OUTPUT: " + turbine_output);
 
 string db_file = argv("db_file");
 string cache_dir = argv("cache_dir");
-string xcorr_data_dir = argv("xcorr_data_dir");
+// string xcorr_data_dir = argv("xcorr_data_dir");
 string gpus = argv("gpus", "");
 
 // string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
-int cell_lines[] = [0:10];
-int drugs[]      = [0:10];
+int N; // The width of the leave out row/column
+
+int X[] = [0:N];
+int Y[] = [0:N];
 
 string results[][];
 
@@ -41,11 +43,16 @@ app (file o) fake_uno(int leaveout_cell_line, int leaveout_drug)
   (emews_root/"swift/fake-uno.sh") leaveout_cell_line leaveout_drug o ;
 }
 
-foreach leaveout_cell_line in cell_lines
+app (file o) fake_nt3(int leaveout_punch_x, int leaveout_punch_y)
 {
-  foreach leaveout_drug in drugs
+  (emews_root/"swift/fake-nt3.sh") leaveout_punch_x leaveout_punch_y o ;
+}
+
+foreach punch_x in X
+{
+  foreach punch_y in Y
   {
-    file f = fake_uno(leaveout_cell_line, leaveout_drug);
-    results[leaveout_cell_line][leaveout_drug] = read(f);
+    file f = fake_nt3(punch_x, punch_y);
+    results[punch_x][punch_y] = read(f);
   }
 }
