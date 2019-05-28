@@ -12,6 +12,7 @@ PRAGMA foreign_keys = ON;
 */
 create table if not exists cplo_ids(
        cplo_id integer primary key,
+       parent integer,
        /* creation time */
        time timestamp
 );
