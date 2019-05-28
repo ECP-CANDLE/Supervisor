@@ -27,7 +27,7 @@ param.set <- makeParamSet(
   
   makeDiscreteParam("residual", values=c(1, 0)),
   
-#  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
+ makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
   
   makeDiscreteParam("optimizer", values=c("adam", "sgd")),
                     
