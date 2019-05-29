@@ -1,8 +1,13 @@
-# Import json module here since it's used in all three functions below
-import json
+# If it's defined in the environment, append $SUPP_PYTHONPATH to the Python path
+import os, json
+supp_pythonpath = os.getenv('SUPP_PYTHONPATH')
+if supp_pythonpath is not None:
+    import sys
+    sys.path.append(supp_pythonpath)
 
-# Load the parameters dictionary from a JSON file
-def load_params(params_json_file): # params_json_file should be params.json to match the value in candle_compliant_wrapper.py
+
+# Load the hyperparameter dictionary stored in the JSON file params.json
+def load_params(params_json_file):
     with open(params_json_file) as infile:
         return(json.load(infile))
 

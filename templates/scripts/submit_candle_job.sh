@@ -1,20 +1,16 @@
 #!/bin/bash
 
-# Always load the candle module
-module load candle
-################ MODIFY ONLY BELOW; DO NOT MODIFY ABOVE ####################################################################
-
-
-# Determine whether to use CANDLE or to run a single job outside of CANDLE for testing purposes
-USE_CANDLE=${USE_CANDLE:-1} # if not already set, as in e.g. by run_without_candle.sh, set to 1 to use CANDLE or 0 to run outside of CANDLE
-
-# Define the model and its environment
+# Define the model and its default settings
 export MODEL_SCRIPT="$CANDLE/Supervisor/templates/models/wrapper_compliant/mnist_mlp.py" # should be wrapper-compliant
 export DEFAULT_PARAMS_FILE="$CANDLE/Supervisor/templates/model_params/mnist1.txt"
 
-# Define the model's execution environment
-export MODULES_TO_LOAD="python/3.6"
-export CONDA_ENV_NAME=
+# Define the execution Python to use if you don't want to use the central Python environment on Biowulf (currently python/3.6) (if PYTHON_BIN_PATH is set, it takes precedence over EXEC_PYTHON_MODULE)
+export PYTHON_BIN_PATH=                 # e.g., "$CONDA_PREFIX/envs/my_conda_env_name/bin", "/data/BIDS-HPC/public/software/conda/envs/main/bin"
+export EXEC_PYTHON_MODULE=              # e.g., "python/2.7" (if unset, defaults to $DEFAULT_PYTHON_MODULE, currently python/3.6)
+
+# Define the execution environment
+export SUPP_MODULES=                    # e.g., "CUDA/10.0 cuDNN/7.5/CUDA-10.0" (this is necessary for running tensorflow when using a local Conda Python)
+export SUPP_PYTHONPATH=                 # e.g., "/home/weismanal/data/conda/envs/with_affine/lib/python3.6/site-packages", "/data/BIDS-HPC/public/software/conda/envs/main3.6/lib/python3.6/site-packages"
 
 # Workflow specification
 export WORKFLOW_TYPE="upf"
@@ -30,17 +26,10 @@ export PROCS="3" # note that PROCS-1 and PROCS-2 are actually used for UPF and m
 export PPN="1"
 export WALLTIME="00:20:00"
 export GPU_TYPE="k80" # the choices on Biowulf are p100, k80, v100, k20x
-export MEM_PER_NODE="20G"
+
+# Determine whether to use CANDLE or to run a single job outside of CANDLE for testing purposes
+export USE_CANDLE=1 # if not already set, as in e.g. by run_without_candle.sh, set to 1 to use CANDLE or 0 to run using the default parameters outside of CANDLE
 
 
 ################ MODIFY ONLY ABOVE; DO NOT MODIFY BELOW ####################################################################
-
-export MODEL_PYTHON_DIR="$CANDLE/Supervisor/templates/scripts"
-export MODEL_PYTHON_SCRIPT="candle_compliant_wrapper"
-module load $MODULES_FOR_BUILD # load the module with which Swift/T was built
-
-if [ $USE_CANDLE -eq 1 ]; then
-    $CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh $SITE -a $CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh $WORKFLOW_SETTINGS_FILE
-else
-    python $MODEL_PYTHON_DIR/$MODEL_PYTHON_SCRIPT.py
-fi
+$CANDLE/Supervisor/templates/scripts/run_workflows.sh

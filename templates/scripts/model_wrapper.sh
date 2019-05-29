@@ -8,26 +8,37 @@ echo "GPU: ${CUDA_VISIBLE_DEVICES:-NA}"
 # Unload environment in which we built Swift/T
 module unload $MODULES_FOR_BUILD
 
-# Load a custom environment if desired
-if [ -n "$MODULES_TO_LOAD" ]; then
-    module load $MODULES_TO_LOAD
-fi
-if [ -n "$CONDA_ENV_NAME" ]; then
-    export PATH=$CONDA_PREFIX/envs/$CONDA_ENV_NAME/bin:$PATH
+# Load a custom, SUPPlementary environment if it's set
+if [ -n "$SUPP_MODULES" ]; then
+    module load $SUPP_MODULES
 fi
 
 # Determine language to use to run the model
-suffix=$(echo $MODEL_SCRIPT | rev | awk -v FS="." '{print tolower($1)}' | rev)
+suffix=$(echo "$MODEL_SCRIPT" | rev | awk -v FS="." '{print tolower($1)}' | rev)
 
 # Run a model written in Python
-if [ $suffix == "py" ]; then
-    echo "Using Python..."
+if [ "x$suffix" == "xpy" ]; then
+
+    # Clear PYTHONHOME since historically that's caused us issues
     unset PYTHONHOME
-    python $MODEL_SCRIPT
+
+    # If $PYTHON_BIN_PATH isn't null, prepend that to our $PATH
+    if [ -n "$PYTHON_BIN_PATH" ]; then
+        export PATH=$PYTHON_BIN_PATH:$PATH
+
+    # Otherwise, load the $EXEC_PYTHON_MODULE if it's set, or $DEFAULT_PYTHON_MODULE if it's not
+    else
+        module load "${EXEC_PYTHON_MODULE:-$DEFAULT_PYTHON_MODULE}"
+    fi
+
+    echo "Using Python for execution: $(command -v python)"
+    python "$MODEL_SCRIPT"
 
 # Run a model written in R
-elif [ $suffix == "r" ]; then
-    echo "Using R..."
+elif [ "x$suffix" == "xr" ]; then
+    module load "$DEFAULT_R_MODULE"
+    echo "Using R for execution: $(command -v R)"
+    R "$MODEL_SCRIPT"
 fi
 
 # Display timing information

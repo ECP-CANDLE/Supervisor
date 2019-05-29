@@ -1,4 +1,4 @@
-# Find and load the wrapper_connector module in order to source the functions that read/write JSON files
+# Run the wrapper_connector script, which (1) appends $SUPP_PYTHONPATH to the Python environment if it's defined and (2) defines the function for loading the hyperparameters
 import sys, os
 sys.path.append(os.getenv("CANDLE")+'/Supervisor/templates/scripts')
 import wrapper_connector
