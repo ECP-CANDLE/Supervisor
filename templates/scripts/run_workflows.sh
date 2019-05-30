@@ -42,20 +42,38 @@ else
     export MEM_PER_NODE="30G"
 fi
 
+# Run one MPI process (GPU process) per node on Biowulf
+export PPN="1"
+
 # Create the experiments directory if it doesn't already exist
 if [ ! -d $EXPERIMENTS ]; then
     mkdir -p $EXPERIMENTS && echo "Experiments directory created: $EXPERIMENTS"
 fi
 
-# Run one MPI process (GPU process) per node on Biowulf
-export PPN="1"
-
-# Write the dictionary of the metadata in JSON format
-tmp="$(output_json_format "${params1[@]}")$(output_json_format "${params2[@]}")$(output_json_format "${params3[@]}")"
-echo "{${tmp:0:${#tmp}-2}}" > metadata.json
-
 # For running the workflows themselves, load the module with which Swift/T was built
 module load $MODULES_FOR_BUILD
+
+# If metadata.json exists, restart the job with the unfinished HPs
+upf_new="upf-restart.txt"
+if [ -f metadata.json ]; then
+    if [ -f $upf_new ]; then
+        echo "Error: New UPF already exists: $upf_new"
+        exit
+    else
+        python $CANDLE/Supervisor/templates/scripts/restart.py metadata.json > $upf_new
+        if [ -s $upf_new ]; then
+            export WORKFLOW_SETTINGS_FILE="$(pwd)/$upf_new"
+        else
+            echo "Error: Job is complete; nothing to do"
+            rm -f $upf_new
+            exit
+        fi
+    fi
+else
+    # Write the dictionary of the metadata in JSON format
+    tmp="$(output_json_format "${params1[@]}")$(output_json_format "${params2[@]}")$(output_json_format "${params3[@]}")"
+    echo "{${tmp:0:${#tmp}-2}}" > metadata.json
+fi
 
 # If we want to run the wrapper using CANDLE... 
 if [ "${USE_CANDLE:-1}" -eq 1 ]; then
