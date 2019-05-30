@@ -102,7 +102,7 @@ then
       UQ_NOISE_ID=$EXPID
     fi
   fi
-  $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $UQ_NOISE_ID
+  # $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $UQ_NOISE_ID
 fi
 
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
@@ -175,6 +175,5 @@ swift-t -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
-        -e PREPROP_RNASEQ \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}

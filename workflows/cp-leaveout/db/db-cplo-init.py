@@ -6,7 +6,7 @@
 import os, sys
 import yaml
 
-from xcorr_db import xcorr_db, qA
+from candle_sql import candle_sql, qA
 
 import argparse
 parser = argparse.ArgumentParser(description="Setup the CPLO DB.")
@@ -15,7 +15,7 @@ parser.add_argument("id", action="store", help="specify new CPLO ID")
 args = parser.parse_args()
 argv = vars(args)
 
-DB = xcorr_db(argv["db"], log=True)
+DB = candle_sql(argv["db"], log=True)
 
 def create_tables(db_cplo_init_sql):
     """ Set up the tables defined in the SQL file """

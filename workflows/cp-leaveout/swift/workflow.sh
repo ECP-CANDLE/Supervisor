@@ -160,6 +160,11 @@ fi
 
 #echo ${CMD_LINE_ARGS[@]}
 
+if [[ ${MACHINE:-} == "" ]]
+then
+  rm turbine-output
+fi
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -187,4 +192,12 @@ swift-t -n $PROCS \
         -e IGNORE_ERRORS \
         -e PREPROP_RNASEQ \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
+  if [[ ${MACHINE:-} == "" ]]
+  then
+    tee $TURBINE_OUTPUT/output.txt
+    # The turbine-output link is only created on scheduled systems,
+    # so if running locally, we create it here so the test*.sh wrappers
+    # can find it
+    ln -s $TURBINE_OUTPUT turbine-output
+  fi

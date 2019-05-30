@@ -12,6 +12,7 @@ PRAGMA foreign_keys = ON;
 */
 create table if not exists cplo_ids(
        cplo_id integer primary key,
+       parent integer,
        /* creation time */
        time timestamp
 );
@@ -20,7 +21,7 @@ create table if not exists cplo_ids(
 create table if not exists cplo_leaveouts(
        cplo_id integer,
        value integer,
-       /* the name of the hyperparameter */
+       /* the specification of what was left out */
        name text,
        foreign key (cplo_id) references cplo_ids(cplo_id)
 );
