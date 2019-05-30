@@ -23,7 +23,7 @@ S = string2int(argv("S", "3"));
 
 (void v) runstage(int N, int S, string parent, int stage, int id, void block)
 {
-  string this = parent+int2string(id);
+  this = parent+int2string(id);
   v = dummy(parent, stage, id, block);
   if (stage < S)
   {
@@ -34,7 +34,7 @@ S = string2int(argv("S", "3"));
   }
 }
 
-int stage = 1;
+stage = 1;
 foreach id in [0:N-1]
 {
   runstage(N, S, "", stage, id, propagate());
