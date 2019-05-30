@@ -5,8 +5,8 @@ export MODEL_SCRIPT="$CANDLE/Supervisor/templates/models/wrapper_compliant/mnist
 export DEFAULT_PARAMS_FILE="$CANDLE/Supervisor/templates/model_params/mnist1.txt"
 
 # Define the execution Python to use if you don't want to use the central Python environment on Biowulf (currently python/3.6) (if PYTHON_BIN_PATH is set, it takes precedence over EXEC_PYTHON_MODULE)
-export PYTHON_BIN_PATH=                 # e.g., "$CONDA_PREFIX/envs/my_conda_env_name/bin", "/data/BIDS-HPC/public/software/conda/envs/main/bin"
-export EXEC_PYTHON_MODULE=              # e.g., "python/2.7" (if unset, defaults to $DEFAULT_PYTHON_MODULE, currently python/3.6)
+export PYTHON_BIN_PATH=                 # e.g., "$CONDA_PREFIX/envs/<YOUR_CONDA_ENVIRONMENT_NAME>/bin", "/data/BIDS-HPC/public/software/conda/envs/main3.6/bin"
+export EXEC_PYTHON_MODULE=              # e.g., "python/2.7" (if unset [and PYTHON_BIN_PATH is unset], the Python used for model execution is $DEFAULT_PYTHON_MODULE, which is currently python/3.6)
 
 # Define the execution environment
 export SUPP_MODULES=                    # e.g., "CUDA/10.0 cuDNN/7.5/CUDA-10.0" (this is necessary for running tensorflow when using a local Conda Python)
@@ -17,13 +17,12 @@ export WORKFLOW_TYPE="upf"
 export WORKFLOW_SETTINGS_FILE="$CANDLE/Supervisor/templates/workflow_settings/upf3.txt"
 
 # Job specification
-export EXPERIMENTS="$(pwd)/experiments" # this will contain the job output; ensure this directory exists, as it will if copy_candle_template was run
+export EXPERIMENTS="$(pwd)/experiments" # this experiment will be created if it doesn't already exist; will contain the job output
 export MODEL_NAME="sample_run_on_mnist_dataset"
 export OBJ_RETURN="val_loss"
 
 # Scheduler settings
 export PROCS="3" # note that PROCS-1 and PROCS-2 are actually used for UPF and mlrMBO computations, respectively
-export PPN="1"
 export WALLTIME="00:20:00"
 export GPU_TYPE="k80" # the choices on Biowulf are p100, k80, v100, k20x
 

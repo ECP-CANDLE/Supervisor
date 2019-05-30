@@ -19,7 +19,7 @@ export PATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/bin:$PATH
 export LD_LIBRARY_PATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/lib:$LD_LIBRARY_PATH
 export LIBDIR=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/lib:${LIBDIR:-}
 export CPATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/include:${CPATH:-}
-export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so:${LD_PRELOAD:-}
+#export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so:${LD_PRELOAD:-}  # I put this in mpich.lua
 
 # Load R paths manually since we can't load the module on the Biowulf submit nodes
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
@@ -30,7 +30,7 @@ export R_LIBS_USER=~/R/%v/library
 # Other additions
 #CANDLE=/data/BIDS-HPC/public/candle # removing because setting this using the candle module
 export R_LIBS=$CANDLE/R/libs/ # these are the libraries I installed via workflows/common/R/install-candle.sh
-export PATH=$PATH:$CANDLE/swift-t-install/stc/bin
+#export PATH=$PATH:$CANDLE/swift-t-install/stc/bin # I put this in mpich.lua
 export PATH=$PATH:$CANDLE/swift-t-install/turbine/bin
 export TURBINE_LOG=1
 export ADLB_DEBUG_RANKS=1

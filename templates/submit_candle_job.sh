@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Always load the candle module
-module load candle
+#module load candle # removing this because we should do this on the command line
 
 
 #### MODIFY ONLY BELOW ####################################################################
