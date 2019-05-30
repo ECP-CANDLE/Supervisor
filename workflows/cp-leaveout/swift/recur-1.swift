@@ -8,6 +8,7 @@
   for 55,986 tasks.
 */
 
+import io;
 import sys;
 
 app (void v) dummy(string parent, int stage, int id, void block)
@@ -24,7 +25,7 @@ S = string2int(argv("S", "3"));
 (void v) runstage(int N, int S, string parent, int stage, int id, void block)
 {
   this = parent+int2string(id);
-  v = dummy(parent, stage, id, block);
+  v = run_dummy(parent, stage, id, block);
   if (stage < S)
   {
     foreach id_child in [0:N-1]
@@ -34,8 +35,18 @@ S = string2int(argv("S", "3"));
   }
 }
 
-stage = 1;
-foreach id in [0:N-1]
+(void v) run_dummy(string parent, int stage, int id, void block)
 {
-  runstage(N, S, "", stage, id, propagate());
+  if (stage == 0)
+  {
+    v = propagate();
+  }
+  else
+  {
+    v = dummy(parent, stage, id, block);
+  }
 }
+
+stage = 0;
+id = 0;
+runstage(N, S, "", stage, id, propagate());
