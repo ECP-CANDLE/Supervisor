@@ -2,7 +2,7 @@
 /*
   RECUR 1 SWIFT
 
-  Simply run with: 'swift-t recur-1.swift'
+  Simply run with: 'swift-t recur-1.swift | nl'
 */
 
 app (void v) dummy(string parent, int stage, int id, void block)
