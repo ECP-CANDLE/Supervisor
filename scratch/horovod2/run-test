@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+PROCS=1
+while getopts ":n:" OPT
+do
+  case $OPT in
+    n) PROCS=$OPTARG ;;
+    ?) echo "run-test: bad flag: -$OPTARG"
+       exit 1 ;;
+  esac
+done
+shift $( expr $OPTIND - 1 )
+
+if [ ${#} -lt 1 ]
+then
+  echo "Provide the test!"
+  exit 1
+fi
+
+TEST=$1
+shift
+
+echo TEST=$TEST
+
+. ./settings.sh
+
+# ldd $TEST
+echo
+mpiexec -n $PROCS $TEST $*
