@@ -11,11 +11,6 @@
 import io;
 import sys;
 
-app (void v) dummy(string parent, int stage, int id, void block)
-{
-  "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
-}
-
 // Data split factor with default
 N = string2int(argv("N", "4"));
 // Maximum stage number with default
@@ -45,6 +40,11 @@ S = string2int(argv("S", "3"));
   {
     v = dummy(parent, stage, id, block);
   }
+}
+
+app (void v) dummy(string parent, int stage, int id, void block)
+{
+  "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
 }
 
 stage = 0;
