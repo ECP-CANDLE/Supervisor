@@ -22,7 +22,7 @@ N = string2int(argv("N", "4"));
 // (tested up to S=7, 21,844 dummy tasks)
 S = string2int(argv("S", "3"));
 
-(void v) runstage(int N, int S, string parent, int stage, int id, void block)
+(void v) run_stage(int N, int S, string parent, int stage, int id, void block)
 {
   this = parent+int2string(id);
   v = run_dummy(parent, stage, id, block);
@@ -30,7 +30,7 @@ S = string2int(argv("S", "3"));
   {
     foreach id_child in [0:N-1]
     {
-      runstage(N, S, this, stage+1, id_child, v);
+      run_stage(N, S, this, stage+1, id_child, v);
     }
   }
 }
@@ -49,4 +49,4 @@ S = string2int(argv("S", "3"));
 
 stage = 0;
 id = 0;
-runstage(N, S, "", stage, id, propagate());
+run_stage(N, S, "", stage, id, propagate());
