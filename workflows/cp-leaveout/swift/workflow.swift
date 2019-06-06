@@ -1,61 +1,52 @@
 
 /*
-  CP LEAVEOUT SWIFT
-  Main workflow
+  RECUR 1 SWIFT
+
+  Simply run with: 'swift-t recur-1.swift | nl'
+  Or specify the N, S values:
+  'swift-t recur-1.swift -N=6 -S=6 | nl'
+  for 55,986 tasks.
 */
 
-import assert;
-import files;
 import io;
-import python;
-import unix;
 import sys;
-import string;
-import location;
-import math;
 
-string FRAMEWORK = "keras";
-
-string xcorr_root = getenv("XCORR_ROOT");
-string preprocess_rnaseq = getenv("PREPROP_RNASEQ");
-string emews_root = getenv("EMEWS_PROJECT_ROOT");
-string turbine_output = getenv("TURBINE_OUTPUT");
-
-printf("TURBINE_OUTPUT: " + turbine_output);
-
-string db_file = argv("db_file");
-string cache_dir = argv("cache_dir");
-// string xcorr_data_dir = argv("xcorr_data_dir");
-string gpus = argv("gpus", "");
-
-// string restart_number = argv("restart_number", "1");
-string site = argv("site");
-
-int N = 4; // The divisor of the leave out rows/columns
-
-int X[] = [0:0];
-int Y[] = [0:N];
-
-string results[][];
-
-app (file o) fake_uno(int leaveout_cell_line, int leaveout_drug)
+app (void v) dummy(string parent, int stage, int id, void block)
 {
-  (emews_root/"swift/fake-uno.sh") leaveout_cell_line leaveout_drug o ;
+  "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
 }
 
-app (file o) fake_nt3(int leaveout_punch_x, int leaveout_punch_y)
-{
-  (emews_root/"swift/fake-nt3.sh") leaveout_punch_x leaveout_punch_y o ;
-}
+// Data split factor with default
+N = string2int(argv("N", "4"));
+// Maximum stage number with default
+// (tested up to S=7, 21,844 dummy tasks)
+S = string2int(argv("S", "3"));
 
-foreach punch_x in X
+(void v) run_stage(int N, int S, string parent, int stage, int id, void block)
 {
-  foreach punch_y in Y
+  this = parent+int2string(id);
+  v = run_dummy(parent, stage, id, block);
+  if (stage < S)
   {
-    file f = fake_nt3(punch_x, punch_y);
-    results[punch_x][punch_y] = read(f);
+    foreach id_child in [0:N-1]
+    {
+      run_stage(N, S, this, stage+1, id_child, v);
+    }
   }
 }
 
-// The test*.sh scripts check for "RESULTS:"
-printf("RESULTS: %i", size(results));
+(void v) run_dummy(string parent, int stage, int id, void block)
+{
+  if (stage == 0)
+  {
+    v = propagate();
+  }
+  else
+  {
+    v = dummy(parent, stage, id, block);
+  }
+}
+
+stage = 0;
+id = 0;
+run_stage(N, S, "", stage, id, propagate());
