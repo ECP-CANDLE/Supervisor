@@ -5,7 +5,6 @@
     This has the same signature as the main objective function
     used by the CANDLE/Supervisor;
     except it just echoes the resulting command to stdout
-    model exploration (optimization) loop.
     params : The JSON string of params to be passed to the Benchmark
     run_id : A string run ID that will be the output directory name
 */
