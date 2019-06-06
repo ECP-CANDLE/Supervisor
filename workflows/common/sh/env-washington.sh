@@ -19,7 +19,8 @@ PATH=$R/bin:$PATH
 
 # Swift/T
 export PATH=/homes/wozniak/Public/sfw/swift-t/2019-05-23/stc/bin:$PATH
-SWIFT_IMPL="app"
+# SWIFT_IMPL="app" # use this one for real runs
+SWIFT_IMPL="echo"  # use this one to debug the model.sh command line
 
 # EMEWS Queues for R
 # EQR=/opt/EQ-R
