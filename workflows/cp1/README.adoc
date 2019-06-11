@@ -1,36 +1,103 @@
 
-= Mini Challenge Problem workflow
+= Mini Challenge Problem Workflow
 
-Currently, this uses a mix of xcorr and cp1.
+This workflow runs N number of mlrMBO hyperparameters optimizations (HPO) of the
+Uno benchmark in parallel, using cross correlated feature sets as input. A
+mlrMBO instance will be run for each cross correlated feature set. So, if there
+are 25 feature sets then 25 concurrent mlrMBO HPOs will be run, each of these
+will then launch Uno benchmark runs. This feature set input can be pre-generated or 
+generated as part of the workflow. 
 
-== Quick Start
+Training data comes from five studies ('CCLE', 'CTRP', 'gCSI', 'GDSC', 'NCI60').
+Each of the five studies come from a different laboratory. Each of the studies measure cell growth in response to exposure to a drug or combination of drugs. The studies differ in the drugs and cell lines. A cell line can be considered an example of a tumor. A cell line will be of a tumor type, for example breast cancer.
 
-Run the workflow in +workflows/cp1+
+The data is preprocessed to select cross correlated features between the studies. A preprocessed data file will have a file name like `CTRP_CCLE_2000_1000_features.txt`
+where the two studies are `CTRP` and `CCLE`, and the cross correlation 
+coefficients are 2000 and 1000. See the xcorr README for more details.
+
+== Requirements
+
+=== Code
+
+* This workflow. Clone git@github.com:ECP-CANDLE/Supervisor.git and switch to the develop branch. 
+* The Uno benchmark. Clone git@github.com:ECP-CANDLE/Benchmarks.git and switch to the
+develop branch. 
 
 === Data
+
+Download the raw Uno feature data to `Benchmarks/Data/Pilot1`.
+data directory. Alternatively, download all the data to another location and 
+symlink to `Benchmarks/Data/Pilot1`.
+
+----
+$ cd Benchmarks
+$ mkdir -p Data/Pilot1
+$ wget -r -nd --no-parent -A '*' http://ftp.mcs.anl.gov/pub/candle/public/benchmarks/Pilot1/combo/
+----
+
+Download the pregenerated cross correlated feature files.
 
 ----
 $ wget http://www.mcs.anl.gov/~wozniak/candle-cp1-data.tgz
 $ tar xfz candle-cp1-data.tgz
 ----
 
-This will create a directory called xcorr_data
+Generate the input data frames from the raw data and the feature files. Uno runs
+much faster with these as input rather than the raw data. A train and test data frame needs to be created for each cross correlated feature file. 
 
-=== Execution
+For example, to generate the data for the `CTRP_CCLE_2000_1000.txt` feature file:
 
 ----
-$ cd test
-# edit cfg-* as necessary
-$ ./test-1.sh theta -a
+$ cd Benchmarks/Pilot1/Uno
+$ python python uno_baseline_keras2.py --train_sources CTRP --cell_feature_subset_path CTRP_CCLE_2000_1000_features.txt --no_feature_source True --no_response_source True --preprocess_rnaseq combat --export_data CTRP_CCLE_2000_1000_train.h5
+$ python uno_baseline_keras2.py --train_sources CCLE --cell_feature_subset_path CTRP_CCLE_2000_1000_features.txt --no_feature_source True --no_response_source True --preprocess_rnaseq combat --export_data CTRP_CCLE_2000_1000_test.h5
 ----
 
-=== Doing a small run
+Note that in the train data creation the train_source is CTRP and in the test data 
+creation the train source is CCLE. The creation of the training and test data can be 
+time consuming for the larger datasets. 
 
-. Edit data/studies[12].txt to select two different studies (one pair)
-. Edit your cfg-sys file to set TURBINE_RESIDENT_WORK_WORKERS to the number of pairs
+
+== Running
+
+. Edit `Supervisor/workflows/cp1/data/studies1.txt` and `Supervisor/workflows/cp1/data/studies2.txt`. These two study files specify the cross correlation between studies where each study in `studies1.txt` is cross correlated with each study in 
+`studies2.txt` except where they are the same. Add or remove (or comment out)
+study names in these files to omit that cross-correlation from the HPO instances.
+
+. Create a set of _cfg_ and _test_ scripts for an experiment run by
+copying an existing set (i.e., _cfg-prm-1.sh_, _cfg-sys-1.sh_, and _test-1.sh_) 
+in the `test` directory. Be sure to update the lines in your _test-n.sh_ that 
+export the _cfg-prm-N.sh_, and _cfg-sys-N.sh_ scripts to point to your scripts.
+Namely,
++
+----
+# Select configurations
+export CFG_SYS=$THIS/cfg-sys-N.sh
+export CFG_PRM=$THIS/cfg-prm-N.sh
+----
++
+See the comments in _cfg-prm-1.sh_, and _cfg-sys-1.sh_ for additional
+information on the various configuration parameters and how to edit them.
+
+. Launch the run using your _test-N.sh_ script, passing SITE, and optional experiment id as arguments (`./test-10.sh <site> [expid]`) where 
+site can be one of local, cori, theta, summit etc.
+
+All the output from the run  appears in a directory named with the
+experiment id, either your specified one or the auto-generated one. Each Uno
+model run launched by the mlrMBO instances runs in own directory: 
+`exp_id/run/W_X_Y_Z` where _W_ is the id of the mlrMBO instance that launched the run, _X_ is the restart number (almost always 1 here), _Y_ is the 
+iteration of the mlrMBO instance, and _Z_ is the id of the hyper parameter set
+with which Uno was launched
+
+A summary of each Uno for organized by mlrMBO instance and iteration will be 
+output in `exp_id/hpo_log/X_Y_hpo_runs.txt` where _X_ is the mlrMBO instance
+id, and _Y_ is the mlrMBO instance's iteration. Each row of this hpo log output
+contains info for a single Uno run and has the following format:
+
+row_index | run_id | hpo parameters | run directory | timestamp | run val loss
 
 
-=== Summit Notes
+=== Running on Summit
 
 Summit's project directories (e.g. /ccs/proj/med106/) are not writable from the compute nodes.
 The workflow needs the following directories in Supervisor/workflows/cp1 to be writable.
@@ -50,9 +117,3 @@ lrwxrwxrwx 1 ncollier ncollier   46 Mar  1 10:35 cache -> /gpfs/alpine/med106/sc
 lrwxrwxrwx 1 ncollier ncollier   48 Feb 28 16:51 experiments -> /gpfs/alpine/med106/scratch/ncollier/experiments
 lrwxrwxrwx 1 ncollier ncollier   47 Mar  1 12:38 xcorr_data -> /gpfs/alpine/med106/scratch/ncollier/xcorr_data
 ----
-
-
-=== More Details
-
- TODO
-...
