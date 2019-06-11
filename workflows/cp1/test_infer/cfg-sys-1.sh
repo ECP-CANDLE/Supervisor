@@ -3,7 +3,7 @@
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
-# The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
+# The rest will run Uno
 export PROCS=${PROCS:-3}
 
 # MPI processes per node
@@ -16,8 +16,10 @@ export PPN=${PPN:-1}
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
-# command separated list of gpu ids
-# export GPU_STRING=${GPU_STRING:-0}
+# Comma separated list of gpu ids
+# Uncomment and edit appropriately if your HPC resource has multiple GPUS
+# export GPU_STRING=${GPU_STRING:-0,1}
+# Specify any MPI launcher (srun, bsub, etc.) options here.
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
 #export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 

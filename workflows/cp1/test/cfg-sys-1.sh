@@ -22,9 +22,10 @@ export QUEUE=${QUEUE:-debug-flat-quad}
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
-# comma separated list of gpu ids
-# Uncomment if your HPC resource has multiple GPUS
-# export GPU_STRING=${GPU_STRING:-0}
+# Comma separated list of gpu ids
+# Uncomment and edit appropriately
+# if your HPC resource has multiple GPUS
+# export GPU_STRING=${GPU_STRING:-0,1}
 # Specify any MPI launcher (srun, bsub, etc.) options here.
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
 #export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
