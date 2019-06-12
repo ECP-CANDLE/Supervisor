@@ -1,4 +1,98 @@
 
+= XCORR
+
+This directory contains python code for producing cross-correlated data sets using the
+COXEN approach. Using the Pilot 1 gene and drug response data as an example, the
+COXEN approach takes three major steps. Suppose dataset 1 includes an _n_×_m_~1~
+matrix of gene expressions for _n_ genes and _m_~1~ drug treatment experiments and
+the corresponding drug response values measured in the experiments, and dataset
+2 is an _n_×_m_~2~ matrix of gene expressions for _m_~2~ drug treatment experiments in
+study 2. Given two positive integer parameters _n_~1~ and _n_~2~, _n_~1~ > _n_~2~ > 1, the
+COXEN approach takes the following steps.
+
+. On dataset 1, for every gene, calculate the Pearson correlation coefficient
+between the gene’s expression and the drug response value. Select _n_~1~ genes
+whose absolute correlation coefficients with drug response are the highest.
+
+. For each of the _n_~1~ genes, do the following: 
+.. Calculate its Pearson correlation coefficients with the other _n_~1~-1 genes
+based on their expression values in dataset 1, which forms a _n_~1~-1-dimensional
+vector of Pearson correlation coefficients denoted by _c_~1~. 
+.. Calculate its Pearson correlation coefficients with the 
+
+. Among the _n_~1~ genes, select _n_~2~ genes whose COXEN scores are the
+highest. 
+
+With respect to using the results in to train a model,
+drug response prediction model would be trained using these _n_~2~ genes using
+dataset 1 and then use the trained model to predict the drug response values of
+experiments in dataset 2 based on the expression data of the selected _n_~2~ genes.
+
+Step 1 of the COXEN approach forms a candidate gene pool, in which the genes are
+individually predictive of drug response. Step 2 calculates the COXEN score of
+each gene, which evaluates how well the gene’s co-expression pattern with other
+candidate genes is preserved between dataset 1 and dataset
+
+ 2. Step 3 further
+selects a subset of genes from the candidate pool whose co-expression patterns
+are best preserved between dataset 1 and dataset 2. Co-expression patterns
+between genes characterize the transcriptional regulation mechanism between
+genes. A higher COXEN score of a gene indicates that the transcriptional
+regulation relationship between the gene and the rest of the predictive genes is
+better preserved between experimental conditions in study 1 and study 2. Thus,
+genes with high COXEN scores may be generalizable for predicting drug response
+on dataset 2. Through the three steps, the COXEN approach considers both
+prediction power and generalizability of genes for selecting features to build
+the prediction model. The COXEN algorithm requires two input parameters _n_~1~ and
+_n_~2~, which are the number of candidate predictive genes and the number of
+selected genes in final output. These two parameters can be pre-determined
+before data analysis or tuned through hyperparameter search for identifying
+their optimal values to build the prediction model.  
+
+== Code
+
+The COXEN implementation consists of two files: `xcorr.py` and `uno_xcorr.py`. 
+
+* `xcorr.py` - implements COXEN correlation using numpy arrays to represent
+the datasets. This code encapsulates steps 1 and 2 in a generic way. See the
+documentation comments in each python function for more details.
+
+* `uno_xcorr.py` - runs the COXEN correlation code in `xcorr.py` on Pilot 1
+gene and drug reponse data to produce cross correlated features files that
+can be used with the Uno benchmark model. The module needs to be initialized 
+with gene and drug repsonse data via call to `uno_xcorr.init_uno_xcorr` before 
+running the cross correlation. For example,
+
++
+----
+
+uno_xcorr.init_uno_xcorr('data/combined_rnaseq_data_lincs1000_combat.bz2',
+    'data/rescaled_combined_single_drug_growth_100K')
+----
+
++
+After initialization, `uno_xcorr.coxen_feature_selection` can be called
+to produce a cross correlated features files that can be passed
+as the `cell_feature_subset_path` argument to an Uno model when launching
+a training run. For example,
+
++
+----
+
+uno_xcorr.coxen_feature_selection('CCLE', 'GDSC', 2000, 1000, 
+    'CCLE_GDSC_2000_1000_features.txt')
+----
+
++
+where 'CCLE' and 'GDSC' are the names of cancer studies in the initialization
+data each with gene / drug treatment and response values. The call produces
+a cross correlation file of the cell features of these two studies using 
+a correlation cutoff of 2000
+(limiting __c_~1~_ in step 2.a above to those values >= 2000), and a cross
+correlation cutoff of 1000 (limiting the results of step 2.c above to those 
+>= 1000).
+
+
 = Cross-correlation workflow
 
 == Installation
