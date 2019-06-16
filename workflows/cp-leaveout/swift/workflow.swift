@@ -1,5 +1,14 @@
 
 /*
+  RECUR 1 SWIFT
+
+  Simply run with: 'swift-t recur-1.swift | nl'
+  Or specify the N, S values:
+  'swift-t recur-1.swift -N=6 -S=6 | nl'
+  for 55,986 tasks.
+*/
+
+/*
   CP LEAVEOUT SWIFT
   Main workflow
 */
@@ -31,31 +40,57 @@ string gpus = argv("gpus", "");
 // string restart_number = argv("restart_number", "1");
 string site = argv("site");
 
-int N = 4; // The divisor of the leave out rows/columns
+// dummy() is now unused- retaining for debugging/demos
+// app (void v) dummy(string parent, int stage, int id, void block)
+// {
+//   "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
+// }
 
-int X[] = [0:0];
-int Y[] = [0:N];
+// Data split factor with default
+N = string2int(argv("N", "2"));
+// Maximum stage number with default
+// (tested up to S=7, 21,844 dummy tasks)
+S = string2int(argv("S", "2"));
 
-string results[][];
-
-app (file o) fake_uno(int leaveout_cell_line, int leaveout_drug)
+(void v) run_stage(int N, int S, string parent, int stage, int id, void block)
 {
-  (emews_root/"swift/fake-uno.sh") leaveout_cell_line leaveout_drug o ;
-}
-
-app (file o) fake_nt3(int leaveout_punch_x, int leaveout_punch_y)
-{
-  (emews_root/"swift/fake-nt3.sh") leaveout_punch_x leaveout_punch_y o ;
-}
-
-foreach punch_x in X
-{
-  foreach punch_y in Y
+  string node;
+  if (parent == "")
   {
-    file f = fake_nt3(punch_x, punch_y);
-    results[punch_x][punch_y] = read(f);
+    node = int2string(id);
+  }
+  else
+  {
+    node = parent+"."+int2string(id);
+  }
+  // node = parent+"."+int2string(id);
+  v = run_node(parent, stage, id, block);
+  if (stage < S)
+  {
+    foreach id_child in [0:N-1]
+    {
+      run_stage(N, S, node, stage+1, id_child, v);
+    }
   }
 }
 
-// The test*.sh scripts check for "RESULTS:"
-printf("RESULTS: %i", size(results));
+(void v) run_node(string node, int stage, int id, void block)
+{
+  if (stage == 0)
+  {
+    v = propagate();
+  }
+  else
+  {
+    // dummy() is now unused- retaining for debugging/demos
+    // v = dummy(parent, stage, id, block);
+
+    json = "{\"node\": \"%s\"}"%node;
+    s = obj(json, node);
+    v = propagate(s);
+  }
+}
+
+stage = 0;
+id = 0;
+run_stage(N, S, "", stage, id, propagate());
