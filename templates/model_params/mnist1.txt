@@ -3,3 +3,4 @@ epochs=20
 batch_size=128
 activation='relu'
 optimizer='rmsprop'
+num_filters=32

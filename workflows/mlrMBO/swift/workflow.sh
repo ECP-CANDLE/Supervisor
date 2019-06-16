@@ -126,6 +126,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+echo "AAAA"
+echo $EQR
+echo "BBBB"
+
 # See Supervisor/templates/README.md for explanation of DEFAULT_PARAMS_FILE below
 swift-t -n $PROCS \
         ${MACHINE:-} \

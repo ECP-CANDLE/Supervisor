@@ -10,6 +10,8 @@ output_json_format() {
     done
 }
 
+export USING_TEMPLATES=1
+
 # These are variables from the module .lua files
 params1=(CANDLE SITE TURBINE_HOME)
 
@@ -53,32 +55,57 @@ fi
 # For running the workflows themselves, load the module with which Swift/T was built
 module load $MODULES_FOR_BUILD
 
-# If metadata.json exists, restart the job with the unfinished HPs
-upf_new="upf-restart.txt"
-if [ -f metadata.json ]; then
-    if [ -f $upf_new ]; then
-        echo "Error: New UPF already exists: $upf_new"
-        exit
-    else
-        python $CANDLE/Supervisor/templates/scripts/restart.py metadata.json > $upf_new
-        if [ -s $upf_new ]; then
+# If doing the UPF workflow...
+if [ "x$WORKFLOW_TYPE" == "xupf" ]; then
+
+    # If a restart job is requested...
+    if [ -n "$RESTART_FROM_EXP" ]; then
+
+        # Ensure the metadata JSON file from the experiment from which we're restarting exists
+        metadata_file=$EXPERIMENTS/$RESTART_FROM_EXP/metadata.json
+        if [ ! -f $metadata_file ]; then
+            echo "Error: metadata.json does not exist in the requested restart experiment $EXPERIMENTS/$RESTART_FROM_EXP"
+            exit
+        fi
+
+        # Create the new restart UPF
+        upf_new="upf-restart.txt"
+        python $CANDLE/Supervisor/templates/scripts/restart.py $metadata_file > $upf_new
+
+        # If the new UPF is empty, then there's nothing to do, so quit
+        if [ -s $upf_new ]; then # if it's NOT empty...
             export WORKFLOW_SETTINGS_FILE="$(pwd)/$upf_new"
         else
             echo "Error: Job is complete; nothing to do"
             rm -f $upf_new
             exit
         fi
+
     fi
-else
-    # Write the dictionary of the metadata in JSON format
-    tmp="$(output_json_format "${params1[@]}")$(output_json_format "${params2[@]}")$(output_json_format "${params3[@]}")"
-    echo "{${tmp:0:${#tmp}-2}}" > metadata.json
+
+# If doing the mlrMBO workflow...
+elif [ "x$WORKFLOW_TYPE" == "xmlrMBO" ]; then
+
+    export R_FILE="mlrMBO-mbo.R"
+    #export SH_TIMEOUT=${SH_TIMEOUT:-}
+    #export IGNORE_ERRORS=${IGNORE_ERRORS:-0}
+
 fi
 
-# If we want to run the wrapper using CANDLE... 
-if [ "${USE_CANDLE:-1}" -eq 1 ]; then
-    "$CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh" "$SITE" -a "$CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh" "$WORKFLOW_SETTINGS_FILE"
+# Write the dictionary of the metadata in JSON format
+tmp="$(output_json_format "${params1[@]}")$(output_json_format "${params2[@]}")$(output_json_format "${params3[@]}")"
+echo "{${tmp:0:${#tmp}-2}}" > metadata.json
 
+# If we want to run the wrapper using CANDLE...
+if [ "${USE_CANDLE:-1}" -eq 1 ]; then
+    "$CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh" "$SITE" -a      "$CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh" "$WORKFLOW_SETTINGS_FILE" "$MODEL_NAME"
+    # if [ "x$WORKFLOW_TYPE" == "xupf" ]; then
+    #     #$EMEWS_PROJECT_ROOT/swift/workflow.sh                           $SITE  -a       $CFG_SYS                                                  $THIS/upf-1.txt
+    #     "$CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh" "$SITE" -a      "$CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh" "$WORKFLOW_SETTINGS_FILE"
+    # elif [ "x$WORKFLOW_TYPE" == "xmlrMBO" ]; then
+    #     #$EMEWS_PROJECT_ROOT/swift/workflow.sh                           $SITE  $RUN_DIR $CFG_SYS                                                 $CFG_PRM                   $MODEL_NAME
+    #     "$CANDLE/Supervisor/workflows/$WORKFLOW_TYPE/swift/workflow.sh" "$SITE" -a      "$CANDLE/Supervisor/workflows/common/sh/cfg-sys-$SITE.sh" "$WORKFLOW_SETTINGS_FILE" "$MODEL_NAME"
+    # fi
 # ...otherwise, run the wrapper alone, outside of CANDLE
 else
     python "$MODEL_PYTHON_DIR/$MODEL_PYTHON_SCRIPT.py"

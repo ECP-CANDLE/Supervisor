@@ -38,7 +38,8 @@ if [ "x$suffix" == "xpy" ]; then
 elif [ "x$suffix" == "xr" ]; then
     module load "$DEFAULT_R_MODULE"
     echo "Using R for execution: $(command -v R)"
-    R "$MODEL_SCRIPT"
+    #R "$MODEL_SCRIPT"
+    Rscript "$MODEL_SCRIPT"
 fi
 
 # Display timing information

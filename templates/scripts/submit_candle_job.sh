@@ -12,9 +12,10 @@ export EXEC_PYTHON_MODULE=              # e.g., "python/2.7" (if unset [and PYTH
 export SUPP_MODULES=                    # e.g., "CUDA/10.0 cuDNN/7.5/CUDA-10.0" (this is necessary for running tensorflow when using a local Conda Python)
 export SUPP_PYTHONPATH=                 # e.g., "/home/weismanal/data/conda/envs/with_affine/lib/python3.6/site-packages", "/data/BIDS-HPC/public/software/conda/envs/main3.6/lib/python3.6/site-packages"
 
-# Workflow specification
+# Workflow settings
 export WORKFLOW_TYPE="upf"
 export WORKFLOW_SETTINGS_FILE="$CANDLE/Supervisor/templates/workflow_settings/upf3.txt"
+export RESTART_FROM_EXP=
 
 # Job specification
 export EXPERIMENTS="$(pwd)/experiments" # this experiment will be created if it doesn't already exist; will contain the job output

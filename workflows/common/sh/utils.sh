@@ -136,6 +136,11 @@ get_expid()
     exit 1
   fi
   TURBINE_OUTPUT=$TO
+
+  if [ -f metadata.json ]; then
+    mv metadata.json $TURBINE_OUTPUT
+  fi
+
 }
 
 get_cfg_sys()
