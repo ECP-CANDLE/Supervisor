@@ -47,7 +47,7 @@ turbine-directory.txt
 # IDE
 .vscode
 
-._*
-workflows/common/sh/env-biowulf.sh
-.DS_Store
-templates/scripts/archive
+# Andrew
+*.DS_Store
+*._*
+templates/scripts/archive/

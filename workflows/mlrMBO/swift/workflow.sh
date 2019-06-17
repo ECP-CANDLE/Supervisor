@@ -117,6 +117,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
+# Andrew: Allows for custom model.sh file, if that's desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 
 WAIT_ARG=""
@@ -126,11 +127,7 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-echo "AAAA"
-echo $EQR
-echo "BBBB"
 
-# See Supervisor/templates/README.md for explanation of DEFAULT_PARAMS_FILE below
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -155,4 +152,5 @@ swift-t -n $PROCS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
+# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
 echo $TURBINE_OUTPUT > turbine-directory.txt
