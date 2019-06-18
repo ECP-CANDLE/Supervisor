@@ -57,19 +57,8 @@ source_site sched $SITE
 # Set PYTHONPATH for BENCHMARK and SQL related stuff
 PYTHONPATH+=:$BENCHMARK_DIR
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/db
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/db
 export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
-
-START=$(( PROCS - TURBINE_RESIDENT_WORK_WORKERS - 1 ))
-END=$(( START + TURBINE_RESIDENT_WORK_WORKERS - 1 ))
-export RESIDENT_WORK_RANKS=$(seq -s , $START 1 $END )
-
-echo "TURBINE_RESIDENT_WORK_WORKERS: $TURBINE_RESIDENT_WORK_WORKERS"
-echo "RESIDENT_WORK_RANKS: $RESIDENT_WORK_RANKS"
-
-if [[ ${EQR:-} == "" ]]
-then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
-fi
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -84,14 +73,6 @@ if [[ ${RESTART_NUMBER:-} != "" ]]
 then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
-
-R_FILE_ARG=""
-if [[ ${R_FILE:-} == "" ]]
-then
-  R_FILE="mlrMBO1.R"
-fi
-
-R_FILE_ARG="--r_file=$R_FILE"
 
 if [ -z ${GPU_STRING+x} ];
 then
@@ -128,7 +109,6 @@ CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 # -drug_response_data=$DRUG_REPSONSE_DATA
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
-                $R_FILE_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -177,8 +157,6 @@ log_path PYTHONPATH
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e XCORR_ROOT \
