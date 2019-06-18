@@ -1,10 +1,10 @@
 
 /*
-  RECUR 1 SWIFT
+  WORKFLOWS SWIFT
 
   Simply run with: 'swift-t recur-1.swift | nl'
   Or specify the N, S values:
-  'swift-t recur-1.swift -N=6 -S=6 | nl'
+  'swift-t workflow.swift -N=6 -S=6 | nl'
   for 55,986 tasks.
 */
 
