@@ -10,4 +10,7 @@
    code: The Python code (the Horovod program)
    return: Success=1 , Failure=0
 */
-int controller(MPI_Comm comm, char* code);
+int controller_setup(MPI_Comm comm, char* code);
+
+
+int controller_run(char* code);

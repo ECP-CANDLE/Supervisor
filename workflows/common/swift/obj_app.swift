@@ -44,7 +44,7 @@
   {
     obj_result = get_results(result_file);
   }
-  printf("result(%s): %s", run_id, obj_result);
+  // printf("result(%s): %s", run_id, obj_result);
 }
 
 /**
@@ -67,7 +67,7 @@ app (void o) run_model (string model_sh, string params,
     obj_result = trim(read(line));
   } else {
     printf("File not found: %s", result_file);
-    // return with a large value 
+    // return with a large value
     obj_result = "1e7";
   }
 }

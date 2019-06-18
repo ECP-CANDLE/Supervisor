@@ -49,6 +49,10 @@ def import_pkg(framework, model_name):
         raise ValueError("Invalid framework: {}".format(framework))
     return pkg
 
+def log(msg):
+    global logger
+    logger.debug("model_runner: " + msg)
+
 def run(hyper_parameter_map, obj_return):
 
     global logger
@@ -77,12 +81,12 @@ def run(hyper_parameter_map, obj_return):
             cp_str = v
             v = list()
             v.append(cp_str)
-        logger.debug("PARAM OVERWRITE: " + str(k) + " = " + str(v))
+        log("PARAM OVERWRITE: " + str(k) + " = " + str(v))
         params[k] = v
 
-    logger.debug("WRITE_PARAMS START")
+    log("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
-    logger.debug("WRITE_PARAMS STOP")
+    log("WRITE_PARAMS STOP")
 
     history = pkg.run(params)
 
@@ -92,22 +96,24 @@ def run(hyper_parameter_map, obj_return):
     result = 0
     if history != None:
         # Return the history entry that the user requested.
-        val_loss = history.history[obj_return]
+        values = history.history[obj_return]
         # Return a large number for nan and flip sign for val_corr
         if(obj_return == "val_loss"):
-            if(math.isnan(val_loss[-1])):
+            if(math.isnan(values[-1])):
                 result = 999999999
             else:
-                result = val_loss[-1]
+                result = values[-1]
         elif(obj_return == "val_corr" or obj_return == "val_dice_coef"): # allow for the return variable to be the val_dice_coef, which is sometimes used by arbitrary models instead of val_corr
             if(math.isnan(val_loss[-1])):
                 result = 999999999
             else:
-                result = -val_loss[-1] #Note negative sign
+                result = -values[-1] # Note negative sign
         else:
-            raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+            raise ValueError("Unsupported objective function " +
+                             "(use obj_param to specify val_corr or val_loss): " +
+                             framework)
 
-        print("result: " + str(result))
+        print("result: " + obj_return + ": " + str(result))
     return result
 
 def get_obj_return():
@@ -145,7 +151,7 @@ def run_post(hyper_parameter_map):
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
     logger = log_tools.get_logger(logger, __name__)
-    logger.debug("RUN START")
+    log("RUN START")
 
     ( _, # The Python program name (unused)
       param_string,
@@ -176,12 +182,10 @@ if __name__ == '__main__':
     run_pre(hyper_parameter_map)
 
     # Call to Benchmark!
-    logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
     print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
-
     run_post(hyper_parameter_map)
 
-    logger.debug("RUN STOP")
-
+    log("RUN STOP")

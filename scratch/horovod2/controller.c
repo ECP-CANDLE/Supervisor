@@ -86,7 +86,7 @@ python_init(void)
 }
 
 int
-controller(MPI_Comm comm, char* code)
+controller_setup(MPI_Comm comm, char* code)
 {
   if (python_init() == 0) return 0;
 
@@ -96,6 +96,15 @@ controller(MPI_Comm comm, char* code)
   printf("Set HOROVOD_COMM: %s\n", s);
   setenv("HOROVOD_COMM", s, 1);
 
+  PyRun_String(code, Py_file_input, main_dict, local_dict);
+  if (PyErr_Occurred()) return handle_python_exception();
+
+  return 1;
+}
+
+int
+controller_run(char* code)
+{
   // Run the Horovod Python program
   PyRun_String(code, Py_file_input, main_dict, local_dict);
   if (PyErr_Occurred()) return handle_python_exception();

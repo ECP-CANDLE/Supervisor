@@ -10,6 +10,7 @@ from pathlib import Path
 THIS = Path(sys.argv[0]).parent.resolve()
 
 DB = xcorr_db('xcorr.db')
+DB.connect()
 
 def create_tables():
     """ Set up the tables defined in the SQL file """

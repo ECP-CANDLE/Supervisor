@@ -174,14 +174,22 @@ class xcorr_db:
     def __del__(self):
         if not self.autoclose:
             return
-        #self.conn.commit()
-        #self.conn.close()
+        self.conn.commit()
+        self.conn.close()
         self.log("DB auto-closed.")
 
 
 def q(s):
     """ Quote the given string """
     return "'" + str(s) + "'"
+
+def qL(L):
+    """ Quote each list entry as a string """
+    return map(q, L)
+
+def qA(*args):
+    """ Quote each argument as a string """
+    return map(q, args)
 
 def sql_tuple(L):
     """ Make the given list into a SQL-formatted tuple """
