@@ -14,7 +14,6 @@ create table if not exists cplo_ids(
        cplo_id integer primary key,
        parent integer,
        /* creation time */
-       parent integer,
        time timestamp
 );
 
