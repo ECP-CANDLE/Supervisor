@@ -136,6 +136,12 @@ get_expid()
     exit 1
   fi
   TURBINE_OUTPUT=$TO
+
+  # Andrew: Needed for functionality with George's restart.py script for UPF jobs
+  if [ -f metadata.json ]; then
+    mv metadata.json $TURBINE_OUTPUT
+  fi
+
 }
 
 get_cfg_sys()

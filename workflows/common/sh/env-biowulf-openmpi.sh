@@ -4,14 +4,14 @@
 # Language settings for non-Singularity Biowulf (Python, R, etc.)
 # Assumes WORKFLOWS_ROOT is set
 
-# Modules; this and following R block are what was needed to successfully at least COMPILE Swift/T
-module -q load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 python/3.6 ant/1.10.3 java/1.8.0_181
+# Modules; this and following R block are what was needed to successfully at least COMPILE Swift/T (also: python/3.6)
+#module -q load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
 
-# Load R paths manually since we can't load the module on the Biowulf submit nodes
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
-PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/bin
-export R_LIBS_SITE=/usr/local/apps/R/3.5/site-library_build2
-export R_LIBS_USER=~/R/%v/library
+# # Load R paths manually since we can't load the module on the Biowulf submit nodes
+# LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
+# PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/bin
+# export R_LIBS_SITE=/usr/local/apps/R/3.5/site-library_build2
+# export R_LIBS_USER=~/R/%v/library
 
 # Which line is uncommented depends on which GPU system we’re using, e.g., k20x needs the first line uncommented, and p100 and v100’s need the second line uncommented. This suppresses an MPI error due to having multiple Infiniband interfaces.
 #export OMPI_MCA_btl_openib_if_exclude="mlx4_0:1"
@@ -28,6 +28,7 @@ export ADLB_DEBUG_HOSTMAP=1
 export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so
 export EQR=$WORKFLOWS_ROOT/common/ext/EQ-R # I don’t know where else to find this directory that needs to be available, e.g., in workflow.sh
 PYTHONPATH=${PYTHONPATH:-}:$CANDLE/swift-t-install/turbine/py
+export OMPI_MCA_mpi_warn_on_fork=0 # for OpenMPI only
 
 # Set up environment
 #module load python/3.6
@@ -103,3 +104,6 @@ which python swift-t
 # show     PYTHONHOME
 # log_path LD_LIBRARY_PATH
 # log_path PYTHONPATH
+
+
+#export LD_PRELOAD=$LD_PRELOAD:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libgcc_s.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libgomp.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/liblzma.so.5:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libpcre.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libpython3.6m.so.1.0:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libquadmath.so.0:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libstdc++.so.6:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libz.so.1

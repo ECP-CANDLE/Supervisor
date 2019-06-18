@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # UPF CFG SYS 1
 
@@ -30,7 +31,10 @@ export QUEUE=${QUEUE:-gpu}
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
-export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE:-k20x}:1 --mem=${MEM_PER_NODE:-20G}"
+export TURBINE_SBATCH_ARGS=${TURBINE_SBATCH_ARGS:-}
+
+#export TURBINE_SBATCH_ARGS="--gres=gpu:${GPU_TYPE:-k20x}:1 --mem=${MEM_PER_NODE:-20G} --cpus-per-task=${CPUS_PER_TASK:-1}"
+export TURBINE_SBATCH_ARGS=${TURBINE_SBATCH_ARGS}${TURBINE_SBATCH_ARGS:+ }"--gres=gpu:${GPU_TYPE:-k20x}:1 --mem=${MEM_PER_NODE:-20G} --cpus-per-task=${CPUS_PER_TASK:-1}"
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov

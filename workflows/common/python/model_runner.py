@@ -15,7 +15,7 @@ logger = None
 
 print("MODEL RUNNER...")
 
-# Adding the following line in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
+# Andrew: Adding the following line (switching the order of the following two lines) in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
@@ -120,6 +120,28 @@ def get_obj_return():
                         valid_obj_returns)
     return obj_return
 
+def load_pre_post(hyper_parameter_map, key):
+    module = None
+    if key in hyper_parameter_map:
+        module_name = hyper_parameter_map[key]
+        module = importlib.import_module(module_name)
+    return module
+
+def run_pre(hyper_parameter_map):
+    module = load_pre_post(hyper_parameter_map, 'pre_module')
+    if module != None:
+        logger.debug("PRE RUN START")
+        module.pre_run(hyper_parameter_map)
+        logger.debug("PRE RUN STOP")
+
+def run_post(hyper_parameter_map):
+    module = load_pre_post(hyper_parameter_map, 'post_module')
+    if module != None:
+        logger.debug("POST RUN START")
+        module.post_run(hyper_parameter_map)
+        logger.debug("POST RUN STOP")
+        
+
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
     logger = log_tools.get_logger(logger, __name__)
@@ -151,10 +173,15 @@ if __name__ == '__main__':
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
 
+    run_pre(hyper_parameter_map)
+
     # Call to Benchmark!
     logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
     print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
-
     runner_utils.write_output(result, instance_directory)
+
+    run_post(hyper_parameter_map)
+
     logger.debug("RUN STOP")
+

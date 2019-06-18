@@ -22,10 +22,15 @@ MODEL_FILE="$3"
 N_PRED=$4
 RUN_ID=$5
 
-FNAME=$( basename $DF )
-DATA_FILE=/mnt/bb/$USER/${RUN_ID}_${FNAME}
 
-cp -u $DF $DATA_FILE
+DATA_FILE=$DF
+
+# Uncomment these three lines and edit the DATA_FILE
+# if you want to make multiple copies of the
+# data input file to avoid io contention.
+# FNAME=$( basename $DF )
+# DATA_FILE=/mnt/bb/$USER/${RUN_ID}_${FNAME}
+# cp -u $DF $DATA_FILE
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY
