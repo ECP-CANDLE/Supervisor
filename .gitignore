@@ -51,3 +51,4 @@ turbine-directory.txt
 *.DS_Store
 *._*
 templates/scripts/archive/
+workflows/common/sh/env-biowulf.sh
