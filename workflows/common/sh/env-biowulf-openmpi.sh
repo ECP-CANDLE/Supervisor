@@ -1,109 +1,55 @@
 #!/bin/bash
 
-# LANGS BIOWULF
-# Language settings for non-Singularity Biowulf (Python, R, etc.)
-# Assumes WORKFLOWS_ROOT is set
+# Assume candle module is loaded as usual
 
-# Modules; this and following R block are what was needed to successfully at least COMPILE Swift/T (also: python/3.6)
-#module -q load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
+# Load the environments for each MPI implementation
+if [ $USE_OPENMPI -eq 1 ]; then
+    module load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
+    export OMPI_MCA_mpi_warn_on_fork=0
+else
+    module load tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
+    module remove openmpi/3.0.2/gcc-7.3.0
+    module load gcc/7.2.0
+    export LD_LIBRARY_PATH=/usr/local/slurm/lib:$LD_LIBRARY_PATH
+    export PATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/bin:$PATH
+    export LD_LIBRARY_PATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/lib:$LD_LIBRARY_PATH
+    export LIBDIR=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/lib:$LIBDIR
+    export CPATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/include:$CPATH
+fi
 
-# # Load R paths manually since we can't load the module on the Biowulf submit nodes
-# LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
-# PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/bin
-# export R_LIBS_SITE=/usr/local/apps/R/3.5/site-library_build2
-# export R_LIBS_USER=~/R/%v/library
+# Load R paths manually since we can't load the module on the Biowulf submit nodes
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
+export PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/bin
+export R_LIBS_SITE=/usr/local/apps/R/3.5/site-library_build2
+export R_LIBS_USER=~/R/%v/library
+export R_LIBS=$CANDLE/R/libs
 
-# Which line is uncommented depends on which GPU system we’re using, e.g., k20x needs the first line uncommented, and p100 and v100’s need the second line uncommented. This suppresses an MPI error due to having multiple Infiniband interfaces.
-#export OMPI_MCA_btl_openib_if_exclude="mlx4_0:1"
-#export OMPI_MCA_btl_openib_if_exclude="mlx4_0:2"
-
-# Other additions
-#CANDLE=/data/BIDS-HPC/public/candle # removing because setting this using the candle module
-export R_LIBS=$CANDLE/R/libs/ # these are the libraries I installed via workflows/common/R/install-candle.sh
-export PATH=$PATH:$CANDLE/swift-t-install/stc/bin
-export PATH=$PATH:$CANDLE/swift-t-install/turbine/bin
+# Swift/T setup
+export SWIFT_T_INSTALL=$CANDLE/swift-t-install
+# NOTE: Below is 1 of 2 lines needed to run swift-t out-of-the-box
+export PATH=$PATH:$SWIFT_T_INSTALL/stc/bin
+export PATH=$PATH:$SWIFT_T_INSTALL/turbine/bin
+export PYTHONPATH=$PYTHONPATH:$SWIFT_T_INSTALL/turbine/py
+export TURBINE_HOME=$SWIFT_T_INSTALL/turbine
 export TURBINE_LOG=1
 export ADLB_DEBUG_RANKS=1
 export ADLB_DEBUG_HOSTMAP=1
-export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so
-export EQR=$WORKFLOWS_ROOT/common/ext/EQ-R # I don’t know where else to find this directory that needs to be available, e.g., in workflow.sh
-PYTHONPATH=${PYTHONPATH:-}:$CANDLE/swift-t-install/turbine/py
-export OMPI_MCA_mpi_warn_on_fork=0 # for OpenMPI only
-
-# Set up environment
-#module load python/3.6
-#module load openmpi/3.0.0/gcc-7.2.0-pmi2
-#### NOTE I'M COMMENTING THIS OUT SINCE IT WON'T LOAD ON SUBMIT NODE!!!! ####module load R/3.5.0
-#export R_LIBS=$CANDLE/R/libs/
-#export PATH=${PATH}:$CANDLE/swift-t-install/turbine/bin
-#export PATH=${PATH}:$CANDLE/swift-t-install/stc/bin
-#export PROCS=3
-#export PPN=1
-#export SLURM_MPI_TYPE=mpi/openmpi
-#export SLURM_MPI_TYPE=pmi2
-
-# Options for SLURM_MPI_TYPE on Biowulf:
-#weismanal@biowulf:/usr/local/slurm/etc $ srun --mpi=list
-#srun: MPI types are...
-#srun: mpi/mpich1_p4
-#srun: mpi/mpich1_shmem
-#srun: mpi/mpichgm
-#srun: mpi/mpichmx
-#srun: mpi/mvapich
-#srun: mpi/none
-#srun: mpi/lam
-#srun: mpi/openmpi
-#srun: mpi/pmi2
-
-# Swift/T
-#SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-06-05
-#export PATH=$SWIFT/stc/bin:$PATH
-# On Cori, we have a good Swift/T Python embedded interpreter,
-# but we use app anyway
-SWIFT_IMPL="app"
-
-# Python
-#PYTHON=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning
-#export PATH=$PYTHON/bin:$PATH
-#PYTHON=$(which python) # THIS BREAKS THINGS SO I ANDREW AM COMMENTING IT OUT!!! (encoding error when trying to load python)... and adding following line
-PYTHON=$(cd $(dirname $(which python))/../; pwd)
-PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
-PYTHONPATH+=$EMEWS_PROJECT_ROOT/python:
-#PYTHONPATH+=$BENCHMARK_DIR:
-#PYTHONPATH+=$BENCHMARKS_ROOT/common:
-#PYTHONPATH+=$SWIFT/turbine/py:
-COMMON_DIR=$WORKFLOWS_ROOT/common/python
-PYTHONPATH+=$COMMON_DIR
-export PYTHONPATH
-export PYTHONHOME=$PYTHON
-
-# R
-#export R_HOME=/global/homes/w/wozniak/Public/sfw/R-3.4.0-gcc-7.1.0/lib64/R
-
-# EMEWS Queues for R
-#EQR=/global/homes/w/wozniak/Public/sfw/compute/EQ-R
-EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
-
+export SWIFT_IMPL="app"
 # Resident task workers and ranks
-if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
-then
+if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]; then
     # Resident task workers and ranks
     export TURBINE_RESIDENT_WORK_WORKERS=1
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
+# NOTE: Below is 2 of 2 lines needed to run swift-t out-of-the-box
+#export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so:$LD_PRELOAD # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so
 
-echo "RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS"
+# Set up EMEWS Queues
+export EQR=$CANDLE/Supervisor/workflows/common/ext/EQ-R # I don’t know where else to find this directory that needs to be available, e.g., in workflow.sh
+export EQPy=$CANDLE/Supervisor/workflows/common/ext/EQ-Py
 
-# LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
-#LD_LIBRARY_PATH+=$R_HOME/lib
+# Other additions
+export PYTHONPATH=$PYTHONPATH:$CANDLE/Supervisor/workflows/common/python
 
 # Log settings to output
 which python swift-t
-# Cf. utils.sh
-# show     PYTHONHOME
-# log_path LD_LIBRARY_PATH
-# log_path PYTHONPATH
-
-
-#export LD_PRELOAD=$LD_PRELOAD:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libgcc_s.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libgomp.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/liblzma.so.5:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libpcre.so.1:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libpython3.6m.so.1.0:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libquadmath.so.0:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libstdc++.so.6:/data/weismanal/conda/envs/kds_on_biowulf_clone_of_jurgen3.6/lib/libz.so.1
