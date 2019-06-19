@@ -58,6 +58,7 @@ source_site sched $SITE
 PYTHONPATH+=:$BENCHMARK_DIR
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/db
 PYTHONPATH+=:$EMEWS_PROJECT_ROOT/db
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py
 export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
@@ -151,7 +152,23 @@ echo PP $PYTHONPATH
 echo PH $PYTHONHOME
 log_path PYTHONPATH
 
-~/Public/sfw/swift-t/stc/bin/swift-t -n $PROCS \
+
+if [[ ${MACHINE:-} == "" ]]
+then
+  STDOUT=$TURBINE_OUTPUT/output.txt
+  # The turbine-output link is only created on scheduled systems,
+  # so if running locally, we create it here so the test*.sh wrappers
+  # can find it
+  [[ -L turbine-output ]] && rm turbine-output
+  ln -s $TURBINE_OUTPUT turbine-output
+else
+  # When running on a scheduled system, Swift/T automatically redirects
+  # stdout to the turbine-output directory.  This will just be for
+  # warnings or unusual messages
+  STDOUT=""
+fi
+
+~/Public/sfw/swift-t/stc/bin/swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
@@ -176,15 +193,8 @@ log_path PYTHONPATH
         -e PREPROP_RNASEQ \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
-  if [[ ${MACHINE:-} == "" ]]
-  then
-    tee $TURBINE_OUTPUT/output.txt
-    # The turbine-output link is only created on scheduled systems,
-    # so if running locally, we create it here so the test*.sh wrappers
-    # can find it
-    ln -s $TURBINE_OUTPUT turbine-output
-  fi
+  tee $STDOUT
 
-# -j /usr/bin/java
+# -j /usr/bin/java # Give this to Swift/T if needed for Java
 
 echo "WORKFLOW OK."
