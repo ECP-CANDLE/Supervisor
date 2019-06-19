@@ -25,7 +25,8 @@ global const string FRAMEWORK = "keras";
 
 file plan_json = input("~/plan.json");
 
-(void v) run_stage(int N, int S, string parent, int stage, int id, void block)
+(void v) run_stage(int N, int S, string parent, int stage,
+                   int id, void block)
 {
   this = parent+int2string(id);
   v = run_dummy(parent, stage, id, block);
@@ -40,23 +41,27 @@ file plan_json = input("~/plan.json");
 
 (void v) db_setup()
 {
-  python_persist("""
+  python_persist(----
 import db_cplo_init
 global db_file
 db_file = 'cplo.db'
 db_cplo_init.main(db_file)
-""",
-"'OK'") =>
+----,
+----
+'OK'
+----) =>
     v = propagate();
-}
-
-app (file this_hdf) setup_data(string ID, file plan_json)
-{
-  "echo" ID plan_json this_hdf ;
 }
 
 (void v) run_dummy(string parent, int stage, int id, void block)
 {
+  json_fragment = ----
+"pre_module":  "data_setup",
+"post_module": "data_setup",
+"plan":        "/home/wozniak/plan.json",
+"dataframe_from":
+    "/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv"
+----;
   if (stage == 0)
   {
     db_setup() =>
@@ -64,16 +69,17 @@ app (file this_hdf) setup_data(string ID, file plan_json)
   }
   else
   {
-    wait (block)
-    {
-      file this_hdf<parent+stage+".hdf">;
-      this_hdf = setup_data(parent+stage, plan_json);
-      v = dummy(parent, stage, id);
-    }
+    node = parent + "." + stage;
+    json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
+    block =>
+      printf("running obj(%s)", node) =>
+      s = obj(json, node);
+    v = propagate(s);
+    // v = dummy(parent, stage, id, block);
   }
 }
 
-app (void v) dummy(string parent, int stage, int id)
+app (void v) dummy(string parent, int stage, int id, void block)
 {
   "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
 }
