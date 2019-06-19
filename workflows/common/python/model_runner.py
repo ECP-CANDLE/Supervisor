@@ -9,8 +9,10 @@ import os
 import numpy as np
 import importlib
 import runner_utils
+from runner_utils import ModelResult
 import log_tools
 import math
+
 logger = None
 
 print("MODEL RUNNER...")
@@ -135,10 +137,12 @@ def load_pre_post(hyper_parameter_map, key):
 
 def run_pre(hyper_parameter_map):
     module = load_pre_post(hyper_parameter_map, 'pre_module')
+    result = ModelResult.SUCCESS
     if module != None:
         logger.debug("PRE RUN START")
-        module.pre_run(hyper_parameter_map)
+        result = module.pre_run(hyper_parameter_map)
         logger.debug("PRE RUN STOP")
+    return result
 
 def run_post(hyper_parameter_map):
     module = load_pre_post(hyper_parameter_map, 'post_module')
@@ -179,7 +183,15 @@ if __name__ == '__main__':
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
 
-    run_pre(hyper_parameter_map)
+    result = run_pre(hyper_parameter_map)
+    if result == ModelResult.ERROR:
+        print("run_pre() returned ERROR!")
+        exit(1)
+    elif result == ModelResult.SKIP:
+        print("run_pre() returned SKIP ...")
+        exit(0)
+    else:
+        assert(result == ModelResult.SUCCESS) # proceed...
 
     # Call to Benchmark!
     log("CALL BENCHMARK " + hyper_parameter_map['model_name'])

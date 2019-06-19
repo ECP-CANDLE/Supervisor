@@ -3,6 +3,7 @@
 
 import json
 
+from runner_utils import ModelResult
 import topN_to_uno
 
 class TopN_Args:
@@ -17,7 +18,13 @@ def pre_run(params):
                      params["node"],
                      params["plan"])
     print("topN build node: '%s' ..." % params["node"])
-    topN_to_uno.build_dataframe(args)
+    try:
+        topN_to_uno.build_dataframe(args)
+    except Exception as e:
+        print("error in build_dataframe!\n" + str(e))
+        return ModelResult.SKIP
+    return ModelResult.SUCCESS
 
 def post_run(params):
     print("post_run")
+    return ModelResult.SUCCESS

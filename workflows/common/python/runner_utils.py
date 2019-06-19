@@ -1,5 +1,6 @@
 import numpy as np
 import json, os
+from enum import Enum
 
 try:
   basestring
@@ -73,3 +74,8 @@ def keras_clear_session(framework):
             K.clear_session()
         except AttributeError:      # theano does not have this function
             pass
+
+class ModelResult(Enum):
+    SUCCESS = 1
+    SKIP = 2
+    ERROR = 3
