@@ -17,7 +17,7 @@ main(int argc, char* argv[])
   }
 
   char* code = slurp(argv[1]);
-  int rc = controller(MPI_COMM_WORLD, code);
+  int rc = controller_setup(MPI_COMM_WORLD, code);
   free(code);
 
   if (!rc)

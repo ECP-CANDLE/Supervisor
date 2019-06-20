@@ -19,10 +19,9 @@ BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/Uno
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
-XCORR_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../xcorr ; /bin/pwd)
-export XCORR_ROOT=${XCORR_ROOT:-$XCORR_DEFAULT}
-
 SCRIPT_NAME=$(basename $0)
+
+export FRAMEWORK="keras"
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
@@ -55,21 +54,12 @@ echo "Running "$MODEL_NAME "workflow"
 source_site env   $SITE
 source_site sched $SITE
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
-export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
-
-START=$(( PROCS - TURBINE_RESIDENT_WORK_WORKERS - 1 ))
-END=$(( START + TURBINE_RESIDENT_WORK_WORKERS - 1 ))
-export RESIDENT_WORK_RANKS=$(seq -s , $START 1 $END )
-
-echo "TURBINE_RESIDENT_WORK_WORKERS: $TURBINE_RESIDENT_WORK_WORKERS"
-echo "RESIDENT_WORK_RANKS: $RESIDENT_WORK_RANKS"
-
-if [[ ${EQR:-} == "" ]]
-then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
-fi
+# Set PYTHONPATH for BENCHMARK and SQL related stuff
+PYTHONPATH+=:$BENCHMARK_DIR
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/db
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/db
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py
+export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -85,14 +75,6 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
-R_FILE_ARG=""
-if [[ ${R_FILE:-} == "" ]]
-then
-  R_FILE="mlrMBO1.R"
-fi
-
-R_FILE_ARG="--r_file=$R_FILE"
-
 if [ -z ${GPU_STRING+x} ];
 then
   GPU_ARG=""
@@ -102,19 +84,21 @@ fi
 
 mkdir -pv $TURBINE_OUTPUT
 
-DB_FILE=$TURBINE_OUTPUT/cplo.db
+export DB_FILE=$TURBINE_OUTPUT/cplo.db
+
 if [[ ! -f DB_FILE ]]
 then
   if [[ ${CPLO_ID:-} == "" ]]
   then
     if [[ ${EXPID:0:1} == "X" ]]
     then
-      CPLO_ID=${EXPID:1}
+      export CPLO_ID=${EXPID:1}
     else
-      CPLO_ID=$EXPID
+      export CPLO_ID=$EXPID
     fi
   fi
-  $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $CPLO_ID
+  # Doing this in workflow now:
+  # $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $CPLO_ID
 fi
 
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
@@ -126,7 +110,6 @@ CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 # -drug_response_data=$DRUG_REPSONSE_DATA
                 $RESTART_FILE_ARG
                 $RESTART_NUMBER_ARG
-                $R_FILE_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -137,7 +120,6 @@ log_script
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 mkdir -pv $CACHE_DIR
-mkdir -pv $XCORR_DATA_DIR
 mkdir -pv $TURBINE_OUTPUT/hpo_log
 
 # Allow the user to set an objective function
@@ -145,8 +127,6 @@ OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
-
-# log_path PYTHONPATH
 
 WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
@@ -162,23 +142,43 @@ fi
 
 if [[ ${MACHINE:-} == "" ]]
 then
-  rm turbine-output
+  # Why? -Justin 2019-05-31
+  # rm turbine-output
+  :
 fi
 
-swift-t -n $PROCS \
+which python swift-t java
+echo PP $PYTHONPATH
+echo PH $PYTHONHOME
+log_path PYTHONPATH
+
+
+if [[ ${MACHINE:-} == "" ]]
+then
+  STDOUT=$TURBINE_OUTPUT/output.txt
+  # The turbine-output link is only created on scheduled systems,
+  # so if running locally, we create it here so the test*.sh wrappers
+  # can find it
+  [[ -L turbine-output ]] && rm turbine-output
+  ln -s $TURBINE_OUTPUT turbine-output
+else
+  # When running on a scheduled system, Swift/T automatically redirects
+  # stdout to the turbine-output directory.  This will just be for
+  # warnings or unusual messages
+  STDOUT=""
+fi
+
+~/Public/sfw/swift-t/stc/bin/swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e XCORR_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
-        -j /usr/bin/java \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
@@ -193,11 +193,8 @@ swift-t -n $PROCS \
         -e PREPROP_RNASEQ \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
-  if [[ ${MACHINE:-} == "" ]]
-  then
-    tee $TURBINE_OUTPUT/output.txt
-    # The turbine-output link is only created on scheduled systems,
-    # so if running locally, we create it here so the test*.sh wrappers
-    # can find it
-    ln -s $TURBINE_OUTPUT turbine-output
-  fi
+  tee $STDOUT
+
+# -j /usr/bin/java # Give this to Swift/T if needed for Java
+
+echo "WORKFLOW OK."

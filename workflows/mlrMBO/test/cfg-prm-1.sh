@@ -10,6 +10,8 @@ DESIGN_SIZE=${DESIGN_SIZE:-9}
 # TODO: move the following code to a utility library-
 #       this is a configuration file
 # Set the R data file for running
+
+set -x
 if [ "$MODEL_NAME" = "combo" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/combo_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p1b1" ]; then
@@ -29,3 +31,4 @@ if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
   echo "Invalid model-" "'${MODEL_NAME:-}'"
   exit 1
 fi
+set +x

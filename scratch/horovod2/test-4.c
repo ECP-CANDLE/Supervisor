@@ -10,7 +10,7 @@ int
 main()
 {
   MPI_Init(NULL, NULL);
-  int rc = controller(MPI_COMM_WORLD, "print(42)");
+  int rc = controller_setup(MPI_COMM_WORLD, "print(42)");
   if (!rc)
   {
     printf("FAIL\n");

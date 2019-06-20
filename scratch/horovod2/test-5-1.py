@@ -17,7 +17,3 @@ import horovod.keras as hvd
 
 # Horovod: initialize Horovod.
 hvd.init()
-
-rank = hvd.rank()
-with open("hvd-%i.txt" % rank, "w") as fp:
-    fp.write("HVD OK %i\n" % hvd.size())

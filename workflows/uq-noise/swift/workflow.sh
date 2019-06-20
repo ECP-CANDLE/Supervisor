@@ -163,7 +163,6 @@ swift-t -n $PROCS \
         -e XCORR_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
-        -j /usr/bin/java \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
