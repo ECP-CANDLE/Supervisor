@@ -42,7 +42,7 @@ if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]; then
     export TURBINE_RESIDENT_WORK_WORKERS=1
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
-# NOTE: Below is 2 of 2 lines needed to run swift-t out-of-the-box
+# NOTE: Below is 2 of 2 lines needed to run swift-t out-of-the-box (no longer needed!!)
 #export LD_PRELOAD=/usr/local/slurm/lib/libslurm.so:$LD_PRELOAD # this is the only way aside from recompiling Swift/T I believe to get past an error regarding /usr/local/slurm/lib/slurm/auth_munge.so, e.g., "/usr/local/Tcl_Tk/8.6.8/gcc_7.2.0/bin/tclsh8.6: symbol lookup error: /usr/local/slurm/lib/slurm/auth_munge.so: undefined symbol: slurm_debug"
 
 # Set up EMEWS Queues
