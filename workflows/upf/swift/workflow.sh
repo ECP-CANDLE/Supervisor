@@ -83,7 +83,7 @@ export UPF
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
-        -o $TURBINE_OUTPUT/workflow.tic
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
