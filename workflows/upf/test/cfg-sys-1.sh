@@ -27,6 +27,10 @@ export QUEUE=debug
 # export PROJECT=Candle_ECP
 # export PROJECT=CSC249ADOA01
 
+# Summit:
+# export QUEUE=${QUEUE:-batch}
+# export PROJECT=med106
+
 export WALLTIME=${WALLTIME:-00:10:00}
 
 # export MAIL_ENABLED=1
