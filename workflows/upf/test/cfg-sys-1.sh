@@ -17,7 +17,7 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-debug}
 # Cori queues: debug, regular
 # export QUEUE=regular
-export QUEUE=debug
+# export QUEUE=debug
 # CANDLE on Cori:
 # export PROJECT=m2924
 
