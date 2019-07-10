@@ -21,12 +21,11 @@ export LD_LIBRARY_PATH=$R:$LD_LIBRARY_PATH
 SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
 PATH=$SWIFT/stc/bin:$PATH
 
-log_path PATH
+# log_path PATH
 
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
-# (especially for Cobalt)
 PYTHONHOME=$PY
 
 # EMEWS Queues for R
