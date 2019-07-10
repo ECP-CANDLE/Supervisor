@@ -27,6 +27,7 @@ PATH=$SWIFT/stc/bin:$PATH
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
 PYTHONHOME=$PY
+PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
 # EMEWS Queues for R
 EQR=$ROOT/gcc-6.4.0/EQ-R
