@@ -3,7 +3,8 @@
 # Language settings for Dunedin for app functions
 # Assumes WORKFLOWS_ROOT is set
 
-echo LANGS APP
+# echo LANGS APP
 
 # Just refer to the normal langs settings
-source $WORKFLOWS_ROOT/common/sh/langs-dunedin.sh
+# source $WORKFLOWS_ROOT/common/sh/env-dunedin.sh
+PATH=$HOME/Public/sfw/anaconda3-tf/bin:$PATH

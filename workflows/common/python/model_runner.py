@@ -1,7 +1,6 @@
 
 # MODEL RUNNER PY
 
-# Currently only supports NT3_TC1 # Not true? -Justin 2018/02/28
 # See __main__ section for usage
 
 import sys
@@ -10,14 +9,17 @@ import os
 import numpy as np
 import importlib
 import runner_utils
+from runner_utils import ModelResult
 import log_tools
 import math
+
 logger = None
 
 print("MODEL RUNNER...")
 
-sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
+# Andrew: Adding the following line (switching the order of the following two lines) in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
+sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
 print("sys.path:")
 print(sys.path)
@@ -49,6 +51,10 @@ def import_pkg(framework, model_name):
         raise ValueError("Invalid framework: {}".format(framework))
     return pkg
 
+def log(msg):
+    global logger
+    logger.debug("model_runner: " + msg)
+
 def run(hyper_parameter_map, obj_return):
 
     global logger
@@ -77,11 +83,12 @@ def run(hyper_parameter_map, obj_return):
             cp_str = v
             v = list()
             v.append(cp_str)
+        log("PARAM OVERWRITE: " + str(k) + " = " + str(v))
         params[k] = v
 
-    logger.debug("WRITE_PARAMS START")
+    log("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
-    logger.debug("WRITE_PARAMS STOP")
+    log("WRITE_PARAMS STOP")
 
     history = pkg.run(params)
 
@@ -91,22 +98,24 @@ def run(hyper_parameter_map, obj_return):
     result = 0
     if history != None:
         # Return the history entry that the user requested.
-        val_loss = history.history[obj_return]
+        values = history.history[obj_return]
         # Return a large number for nan and flip sign for val_corr
         if(obj_return == "val_loss"):
+            if(math.isnan(values[-1])):
+                result = 999999999
+            else:
+                result = values[-1]
+        elif(obj_return == "val_corr" or obj_return == "val_dice_coef"): # allow for the return variable to be the val_dice_coef, which is sometimes used by arbitrary models instead of val_corr
             if(math.isnan(val_loss[-1])):
                 result = 999999999
             else:
-                result = val_loss[-1]
-        elif(obj_return == "val_corr"):
-            if(math.isnan(val_loss[-1])):
-                result = 999999999
-            else:
-                result = -val_loss[-1] #Note negative sign
+                result = -values[-1] # Note negative sign
         else:
-            raise ValueError("Unsupported objective function (use obj_param to specify val_corr or val_loss): {}".format(framework))
+            raise ValueError("Unsupported objective function " +
+                             "(use obj_param to specify val_corr or val_loss): " +
+                             framework)
 
-        print("result: " + str(result))
+        print("result: " + obj_return + ": " + str(result))
     return result
 
 def get_obj_return():
@@ -119,10 +128,34 @@ def get_obj_return():
                         valid_obj_returns)
     return obj_return
 
+def load_pre_post(hyper_parameter_map, key):
+    module = None
+    if key in hyper_parameter_map:
+        module_name = hyper_parameter_map[key]
+        module = importlib.import_module(module_name)
+    return module
+
+def run_pre(hyper_parameter_map):
+    module = load_pre_post(hyper_parameter_map, 'pre_module')
+    result = ModelResult.SUCCESS
+    if module != None:
+        logger.debug("PRE RUN START")
+        result = module.pre_run(hyper_parameter_map)
+        logger.debug("PRE RUN STOP")
+    return result
+
+def run_post(hyper_parameter_map):
+    module = load_pre_post(hyper_parameter_map, 'post_module')
+    if module != None:
+        logger.debug("POST RUN START")
+        module.post_run(hyper_parameter_map)
+        logger.debug("POST RUN STOP")
+        
+
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
     logger = log_tools.get_logger(logger, __name__)
-    logger.debug("RUN START")
+    log("RUN START")
 
     ( _, # The Python program name (unused)
       param_string,
@@ -150,10 +183,21 @@ if __name__ == '__main__':
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
 
+    result = run_pre(hyper_parameter_map)
+    if result == ModelResult.ERROR:
+        print("run_pre() returned ERROR!")
+        exit(1)
+    elif result == ModelResult.SKIP:
+        print("run_pre() returned SKIP ...")
+        exit(0)
+    else:
+        assert(result == ModelResult.SUCCESS) # proceed...
+
     # Call to Benchmark!
-    logger.debug("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
     print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
-
     runner_utils.write_output(result, instance_directory)
-    logger.debug("RUN STOP")
+    run_post(hyper_parameter_map)
+
+    log("RUN STOP")

@@ -46,3 +46,8 @@ turbine-directory.txt
 
 # IDE
 .vscode
+
+# Andrew
+*.DS_Store
+*._*
+templates/scripts/archive/

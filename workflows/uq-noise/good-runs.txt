@@ -1,0 +1,8 @@
+Dunedin:
+X053 : epochs=10 : modifying wrong DF
+X056 : epochs=10 : good, small run
+Theta:
+*    : wrong DF
+X012 : epochs=7 : good data but flat plot
+X013 : epochs=10
+X021 : epochs=10 : DONE

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+if [ ${#} = 0 ]
+then
+  echo "Provide the CSV!"
+  exit 1
+fi
+
+CSV=$1
+DAT=${CSV%.csv}.dat
+
+set -x
+make
+./csv2f64 $CSV $DAT
+cat $CSV
+od -t f8 -w24 --output-duplicates $DAT

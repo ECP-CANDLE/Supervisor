@@ -1,0 +1,7 @@
+{"id": "hpset_01", "epochs": 15, "activation": "tanh"}
+{"id": "hpset_02", "epochs": 30, "activation": "tanh"}
+{"id": "hpset_03", "epochs": 15, "activation": "relu"}
+{"id": "hpset_04", "epochs": 30, "activation": "relu"}
+{"id": "hpset_05", "epochs": 10, "batch_size": 128}
+{"id": "hpset_06", "epochs": 10, "batch_size": 256}
+{"id": "hpset_07", "epochs": 10, "batch_size": 512}

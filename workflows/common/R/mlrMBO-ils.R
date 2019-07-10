@@ -1,6 +1,6 @@
-  set.seed(12345)
-  
+
   #mlrMBO EMEWS Algorithm Wrapper
+  # ILS: ???
 
   emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
   if (emews_root == "") {
@@ -32,6 +32,7 @@
       # print(paste("parallelMap2 called with list size:", length(string_params)))
       OUT_put(string_params)
       string_results = IN_get()
+      print(paste0("parallelMap2 results: ", string_results))
 
       st = proc.time() - st
 
@@ -39,6 +40,7 @@
       # Note: can also handle vector returns for each,
       # i.e., a,b;c,d;e,f
       res <- string_to_list_of_vectors(string_results)
+      print(paste0("parallelMap2 result count: ", length(res)))
       # using dummy time
       return(result_with_extras_if_exist(res,st[3]))
     }
@@ -66,7 +68,9 @@
   simple.obj.fun = function(x){}
 
   main_function <- function(max.budget = 110,
+                            # max.iterations is not used
                             max.iterations = 10,
+                            # design.size is ignored
                             design.size=10,
                             propose.points=10,
                             restart.file) {
@@ -74,37 +78,26 @@
     ptm <- proc.time()
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                           fix.factors.prediction = TRUE,
-                          mtry = 6,
-                          se.method = "bootstrap", se.boot = 50, se.ntree = 100)
-    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
-                          impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
-    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
-                               opt.restarts = 1, opt.focussearch.points = 1000)
-    ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)#, iters = max.iterations)
-
-
-    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
-                          fix.factors.prediction = TRUE,
-                          se.method = "bootstrap", 
-                          se.boot = 2, 
-                          ntree=500, 
-                          mtry=8) 
+                          mtry = 8,
+                          se.method = "jackknife",
+                          se.boot = 2,
+                          ntree=500)
     ctrl = makeMBOControl(n.objectives = 1,
-    	   	          propose.points = propose.points, 
+                          propose.points = propose.points,
                           trafo.y.fun = makeMBOTrafoFunction('log', log),
-                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax) 
-    ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
-    ctrl = setMBOControlInfill(ctrl, 
-                               crit = makeMBOInfillCritEI(se.threshold = 0.0),
-                               opt.restarts = 1, 
-                               opt.focussearch.points = 1000)
+                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
+    ctrl = setMBOControlTermination(ctrl, max.evals = propose.points+1)#, iters = max.iterations)
 
+    ctrl = setMBOControlInfill(ctrl,
+                              crit = makeMBOInfillCritCB(),
+                              opt.restarts = 1,
+                              opt.focussearch.points = 1000)
 
     chkpntResults<-NULL
     # TODO: Make this an argument
-    restartFile<-restart.file 
+    restartFile<-restart.file
     if (file.exists(restart.file)) {
       print(paste("Loading restart:", restart.file))
 
@@ -135,8 +128,46 @@
     }
 
     if (is.null(chkpntResults)){
-      design = generateDesign(n = max.budget, par.set = getParamSet(obj.fun))
-      design = head(design, n = propose.points)
+      par.set = getParamSet(obj.fun)
+
+      ## represent each discrete value once
+      # get the maximum number of variables
+      max_val_discrete = 0
+      index=0
+
+      for (v in par.set$pars) {
+        if (v$type == "discrete"){
+          index=index+1
+          i = 0
+          for (val in v$values){
+            i=i+1
+          }
+          if (max_val_discrete < i){
+            max_val_discrete = i
+          }
+        }
+      }
+      # each discrete variable should be represented once, else optimization will fail
+      # this checks if design size is less than max number of discrete values
+      if (design.size < max_val_discrete){
+        print("Aborting! design.size is less than the discrete parameters specified")
+        quit()
+      }
+
+      design = generateDesign(n = propose.points, par.set)
+
+      # this loop modifies the top max_val_discrete designs (design) to have each discrete value represented once
+      i = 0
+      for (v in par.set$pars){
+        i=i+1
+        if (v$type == "discrete"){
+          index=0
+          for (val in v$values){
+            index=index+1
+            design[[i]][index] = val
+          }
+        }
+      }
     } else {
       design = chkpntResults
     }
@@ -160,28 +191,28 @@
     time <-(proc.time() - ptm)
     print(sprintf("nevals = %03d; itr = %03d; time = %5.5f;", nrow(all_res), itr, as.numeric(time[3])))
     min.index<-which(itr_res$y==min(itr_res$y))
-    
+
     par.set.t = par.set0
     pars = par.set.t$pars
     lens = getParamLengths(par.set.t)
     k = sum(lens)
     pids = getParamIds(par.set.t, repeated = TRUE, with.nr = TRUE)
-    
+
     snames = c("y", pids)
     reqDF = subset(itr_res, select = snames, drop =TRUE)
     bestDF <- reqDF[min.index,]
     print("reqDF")
     print(nrow(reqDF))
     print(summary(reqDF))
-    
+
     print("itr-rf")
-    train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
+    train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=10000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
-    var.imp[which(var.imp[,1] < 0),1]<-0
+    #var.imp[which(var.imp[,1] < 0),1]<-0
     index <- sort(abs(var.imp[,1]),
                   decreasing = TRUE,
                   index.return = TRUE)$ix
-    
+
     inputs <- rownames(var.imp)[index]
     scores <- var.imp[index,1]
     remove.index <- which(scores >= 0.9*max(scores))
@@ -190,20 +221,38 @@
     print('removing:')
     print(rnames)
 
-    
+
     par.set1<-par.set0
     pnames<-names(par.set$pars)
     print(par.set1)
     for (index in c(1:k)){
       p = pnames[index]
       type = par.set$pars[[index]]$type
-      if(type == "discrete" & max(scores) > 0){
-      	if (p %in% rnames){
-           val  = subset(bestDF, select = p)
-           cval = as.vector(unlist(val))
-	   print(p)
-	   print(cval)
-           par.set1$pars[[index]]<-makeDiscreteParam(p, values=c(cval))
+      if(max(scores)>0){
+        if (p %in% rnames){
+          val  = subset(bestDF, select = p)
+          cval = as.vector(unlist(val))
+          print(p)
+          print(cval)
+          trafo <- par.set1$pars[[index]]$trafo
+          if (type == "logical1"){
+            par.set1$pars[[index]]<-makeLogicalParam(p, default = cval, tunable = FALSE,  trafo = trafo)
+          } else if(type == "discrete") {
+            par.set1$pars[[index]]<-makeDiscreteParam(p, values=c(cval),  trafo = trafo)
+          } else {
+            delta <- max(1, round(cval * 10/100))
+            ll <- max(cval - delta, par.set$pars[[index]]$lower)
+            uu <- min(cval + delta, par.set$pars[[index]]$upper)
+            if(type == "integer") {
+              if (par.set$pars[[index]]$lower == 0 | par.set$pars[[index]]$upper == 1){
+                par.set1$pars[[index]]<-makeIntegerParam(p, lower=cval, upper=cval, trafo = trafo)
+              } else {
+                par.set1$pars[[index]]<-makeIntegerParam(p, lower=ll, upper=uu, trafo = trafo)
+              }
+            } else {
+              par.set1$pars[[index]]<-makeNumericParam(p, lower=ll, upper=uu, trafo = trafo)
+            }
+          }
         }
       }
     }
@@ -220,30 +269,27 @@
     #ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     design = generateDesign(n = propose.points, par.set = par.set1)
 
-    print("bug msg:")
-    print(names(design))
-    print(names(reqDF[,-1]))
     temp<-rbind(design,reqDF[,-1])
     design <- head(temp, n = propose.points)
-    
-    
+
+
     USE_MODEL <- TRUE
     if(USE_MODEL){
       yvals <- predict(train.model,design)
-      design <- cbind(y=abs(yvals), design)
+      design <- cbind(y=yvals, design)
       ctrl = setMBOControlTermination(ctrl, max.evals = 2*propose.points)
     } else {
       ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
     }
     print("mbo-itr")
     print(yvals)
-    
+
     print(summary(yvals))
-    res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
+    res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = FALSE)
     itr_res<-as.data.frame(res$opt.path)
     itr_res<-cbind(itr_res, stime = as.numeric(time[3]))
     itr_res<-tail(itr_res, n = propose.points)
-   
+
     par.set0<-par.set1
     itr <- itr + 1
     print("bug msg:")
@@ -297,4 +343,3 @@
   setwd(wd)
   OUT_put("Look at final_res.Rds for final results.")
   print("algorithm done.")
-

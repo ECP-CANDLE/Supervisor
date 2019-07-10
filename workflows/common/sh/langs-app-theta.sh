@@ -16,6 +16,8 @@ APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
 unset PYTHONPATH
 unset LD_LIBRARY_PATH
 
+# export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
+module load datascience/tensorflow-1.10
 module load datascience/keras-2.2.2
 export PYTHONHOME="/opt/intel/python/2017.0.035/intelpython35"
 

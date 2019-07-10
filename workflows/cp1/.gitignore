@@ -1,2 +1,4 @@
 experiments
 scratch
+*.db
+!data/initial.db

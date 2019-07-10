@@ -15,7 +15,7 @@ then
 fi
 BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1
+BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
@@ -117,7 +117,8 @@ mkdir -pv $TURBINE_OUTPUT/run
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+# Andrew: Allows for custom model.sh file, if that's desired
+export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 
 WAIT_ARG=""
 if (( ${WAIT:-0} ))
@@ -125,6 +126,7 @@ then
   WAIT_ARG="-t w"
   echo "Turbine will wait for job completion."
 fi
+
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
@@ -150,4 +152,5 @@ swift-t -n $PROCS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
+# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
 echo $TURBINE_OUTPUT > turbine-directory.txt

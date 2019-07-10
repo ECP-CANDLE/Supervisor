@@ -108,24 +108,27 @@ get_expid()
 
   if [ $EXPID = "-a" ]
   then
-    local i=0
-    # Exponential search for free number
-    while (( 1 ))
-    do
-      EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
-      if [[ -d $EXPERIMENTS/$EXPID ]]
-      then
-        i=$(( i + i*RANDOM/32767 + 1 ))
-      else
-        break
-      fi
-    done
     shift
+    local i=0 EXPS E
+    # Search for free number
+    EXPS=( $( ls $EXPERIMENTS ) )
+    if [ ${#EXPS[@]} -ne 0 ]; then
+      for E in ${EXPS[@]}
+      do
+        EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+        if [[ $E == $EXPID ]]
+        then
+          i=$(( i + 1 ))
+        fi
+      done
+    fi
+    EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
+  mkdir -pv $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then
@@ -133,6 +136,12 @@ get_expid()
     exit 1
   fi
   TURBINE_OUTPUT=$TO
+
+  # Andrew: Needed for functionality with George's restart.py script for UPF jobs
+  if [ -f metadata.json ]; then
+    mv metadata.json $TURBINE_OUTPUT
+  fi
+
 }
 
 get_cfg_sys()
@@ -276,6 +285,9 @@ queue_wait_site()
   then
     queue_wait_lsf $JOBID
   elif [[ $SITE == "pascal" ]]
+  then
+    queue_wait_slurm $JOBID
+  elif [[ $SITE == "biowulf" ]]
   then
     queue_wait_slurm $JOBID
   else
@@ -495,7 +507,7 @@ check_directory_exists() {
 
 pad_keys() {
   # Pad 1st tokens
-  printf "%-15s" $1
+  printf "%-15s " $1
   shift
   echo ${*}
 }

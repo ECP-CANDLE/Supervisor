@@ -3,13 +3,19 @@
 # Initialize the SQLite DB
 # See db-init.sql for the table schema
 
+import sys
 from xcorr_db import xcorr_db, q
 
+from pathlib import Path
+THIS = Path(sys.argv[0]).parent.resolve()
+
 DB = xcorr_db('xcorr.db')
+DB.connect()
 
 def create_tables():
     """ Set up the tables defined in the SQL file """
-    with open("db-init.sql") as fp:
+    global THIS
+    with open(str(THIS)+"/db-init.sql") as fp:
         sqlcode = fp.read()
     DB.executescript(sqlcode)
     DB.commit()
@@ -19,7 +25,9 @@ def insert_feature_names():
     Copy features from the header of this datafile
     into the features table
     """
-    datafile = "test_data/combined_rnaseq_data_lincs1000_combat"
+    global THIS
+    datafile = str(THIS)+"/test_data/combined_rnaseq_data_lincs1000_combat"
+    #datafile = "test_data/combined_rnaseq_data_combat"
 
     with open(datafile) as fp:
         line = fp.readline()
@@ -36,8 +44,9 @@ def insert_feature_names():
 
 def insert_study_names():
     """ Copy study names from studies.txt into the DB """
+    global THIS
     studies = []
-    with open("studies.txt") as fp:
+    with open(str(THIS)+"/studies.txt") as fp:
         while True:
             line = fp.readline()
             if line == "": break

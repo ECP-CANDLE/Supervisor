@@ -18,7 +18,7 @@ export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 usage()
 {
-  echo "NT3 UNROLLED: usage: workflow.sh SITE EXPID CFG_SYS UPF"
+  echo "UNROLLED PARAMETER FILE: usage: workflow.sh SITE EXPID CFG_SYS UPF"
 }
 
 if (( ${#} != 4 ))
@@ -57,7 +57,8 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+# Andrew: Allows for custom model.sh if desired
+export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
@@ -77,9 +78,12 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
+
+# Andrew: This is machine-specific I believe
 # export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
@@ -93,7 +97,6 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \

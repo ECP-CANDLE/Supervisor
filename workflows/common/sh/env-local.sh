@@ -1,10 +1,10 @@
 
-# LANGS LOCAL
+# ENV LOCAL
 # Language settings for any local machine like Ubuntu
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 # Modify to specify the location of SWIFT_T installation
 export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
-export LD_LIBRARY_PATH+=$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
+export LD_LIBRARY_PATH+=$SWIFT_T/turbine/lib:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
@@ -33,6 +33,6 @@ export LOCAL=1
 export CRAY=0
 
 PATH=$SWIFT_T/bin/:$PATH
-# Cf. utils.s
+# Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH

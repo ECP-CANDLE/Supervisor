@@ -36,7 +36,8 @@ export CFG_SYS=$THIS/cfg-sys-3.sh
 export CFG_PRM=$THIS/cfg-prm-3.sh
 
 # Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
-export R_FILE=mlrMBO-mbo.R
+export R_FILE=mlrMBO-ils.R
+#export R_FILE=mlrMBO-ils.R
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported

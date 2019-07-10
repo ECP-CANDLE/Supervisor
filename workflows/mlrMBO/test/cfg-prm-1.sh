@@ -3,14 +3,15 @@
 # mlrMBO settings
 
 # Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-5}
+PROPOSE_POINTS=${PROPOSE_POINTS:-9}
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-180}
-DESIGN_SIZE=${DESIGN_SIZE:-10}
-
+DESIGN_SIZE=${DESIGN_SIZE:-9}
 # TODO: move the following code to a utility library-
 #       this is a configuration file
 # Set the R data file for running
+
+set -x
 if [ "$MODEL_NAME" = "combo" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/combo_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p1b1" ]; then
@@ -23,8 +24,6 @@ elif [ "$MODEL_NAME" = "p1b2" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_hps_exp_01.R}
 elif [ "$MODEL_NAME" = "p2b1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_param1.R}
-elif [ "$MODEL_NAME" = "t29res" ]; then
-    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/nt3_hps_exp_01.R}
 fi
 
 if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
@@ -32,3 +31,4 @@ if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
   echo "Invalid model-" "'${MODEL_NAME:-}'"
   exit 1
 fi
+set +x
