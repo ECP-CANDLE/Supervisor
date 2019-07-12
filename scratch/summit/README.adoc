@@ -1,0 +1,10 @@
+
+This will run model_runner.py on nt3, resulting in an internal Keras error.
+
+To run:
+
+. Edit run-py-1.sh to set BENCHMARKS_ROOT and SUPERVISOR_ROOT.
+. Run:
+----
+./run-py-1.sh
+----
