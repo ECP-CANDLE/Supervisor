@@ -22,33 +22,41 @@ sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
 print("sys.path:")
-print(sys.path)
+# print(sys.path)
+for i in range(0, len(sys.path)-1):
+    print("%2i: %s" % (i, sys.path[i]))
 print("")
 
 def import_pkg(framework, model_name):
-    print ("model_name", model_name)
-    if framework == 'keras':
-        module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
-        print ("module_name:", module_name)
-        pkg = importlib.import_module(module_name)
+    # The model_name is the short form of the Benchmark: e.g., 'nt3'
+    # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
+    print("model_name: ", model_name)
+    if framework != 'keras':
+        raise ValueError("Invalid framework: {}".format(framework))
+    module_name = os.getenv("MODEL_PYTHON_SCRIPT")
+    if module_name == None or module_name == "":
+        module_name = "{}_baseline_keras2".format(model_name)
+    print ("module_name:", module_name)
+    pkg = importlib.import_module(module_name)
 
-        from keras import backend as K
-        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
-            import tensorflow as tf
-            print("Configuring tensorflow with {} inter threads and {} intra threads".
-                format(os.environ['NUM_INTER_THREADS'], os.environ['NUM_INTRA_THREADS']))
-            session_conf = tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
-                intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
-            sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
-            K.set_session(sess)
+    from keras import backend as K
+    if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+        import tensorflow as tf
+        inter_threads = int(os.environ['NUM_INTER_THREADS'])
+        intra_threads = int(os.environ['NUM_INTRA_THREADS'])
+        print("Configuring tensorflow with {} inter threads and {} intra threads" %
+              (inter_threads, intra_threads))
+        cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
+                             intra_op_parallelism_threads=intra_threads)
+        sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
+        K.set_session(sess)
     # elif framework is 'mxnet':
     #     import nt3_baseline_mxnet
     #     pkg = nt3_baseline_keras_baseline_mxnet
     # elif framework is 'neon':
     #     import nt3_baseline_neon
     #     pkg = nt3_baseline_neon
-    else:
-        raise ValueError("Invalid framework: {}".format(framework))
+
     return pkg
 
 def log(msg):
@@ -62,12 +70,15 @@ def run(hyper_parameter_map, obj_return):
 
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
-    pkg = import_pkg(framework, model_name)
+
+    # pkg = import_pkg(framework, model_name)
+    import nt3_baseline_keras2
 
     runner_utils.format_params(hyper_parameter_map)
 
     # params is python dictionary
-    params = pkg.initialize_parameters()
+    # params = pkg.initialize_parameters()
+    params = nt3_baseline_keras2.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
@@ -90,7 +101,8 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.write_params(params, hyper_parameter_map)
     log("WRITE_PARAMS STOP")
 
-    history = pkg.run(params)
+    # history = pkg.run(params)
+    nt3_baseline_keras2.run(params)
 
     runner_utils.keras_clear_session(framework)
 
@@ -150,7 +162,7 @@ def run_post(hyper_parameter_map):
         logger.debug("POST RUN START")
         module.post_run(hyper_parameter_map)
         logger.debug("POST RUN STOP")
-        
+
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
