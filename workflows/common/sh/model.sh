@@ -60,6 +60,11 @@ echo
 echo "USING PYTHON:"
 which python
 
+echo BENCHMARKS_ROOT $BENCHMARKS_ROOT
+
+set -x
+export PYTHONPATH=$BENCHMARKS_ROOT/Pilot1/NT3:${PYTHONPATH:-}
+
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
@@ -68,7 +73,7 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$BENCHMARK_TIMEOUT")
 MODEL_CMD="python -u ${arg_array[@]}"
 # echo MODEL_CMD: $MODEL_CMD
-if $TIMEOUT_CMD python -u "${arg_array[@]}"
+if $TIMEOUT_CMD python -v -u "${arg_array[@]}"
 then
   : # Assume success so we can keep a failed exit code
 else
