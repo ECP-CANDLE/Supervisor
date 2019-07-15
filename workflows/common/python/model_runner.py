@@ -3,6 +3,8 @@
 
 # See __main__ section for usage
 
+import nt3_baseline_keras2
+
 import sys
 import json
 import os
@@ -72,7 +74,7 @@ def run(hyper_parameter_map, obj_return):
     model_name = hyper_parameter_map['model_name']
 
     # pkg = import_pkg(framework, model_name)
-    import nt3_baseline_keras2
+    # import nt3_baseline_keras2 # to top
 
     runner_utils.format_params(hyper_parameter_map)
 
@@ -102,7 +104,7 @@ def run(hyper_parameter_map, obj_return):
     log("WRITE_PARAMS STOP")
 
     # history = pkg.run(params)
-    nt3_baseline_keras2.run(params)
+    history = nt3_baseline_keras2.run(params)
 
     runner_utils.keras_clear_session(framework)
 
