@@ -59,13 +59,7 @@ db_cplo_init.main(db_file)
 // "pre_module":  "data_setup",
 // "post_module": "data_setup",
 
-  json_fragment = ----
-"plan":        "/home/wozniak/plan.json",
-"config_file":        "uno_auc_model.txt",
-"cache":       "cache/top6_auc",
-"dataframe_from":
-    "/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv"
-----;
+  json_fragment = make_json_fragment(this, stage);
   if (stage == 0)
   {
     //
@@ -82,6 +76,31 @@ db_cplo_init.main(db_file)
       s = obj(json, node);
     v = propagate(s);
     // v = dummy(parent, stage, id, block);
+  }
+}
+
+(string result) make_json_fragment(string this, int stage)
+{
+    json_fragment = ----
+"plan":        "/home/wozniak/plan.json",
+"config_file":        "uno_auc_model.txt",
+"cache":       "cache/top6_auc",
+"dataframe_from":
+    "/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv",
+"save_weights": "model.h5"
+----;
+  if (stage > 1)
+  {
+    n = strlen(this);
+    parent = substring(this, 0, n-2);
+    result = json_fragment + ----
+,
+"initial_weights": "../%s/model.h5"
+---- % parent;
+  }
+  else
+  {
+    result = json_fragment;
   }
 }
 
