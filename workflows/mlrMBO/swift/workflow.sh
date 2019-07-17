@@ -129,6 +129,7 @@ fi
 
 
 swift-t -n $PROCS \
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
