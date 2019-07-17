@@ -25,18 +25,19 @@ global const string FRAMEWORK = "keras";
 
 file plan_json = input("~/plan.json");
 
-(void v) run_stage(int N, int S, string parent, int stage,
-                   int id, void block)
+(void v)
+run_stage(int N, int S, string this, int stage, void block)
 {
-  this = parent+int2string(id);
-  v = run_dummy(parent, stage, id, block);
+  printf("stage: %i this: %s", stage, this);
+  void p = run_single(this, stage, block);
   if (stage < S)
   {
-    foreach id_child in [0:N-1]
+    foreach id_child in [1:N]
     {
-      run_stage(N, S, this, stage+1, id_child, v);
+      run_stage(N, S, this+"."+id_child, stage+1, p);
     }
   }
+  v = propagate();
 }
 
 (void v) db_setup()
@@ -53,23 +54,28 @@ db_cplo_init.main(db_file)
     v = propagate();
 }
 
-(void v) run_dummy(string parent, int stage, int id, void block)
+(void v) run_single(string this, int stage, void block)
 {
+// "pre_module":  "data_setup",
+// "post_module": "data_setup",
+
   json_fragment = ----
-"pre_module":  "data_setup",
-"post_module": "data_setup",
 "plan":        "/home/wozniak/plan.json",
+"config_file":        "uno_auc_model.txt",
+"cache":       "cache/top6_auc",
 "dataframe_from":
     "/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv"
 ----;
   if (stage == 0)
   {
-    db_setup() =>
+    //
+    // db_setup() =>
       v = propagate();
   }
   else
   {
-    node = parent + "." + stage;
+    // node = this + "." + id;
+    node = this;
     json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
     block =>
       printf("running obj(%s)", node) =>
@@ -85,5 +91,5 @@ app (void v) dummy(string parent, int stage, int id, void block)
 }
 
 stage = 0;
-id = 0;
-run_stage(N, S, "", stage, id, propagate());
+run_stage(N, S, "1", stage, propagate()) =>
+  printf("RESULTS: COMPLETE");
