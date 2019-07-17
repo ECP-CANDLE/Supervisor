@@ -58,7 +58,7 @@ def log(msg):
 def run(hyper_parameter_map, obj_return):
 
     global logger
-    logger = log_tools.get_logger(logger, __name__)
+    logger = log_tools.get_logger(logger, "MODEL RUNNER")
 
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
@@ -150,11 +150,11 @@ def run_post(hyper_parameter_map):
         logger.debug("POST RUN START")
         module.post_run(hyper_parameter_map)
         logger.debug("POST RUN STOP")
-        
+
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
-    logger = log_tools.get_logger(logger, __name__)
+    logger = log_tools.get_logger(logger, "MODEL_RUNNER")
     log("RUN START")
 
     ( _, # The Python program name (unused)
