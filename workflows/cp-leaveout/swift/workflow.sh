@@ -149,7 +149,7 @@ fi
 
 which python swift-t java
 echo PP $PYTHONPATH
-echo PH $PYTHONHOME
+echo PH ${PYTHONHOME:-UNSET}
 log_path PYTHONPATH
 
 
