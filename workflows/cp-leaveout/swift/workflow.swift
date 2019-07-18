@@ -1,11 +1,13 @@
 
 /*
-  RECUR 2 SWIFT
+  WORKFLOW SWIFT
 
-  Simply run with: 'swift-t recur-1.swift | nl'
+  Simply run with: 'swift-t workflow.swift'
   Or specify the N, S values:
-  'swift-t recur-1.swift -N=6 -S=6 | nl'
+  'swift-t workflow.swift -N=6 -S=6'
   for 55,986 tasks.
+  N: Number of nodes per stage
+  S: Number of stages
 */
 
 import io;
