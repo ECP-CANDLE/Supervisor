@@ -42,20 +42,6 @@ run_stage(int N, int S, string this, int stage, void block)
   v = propagate();
 }
 
-(void v) db_setup()
-{
-  python_persist(----
-import db_cplo_init
-global db_file
-db_file = 'cplo.db'
-db_cplo_init.main(db_file)
-----,
-----
-'OK'
-----) =>
-    v = propagate();
-}
-
 (void v) run_single(string this, int stage, void block)
 {
 // "pre_module":  "data_setup",
@@ -104,11 +90,6 @@ db_cplo_init.main(db_file)
   {
     result = json_fragment;
   }
-}
-
-app (void v) dummy(string parent, int stage, int id, void block)
-{
-  "echo" ("parent='%3s'"%parent) ("stage="+stage) ("id="+id) ;
 }
 
 stage = 0;
