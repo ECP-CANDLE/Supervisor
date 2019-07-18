@@ -60,6 +60,20 @@ echo
 echo "USING PYTHON:"
 which python
 
+# Link to data+cache: #62
+echo
+echo "CREATING LINKS IN: $PWD"
+DATA=/usb1/wozniak/CANDLE-Benchmarks-Data
+ln -s $DATA/cache
+ln -s $DATA/uno_default_model.txt
+ln -s $DATA/uno_auc_model.txt
+ln -s $DATA/topN.uno.h5
+set -x
+ls $PWD
+ls $PWD/cache
+set +x
+# End #62
+
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
             "$INSTANCE_DIRECTORY"
