@@ -13,7 +13,7 @@ class TopN_Args:
         self.plan = plan
 
 def pre_run(params):
-    print("pre_run")
+    print("data_setup.pre_run()...")
     args = TopN_Args(params["dataframe_from"],
                      params["node"],
                      params["plan"])
@@ -23,6 +23,7 @@ def pre_run(params):
     except Exception as e:
         print("error in build_dataframe!\n" + str(e))
         return ModelResult.SKIP
+    print("data_setup.pre_run() done.")
     return ModelResult.SUCCESS
 
 def post_run(params):
