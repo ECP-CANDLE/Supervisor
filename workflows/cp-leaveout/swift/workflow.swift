@@ -69,7 +69,7 @@ run_stage(int N, int S, string this, int stage, void block)
 {
     json_fragment = ----
 "plan":        "/home/wozniak/plan.json",
-"config_file":        "uno_auc_model.txt",
+"config_file": "uno_auc_model.txt",
 "cache":       "cache/top6_auc",
 "dataframe_from":
     "/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv",
