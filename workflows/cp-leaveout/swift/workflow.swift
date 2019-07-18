@@ -50,20 +50,18 @@ run_stage(int N, int S, string this, int stage, void block)
   json_fragment = make_json_fragment(this, stage);
   if (stage == 0)
   {
-    //
-    // db_setup() =>
+    // db_setup() => // cf. junk.swift
       v = propagate();
   }
   else
   {
-    // node = this + "." + id;
     node = this;
     json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
     block =>
       printf("running obj(%s)", node) =>
       s = obj(json, node);
     v = propagate(s);
-    // v = dummy(parent, stage, id, block);
+    // v = dummy(parent, stage, id, block); // cf. junk.swift
   }
 }
 
