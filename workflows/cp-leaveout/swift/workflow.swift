@@ -43,40 +43,59 @@ global const string FRAMEWORK = "keras";
 file plan_json =
   input("/home/wozniak/proj/SV.develop/workflows/cp-leaveout/plangen_cell8-p2_drug8-p2.json");
 
-
 (void v)
 run_stage(int N, int S, string this, int stage, void block,
-          string plan_id, string db_file)
+          string plan_id, string db_file, string runtype)
 {
+
   printf("stage: %i this: %s", stage, this);
-  void parent = run_single(this, stage, block);
+  // Run the model
+  void parent = run_single(this, stage, block, plan_id);
+
   if (stage < S)
   {
     foreach id_child in [1:N]
     {
       run_stage(N, S, this+"."+id_child, stage+1, parent,
-                plan_id, db_file);
+                plan_id, db_file, runtype);
     }
   }
   v = propagate();
 }
 
-(void v) run_single(string this, int stage, void block)
+(void v) run_single(string node, int stage, void block, string plan_id)
 {
-  json_fragment = make_json_fragment(this, stage);
+  json_fragment = make_json_fragment(node, stage);
   if (stage == 0)
   {
     // db_setup() => // cf. junk.swift
-      v = propagate();
+    v = propagate();
   }
   else
   {
-    node = this;
     json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
     block =>
       printf("running obj(%s)", node) =>
-      s = obj(json, node);
-    v = propagate(s);
+      // Insert the model run into the DB
+      code = python_persist("import plangen",
+                            "str(plangen.start_subplan('%s', '%s', %s, '%s', %s))" %
+                            (db_file, filename(plan_json), plan_id, node, runtype));
+    if (code == "0")
+    {
+      // Run the model
+      s = obj(json, node) =>
+        printf("completed: node: " + node) =>
+        // Update the DB to complete the model run
+        python_persist("import plangen",
+                       "str(plangen.stop_subplan('%s', '%s', '%s', {}))" %
+                       (db_file, plan_id, node));
+      v = propagate(s);
+    }
+    else
+    {
+      printf("plan node already marked complete: " + node) =>
+        v = propagate();
+    }
     // v = dummy(parent, stage, id, block); // cf. junk.swift
   }
 }
@@ -108,15 +127,14 @@ run_stage(int N, int S, string this, int stage, void block,
   }
 }
 
-
-plan_id = python("import plangen",
-                 "str(plangen.plan_prep('%s', '%s', %s))" %
-                 (db_file, filename(plan_json), runtype));
+plan_id = python_persist("import plangen",
+                         "str(plangen.plan_prep('%s', '%s', %s))" %
+                         (db_file, filename(plan_json), runtype));
 printf("DB plan_id: %s", plan_id);
 
 // python("print('hi')");
 assert(plan_id != "-1", "Plan already exists!");
 
 stage = 0;
-run_stage(N, S, "1", stage, propagate(), plan_id, db_file) =>
+run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype) =>
   printf("RESULTS: COMPLETE");
