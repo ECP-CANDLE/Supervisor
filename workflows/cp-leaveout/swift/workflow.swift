@@ -29,12 +29,12 @@ file plan_json = input("~/plan.json");
 run_stage(int N, int S, string this, int stage, void block)
 {
   printf("stage: %i this: %s", stage, this);
-  void p = run_single(this, stage, block);
+  void parent = run_single(this, stage, block);
   if (stage < S)
   {
     foreach id_child in [1:N]
     {
-      run_stage(N, S, this+"."+id_child, stage+1, p);
+      run_stage(N, S, this+"."+id_child, stage+1, parent);
     }
   }
   v = propagate();
