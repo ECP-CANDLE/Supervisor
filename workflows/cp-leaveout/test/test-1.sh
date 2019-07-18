@@ -5,24 +5,21 @@ set -eu
 
 usage()
 {
-  echo "Usage: test SITE RUN_DIR(optional)"
-  echo "       RUN_DIR is optional, use -a for automatic"
+  echo "Usage: test SITE EXPID WORKFLOW_ARGS"
 }
 
-RUN_DIR=""
-if (( ${#} == 2 ))
+if (( ${#} == 0 ))
 then
-	RUN_DIR=$2
-elif (( ${#} == 1 )) # test-all uses this
-then
-	RUN_DIR="-a"
-else
-        usage
-        exit 1
+  usage
+  exit 1
 fi
 
-export MODEL_NAME=uno
 SITE=$1
+RUN_DIR=$2
+shift 2
+WORKFLOW_ARGS=$*
+
+export MODEL_NAME=uno # nt3
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
@@ -45,7 +42,8 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+                                      $MODEL_NAME $WORKFLOW_ARGS
 
 # Wait for job
 queue_wait
