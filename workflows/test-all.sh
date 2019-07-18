@@ -35,7 +35,7 @@ do
   # do
     # $THIS/$ALGORITHM/test/test-1.sh $SITE $BENCHMARK
   set -x
-  $THIS/mlrMBO/test/test-1.sh $BENCHMARK $SITE
+  $THIS/mlrMBO/test/test-1.sh $BENCHMARK $SITE -a
   # done
 done
 
