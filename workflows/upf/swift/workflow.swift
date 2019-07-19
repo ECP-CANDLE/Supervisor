@@ -19,7 +19,7 @@ int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 
 // Report some key facts:
 printf("UPF: %s", filename(upf));
-system1("date \"+%Y/%m/%d %H:%M\"");
+system1("date \"+%Y-%m-%d %H:%M\"");
 
 // Read unrolled parameter file
 string upf_lines[] = file_lines(upf);
@@ -37,6 +37,6 @@ foreach params,i in upf_lines
 }
 
 // Join all result values into one big semicolon-delimited string
-string res = join(results, ";");
+string result = join(results, ";");
 // and print it
-printf(res);
+printf(result);
