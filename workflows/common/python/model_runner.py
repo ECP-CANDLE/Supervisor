@@ -22,7 +22,8 @@ sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
 print("sys.path:")
-print(sys.path)
+for i in range(0, len(sys.path)-1):
+    print("%2i: %s" % (i, sys.path[i]))
 print("")
 
 def import_pkg(framework, model_name):
