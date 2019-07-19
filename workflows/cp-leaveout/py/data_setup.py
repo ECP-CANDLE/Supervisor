@@ -30,7 +30,7 @@ def pre_run(params):
     try:
         topN_to_uno.build_dataframe(args)
     except Exception as e:
-        print("error in build_dataframe!\n" + str(e))
+        print("data_setup: error in build_dataframe!\n" + str(e))
         return ModelResult.ERROR
     print("data_setup.pre_run() done.")
     return ModelResult.SUCCESS
