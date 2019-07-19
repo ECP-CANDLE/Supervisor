@@ -88,6 +88,7 @@ else
       # This will trigger a NaN (the result file does not exist)
       exit 0
     fi
+    echo "ABORTING WORKFLOW (exit 1)"
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
