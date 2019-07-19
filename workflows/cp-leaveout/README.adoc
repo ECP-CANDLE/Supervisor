@@ -28,3 +28,9 @@ Restart:
 ----
 $ test/test-1.sh <SITE> <EXPID> -r
 ----
+
+Quick check of DB contents after run:
+
+----
+$ ./check-db.sh <FILE.db>
+----
