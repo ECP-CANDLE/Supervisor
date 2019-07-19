@@ -166,7 +166,6 @@ swift-t -O 0 -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
-        -e XCORR_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
@@ -180,7 +179,6 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
-        -e PREPROP_RNASEQ \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
   tee $STDOUT
