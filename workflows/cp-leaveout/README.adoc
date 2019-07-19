@@ -10,15 +10,21 @@
 In this directory, retrieve:
 ----
 # The original data file
-$ wget http://www.mcs.anl.gov/~wozniak/top21_dataframe_8x8.csv
+$ wget http://www.mcs.anl.gov/~wozniak/data/top21_dataframe_8x8.csv
 # The plan file (used by topN_to_uno to make a training file)
-$ wget http://www.mcs.anl.gov/~wozniak/plangen_cell8-p2_drug8-p2.json
+$ wget http://www.mcs.anl.gov/~wozniak/data/plangen_cell8-p2_drug8-p2.json
 # An example training file
-$ wget http://www.mcs.anl.gov/~wozniak/topN.uno.h5
+$ wget http://www.mcs.anl.gov/~wozniak/data/topN.uno.h5
 ----
 
 Run:
 
 ----
 $ test/test-1.sh <SITE> -a
+----
+
+Restart:
+
+----
+$ test/test-1.sh <SITE> <EXPID> -r
 ----
