@@ -88,17 +88,16 @@ get_expid()
 # EXPID is the name of the new directory under experiments/
 # If the user provides -a, this function will autogenerate
 #   a new EXPID under the experiments directory,
-#   which will be exported as TURBINE_OUTPUT
 # If EXP_SUFFIX is set in the environment, the resulting
 #   EXPID will have that suffix.
-# EXPID is exported into the environment
+# RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
 #    from the compute nodes without accessing the soft-links
 {
   if (( ${#} < 1 ))
   then
-    echo "could not find EXPID argument!"
+    echo "get_expid(): could not find EXPID argument!"
     return 1
   fi
 
@@ -106,13 +105,16 @@ get_expid()
 
   export EXPID=$1
 
+  local i=0 EXPS E TO
+
   if [ $EXPID = "-a" ]
   then
     shift
-    local i=0 EXPS E
-    # Search for free number
+    # Search for free experiment number
+    mkdir -pv $EXPERIMENTS
     EXPS=( $( ls $EXPERIMENTS ) )
-    if [ ${#EXPS[@]} -ne 0 ]; then
+    if (( ${#EXPS[@]} != 0 ))
+    then
       for E in ${EXPS[@]}
       do
         EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
@@ -208,7 +210,7 @@ source_site()
   if (( ${#} != 2 ))
   then
     echo "usage: source_site TOKEN SITE"
-    echo "where TOKEN is langs, modules, etc."
+    echo "where TOKEN is env, sched, etc."
     echo "  and SITE is titan, cori, theta, etc."
     return 1
   fi
@@ -218,23 +220,23 @@ source_site()
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
   then
-    echo "Set WORKFLOWS_ROOT!"
+    echo "source_site(): Set WORKFLOWS_ROOT!"
     return 1
   fi
 
   FILE=$WORKFLOWS_ROOT/common/sh/$TOKEN-$SITE.sh
   if ! [[ -f $FILE ]]
   then
-    echo "warning: no file: $FILE"
+    echo "source_site(): warning: no file: $FILE"
     return 0
   fi
-  echo sourcing $FILE
+  echo "sourcing $FILE"
   source $FILE
 }
 
 queue_wait()
-# Autodetect TURBINE_OUTPUT and do a queue_wait_site()
-# Assumes MACHINE and SITE are globals
+# INPUT: TURBINE_OUTPUT, MACHINE, and SITE as globals
+# Dispatches to queue_wait_site()
 {
   if (( ${#} != 0 ))
   then
@@ -242,18 +244,18 @@ queue_wait()
     return 1
   fi
 
+  echo "queue_wait()..."
+
   source_site sched $SITE
 
   if [[ ${MACHINE:-} == "" ]]
   then
     # Local execution
-    TURBINE_OUTPUT=$PWD
     JOBID=NONE
     return
   fi
 
   # Scheduled execution
-  TURBINE_OUTPUT=$( cat turbine-directory.txt )
   JOBID=$( cat $TURBINE_OUTPUT/jobid.txt )
   queue_wait_site $SITE $JOBID
 }
