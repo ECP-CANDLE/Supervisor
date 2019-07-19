@@ -5,24 +5,21 @@ set -eu
 
 usage()
 {
-  echo "Usage: test SITE RUN_DIR(optional)"
-  echo "       RUN_DIR is optional, use -a for automatic"
+  echo "Usage: test SITE EXPID WORKFLOW_ARGS"
 }
 
-RUN_DIR=""
-if (( ${#} == 2 ))
+if (( ${#} == 0 ))
 then
-	RUN_DIR=$2
-elif (( ${#} == 1 )) # test-all uses this
-then
-	RUN_DIR="-a"
-else
-        usage
-        exit 1
+  usage
+  exit 1
 fi
 
-export MODEL_NAME=uno
 SITE=$1
+RUN_DIR=$2
+shift 2
+WORKFLOW_ARGS=$*
+
+export MODEL_NAME=uno # nt3
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
@@ -35,6 +32,11 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+# Data files
+PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
+DATAFRAME_CSV=/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv
+BENCHMARK_DATA=/usb1/wozniak/proj/Benchmarks/Pilot1/Uno
+
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
 export OBJ_RETURN="val_loss"
@@ -45,8 +47,11 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
-
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+                                      $MODEL_NAME $WORKFLOW_ARGS       \
+                                      --plan_json=$PLAN_JSON           \
+                                      --dataframe_csv=$DATAFRAME_CSV   \
+                                      --benchmark_data=$BENCHMARK_DATA
 # Wait for job
 queue_wait
 

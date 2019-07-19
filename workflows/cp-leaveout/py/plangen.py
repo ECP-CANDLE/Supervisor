@@ -4,7 +4,7 @@ from enum import Enum
 import glob
 import itertools as it
 import json
-# import numpy as np
+import numpy as np
 import os
 import sys
 import sqlite3
@@ -14,7 +14,7 @@ import planargs
 
 from abc import ABC, abstractmethod     # abstract class support
 from collections import OrderedDict
-# from scipy.special import comb
+from scipy.special import comb
 from pprint import pprint as pp
 from datetime import datetime
 
@@ -479,8 +479,6 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
         lclcsr = conn.cursor()
     try:
         db_exception = False
-        with open("db.log", "a") as fp:
-            fp.write("STMT: " + stmt + "\n")
         lclcsr.execute(stmt)
 
     except db_Error as e:
@@ -624,7 +622,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
     partitions   = get_plan_fs_parts(plan_dict)
     nbr_subplans    = get_plan_nbr_subplans(plan_dict)
 
-    # de    termine if a plan of the given name has already been registered
+    # determine if a plan of the given name has already been registered
     conn = db_connect(db_path)
     plan_key = _get_planstat_key(plan_path)
     stmt = _select_row_from_planstat.format(plan_key)
