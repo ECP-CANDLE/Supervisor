@@ -158,7 +158,7 @@ else
   STDOUT=""
 fi
 
-~/Public/sfw/swift-t/stc/bin/swift-t -O 0 -n $PROCS \
+swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
