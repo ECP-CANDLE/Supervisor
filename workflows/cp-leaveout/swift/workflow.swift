@@ -40,9 +40,10 @@ else
 {
   runtype = "plangen.RunType.RUN_ALL";
 }
-string plan_json     = argv("plan_json");
-string dataframe_csv = argv("dataframe_csv");
-string db_file       = argv("db_file");
+string plan_json      = argv("plan_json");
+string dataframe_csv  = argv("dataframe_csv");
+string db_file        = argv("db_file");
+string benchmark_data = argv("benchmark_data");
 // END WORKFLOW ARGUMENTS
 
 // For compatibility with obj():
@@ -111,15 +112,16 @@ run_stage(int N, int S, string this, int stage, void block,
 (string result) make_json_fragment(string this, int stage)
 {
     json_fragment = ----
-"pre_module":  "data_setup",
-"post_module": "data_setup",
-"plan":        "%s",
-"config_file": "uno_auc_model.txt",
-"cache":       "cache/top6_auc",
+"pre_module":     "data_setup",
+"post_module":    "data_setup",
+"plan":           "%s",
+"config_file":    "uno_auc_model.txt",
+"cache":          "cache/top6_auc",
 "dataframe_from": "%s",
-"save_weights": "model.h5"
+"save_weights":   "model.h5",
+"benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv);
+(plan_json, dataframe_csv, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);
