@@ -187,4 +187,10 @@ swift-t -O 0 -n $PROCS \
 
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
 
+if (( ${PIPESTATUS[0]} ))
+then
+  echo "workflow.sh: swift-t exited with error!"
+  exit 1
+fi
+
 echo "WORKFLOW OK."
