@@ -1,4 +1,5 @@
 
+from collections import deque
 from collections import namedtuple
 from enum import Enum
 import glob
@@ -7,7 +8,7 @@ import json
 import numpy as np
 import os
 import sys
-import sqlite3 
+import sqlite3
 from sqlite3 import Error as db_Error
 
 import planargs
@@ -17,6 +18,10 @@ from collections import OrderedDict
 from scipy.special import comb
 from pprint import pprint as pp
 from datetime import datetime
+
+ISO_TIMESTAMP = "seconds"                       # timestamp to ISO string
+ISO_TIMESTAMP_ENCODE = "%Y-%m-%dT%H:%M:%S"      # ISO string to timestamp
+DEBUG_SQL = False
 
 def isempty(path):
     """Determine whether the given directory is empty."""
@@ -261,7 +266,7 @@ class LeaveoutSubsetGenerator(SubsetGenerator):
         """Initialize - collect plan metadata """
         currtime = datetime.now()
         details = {'fs_names': fs_names, 'fs_filepaths':fs_paths, 'fs_parts': fs_parts}
-        details['create_date'] = currtime.strftime("%m/%d/%Y-%H:%M:%S")
+        details['create_date'] = currtime.isoformat(timespec=ISO_TIMESTAMP)
         details['strategy'] = self.strategy
 
         label = ''
@@ -388,9 +393,11 @@ _runhist_ddl = """
         status          TEXT NOT NULL,
         start_time      TEXT NOT NULL,
         stop_time       TEXT,
+        run_mins        INT,
         mae             REAL,
         mse             REAL,
         r_square        REAL,
+        other_info      TEXT,
         weights_fn      TEXT,
         PRIMARY KEY (plan_id, subplan_id)
     ); """
@@ -402,33 +409,39 @@ RunhistRow = namedtuple('RunhistRow',
         'status',
         'start_time',
         'stop_time',
+        'run_mins',
         'mae',
         'mse',
         'r_square',
+        'other_info',
         'weights_fn'
     ]
 )
 
 _select_row_from_runhist = """
-    SELECT plan_id, subplan_id, status, start_time, stop_time, mae, mse, r_square, weights_fn
+    SELECT plan_id, subplan_id, status,
+           start_time, stop_time, run_mins,
+           mae, mse, r_square, other_info, weights_fn
     FROM runhist
     WHERE plan_id = {} and subplan_id = '{}'
     """
 
 _insupd_scheduled_runhist = """
     REPLACE INTO runhist(plan_id, subplan_id, status, start_time,
-        stop_time, mae, mse, r_square, weights_fn)
+        stop_time, run_mins, mae, mse, r_square, other_info, weights_fn)
     VALUES({}, '{}', '{}', '{}',
-        NULL, NULL, NULL, NULL, NULL)
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL)
     """
 
 _insupd_completed_runhist = """
     UPDATE runhist SET
         status = '{}',
         stop_time = '{}',
+        run_mins = {},
         mae = {},
         mse = {},
         r_square = {},
+        other_info = '{}',
         weights_fn = '{}'
     WHERE
         plan_id = {} AND subplan_id='{}'
@@ -444,9 +457,9 @@ _delete_from_runhistory = """
 #   db_connect          - establish database connection returning conn handle     
 #   execute_sql_stmt    - execute a SQL statement with optional error trap   
 #   plan_prep           - prepare for the execution of a multi-step "plan"
-#   start_subplan       - start a subplan, (ex. '1.4.8'), write RunHistRow  
-#   stop_subplan        - stop a subplan, update RunHistRow 
-#   get_subplan_runhist - return a RunHistRow for a given subplan 
+#   start_subplan       - start a subplan, (ex. '1.4.8'), write RunhistRow  
+#   stop_subplan        - stop a subplan, update RunhistRow 
+#   get_subplan_runhist - return a RunhistRow for a given subplan 
 #   plan_remove         - remove all database records for the named plan
 #------------------------------------------------------------------------------
 
@@ -478,6 +491,10 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
     else:
         lclcsr = conn.cursor()
     try:
+        if DEBUG_SQL:
+            with open("plangen_db.log", "a") as fp:
+                fp.write("STMT: " + stmt + "\n")
+
         db_exception = False
         lclcsr.execute(stmt)
 
@@ -578,7 +595,7 @@ def plan_remove(db_path, plan_path):
 def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
     """Prepare to run a plan, a hierarchy of interdependent subplans.
 
-    Plans names and related information are stored in the planstat (PLAN STATUS)
+    Plan names and related information are stored in the planstat (PLAN STATUS)
     table. There is one row for each plan submitted. A positive, unique integer
     called the 'rowid' is assigned to table rows by the database manager. The
     rowid of a planstat table row is defined here as the "plan_id". The plan_id
@@ -590,15 +607,15 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         When a new plan is presented it is registered in the planstat table and
         during its execution a large number of runhist (RUN HISTORY) table
         entries are created and then updated. To prevent unintended loss of
-        data one of thethe following "RunTypes" is specified on the initial
-        plan_prep() call and again on subsequent subplan_start() calls.
+        data one of the following "RunTypes" is specified on the initial
+        plan_prep() call and again on subsequent start_subplan() calls.
 
         Specify RUN_ALL on the first attempt to run a plan. If the plan name
         is already registered, the request fails and neither the planstat or
         runstat tables are changed.
 
         Specify RESTART if a prior attempt to run a plan did not complete. The
-        presence of a corresponding planstat record is verified. subplan_start()
+        presence of a corresponding planstat record is verified. start_subplan()
         returns a SKIP status if the associated runhist row (if any) is marked
         COMPLETE.
 
@@ -611,7 +628,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         A negative value indicates a fatal error.
 
         Otherwise the integer returned is the plan_id used together with a
-        subplan_id string used in subsequent subplan_start(), subplan_stop()
+        subplan_id string used in subsequent start_subplan(), stop_subplan()
         and get_subplan_hist() calls.
     """
 
@@ -644,8 +661,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         error = True
 
     elif run_type == RunType.RESTART and rowid < 0:
-        print("Error: RESTART specified but plan: %s has not been previously run" % plan_key)
-        error = True
+        print("Warning: RESTART specified but plan: %s has not been previously run" % plan_key)
 
     elif rowid > 0 and create_date != create_date:  # DEBUG ???????????????????????????????????? plan_rec.create_date:
         print("Error: RESTART specified but the signature of the previously defined plan: %s does not match" % plan_key)
@@ -681,7 +697,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
 def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=None):
     """Schedule the execution of a subplan.
 
-    This function writes a RunHistRow record to the runhist table indicating that
+    This function writes a RunhistRow record to the runhist table indicating that
     the named plan/subplan has been SCHEDULED. The row includes the "start time".
     If the given run_type is RESTART, it is possible that the subplan has already
     run, as indicated by the status returned.
@@ -694,8 +710,8 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         run_type:       RunType.RUN_ALL or RunType.RESTART
 
     Returns
-        Zero indicates that a RunHistRow record has been created to represent
-        the subplan. -1 is returned from a RESTART call if the a RunHistRow
+        Zero indicates that a RunhistRow record has been created to represent
+        the subplan. -1 is returned from a RESTART call if the a RunhistRow
         already exists for the plan/subplan and is marked COMPLETE.
     """
 
@@ -710,14 +726,14 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         row = csr.fetchone()
 
         if row:
-            plan_rec = RunhistRow._make(row)
-            if plan_rec.status == RunStat.COMPLETE.name:
+            runhist_rec = RunhistRow._make(row)
+            if runhist_rec.status == RunStat.COMPLETE.name:
                 skip = True
 
     # construct/reinit a new runhist record 
     if not skip:
         currtime = datetime.now()
-        start_time = currtime.strftime("%m/%d/%Y-%H:%M:%S")
+        start_time = currtime.isoformat(timespec=ISO_TIMESTAMP)
 
         stmt = _insupd_scheduled_runhist.format(
             plan_id,
@@ -741,16 +757,16 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
 def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     """Complete the execution of a subplan.
 
-    This function updates the RunHistRow record created by start_subplan()
+    This function updates the RunhistRow record created by start_subplan()
     updating the status to COMPLETE, the completion timestamp, and "user
     fields" (such as MAE, MSE, R2) returned by the model.
 
     A comp_dict dictionary is populated with the names and default values
-    for columns implemented in the RunHistRow table. Values matching those
-    names are extracted from the comp_info_dict are written to the table. 
+    for columns implemented in the RunhistRow table. Values matching those
+    names are extracted from the comp_info_dict are written to the table.
 
     TODO It might be nice to take all of the unmatched fields from comp_info_dict
-    and write them into a single RunHistRow text field as key=value, ...
+    and write them into a single RunhistRow text field as key=value, ...
 
     Args
         db_path:        plan management database path (relative or absolute)
@@ -760,32 +776,56 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     """
 
     conn = db_connect(db_path)
-    currtime = datetime.now()
-    stop_time = currtime.strftime("%m/%d/%Y-%H:%M:%S")
+    csr  = conn.cursor()
+    curr_time  = datetime.now()
+    stop_time = curr_time.isoformat(timespec=ISO_TIMESTAMP)
 
-    comp_dict = dict(mae=0.0, mse=0.0, r_square=0.0, weights_fn='N/A')
-    _acquire_actuals(comp_dict, comp_info_dict)
+    comp_dict = dict(mae=0.0, mse=0.0, r_square=0.0, weights_fn='N/A', unprocessed='')
+    remainder = _acquire_actuals(comp_dict, comp_info_dict)
 
-    stmt = _insupd_completed_runhist.format(
-    # column values
-        RunStat.COMPLETE.name,
-        stop_time,
-        comp_dict['mae'],
-        comp_dict['mse'],
-        comp_dict['r_square'],
-        comp_dict['weights_fn'],
-    # key spec    
-        plan_id,
-        subplan_id
-    )
+    if len(remainder) == 0:
+        other_info = ''
+    else:
+        other_info = json.dumps(remainder)
 
-    execute_sql_stmt(conn, stmt)
+    # fetch row to retrieve schedule info
+    stmt = _select_row_from_runhist.format(plan_id, subplan_id)
+    execute_sql_stmt(conn, stmt, csr)
+    row = csr.fetchone()
+
+    if row:                 # expected, caller error if already marked COMPLETED
+        runhist_rec = RunhistRow._make(row)
+        if runhist_rec.status != RunStat.COMPLETE.name:
+            start_time = datetime.strptime(runhist_rec.start_time, ISO_TIMESTAMP_ENCODE)
+            duration   = curr_time - start_time
+            run_mins   = int((duration.total_seconds() + 59) / 60)
+
+            # update runhist record
+            stmt = _insupd_completed_runhist.format(
+               # column values
+                RunStat.COMPLETE.name,
+                stop_time,
+                run_mins,
+                comp_dict['mae'],
+                comp_dict['mse'],
+                comp_dict['r_square'],
+                other_info,
+                comp_dict['weights_fn'],
+               # key spec    
+                plan_id,
+                subplan_id
+            )
+
+            execute_sql_stmt(conn, stmt)
+
+    # cleanup
+    csr.close()
     conn.commit()
     conn.close()
 
 
 def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
-    """Return the RunHistRow record for a given plan/subplan.
+    """Return the RunhistRow record for a given plan/subplan.
 
     Args
         db_path:        plan management database path (relative or absolute)
@@ -793,7 +833,7 @@ def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
         subplan_id      the subplan identifier ex. '1 4.8'
 
     Returns
-        The RunHistRow associated with the given plan/subplan is returned if
+        The RunhistRow associated with the given plan/subplan is returned if
         found.
     """
     conn = db_connect(db_path)
@@ -810,9 +850,15 @@ def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
     return plan_rec
 
 def _acquire_actuals(dft_dict, actuals_dict):
+    """Extract values from dictionary overlaying defaults."""
+    actuals = actuals_dict.copy()
     for key, value in dft_dict.items():
-        if key in actuals_dict:
-            dft_dict[key] = actuals_dict[key]
+        if key in actuals:
+            dft_dict[key] = actuals[key]
+            actuals.pop(key)
+
+    return actuals          # possibly empty
+
 
 def _get_planstat_key(plan_path):
     """Extract the name portion of a plan from a filepath."""
@@ -822,7 +868,7 @@ def _get_planstat_key(plan_path):
 
 
 def _delete_runhistory(conn, plan_id):
-    """Delete RunHistRows containing the given plan_id."""
+    """Delete RunhistRows containing the given plan_id."""
     csr  = conn.cursor()
     stmt = _delete_from_runhistory.format(plan_id)
     execute_sql_stmt(conn, stmt, cursor=csr, trap_exception=True)
@@ -1182,20 +1228,73 @@ def main():
         print("%s JSON file written" % json_abspath)
 
     if args.debug:
-        pp(args.plan_dict, width=160)
+        print("Plan dictionary generated")
+        pp(args.plan_dict, width=160)               # DEBUG comment this out for large plans
 
     if args.test:
-        test(json_abspath)
+        #test1(json_abspath, "test1_sql.db")
+        test2(json_abspath, "test2_sql.db")
 
 #----------------------------------------------------------------------------------
 # test plan navigation and subplan entry retrieval
 #----------------------------------------------------------------------------------
 
-def test(plan_path):
-    db_path = "test_sql_database"
+def test2(plan_path, db_path):
     run_type = RunType.RESTART
+   #run_type = RunType.RUN_ALL
 
-    plan_id = plan_prep(db_path, "plangen_cell8-p2_drug8-p2.json", run_type)
+    plan_name = os.path.basename(plan_path)
+    plan_id   = plan_prep(db_path, plan_name, run_type)
+
+    plan_dict = load_plan(plan_path)
+    metadata, root_name = get_subplan(plan_dict)
+
+    queue = deque()
+    queue.append(root_name)
+
+    print("Test2 start")
+    for iloop in it.count(start = 0):
+        if len(queue) == 0:
+            print("Test2 complete - proc loop count: %d" % iloop)
+            break
+
+        curr_subplan = queue.popleft()
+        successor_names = get_successors(plan_dict, curr_subplan)
+        for successor in successor_names:
+            queue.append(successor)
+
+        if len(curr_subplan) == 1:
+            continue
+
+        status = start_subplan(
+            db_path,
+            plan_path,
+            plan_id=plan_id,
+            subplan_id=curr_subplan,
+            run_type=run_type
+        )
+
+        if status < 0:
+            continue
+
+        completion_status = dict(mse=1.1, mae=2.2, r_square=.555)
+
+        stop_subplan(
+            db_path,
+            plan_id=plan_id,
+            subplan_id=curr_subplan,
+            comp_info_dict=completion_status
+        )
+        print("Completing subplan %6d" % iloop)
+
+#----------------------------------------------------------------------------------
+
+def test1(plan_path, db_path):
+    run_type = RunType.RESTART
+   #run_type = RunType.RUN_ALL
+
+    plan_name = os.path.basename(plan_path)
+    plan_id   = plan_prep(db_path, plan_name, run_type)
 
     if (plan_id < 0):
         sys.exit("Terminating due to database detected error")
@@ -1203,7 +1302,7 @@ def test(plan_path):
     print("\nBegin plan navigation and subplan retrieval test")
     plan_dict = load_plan(plan_path)
 
-    # plan root name, value returned when subplan_id= is omitted
+    # plan root name value returned when subplan_id= is omitted
     metadata, root_name = get_subplan(plan_dict)
 
     # the root has no parent / predecessor
@@ -1255,10 +1354,10 @@ def test(plan_path):
 
         # test retrieval api
         row = get_subplan_runhist(db_path, plan_id=plan_id, subplan_id=select_one)
-        print(row)
+        #print(row)
 
         # post subplan termination
-        completion_status = dict(mse=1.1, mae=2.2, r_square=.555)
+        completion_status = dict(mse=1.1, mae=2.2, r_square=.555, misc='no such column', data=123)
 
         stop_subplan(
             db_path,
