@@ -158,7 +158,7 @@ else
   STDOUT=""
 fi
 
-~/Public/sfw/swift-t/stc/bin/swift-t -O 0 -n $PROCS \
+swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
@@ -186,5 +186,11 @@ fi
   tee $STDOUT
 
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
+
+if (( ${PIPESTATUS[0]} ))
+then
+  echo "workflow.sh: swift-t exited with error!"
+  exit 1
+fi
 
 echo "WORKFLOW OK."
