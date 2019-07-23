@@ -4,14 +4,25 @@
 == Quick start
 
 * Check out Benchmarks branch loocv
+** Edit uno_baseline_keras2.py to replace uno_default_model.txt +
+   with uno_auc_model.txt
+** Edit uno_auc_model.txt to set epochs=3 (or whatever for a shorter run)
 * Check out Supervisor branch issue-62
-* Edit model.sh to set DATA location
+* Edit test-1.sh to set data locations:
++
+----
+PLAN_JSON      (file: see below)
+DATAFRAME_CSV  (file: see below)
+BENCHMARK_DATA (full path of directory Benchmarks/Pilot1/Uno)
+----
 
-In this directory, retrieve:
+BENCHMARK_DATA must contain uno_auc_model.txt
+
+Retrieve:
 ----
 # The original data file
-$ wget http://www.mcs.anl.gov/~wozniak/data/top21_dataframe_8x8.csv
-# The plan file (used by topN_to_uno to make a training file)
+$ wget http://www.mcs.anl.gov/~wozniak/data/top21_dataframe_8x8.csv (DATAFRAME_CSV)
+# The plan file (used by topN_to_uno to make a training file) (PLAN_JSON)
 $ wget http://www.mcs.anl.gov/~wozniak/data/plangen_cell8-p2_drug8-p2.json
 # An example training file
 $ wget http://www.mcs.anl.gov/~wozniak/data/topN.uno.h5

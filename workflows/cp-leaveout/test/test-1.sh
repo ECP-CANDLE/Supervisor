@@ -33,9 +33,12 @@ export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Data files
-PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
-DATAFRAME_CSV=/usb1/wozniak/CANDLE-Benchmarks-Data/top21_dataframe_8x8.csv
-BENCHMARK_DATA=/usb1/wozniak/proj/Benchmarks/Pilot1/Uno
+# PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
+SCRATCH=/gpfs/alpine/med106/scratch/wozniak
+CANDLE_DATA=$SCRATCH/CANDLE-Data
+PLAN_JSON=$CANDLE_DATA/plangen_cell8-p2_drug8-p2.json
+DATAFRAME_CSV=$CANDLE_DATA/top21_dataframe_8x8.csv
+BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
@@ -46,18 +49,29 @@ then
   export WAIT=1
 fi
 
+for f in $DATAFRAME_CSV $PLAN_JSON
+do
+  if ! [[ -f $f ]]
+  then
+    echo "$0: does not exist: $f"
+    exit 1
+  fi
+done
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $WORKFLOW_ARGS       \
                                       --plan_json=$PLAN_JSON           \
                                       --dataframe_csv=$DATAFRAME_CSV   \
                                       --benchmark_data=$BENCHMARK_DATA
-# Wait for job
-queue_wait
 
 # Check job output
+TURBINE_OUTPUT=$( readlink turbine-output )
 OUTPUT=turbine-output/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
+
+# Wait for job
+queue_wait
 
 SCRIPT=$( basename $0 .sh )
 check_output "RESULTS:" $OUTPUT $WORKFLOW $SCRIPT $JOBID
