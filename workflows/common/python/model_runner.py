@@ -31,7 +31,7 @@ def import_pkg(framework, model_name):
     # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
     print("model_name: ", model_name)
     if framework != 'keras':
-        raise ValueError("Invalid framework: {}".format(framework))
+        raise ValueError("Invalid framework: '{}'".format(framework))
     module_name = os.getenv("MODEL_PYTHON_SCRIPT")
     if module_name == None or module_name == "":
         module_name = "{}_baseline_keras2".format(model_name)
@@ -49,14 +49,6 @@ def import_pkg(framework, model_name):
                              intra_op_parallelism_threads=intra_threads)
         sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
         K.set_session(sess)
-    # elif framework is 'mxnet':
-    #     import nt3_baseline_mxnet
-    #     pkg = nt3_baseline_keras_baseline_mxnet
-    # elif framework is 'neon':
-    #     import nt3_baseline_neon
-    #     pkg = nt3_baseline_neon
-    else:
-        raise ValueError("Invalid framework: {}".format(framework))
     return pkg
 
 def log(msg):
