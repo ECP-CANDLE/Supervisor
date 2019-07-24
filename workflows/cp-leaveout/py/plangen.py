@@ -18,11 +18,22 @@ from scipy.special import comb
 from pprint import pprint as pp
 from datetime import datetime
 
+import log_tools
+
+logger_pg = None
+
 def isempty(path):
     """Determine whether the given directory is empty."""
     flist = glob.glob(os.path.join(path,'*'))
     return flist == []
 
+def get_logger_pg():
+    global logger_pg
+    if logger_pg is not None:
+        return
+    fp = open("plangen.log", "a")
+    logger_pg = log_tools.get_logger(logger, "PLANGEN", stream=fp)
+    return logger_pg
 
 def validate_args(args):
     """Validate the execution arguments as defined in planargs.py.
@@ -699,6 +710,9 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         already exists for the plan/subplan and is marked COMPLETE.
     """
 
+    logger = get_logger_pg()
+    logger.info("start_subplan(): subplan_id=" + str(subplan_id))
+
     conn = db_connect(db_path)
     csr  = conn.cursor()
     skip = False
@@ -759,6 +773,9 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
         comp_info_dict: supplemental completion data dictionar
     """
 
+    logger = get_logger_pg()
+    logger.info("stop_subplan(): subplan_id=" + str(subplan_id))
+    
     conn = db_connect(db_path)
     currtime = datetime.now()
     stop_time = currtime.strftime("%m/%d/%Y-%H:%M:%S")
