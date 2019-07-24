@@ -29,10 +29,10 @@ def isempty(path):
 
 def get_logger_pg():
     global logger_pg
-    if logger_pg is not None:
-        return
+    if logger_pg != None:
+        return logger_pg
     fp = open("plangen.log", "a")
-    logger_pg = log_tools.get_logger(logger, "PLANGEN", stream=fp)
+    logger_pg = log_tools.get_logger(logger_pg, "PLANGEN", stream=fp)
     return logger_pg
 
 def validate_args(args):
@@ -711,7 +711,7 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     """
 
     logger = get_logger_pg()
-    logger.info("start_subplan(): subplan_id=" + str(subplan_id))
+    logger.info("start_subplan(): subplan_id=%s ..." % str(subplan_id))
 
     conn = db_connect(db_path)
     csr  = conn.cursor()
@@ -746,6 +746,8 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     conn.commit()
     conn.close()
 
+    logger.info("start_subplan(): subplan_id=%s done." % str(subplan_id))
+
     if skip:
         return -1
     else:
@@ -774,7 +776,7 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     """
 
     logger = get_logger_pg()
-    logger.info("stop_subplan(): subplan_id=" + str(subplan_id))
+    logger.info("stop_subplan(): subplan_id=%s ..." % str(subplan_id))
     
     conn = db_connect(db_path)
     currtime = datetime.now()
@@ -799,6 +801,7 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     execute_sql_stmt(conn, stmt)
     conn.commit()
     conn.close()
+    logger.info("stop_subplan(): subplan_id=%s done." % str(subplan_id))
 
 
 def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
