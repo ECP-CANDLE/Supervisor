@@ -9,6 +9,48 @@ abort()
   exit 1
 }
 
+is ()
+{
+  if eval "${*}"
+  then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+check()
+{
+  if (( ${#} != 2 ))
+  then
+    echo "check: requires CMD MSG"
+    exit 1
+  fi
+  local CMD=$1
+  local MSG=$2
+  if (( ! $( is $CMD ) ))
+  then
+    return
+  fi
+  abort $MSG
+}
+
+assert()
+{
+  if (( ${#} != 2 ))
+  then
+    echo "assert: requires CODE MSG"
+    exit 1
+  fi
+  local CODE=$1
+  local MSG=$2
+  if (( $CODE ))
+  then
+    return
+  fi
+  abort $MSG
+}
+
 show()
 # Report variable names with their values
 {
@@ -403,7 +445,7 @@ queue_wait_lsf()
 
   local JOBID=$1
 
-  local DELAY_MIN=30
+  local DELAY_MIN=10
   local DELAY_MAX=600
   local DELAY=$DELAY_MIN
 
