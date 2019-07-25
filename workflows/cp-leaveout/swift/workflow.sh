@@ -57,13 +57,11 @@ echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
 source_site env   $SITE
 source_site sched $SITE
 
-# Set APP PYTHONPATH for BENCHMARK and SQL related stuff
-APP_PYTHONPATH+=:$BENCHMARK_DIR
-APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/db
-APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/db
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py # For plangen
-APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py # For data_setup
-APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py            # For plangen, data_setup
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
+APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
+APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
+APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
