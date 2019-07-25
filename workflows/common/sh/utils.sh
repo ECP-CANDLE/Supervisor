@@ -566,3 +566,54 @@ print_json() {
       pad_keys $line
     done
 }
+
+signature()
+# Gives shell scripts an argument list
+# First argument: SELF (the current script)
+# Variable names (e.g., X Y Z)
+# -
+# Variable values (typically ${*}) to be assigned to X Y Z
+# Use -H MESSAGE to provide an additional help message
+{
+  local L
+  L=()
+  local SELF=$1 HELP=""
+  shift
+  while getopts "H:" OPT
+  do
+    case $OPT in
+      H) HELP=$OPTARG ;;
+      *) return 1 ;; # Bash prints an error
+    esac
+  done
+  shift $(( $OPTIND - 1 ))
+  while true
+  do
+    if [[ ${1:-} = "-" ]]
+    then
+      shift
+      break
+    fi
+    L+=$1
+    shift || return 1
+  done
+  if (( ${#L[@]} != ${#*} ))
+  then
+    echo "$SELF: Requires ${#L[@]} arguments, given ${#*}"
+    echo "$SELF: Required arguments: ${L[@]}"
+    if (( ${#HELP} ))
+    then
+      echo "$SELF: Usage: $HELP"
+    fi
+    return 1
+  fi
+  local V
+  for V in $L
+  do
+    eval $V=$1
+    shift
+  done
+}
+
+shopt -s expand_aliases
+alias SIGNATURE='signature $0'
