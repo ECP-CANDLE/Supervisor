@@ -137,6 +137,20 @@ run_stage(int N, int S, string this, int stage, void block,
   }
 }
 
+printf("CP LEAVEOUT WORKFLOW: START");
+
+// First: simple test that we can import plangen
+check = python_persist(----
+try:
+    import plangenx
+except Exception as e:
+    result = str(e)
+result = 'OK'
+----,
+"result");
+printf("python result: import plangen: '%s'", check) =>
+  assert(check == "OK", "could not import plangen, check PYTHONPATH!");
+
 // Initialize the DB
 plan_id = python_persist("import plangen",
                          "str(plangen.plan_prep('%s', '%s', %s))" %
@@ -149,4 +163,4 @@ assert(plan_id != "-1", "Plan already exists!");
 // Kickoff the workflow
 stage = 0;
 run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype) =>
-  printf("RESULTS: COMPLETE");
+  printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
