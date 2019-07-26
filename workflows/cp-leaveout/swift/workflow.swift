@@ -85,23 +85,36 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      code = python_persist("import plangen",
-                            "str(plangen.start_subplan('%s', '%s', %s, '%s', %s))" %
-                            (db_file, plan_json, plan_id, node, runtype));
-    if (code == "0")
+      result1 = python_persist(
+----
+import plangen
+try:
+    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
+except Exception as e:
+    result = "EXCEPTION: " + str(e)
+----  % (db_file, plan_json, plan_id, node, runtype),
+    "result");
+    if (result1 == "0")
     {
       // Run the model
       s = obj(json, node) =>
         printf("completed: node: " + node) =>
         // Update the DB to complete the model run
-        python_persist("import plangen",
-                       "str(plangen.stop_subplan('%s', '%s', '%s', {}))" %
-                       (db_file, plan_id, node));
+        result2 = python_persist(
+----
+import plangen
+try:
+    result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
+except Exception as e:
+    result = "EXCEPTION: " + str(e)
+---- % (db_file, plan_id, node),
+      "result");
+      printf("stop_subplan result: %s", result2);
       v = propagate(s);
     }
     else
     {
-      printf("plan node already marked complete: " + node) =>
+      printf("plan node already marked complete: %s result=%s", node, result1) =>
         v = propagate();
     }
   }
@@ -142,10 +155,10 @@ printf("CP LEAVEOUT WORKFLOW: START");
 // First: simple test that we can import plangen
 check = python_persist(----
 try:
-    import plangenx
+    import plangen
+    result = 'OK'
 except Exception as e:
     result = str(e)
-result = 'OK'
 ----,
 "result");
 printf("python result: import plangen: '%s'", check) =>
