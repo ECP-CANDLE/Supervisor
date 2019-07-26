@@ -7,7 +7,7 @@
 ** Edit uno_baseline_keras2.py to replace uno_default_model.txt +
    with uno_auc_model.txt
 ** Edit uno_auc_model.txt to set epochs=3 (or whatever for a shorter run)
-* Check out Supervisor branch issue-62
+* Check out Supervisor branch develop
 * Edit test-1.sh to set data locations:
 +
 ----
