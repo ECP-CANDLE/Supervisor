@@ -110,10 +110,14 @@ run_stage(int N, int S, string this, int stage, void block,
 {
   result = python_persist(
 ----
-import sys, traceback
+import fcntl, sys, traceback
 import plangen
 try:
+    fp = open("lock", "w+")
+    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
+    fcntl.flock(fp, fcntl.LOCK_UN)
+    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
