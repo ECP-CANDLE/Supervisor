@@ -85,30 +85,16 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      result1 = python_persist(
-----
-import plangen
-try:
-    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-except Exception as e:
-    result = "EXCEPTION: " + str(e)
-----  % (db_file, plan_json, plan_id, node, runtype),
-    "result");
+      result1 = plangen_start(node, plan_id);
+    assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
       // Run the model
       s = obj(json, node) =>
         printf("completed: node: " + node) =>
         // Update the DB to complete the model run
-        result2 = python_persist(
-----
-import plangen
-try:
-    result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-except Exception as e:
-    result = "EXCEPTION: " + str(e)
----- % (db_file, plan_id, node),
-      "result");
+        result2 = plangen_stop(node, plan_id);
+      assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("stop_subplan result: %s", result2);
       v = propagate(s);
     }
@@ -120,6 +106,41 @@ except Exception as e:
   }
 }
 
+(string result) plangen_start(string node, string plan_id)
+{
+  result = python_persist(
+----
+import sys, traceback
+import plangen
+try:
+    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
+except Exception as e:
+    info = sys.exc_info()
+    s = traceback.format_tb(info[2])
+    print(str(e) + ' ... \\n' + ''.join(s))
+    sys.stdout.flush()
+    result = "EXCEPTION"
+----  % (db_file, plan_json, plan_id, node, runtype),
+    "result");
+}
+
+(string result) plangen_stop(string node, string plan_id)
+{
+  result = python_persist(
+----
+import plangen
+import sys, traceback
+try:
+    result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
+except Exception as e:
+    info = sys.exc_info()
+    s = traceback.format_tb(info[2])
+    print(str(e) + ' ... \\n' + ''.join(s))
+    sys.stdout.flush()
+    result = 'EXCEPTION'
+---- % (db_file, plan_id, node),
+      "result");
+}
 
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this, int stage)
