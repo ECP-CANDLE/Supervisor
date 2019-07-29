@@ -74,7 +74,8 @@ WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 queue_wait
 
 SCRIPT=$( basename $0 .sh )
-check_output "RESULTS:" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "EXIT CODE: 0" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
 
