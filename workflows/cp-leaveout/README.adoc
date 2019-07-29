@@ -3,6 +3,8 @@
 
 == Quick start
 
+* On Summit, be sure to run from a compute-node writable directory +
+  E.g., /gpfs/alpine/med106/scratch/$USER
 * Check out Benchmarks branch loocv
 ** Edit uno_baseline_keras2.py to replace uno_default_model.txt +
    with uno_auc_model.txt
