@@ -28,17 +28,25 @@ $ wget http://www.mcs.anl.gov/~wozniak/data/plangen_cell8-p2_drug8-p2.json
 $ wget http://www.mcs.anl.gov/~wozniak/data/topN.uno.h5
 ----
 
-Run:
+=== Run
 
 ----
 $ test/test-1.sh <SITE> -a
 ----
 
-Restart:
+This will autogenerate a new experiment directory X001, X002, ...
+
+=== Restart
 
 ----
 $ test/test-1.sh <SITE> <EXPID> -r
 ----
+
+EXPID should be a previously completed experiment (e.g., X001, X002, ...)
+
+This will modify the given EXPID in place (you may want to back it up first).
+
+=== DB check
 
 Quick check of DB contents after run:
 
