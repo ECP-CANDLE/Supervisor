@@ -16,6 +16,9 @@
   --plan_json=<FILE>     : The JSON plan for topN_to_uno
   --dataframe_csv=<FILE> : The CSV data file for topN_to_uno
   --db_file=<FILE>       : The SQLite DB file
+
+  NOTE: This workflow has some complex Python Exception handling
+  code that will be pushed into Swift/T for conciseness...
 */
 
 import assert;
@@ -190,10 +193,22 @@ printf("python result: import plangen: '%s'", check) =>
   assert(check == "OK", "could not import plangen, check PYTHONPATH!");
 
 // Initialize the DB
-plan_id = python_persist("import plangen",
-                         "str(plangen.plan_prep('%s', '%s', %s))" %
-                         (db_file, plan_json, runtype));
+plan_id = python_persist(
+----
+import sys, traceback
+import plangen
+try:
+    result = str(plangen.plan_prep('%s', '%s', %s))
+except Exception as e:
+    info = sys.exc_info()
+    s = traceback.format_tb(info[2])
+    print(str(e) + ' ... \\n' + ''.join(s))
+    sys.stdout.flush()
+    result = 'EXCEPTION'
+---- % (db_file, plan_json, runtype),
+"result");
 printf("DB plan_id: %s", plan_id);
+assert(plan_id != "EXCEPTION", "Plan prep failed!");
 
 // If the plan already exists and we are not doing a restart, abort
 assert(plan_id != "-1", "Plan already exists!");
