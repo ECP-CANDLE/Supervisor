@@ -20,8 +20,8 @@ SUMMARY=$DIR/summary.txt
 
 # Get the overall start/stop times from the Turbine stdout
 check "test -f $OUTPUT" "Could not find: $OUTPUT"
-DATE_START=$( sed -n 's/DATE START: \(.*\)/\1/p' $DIR/output.txt )
-DATE_STOP=$(  sed -n 's/DATE STOP:  \(.*\)/\1/p' $DIR/output.txt )
+DATE_START=$( sed -n 's/.*DATE START: \(.*\)/\1/p' $DIR/output.txt )
+DATE_STOP=$(  sed -n 's/.*DATE STOP:  \(.*\)/\1/p' $DIR/output.txt )
 assert $(( ${#DATE_START} > 0 )) "DATE START not found!"
 assert $(( ${#DATE_START} > 0 )) "DATE STOP  not found!"
 
@@ -34,10 +34,11 @@ do
 done | sort -k 2 > $T
 
 # Make the summary
-# python3 $SUPERVISOR/scratch/load/load.py \
-#  "$DATE_START" "$DATE_STOP" < $T > $SUMMARY
 python3 $SUPERVISOR/scratch/load/load.py \
-        "$DATE_START":00 "$DATE_STOP":00 < $T > $SUMMARY
-rm $T
+ "$DATE_START" "$DATE_STOP" < $T > $SUMMARY
+set -x
+# python3 $SUPERVISOR/scratch/load/load.py \
+#        "$DATE_START":00 "$DATE_STOP":00 < $T > $SUMMARY
+# rm $T
 
 echo "extract.sh: wrote: $SUMMARY"
