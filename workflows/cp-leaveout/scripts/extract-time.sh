@@ -2,7 +2,7 @@
 set -eu
 
 # EXTRACT TIME SH
-# Extract losses
+# Extract final times
 # Provide a directory full of model.logs
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
@@ -19,9 +19,6 @@ OUTPUT=$DIR/output.txt
 TIMES=$DIR/times.txt
 
 RUNS=$( ls $DIR/run )
-
-# Get the model start/stop times from the model.logs
-T=$( mktemp extract-XXX --suffix .txt )
 
 for RUN in $RUNS
 do

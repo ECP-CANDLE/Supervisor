@@ -20,9 +20,6 @@ LOSSES=$DIR/losses.txt
 
 RUNS=$( ls $DIR/run )
 
-# Get the model start/stop times from the model.logs
-T=$( mktemp extract-XXX --suffix .txt )
-
 for RUN in $RUNS
 do
   # grep "val_loss: " $DIR/run/$RUN/model.log | tail -1
