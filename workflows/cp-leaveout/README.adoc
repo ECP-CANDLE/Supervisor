@@ -38,6 +38,8 @@ $ test/test-1.sh <SITE> -a
 
 This will autogenerate a new experiment directory X001, X002, ...
 
+This will run the short N=2, S=2 case.
+
 === Restart
 
 ----
@@ -55,3 +57,14 @@ Quick check of DB contents after run:
 ----
 $ ./check-db.sh <FILE.db>
 ----
+
+== Bigger runs
+
+The plan plangen_cell8-p2_drug8-p2.json supports up to N=4 children for S=3 stages.
+You can run the whole file with:
+
+----
+$ test/test-1.sh <SITE> -a -N=4 -S=3
+----
+
+The -N -S arguments are passed through to workflow.swift
