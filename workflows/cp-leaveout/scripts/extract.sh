@@ -39,6 +39,6 @@ python3 $SUPERVISOR/scratch/load/load.py \
 set -x
 # python3 $SUPERVISOR/scratch/load/load.py \
 #        "$DATE_START":00 "$DATE_STOP":00 < $T > $SUMMARY
-# rm $T
+rm $T
 
 echo "extract.sh: wrote: $SUMMARY"
