@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# EXTRACT SH
+# EXTRACT LOAD SH
 # Extract load levels for the load/time plotter (load.py)
 # Provide a directory full of model.logs
 
