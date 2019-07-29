@@ -532,7 +532,12 @@ def db_connect(db_path):
     try:
         conn = sqlite3.connect(db_path)
     except db_Error as error:
-        print('db_connect', error)
+        print('db_connect(): error:', error)
+        sys.stdout.flush()
+        print('db_connect(): attempted to open DB:', db_path)
+        sys.stdout.flush()
+        print('db_connect(): CWD is:', os.getcwd())
+        sys.stdout.flush()
         raise
 
     # create plan management tables on initial database allocation
