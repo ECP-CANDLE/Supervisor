@@ -60,7 +60,7 @@ def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def setup_perf(params):
-    return { 'top': setup_perf_top(params),
+    return { 'top':    setup_perf_top(params),
              'nvidia': setup_perf_nvidia(params) }
 
 def setup_perf_top(params):
