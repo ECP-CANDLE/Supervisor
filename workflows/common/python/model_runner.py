@@ -55,6 +55,54 @@ def log(msg):
     global logger
     logger.debug("model_runner: " + msg)
 
+def timestamp():
+    from datetime import datetime
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def setup_perf(params):
+    return { 'top': setup_perf_top(params),
+             'nvidia': setup_perf_nvidia(params) }
+
+def setup_perf_top(params):
+    if 'perf_top' not in params:
+        return None
+    if params['perf_top'] == '0':
+        return None
+    try:
+        delay = int(params['perf_top'])
+    except:
+        msg = 'setup_perf_top(): params[perf_top] not an int: got: "%s"' % \
+              params['perf_top']
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+    with open('perf-top.log', 'a') as fp_out:
+        fp_out.write('model_runner: start: %s\n\n' % timestamp())
+        P = subprocess.Popen(['top', '-b', '-d', params['perf_top']],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
+def setup_perf_nvidia(params):
+    if 'perf_nvidia' not in params:
+        return None
+    if params['perf_nvidia'] == '0':
+        return None
+    try:
+        delay = int(params['perf_nvidia'])
+    except:
+        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: got: "%s"' % \
+              params['perf_nvidia']
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+    with open('perf-nvidia.log', 'a') as fp_out:
+        fp_out.write('model_runner: start: %s\n\n' % timestamp())
+        P = subprocess.Popen(['nvidia-smi', '--loop='+params['perf_top']],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
 def run(hyper_parameter_map, obj_return):
 
     global logger
@@ -90,6 +138,9 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.write_params(params, hyper_parameter_map)
     log("WRITE_PARAMS STOP")
 
+    Ps = setup_perf(params)
+
+    # Run the model!
     history = pkg.run(params)
 
     runner_utils.keras_clear_session(framework)
@@ -116,6 +167,10 @@ def run(hyper_parameter_map, obj_return):
                              framework)
 
         print("result: " + obj_return + ": " + str(result))
+
+    for s in ['top', 'nvidia']:
+        if Ps[s] is not None:
+            Ps[s].terminate()
     return result
 
 def get_obj_return():
