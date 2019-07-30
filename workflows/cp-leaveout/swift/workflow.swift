@@ -179,7 +179,7 @@ except Exception as e:
   }
 }
 
-printf("CP LEAVEOUT WORKFLOW: START");
+printf("CP LEAVEOUT WORKFLOW: START: N=%i S=%i", N, S);
 
 // First: simple test that we can import plangen
 check = python_persist(----
