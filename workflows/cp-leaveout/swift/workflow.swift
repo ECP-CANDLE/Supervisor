@@ -7,9 +7,10 @@
   'swift-t workflow.swift -N=6 -S=6 <FILE SETTINGS>'
   for 55,986 tasks.
   Flags:
-  -N : Number of nodes per stage
-  -S : Number of stages
+  -N : Number of nodes per stage (see default in code)
+  -S : Number of stages          (see default in code)
   -r : Use RunType.RESTART, default is RunType.RUN_ALL
+       RUN_ALL means this is a fresh run with no prior results
 
   FILE SETTINGS:
   These are mandatory:

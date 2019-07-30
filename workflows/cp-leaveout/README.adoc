@@ -40,6 +40,8 @@ This will autogenerate a new experiment directory X001, X002, ...
 
 This will run the short N=2, S=2 case.
 
+Any additional arguments appended to the end of this command line will be passed through to workflow.swift .  See the header of workflow.swift for those options.
+
 === Restart
 
 ----
