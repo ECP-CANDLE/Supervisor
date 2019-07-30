@@ -43,8 +43,8 @@ def import_pkg(framework, model_name):
         import tensorflow as tf
         inter_threads = int(os.environ['NUM_INTER_THREADS'])
         intra_threads = int(os.environ['NUM_INTRA_THREADS'])
-        print("Configuring tensorflow with {} inter threads and {} intra threads" %
-              (inter_threads, intra_threads))
+        print("Configuring tensorflow with {} inter threads and {} intra threads"
+              .format(inter_threads, intra_threads))
         cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
                              intra_op_parallelism_threads=intra_threads)
         sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
