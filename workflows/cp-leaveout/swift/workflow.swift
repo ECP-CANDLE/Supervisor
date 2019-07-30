@@ -17,6 +17,8 @@
   --plan_json=<FILE>     : The JSON plan for topN_to_uno
   --dataframe_csv=<FILE> : The CSV data file for topN_to_uno
   --db_file=<FILE>       : The SQLite DB file
+  --benchmark_data=<DIR> : Used by data_setup to set softlinks to
+                           Uno cache and uno_auc_model.txt
 
   NOTE: This workflow has some complex Python Exception handling
   code that will be pushed into Swift/T for conciseness...
