@@ -191,3 +191,4 @@ then
 fi
 
 echo "WORKFLOW OK."
+echo "EXIT CODE: 0" | tee -a $STDOUT

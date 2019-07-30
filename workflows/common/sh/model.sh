@@ -57,8 +57,9 @@ echo PARAMS:
 echo $PARAMS | print_json
 
 echo
-echo "USING PYTHON:"
+echo "MODEL.SH: USING PYTHON:"
 which python
+echo
 
 arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$PARAMS"
@@ -75,20 +76,22 @@ else
   # $? is the exit status of the most recently executed command
   # (i.e the line in the 'if' condition)
   CODE=$?
-  if [ $CODE == 124 ]; then
+  echo # spacer
+  if [ $CODE == 124 ]
+  then
     echo "MODEL.SH: Timeout error in $MODEL_CMD"
     # This will trigger a NaN (the result file does not exist)
     exit 0
   else
     echo "MODEL.SH: Error (CODE=$CODE) in $MODEL_CMD"
-    echo "TIMESTAMP:" $( date "+%Y-%m-%d %H:%M:%S" )
+    echo "MODEL.SH: TIMESTAMP:" $( date "+%Y-%m-%d %H:%M:%S" )
     if (( ${IGNORE_ERRORS:-0} ))
     then
-      echo "IGNORING ERROR."
+      echo "MODEL.SH: IGNORING ERROR."
       # This will trigger a NaN (the result file does not exist)
       exit 0
     fi
-    echo "ABORTING WORKFLOW (exit 1)"
+    echo "MODEL.SH: ABORTING WORKFLOW (exit 1)"
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
