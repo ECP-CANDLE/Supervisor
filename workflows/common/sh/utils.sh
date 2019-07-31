@@ -605,7 +605,7 @@ signature()
     then
       echo "$SELF: Usage: $HELP"
     fi
-    return 1
+    exit 1
   fi
   local V
   for V in $L
