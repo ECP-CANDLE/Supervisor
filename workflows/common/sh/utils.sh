@@ -594,7 +594,7 @@ signature()
       shift
       break
     fi
-    L+=$1
+    L+=( $1 )
     shift || return 1
   done
   if (( ${#L[@]} != ${#*} ))
