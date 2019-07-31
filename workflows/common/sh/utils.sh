@@ -608,7 +608,7 @@ signature()
     exit 1
   fi
   local V
-  for V in $L
+  for V in ${L[@]}
   do
     eval $V=$1
     shift
