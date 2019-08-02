@@ -130,8 +130,9 @@ def validate_args(args):
         sys.exit("Terminating due to error")
 
     # construct a partitioning object exporting a partion() function
-    if args.partition_strategy == 'windows':
+    if args.partition_strategy == 'leaveout':
         generator = LeaveoutSubsetGenerator()
+
     # return feature-set contents lists
     return generator, fs_content
 
@@ -765,9 +766,6 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     for columns implemented in the RunhistRow table. Values matching those
     names are extracted from the comp_info_dict are written to the table.
 
-    TODO It might be nice to take all of the unmatched fields from comp_info_dict
-    and write them into a single RunhistRow text field as key=value, ...
-
     Args
         db_path:        plan management database path (relative or absolute)
         plan_path:      JSON plan file (relative or absolute)
@@ -1026,9 +1024,7 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
                     (subplan) plan_id.
 
         depth:      Specify 0 on the root call. This arg can be used to
-                    determine/set the current level of the recursion. It is
-                    not currently used in the existing data partitioning /
-                    file naming strategies.
+                    determine/set the current level of the recursion.
 
         data_pfx:   Reserved for constructing feature-set name files.
         plan_pfx:   Reserved for constructing plan control files.
@@ -1041,6 +1037,9 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
         returned.
     """
     curr_depth = depth + 1
+    if args.maxdepth > 0 and curr_depth >= args.maxdepth:
+        return 0
+
     all_parts = []
     successful_splits = 0
 
