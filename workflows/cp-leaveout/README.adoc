@@ -70,3 +70,18 @@ $ test/test-1.sh <SITE> -a -N=4 -S=3
 ----
 
 The -N -S arguments are passed through to workflow.swift
+
+== Data setup
+
+This workflow sets up the data for each run using the new model_runner feature to specify a pre_run Python module.  This is controlled by the additional hyperparameters in workflow.swift:make_json_fragment(), namely 'pre_module'.
+
+The workflow:
+
+. passes these hyperparameters to each obj() call,
+. through model.sh,
+. into model_runner.py,
+. which loads the specified module data_setup (found in PYTHONPATH),
+. which imports topN_to_uno,
+. constructs the training H5 input file model.h5,
+. and sets up symlinks to other data, the Uno cache and the uno_auc_model.txt .
+. The available 'post_module' is currently unused.
