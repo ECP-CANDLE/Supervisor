@@ -85,7 +85,7 @@ def validate_args(args):
         sys.exit("Error: Partitioning requires multiple feature sets")
 
     for nparts in args.fs_parts:
-        if nparts <= 1 or nparts >= 8:
+        if nparts < 1 or nparts >= 8:
             sys.exit("Error: Invalid partitioning value %d" % nparts)
 
     # validate input and output directories
@@ -161,7 +161,7 @@ class SubsetGenerator(ABC):
         count=None,
         name='-unspecified-'
     ):
-        """Partion a feature-set array.
+        """Partition a feature-set array.
 
         Partition the 'base', a list of elements, using the abstract arguments
         'size' and 'count' to tailor the implementation's algorithm. 'name' is
@@ -263,7 +263,7 @@ class LeaveoutSubsetGenerator(SubsetGenerator):
         SubsetGenerator.__init__(self, 'LeaveoutSubsetGenerator')
         self.strategy = "leaveout"
 
-    def plan_init(self, fs_names, fs_paths, fs_lines, fs_parts, root_name='1'):
+    def plan_init(self, fs_names, fs_paths, fs_lines, fs_parts, maxdepth, root_name='1'):
         """Initialize - collect plan metadata """
         currtime = datetime.now()
         details = {'fs_names': fs_names, 'fs_filepaths':fs_paths, 'fs_parts': fs_parts}
@@ -276,6 +276,9 @@ class LeaveoutSubsetGenerator(SubsetGenerator):
                 label += '_'
             s = '{}{}-p{}'.format(fs_names[i], fs_lines[i], fs_parts[i])
             label += s
+
+        if maxdepth > 0:
+            label += '-maxdepth{}'.format(maxdepth)
 
         details['label'] = label
         plan_dict = OrderedDict()
@@ -293,14 +296,13 @@ class LeaveoutSubsetGenerator(SubsetGenerator):
 
         This partitioner accepts a list of feature-set names and returns
         'count' lists, the elements evenly divided between these lists.
-        The last sublist will contain fewer elements if the base list cannot
-        be evenly divided.
+        The last sublist will contain more or fewer elements if the base
+        list cannot be evenly divided.
 
         Args
             base:   A list of feature-set names.
             size:   Ignored, not used in this implementation.
-            count:  The number of equal sized partitions requested.
-                    Required, the minimum value is 2.
+            count:  The number of equal sized partitions requested, required.
             name:   A tag used for debug/error tracing. Not used in this
                     implementation.
 
@@ -314,20 +316,26 @@ class LeaveoutSubsetGenerator(SubsetGenerator):
 
                 [[CELL1, ..., CELL4], [CELL5, ..., CELL7]]
 
-            Otherwise, the given 'base' list is returned as a list of one list.
+            Otherwise the base list is returned as a list of lists, each list
+            containing one feature from the input list. This implementation
+            maintains compatibility with the "standard" return format discussed
+            above.
         """
 
         base_len = len(base)
         if base_len < count:            # can partition any further?
-            return [base]               # return the input as a list of one list
+            return [[feature] for feature in base]
 
-        size = int((base_len / count) + .9)
+        size = base_len // count
         sublists = []
 
         for i in range(count):
             org = i * size
             end = org + size
-            part = base[org:end]
+            if i != count - 1:
+                part = base[org:end]
+            else:
+                part = base[org:]
             sublists.append(part)
 
         return sublists
@@ -561,7 +569,7 @@ def plan_remove(db_path, plan_path):
     The relative plan name is extracted from the plan_path by removing the
     leading directories and the trailing filetype suffix from the given
     plan_path. The planstat row is retrieved and the associated rowid is
-    the plan_id identifying the target runhist table rows. 
+    the plan_id identifying the target runhist table rows.
 
     Returns
         Zero indicates deletion complete, -1 if the plan name is not matched.
@@ -1041,61 +1049,62 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
         return 0
 
     all_parts = []
-    successful_splits = 0
 
     #flat_partitions = []                           # preserve, used for file-based approach
     #files = []                                     # preserve, used for file-based approach     
     #sequence = 0                                   # preserve, used for file-based approach
+    xxx = False
 
     for i in range(len(args.fs_names)):
         group = feature_set_content[i]
         count = args.fs_parts[i]
         feature_set_name = args.fs_names[i]
-        partitions = args.generator.partition(feature_set_content[i], count=count)   # name= ??????????????
-
-
-        if len(partitions) > 1:                     # partitioning successful?
-            successful_splits += 1                  # successful split
-
+        partitions = args.generator.partition(feature_set_content[i], count=count)
         all_parts.append(partitions)
-
-    # if no further partitioning is possible task is complete
-    if successful_splits == 0:
-        return 0
 
     # acquire a cross-product of all feature-set partitions
     parts_xprod = np.array(list(it.product(*all_parts)))
     steps = len(parts_xprod)
-    substeps = 0
 
-    for step in range(steps):
-        train = []
-        val = []
+    if steps > 1:
+        substeps = 0
+        for step in range(steps):
+            train = []
+            val = []
 
-        # split into validation and training components
-        for i, plan in enumerate(parts_xprod):
-            section = build_dictionary_from_lists(plan, args.fs_names)
-            if i == step:
-                val.append(section)
-            else:
-                train.append(section)
+            # split into validation and training components
+            for i, plan in enumerate(parts_xprod):
+                section = build_dictionary_from_lists(plan, args.fs_names)
+                if i == step:
+                    val.append(section)
+                else:
+                    train.append(section)
 
-        # generate next depth/level (successor) plans 
-        curr_plan_id = '{}.{}'.format(parent_plan_id, step + 1)
-        args.plan_dict[curr_plan_id] = {'val': val, 'train': train}
-        data_name = '{}.{}'.format(data_pfx, step + 1)
-        plan_name = '{}.{}'.format(plan_pfx, step + 1)
+            # generate next depth/level (successor) plans 
+            curr_plan_id = '{}.{}'.format(parent_plan_id, step + 1)
+            args.plan_dict[curr_plan_id] = {'val': val, 'train': train}
+            data_name = '{}.{}'.format(data_pfx, step + 1)
+            plan_name = '{}.{}'.format(plan_pfx, step + 1)
 
-        substeps += build_plan_tree(
-            args,
-            parts_xprod[step],
-            parent_plan_id=curr_plan_id,
-            depth=curr_depth,
-            data_pfx=data_name,
-            plan_pfx=plan_name
-        )
+            # depth-first, shorthand representation of tree showing first feature names 
+            if args.debug:
+                indent = ' ' * (depth * 4)
+                print(indent, curr_plan_id)
+                indent += ' ' * 4
+                fs = parts_xprod[step]
+                for i in range(len(fs)):
+                    print(indent, args.fs_names[i], 'count:', len(fs[i]), 'validation[0]:', fs[i][0])
 
-    steps += substeps
+            substeps += build_plan_tree(
+                args,
+                parts_xprod[step],
+                parent_plan_id=curr_plan_id,
+                depth=curr_depth,
+                data_pfx=data_name,
+                plan_pfx=plan_name
+            )
+
+        steps += substeps
     return steps
 
     """
@@ -1194,10 +1203,11 @@ def main():
     args.generator = generator
 
     root_name, args.plan_dict = generator.plan_init(
-        fs_names=args.fs_names,         # validated cmdline arg
-        fs_paths=args.fs_paths,         # validated cmdline arg
-        fs_lines=args.fs_lines,         # created by validate_args
-        fs_parts=args.fs_parts          # validated cmdline arg
+        fs_names = args.fs_names,       # validated cmdline arg
+        fs_paths = args.fs_paths,       # validated cmdline arg
+        fs_lines = args.fs_lines,       # created by validate_args
+        fs_parts = args.fs_parts,       # validated cmdline arg
+        maxdepth = args.maxdepth
     )
 
     # feature_set_content = [cell_names, drug_names] 
@@ -1226,7 +1236,7 @@ def main():
         write_dict_to_json(args.plan_dict, json_abspath)
         print("%s JSON file written" % json_abspath)
 
-    if args.debug:
+    if args.print_tree:
         print("Plan dictionary generated")
         pp(args.plan_dict, width=160)               # DEBUG comment this out for large plans
 

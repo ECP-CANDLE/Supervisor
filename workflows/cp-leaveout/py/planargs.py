@@ -70,7 +70,11 @@ def parse_arguments():
 
     parser.add_argument('--debug',
                         action='store_true',
-                        help='Data structure dumps, etc')
+                        help='Show complete plan tree structure')
+
+    parser.add_argument('--print_tree',
+                        action='store_true',
+                        help='Dump the complete plan tree - potentially lengthy!')
 
     parser.add_argument('--test',
                         action='store_true',
