@@ -995,9 +995,94 @@ def get_successors(plan_dict, subplan_id):
     return successor_names
 
 
-def parse_plan_entry(plan_entry):
-    """ THIS NEEDS REFINEMENT ?????????? """
-    return plan_entry['train'], plan_entry['val']
+def _get_named_set(plan_dict, subplan_id, section_tag, fs_name, collector, parent_features=None):
+    """ """
+
+    while True:
+        content, _ = get_subplan(plan_dict, subplan_id)
+        assert(content)
+
+        section = content[section_tag]
+        for i, section_features in enumerate(section):
+            feature_list = section_features[fs_name]
+            collector.insert(i, feature_list)
+
+        if not parent_features:
+            break
+
+        # visit parent node, root has no feature information and ends upward traversal
+        subplan_id = get_predecessor(plan_dict, subplan_id)
+        grand_parent_id = get_predecessor(plan_dict, subplan_id)
+
+        if not grand_parent_id:
+            break
+
+
+def get_subplan_features(plan_dict, subplan_id, parent_features=False):
+    """Return train and validation features associated with a named subplan.
+
+    Args
+        plan_dict:          The plan dictionary as returned by load_plan()x.
+        subplan_id:         The name of the target subplan
+        parent_features:    True or False 
+
+    Returns
+        The result is four-tuple (t0, t1, t2, t30) constructed as follows.
+        Some applications may choose to discard some of the returns, t0 and
+        t1, for example.
+
+            t0 - the result dictionary which is disassmbled as follows
+            t1 - a list of feature names found in the train/validate sets
+            t2 - training feature set dictionary as described below
+            t3 - validation feature set dictionary as described below
+
+        t2 and t3 are dictionaries that represent one or more training sets
+        and one or more validation sets, respectively. The key of each entry
+        is a feature-set name as returned in the t1 list, ['cell', 'drug'] for
+        example. The value of each is a list of lists.
+
+        Consider a training feature set dictionary returned as follows:
+
+            {
+                'cell': [[C1, C2, C3, C4], [C5, C6, C7, C8]],
+                'drug': [[  [D1, D2]    ,     [D3, D4]]
+            }
+
+        The feature sets defined here are the combination of (cell[0], drug[0])
+        and (cell[1], drug[1]). The lenghts, i.e. number of sublists of each
+        dictionary entry are always equal.
+    """
+
+    # acquire feature_set names populated in the plan
+    content, _ = get_subplan(plan_dict, subplan_id)
+    if not content:
+        return None, None
+
+    # peek inside the training set to capture active feature-set names
+    train_set = content['train'][0]
+    fs_names = [name for name in train_set.keys()]
+
+    # categorize the results    
+    result = {}
+    result[0] = fs_names
+    result['train'] = {}
+    result['val'] = {}
+
+    for set_name in ['train', 'val']:
+        for fs_name in fs_names:
+            collector = []
+            _get_named_set(
+                plan_dict,
+                subplan_id,
+                set_name,
+                fs_name,
+                collector,
+                parent_features=parent_features
+            )
+
+            result[set_name][fs_name] = collector
+
+    return  result, result[0], result['train'], result['val']
 
 #------------------------------------------------------------------------------
 # Plan construction 
@@ -1093,7 +1178,7 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
                 indent += ' ' * 4
                 fs = parts_xprod[step]
                 for i in range(len(fs)):
-                    print(indent, args.fs_names[i], 'count:', len(fs[i]), 'validation[0]:', fs[i][0])
+                    print(indent, args.fs_names[i], 'count:', len(fs[i]), 'first:', fs[i][0])
 
             substeps += build_plan_tree(
                 args,
@@ -1213,6 +1298,17 @@ def main():
     # feature_set_content = [cell_names, drug_names] 
     # feature_set_content = [synthetic_cell_names, synthetic_drug_names]
 
+    # remove by-1 dimensions, they do not need to be represented in the plan explicitly 
+    while True:
+        try:
+            ndx = args.fs_parts.index(1)
+            args.fs_names.pop(ndx)
+            args.fs_paths.pop(ndx)
+            args.fs_lines.pop(ndx)
+            args.fs_parts.pop(ndx)
+        except ValueError:
+            break
+
     # Plan generation 
     data_fname_pfx = os.path.join(args.out_dir, 'DATA.1')
     plan_fname_pfx = os.path.join(args.out_dir, 'PLAN.1')
@@ -1241,8 +1337,8 @@ def main():
         pp(args.plan_dict, width=160)               # DEBUG comment this out for large plans
 
     if args.test:
-        #test1(json_abspath, "test1_sql.db")
-        test2(json_abspath, "test2_sql.db")
+        test1(json_abspath, "test1_sql.db")
+        # test2(json_abspath, "test2_sql.db")
 
 #----------------------------------------------------------------------------------
 # test plan navigation and subplan entry retrieval
@@ -1297,7 +1393,7 @@ def test2(plan_path, db_path):
         print("Completing subplan %6d" % iloop)
 
 #----------------------------------------------------------------------------------
-
+#
 def test1(plan_path, db_path):
     run_type = RunType.RESTART
    #run_type = RunType.RUN_ALL
@@ -1350,16 +1446,20 @@ def test1(plan_path, db_path):
         parent_name = get_predecessor(plan_dict, select_one)
         print("%-16s is a successor of %-16s - all successors: %s" % (select_one, parent_name, successor_names))
 
+# ???????????????????????????????????????????????????????????
         value,_ = get_subplan(plan_dict, select_one)
-        train_set, validation_set = parse_plan_entry(value)
 
-        # print the coarsely parsed plan entry train/validation components
-        if i == 1:
-            print("\n*** Training set ***")
-            pp(train_set, width=160)
-            print("\n*** Validation set ***")
-            pp(validation_set, width=160)
-            print(" ")
+        if i < 3:
+            for pf in [False, True]:
+                _, fs_name_list, train_list, val_list = get_subplan_features(plan_dict, select_one, parent_features=pf)
+                print("\nsubplan original:", select_one, "parent features:", pf)
+                pp(plan_dict[select_one])
+                print("\nflattened TRAIN")
+                pp(train_list)
+                print("\nflattened VAL")
+                pp(val_list)
+
+# ???????????????????????????????????????????????????????????
 
         # test retrieval api
         row = get_subplan_runhist(db_path, plan_id=plan_id, subplan_id=select_one)
