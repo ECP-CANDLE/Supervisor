@@ -1024,7 +1024,7 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     Args
         plan_dict:          The plan dictionary as returned by load_plan()x.
         subplan_id:         The name of the target subplan
-        parent_features:    True or False 
+        parent_features:    True or False
 
     Returns
         The result is four-tuple (t0, t1, t2, t30) constructed as follows.
@@ -1068,7 +1068,10 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     result['train'] = {}
     result['val'] = {}
 
-    for set_name in ['train', 'val']:
+    for set_name, pf in [('train', True), ('val', False)]:
+        if pf == True:
+            pf = parent_features
+
         for fs_name in fs_names:
             collector = []
             _get_named_set(
@@ -1077,7 +1080,7 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
                 set_name,
                 fs_name,
                 collector,
-                parent_features=parent_features
+                parent_features=pf
             )
 
             result[set_name][fs_name] = collector
