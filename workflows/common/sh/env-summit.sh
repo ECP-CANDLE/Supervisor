@@ -10,12 +10,12 @@ module load spectrum-mpi/10.3.0.1-20190611
 
 ROOT=/ccs/proj/med106/gounley1/summit
 
-export PY=$ROOT/miniconda3
-export R=$ROOT/R-190814/lib64/R/lib
+export PY=$ROOT/miniconda37
+export R=$ROOT/R-190822/lib64/R/lib
 
 export LD_LIBRARY_PATH=$R:$LD_LIBRARY_PATH
 
-SWIFT=$ROOT/swift-t-190814
+SWIFT=$ROOT/swift-t-190822
 PATH=$SWIFT/stc/bin:$PATH
 
 # log_path PATH
@@ -27,7 +27,7 @@ PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
 # EMEWS Queues for R
-EQR=$ROOT/EQ-R-190814
+EQR=$ROOT/EQ-R-190822
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
