@@ -70,13 +70,17 @@ def validate_args(args):
     params = {}
     verbose = args.verbose
 
+    if not args.first_parts:
+        args.first_parts = args.fs_parts
+
     fs_names_len = len(args.fs_names)
     fs_paths_len = len(args.fs_paths)
     fs_parts_len = len(args.fs_parts)
+    fs_first_len = len(args.first_parts)
 
     nbr_feature_sets = fs_names_len
-    test_lengths = [fs_names_len, fs_paths_len, fs_parts_len]
-    reqd_lengths = [nbr_feature_sets] * 3
+    test_lengths = [fs_names_len, fs_paths_len, fs_parts_len, fs_first_len]
+    reqd_lengths = [nbr_feature_sets] * 4
 
     if test_lengths != reqd_lengths:
         sys.exit("Error: The lengths of all feature set definition args (fs_<>) must be identical")
@@ -84,9 +88,11 @@ def validate_args(args):
     if nbr_feature_sets <= 1:
         sys.exit("Error: Partitioning requires multiple feature sets")
 
-    for nparts in args.fs_parts:
+    for fparts, nparts in zip(args.first_parts, args.fs_parts):
         if nparts < 1 or nparts >= 8:
             sys.exit("Error: Invalid partitioning value %d" % nparts)
+        if fparts < 1 or fparts >= 8:
+            sys.exit("Error: Invalid 'first' partitioning value %d" % fparts)
 
     # validate input and output directories
     if args.in_dir and not os.path.isdir(args.in_dir):
@@ -141,7 +147,7 @@ class SubsetGenerator(ABC):
     """Abstract class implementing a data partitioning method.
 
     The SubsetGenerator class provides a template for subclasses that implement
-    mechanisms for dividing sets of lists into sublists for the purpose of 
+    mechanisms for dividing sets of lists into sublists for the purpose of
     defining unique ML training and validation sets.
 
     Subclasses must implement those methods defined as @abstractmethod.
@@ -1146,6 +1152,8 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
     for i in range(len(args.fs_names)):
         group = feature_set_content[i]
         count = args.fs_parts[i]
+        if depth == 0:
+            count = args.first_parts[i]
         feature_set_name = args.fs_names[i]
         partitions = args.generator.partition(feature_set_content[i], count=count)
         all_parts.append(partitions)
@@ -1449,22 +1457,21 @@ def test1(plan_path, db_path):
         parent_name = get_predecessor(plan_dict, select_one)
         print("%-16s is a successor of %-16s - all successors: %s" % (select_one, parent_name, successor_names))
 
-# ???????????????????????????????????????????????????????????
+        # test feature lists retrieval API get_subplan_features
         value,_ = get_subplan(plan_dict, select_one)
 
         if i < 3:
             for pf in [False, True]:
                 _, fs_name_list, train_list, val_list = get_subplan_features(plan_dict, select_one, parent_features=pf)
-                print("\nsubplan original:", select_one, "parent features:", pf)
-                pp(plan_dict[select_one])
-                print("\nflattened TRAIN")
-                pp(train_list)
-                print("\nflattened VAL")
-                pp(val_list)
+                if False:   # very verbose, use only as needed! ???????????????????????????????????????????????????????
+                    print("\nsubplan original:", select_one, "parent features:", pf)
+                    pp(plan_dict[select_one])
+                    print("\nflattened TRAIN")
+                    pp(train_list)
+                    print("\nflattened VAL")
+                    pp(val_list)
 
-# ???????????????????????????????????????????????????????????
-
-        # test retrieval api
+        # test runhist retrieval api
         row = get_subplan_runhist(db_path, plan_id=plan_id, subplan_id=select_one)
         #print(row)
 

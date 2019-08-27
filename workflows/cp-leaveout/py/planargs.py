@@ -57,6 +57,12 @@ def parse_arguments():
                         nargs='+',
                         help='Specify a list of partition counts')
 
+    parser.add_argument('--first_parts',
+                        required=False,
+                        type=int,
+                        nargs='+',
+                        help='Optionally, specify a list of first pass partition counts')
+
     # misc 
 
     parser.add_argument('--maxdepth',
