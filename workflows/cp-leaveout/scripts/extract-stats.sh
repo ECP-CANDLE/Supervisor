@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu
 
-# EXTRACT R2 SH
-# Extract R2s
+# EXTRACT STATS SH
+# Extract stats: r2, mse, mae
 # Provide a directory full of model.logs
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
@@ -14,15 +14,28 @@ SIGNATURE -H "Provide an experiment DIR (e.g., .../experiments/X042)!" \
           DIR - ${*}
 
 # The output of this script, a plottable file
-R2S=$DIR/r2s.txt
+STATS_FILE=$DIR/stats.txt
 
 RUNS=$( ls $DIR/run )
 
-for RUN in $RUNS
-do
-  printf "%-10s " $RUN
-  sed '/r2:/ {s/.*]   r2: \(.*\)/\1/ ; h}; $!d; x' \
-      $DIR/run/$RUN/model.log
-done > $R2S
+FORMAT="%-6s %-10s %-8s %-8s %-8s"
 
-echo "extract-r2.sh: wrote: $R2S"
+{
+  printf "# $FORMAT\n" STAGE RUN R2 MSE MAE
+  for RUN in $RUNS
+  do
+    # echo $RUN >&2 # Uncomment for progress indication
+    STAGE=$(( ${#RUN} / 2 )) # Length of run label, not counting dots
+    STATS=()
+    for TOKEN in r2 mae mse
+    do
+      STATS+=( $(
+                 sed "/$TOKEN:/ {s/.*]   $TOKEN: \(.*\)/\1/ ; h}; \$!d; x" \
+                     $DIR/run/$RUN/model.log
+               ) )
+    done
+    printf "  $FORMAT\n" $STAGE $RUN ${STATS[@]}
+  done
+} > $STATS_FILE
+
+echo "extract-stats.sh: wrote: $STATS_FILE"
