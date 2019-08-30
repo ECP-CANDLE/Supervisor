@@ -43,9 +43,22 @@ def avg(L):
         s += float(v)
     return s / len(L)
 
+def mean_confidence_interval(data, confidence=0.95):
+    import numpy as np
+    import scipy.stats
+    """ Cf. https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data """
+    data = list(map(float, data))
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
+    c = 100.0 * h / m # Interval scaled to mean
+    return m, h, c
+
 # Average each data[label][stage] and report
 print("# %-5s %-6s AVG" % ("STAT", "STAGE"))
 for label in labels:
     for stage in data[label].keys():
-        a = avg(data[label][stage])
-        print("  %-5s %-6s %0.6f" % (label, stage, a))
+        # a = avg(data[label][stage])
+        m, h, c = mean_confidence_interval(data[label][stage])
+        print("  %-5s %-6s %0.6f±%0.6f (%2.f%%)" % (label, stage, m, h, c))
