@@ -7,7 +7,7 @@
 
 import sys
 
-# Read the header, obtain the stat labels (R2, MSE, MAE)
+# Read the header, obtain the stat labels (R2, MSE, MAE, TIME)
 line = sys.stdin.readline()
 tokens = line.split()
 data = {}

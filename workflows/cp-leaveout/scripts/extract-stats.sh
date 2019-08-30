@@ -18,10 +18,10 @@ STATS_FILE=$DIR/stats.txt
 
 RUNS=$( ls $DIR/run )
 
-FORMAT="%-6s %-10s %-8s %-8s %-8s"
+FORMAT="%-6s %-10s %-8s %-8s %-8s %-8s"
 
 {
-  printf "# $FORMAT\n" STAGE RUN R2 MSE MAE
+  printf "# $FORMAT\n" STAGE RUN R2 MSE MAE TIME
   for RUN in $RUNS
   do
     # echo $RUN >&2 # Uncomment for progress indication
@@ -34,6 +34,10 @@ FORMAT="%-6s %-10s %-8s %-8s %-8s"
                      $DIR/run/$RUN/model.log
                ) )
     done
+    STATS+=( $(
+               sed "/Current time/ {s/Current time \.\.\.\.\(.*\)/\1/ ; h}; \$!d; x" \
+                   $DIR/run/$RUN/model.log
+             ) )
     printf "  $FORMAT\n" $STAGE $RUN ${STATS[@]}
   done
 } > $STATS_FILE
