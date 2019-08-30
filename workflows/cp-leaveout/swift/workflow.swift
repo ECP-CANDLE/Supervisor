@@ -141,7 +141,11 @@ except Exception as e:
 import plangen
 import sys, traceback
 try:
+    fp = open("lock", "w+")
+    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
+    fcntl.flock(fp, fcntl.LOCK_UN)
+    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
