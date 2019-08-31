@@ -139,7 +139,7 @@ except Exception as e:
   result = python_persist(
 ----
 import plangen
-import sys, traceback
+import fcntl, sys, traceback
 try:
     fp = open("lock", "w+")
     fcntl.flock(fp, fcntl.LOCK_EX)
