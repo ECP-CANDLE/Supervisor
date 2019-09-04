@@ -50,6 +50,7 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
+int epochs = 16;
 // END WORKFLOW ARGUMENTS
 
 // For compatibility with obj():
@@ -91,7 +92,7 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      result1 = plangen_start(node, plan_id);
+      result1 = "0"; // plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
@@ -99,7 +100,7 @@ run_stage(int N, int S, string this, int stage, void block,
       s = obj(json, node) =>
         printf("completed: node: " + node) =>
         // Update the DB to complete the model run
-        result2 = plangen_stop(node, plan_id);
+        result2 = "0"; // plangen_stop(node, plan_id);
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("stop_subplan result: %s", result2);
       v = propagate(s);
@@ -159,6 +160,15 @@ except Exception as e:
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this, int stage)
 {
+    int this_ep;
+    if (stage > 1)
+    {
+      this_ep = max_integer(epochs %/ float2int(pow_integer(2, (stage - 1))), 1);
+    }
+    else
+    {
+      this_ep = epochs;
+    }
     json_fragment = ----
 "pre_module":     "data_setup",
 "post_module":    "data_setup",
@@ -167,9 +177,12 @@ except Exception as e:
 "cache":          "cache/top6_auc",
 "dataframe_from": "%s",
 "save_weights":   "model.h5",
+"gpus": "0",
+"epochs": %i,
+"use_exported_data": "topN.uno.h5",
 "benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv, benchmark_data);
+(plan_json, dataframe_csv, this_ep, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);
