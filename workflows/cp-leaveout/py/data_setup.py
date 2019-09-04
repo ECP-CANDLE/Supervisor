@@ -12,6 +12,8 @@ class TopN_Args:
         self.dataframe_from = dataframe_from
         self.node = node
         self.plan = plan
+        self.fold = None
+        self.incremental = 'True'
 
 def pre_run(params):
     print("data_setup.pre_run()...")
