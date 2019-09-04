@@ -724,6 +724,8 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         already exists for the plan/subplan and is marked COMPLETE.
     """
 
+    print("start_subplan: " + str(os.getenv("PMI_RANK")))
+
     conn = db_connect(db_path)
     csr  = conn.cursor()
     skip = False
@@ -780,6 +782,8 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
         plan_id:        the plan identifier returned by plan_prep()
         comp_info_dict: supplemental completion data dictionar
     """
+
+    print("stop_subplan: " + str(os.getenv("PMI_RANK")))
 
     conn = db_connect(db_path)
     csr  = conn.cursor()
