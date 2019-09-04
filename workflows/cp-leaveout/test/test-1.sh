@@ -58,6 +58,13 @@ do
   fi
 done
 
+if [[ ! -e $BENCHMARK_DATA/cache ]]
+then
+  echo "$0: The cache does not exist: $BENCHMARK_DATA/cache"
+  echo "$0: Use mkdir to create this directory"
+  exit 1
+fi
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $WORKFLOW_ARGS       \

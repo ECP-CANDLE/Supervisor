@@ -78,6 +78,13 @@ run_stage(int N, int S, string this, int stage, void block,
   v = propagate();
 }
 
+pragma worktypedef DB;
+
+@dispatch=DB
+(string output) python_db(string code, string expr)
+"turbine" "0.1.0"
+ [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
+
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
 (void v) run_single(string node, int stage, void block, string plan_id)
 {
@@ -92,7 +99,7 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      result1 = "0"; // plangen_start(node, plan_id);
+      result1 = plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
@@ -100,7 +107,7 @@ run_stage(int N, int S, string this, int stage, void block,
       s = obj(json, node) =>
         printf("completed: node: " + node) =>
         // Update the DB to complete the model run
-        result2 = "0"; // plangen_stop(node, plan_id);
+        result2 = plangen_stop(node, plan_id);
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("stop_subplan result: %s", result2);
       v = propagate(s);
@@ -115,7 +122,7 @@ run_stage(int N, int S, string this, int stage, void block,
 
 (string result) plangen_start(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import fcntl, sys, traceback
 import plangen
@@ -137,7 +144,7 @@ except Exception as e:
 
 (string result) plangen_stop(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import plangen
 import fcntl, sys, traceback

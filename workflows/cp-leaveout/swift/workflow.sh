@@ -178,6 +178,7 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
+        -e TURBINE_DB_WORKERS=1 \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
   tee $STDOUT
