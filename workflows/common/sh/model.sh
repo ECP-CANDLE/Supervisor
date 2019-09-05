@@ -43,7 +43,7 @@ exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
 
-echo "MODEL.SH START:"
+echo "MODEL.SH START:" $(hostname)
 echo "MODEL_NAME: $MODEL_NAME"
 echo "RUNID: $RUNID"
 
