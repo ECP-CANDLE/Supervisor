@@ -101,7 +101,8 @@ pragma worktypedef DB;
       // Insert the model run into the DB
       result1 = plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
-    if (result1 == "0")
+    printf("start_subplan result: %s", result1);
+    if (find(result1, "0", 0, -1) == 0) // result1 should start with "0"
     {
       // Run the model
       s = obj(json, node) =>
@@ -114,7 +115,8 @@ pragma worktypedef DB;
     }
     else
     {
-      printf("plan node already marked complete: %s result=%s", node, result1) =>
+      printf("plan node already marked complete: %s result=%s",
+             node, result1) =>
         v = propagate();
     }
   }

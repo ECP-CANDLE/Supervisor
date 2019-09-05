@@ -724,7 +724,11 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         already exists for the plan/subplan and is marked COMPLETE.
     """
 
-    print("start_subplan: " + str(os.getenv("PMI_RANK")))
+    import socket, traceback
+    try:
+        hostname = str(socket.gethostname())
+    except Exception:
+        traceback.print_exc()
 
     conn = db_connect(db_path)
     csr  = conn.cursor()
@@ -760,9 +764,9 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     conn.close()
 
     if skip:
-        return -1
+        return "-1"
     else:
-        return 0
+        return "0 " + hostname
 
 
 def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
@@ -783,7 +787,9 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
         comp_info_dict: supplemental completion data dictionar
     """
 
-    print("stop_subplan: " + str(os.getenv("PMI_RANK")))
+
+    import socket
+    hostname = str(socket.gethostname())
 
     conn = db_connect(db_path)
     csr  = conn.cursor()
@@ -832,6 +838,7 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     csr.close()
     conn.commit()
     conn.close()
+    return hostname
 
 
 def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
