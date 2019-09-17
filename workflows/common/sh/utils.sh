@@ -594,7 +594,7 @@ signature()
       shift
       break
     fi
-    L+=$1
+    L+=( $1 )
     shift || return 1
   done
   if (( ${#L[@]} != ${#*} ))
@@ -605,10 +605,10 @@ signature()
     then
       echo "$SELF: Usage: $HELP"
     fi
-    return 1
+    exit 1
   fi
   local V
-  for V in $L
+  for V in ${L[@]}
   do
     eval $V=$1
     shift
