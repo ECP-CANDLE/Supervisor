@@ -6,3 +6,4 @@ THIS=$( dirname $0 )
 set -x
 cd $THIS
 jwplot plot.{cfg,eps,data}
+convert plot.{eps,png}
