@@ -31,7 +31,7 @@ usage()
   echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} < 5 ))
 then
   usage
   exit 1
@@ -49,17 +49,19 @@ then
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+shift 5
+WORKFLOW_ARGS=$*
+
+echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
 
 source_site env   $SITE
 source_site sched $SITE
 
-# Set PYTHONPATH for BENCHMARK and SQL related stuff
-PYTHONPATH+=:$BENCHMARK_DIR
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/db
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/db
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py
-export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py            # For plangen, data_setup
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
+APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
+APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
+APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -82,8 +84,6 @@ else
   GPU_ARG="-gpus=$GPU_STRING"
 fi
 
-mkdir -pv $TURBINE_OUTPUT
-
 export DB_FILE=$TURBINE_OUTPUT/cplo.db
 
 if [[ ! -f DB_FILE ]]
@@ -101,15 +101,11 @@ then
   # $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $CPLO_ID
 fi
 
-CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -site=$SITE
-                -db_file=$DB_FILE
+CMD_LINE_ARGS=( --benchmark_timeout=$BENCHMARK_TIMEOUT
+                --site=$SITE
+                --db_file=$DB_FILE
                 $GPU_ARG
-                -cache_dir=$CACHE_DIR
-                # -rna_seq_data=$RNA_SEQ_DATA
-                # -drug_response_data=$DRUG_REPSONSE_DATA
-                $RESTART_FILE_ARG
-                $RESTART_NUMBER_ARG
+                $WORKFLOW_ARGS
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -117,10 +113,7 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # Make run directory in advance to reduce contention
-mkdir -pv $TURBINE_OUTPUT/run
-mkdir -pv $TURBINE_OUTPUT/data
-mkdir -pv $CACHE_DIR
-mkdir -pv $TURBINE_OUTPUT/hpo_log
+mkdir -p $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
@@ -147,11 +140,7 @@ then
   :
 fi
 
-which python swift-t java
-echo PP $PYTHONPATH
-echo PH $PYTHONHOME
-log_path PYTHONPATH
-
+# which python swift-t java
 
 if [[ ${MACHINE:-} == "" ]]
 then
@@ -168,7 +157,7 @@ else
   STDOUT=""
 fi
 
-~/Public/sfw/swift-t/stc/bin/swift-t -O 0 -n $PROCS \
+swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
@@ -176,7 +165,6 @@ fi
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
-        -e XCORR_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
@@ -190,11 +178,17 @@ fi
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
-        -e PREPROP_RNASEQ \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
   tee $STDOUT
 
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
 
+if (( ${PIPESTATUS[0]} ))
+then
+  echo "workflow.sh: swift-t exited with error!"
+  exit 1
+fi
+
 echo "WORKFLOW OK."
+echo "EXIT CODE: 0" | tee -a $STDOUT

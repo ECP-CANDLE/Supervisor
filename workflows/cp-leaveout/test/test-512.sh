@@ -29,16 +29,16 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-1.sh
+export CFG_SYS=$THIS/cfg-sys-512.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Data files
 # PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
-SCRATCH=/gpfs/alpine/med106/scratch/wozniak
-CANDLE_DATA=$SCRATCH/CANDLE-Data
-PLAN_JSON=$CANDLE_DATA/plangen_cell8-p2_drug8-p2.json
-DATAFRAME_CSV=$CANDLE_DATA/top21_dataframe_8x8.csv
-BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
+SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
+CANDLE_DATA=$SCRATCH/Milestone13
+PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
+DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
+BENCHMARK_DATA=$SCRATCH/Milestone13/Benchmarks/Pilot1/Uno
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported

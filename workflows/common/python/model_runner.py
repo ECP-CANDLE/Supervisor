@@ -22,43 +22,91 @@ sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
 print("sys.path:")
-print(sys.path)
+for i in range(0, len(sys.path)-1):
+    print("%2i: %s" % (i, sys.path[i]))
 print("")
 
 def import_pkg(framework, model_name):
-    print ("model_name", model_name)
-    if framework == 'keras':
-        module_name = os.getenv("MODEL_PYTHON_SCRIPT") if "MODEL_PYTHON_SCRIPT" in os.environ and os.getenv("MODEL_PYTHON_SCRIPT") != "" else "{}_baseline_keras2".format(model_name)
-        print ("module_name:", module_name)
-        pkg = importlib.import_module(module_name)
+    # The model_name is the short form of the Benchmark: e.g., 'nt3'
+    # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
+    print("model_name: ", model_name)
+    if framework != 'keras':
+        raise ValueError("Invalid framework: '{}'".format(framework))
+    module_name = os.getenv("MODEL_PYTHON_SCRIPT")
+    if module_name == None or module_name == "":
+        module_name = "{}_baseline_keras2".format(model_name)
+    print ("module_name:", module_name)
+    pkg = importlib.import_module(module_name)
 
-        from keras import backend as K
-        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
-            import tensorflow as tf
-            print("Configuring tensorflow with {} inter threads and {} intra threads".
-                format(os.environ['NUM_INTER_THREADS'], os.environ['NUM_INTRA_THREADS']))
-            session_conf = tf.ConfigProto(inter_op_parallelism_threads=int(os.environ['NUM_INTER_THREADS']),
-                intra_op_parallelism_threads=int(os.environ['NUM_INTRA_THREADS']))
-            sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
-            K.set_session(sess)
-    # elif framework is 'mxnet':
-    #     import nt3_baseline_mxnet
-    #     pkg = nt3_baseline_keras_baseline_mxnet
-    # elif framework is 'neon':
-    #     import nt3_baseline_neon
-    #     pkg = nt3_baseline_neon
-    else:
-        raise ValueError("Invalid framework: {}".format(framework))
+    from keras import backend as K
+    if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+        import tensorflow as tf
+        inter_threads = int(os.environ['NUM_INTER_THREADS'])
+        intra_threads = int(os.environ['NUM_INTRA_THREADS'])
+        print("Configuring tensorflow with {} inter threads and {} intra threads"
+              .format(inter_threads, intra_threads))
+        cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
+                             intra_op_parallelism_threads=intra_threads)
+        sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
+        K.set_session(sess)
     return pkg
 
 def log(msg):
     global logger
     logger.debug("model_runner: " + msg)
 
+def timestamp():
+    from datetime import datetime
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def setup_perf(params):
+    return { 'top':    setup_perf_top(params),
+             'nvidia': setup_perf_nvidia(params) }
+
+def setup_perf_top(params):
+    if 'perf_top' not in params:
+        return None
+    if params['perf_top'] == '0':
+        return None
+    try:
+        delay = int(params['perf_top'])
+    except:
+        msg = 'setup_perf_top(): params[perf_top] not an int: got: "%s"' % \
+              params['perf_top']
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+    with open('perf-top.log', 'a') as fp_out:
+        fp_out.write('model_runner: start: %s\n\n' % timestamp())
+        P = subprocess.Popen(['top', '-b', '-d', params['perf_top']],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
+def setup_perf_nvidia(params):
+    if 'perf_nvidia' not in params:
+        return None
+    if params['perf_nvidia'] == '0':
+        return None
+    try:
+        delay = int(params['perf_nvidia'])
+    except:
+        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: got: "%s"' % \
+              params['perf_nvidia']
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+    with open('perf-nvidia.log', 'a') as fp_out:
+        fp_out.write('model_runner: start: %s\n\n' % timestamp())
+        P = subprocess.Popen(['nvidia-smi', '--loop='+params['perf_top']],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
 def run(hyper_parameter_map, obj_return):
 
     global logger
-    logger = log_tools.get_logger(logger, __name__)
+    logger = log_tools.get_logger(logger, "MODEL RUNNER")
 
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
@@ -90,6 +138,9 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.write_params(params, hyper_parameter_map)
     log("WRITE_PARAMS STOP")
 
+    Ps = setup_perf(params)
+
+    # Run the model!
     history = pkg.run(params)
 
     runner_utils.keras_clear_session(framework)
@@ -116,6 +167,10 @@ def run(hyper_parameter_map, obj_return):
                              framework)
 
         print("result: " + obj_return + ": " + str(result))
+
+    for s in ['top', 'nvidia']:
+        if Ps[s] is not None:
+            Ps[s].terminate()
     return result
 
 def get_obj_return():
@@ -150,11 +205,11 @@ def run_post(hyper_parameter_map):
         logger.debug("POST RUN START")
         module.post_run(hyper_parameter_map)
         logger.debug("POST RUN STOP")
-        
+
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
-    logger = log_tools.get_logger(logger, __name__)
+    logger = log_tools.get_logger(logger, "MODEL_RUNNER")
     log("RUN START")
 
     ( _, # The Python program name (unused)

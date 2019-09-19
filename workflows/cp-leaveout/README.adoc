@@ -3,29 +3,85 @@
 
 == Quick start
 
+* On Summit, be sure to run from a compute-node writable directory +
+  E.g., /gpfs/alpine/med106/scratch/$USER
+* Check out Benchmarks branch loocv
+** Edit uno_baseline_keras2.py to replace uno_default_model.txt +
+   with uno_auc_model.txt
+** Edit uno_auc_model.txt to set epochs=3 (or whatever for a shorter run)
+* Check out Supervisor branch develop
+* Edit test-1.sh to set data locations:
++
 ----
-$ test/test-1.sh
-FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=9 FILE_OUTPUT=/tmp/tcl_jmAASQ.turbine
-FAKE-UNO.SH: LEAVEOUT_CELL_LINE=6 LEAVEOUT_DRUG=7 FILE_OUTPUT=/tmp/tcl_LvVIrA.turbine
-FAKE-UNO.SH: LEAVEOUT_CELL_LINE=9 LEAVEOUT_DRUG=10 FILE_OUTPUT=/tmp/tcl_jDl1IG.turbine
-FAKE-UNO.SH: LEAVEOUT_CELL_LINE=10 LEAVEOUT_DRUG=4 FILE_OUTPUT=/tmp/tcl_iCvpXR.turbine
-...
+PLAN_JSON      (file: see below)
+DATAFRAME_CSV  (file: see below)
+BENCHMARK_DATA (full path of directory Benchmarks/Pilot1/Uno)
 ----
 
-== TODOs
+BENCHMARK_DATA must contain uno_auc_model.txt
 
-From the Google doc:
-https://docs.google.com/document/d/1s2OyCdo4BywKtH2EeCorVf8rewahScmW3uxr8JT0mmY
+Retrieve:
+----
+# The original data file
+$ wget http://www.mcs.anl.gov/~wozniak/data/top21_dataframe_8x8.csv (DATAFRAME_CSV)
+# The plan file (used by topN_to_uno to make a training file) (PLAN_JSON)
+$ wget http://www.mcs.anl.gov/~wozniak/data/plangen_cell8-p2_drug8-p2.json
+# An example training file
+$ wget http://www.mcs.anl.gov/~wozniak/data/topN.uno.h5
+----
 
-. Generate training data from subset of whole data set
-. Pass this training data into Uno
-. Record that input data subset and training run in the DB
-. Express the whole sweep as a workflow
-.. Step 1: Express as combination of leave-one-out, multiple phases
-.. Step 2: Use Cobalt job dependencies to handle multiple phases
-.. Step 3: Asynchronous interphase dependencies
-. Apply data parallelism in early phases?
+=== Run
 
-New TODOs:
+----
+$ test/test-1.sh <SITE> -a
+----
 
-. Fill in fake-uno.sh with an actual call to Uno that runs it after leaving out the given data indices.
+This will autogenerate a new experiment directory X001, X002, ...
+
+This will run the short N=2, S=2 case.
+
+Any additional arguments appended to the end of this command line will be passed through to workflow.swift .  See the header of workflow.swift for those options.
+
+=== Restart
+
+----
+$ test/test-1.sh <SITE> <EXPID> -r
+----
+
+EXPID should be a previously completed experiment (e.g., X001, X002, ...)
+
+This will modify the given EXPID in place (you may want to back it up first).
+
+=== DB check
+
+Quick check of DB contents after run:
+
+----
+$ ./check-db.sh <FILE.db>
+----
+
+== Bigger runs
+
+The plan plangen_cell8-p2_drug8-p2.json supports up to N=4 children for S=3 stages.
+You can run the whole file with:
+
+----
+$ test/test-1.sh <SITE> -a -N=4 -S=3
+----
+
+The -N -S arguments are passed through to workflow.swift
+
+== Data setup
+
+This workflow sets up the data for each run using the new model_runner feature to specify a pre_run Python module.  This is controlled by the additional hyperparameters in workflow.swift:make_json_fragment(), namely 'pre_module'.
+
+The workflow:
+
+. passes these hyperparameters to each obj() call,
+. through model.sh,
+. into model_runner.py,
+. which loads the specified module data_setup (found in PYTHONPATH),
+. which imports topN_to_uno,
+. constructs the training H5 input file model.h5,
+. and sets up symlinks to other data, the Uno cache and the uno_auc_model.txt .
+. The available 'post_module' is currently unused.

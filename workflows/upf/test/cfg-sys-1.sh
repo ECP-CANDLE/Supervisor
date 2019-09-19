@@ -17,7 +17,7 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-debug}
 # Cori queues: debug, regular
 # export QUEUE=regular
-export QUEUE=debug
+# export QUEUE=debug
 # CANDLE on Cori:
 # export PROJECT=m2924
 
@@ -26,6 +26,10 @@ export QUEUE=debug
 # export PROJECT=${PROJECT:-ecp-testbed-01}
 # export PROJECT=Candle_ECP
 # export PROJECT=CSC249ADOA01
+
+# Summit:
+# export QUEUE=${QUEUE:-batch}
+# export PROJECT=med106
 
 export WALLTIME=${WALLTIME:-00:10:00}
 
