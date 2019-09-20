@@ -1,4 +1,4 @@
-from keras.engine import topology
+from keras.engine import saving
 from keras import optimizers
 from keras.models import Sequential
 import keras.backend as K
@@ -153,7 +153,7 @@ def save_state(model, outdir, rank):
     fname = "{}/weights_opt_{}.h5".format(outdir, rank)
     with h5py.File(fname, 'w') as f:
         model_weights_group = f.create_group('model_weights')
-        topology.save_weights_to_hdf5_group(model_weights_group, model.layers)
+        saving.save_weights_to_hdf5_group(model_weights_group, model.layers)
         save_optimizer(model, f)
         f.flush()
 
@@ -167,7 +167,7 @@ def load_state(model, outdir, rank):
         if 'layer_names' not in f.attrs and 'model_weights' in f:
             weights = f['model_weights']
      
-        topology.load_weights_from_hdf5_group(weights, model.layers)
+        saving.load_weights_from_hdf5_group(weights, model.layers)
         load_optimizer(model, f)
 
 

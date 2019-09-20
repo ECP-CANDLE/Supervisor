@@ -43,10 +43,12 @@ cp -p $PARAMS_FILE $EXP_DIR
 cp "$(readlink -f $0)" $EXP_DIR
 
 export P_FILE="./$(basename $PARAMS_FILE)"
+export PARAMS_FILE="$PARAMS_FILE"
 
 echo "EXPERIMENT DIRECTORY: $EXP_DIR"
 
 source "$SITE"_submit.cfg
+CMD="bsub $SH"
 
 #echo $CMD
 $CMD
