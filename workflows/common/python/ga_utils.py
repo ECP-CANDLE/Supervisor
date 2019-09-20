@@ -173,7 +173,7 @@ def create_parameters(param_file, ignore_sigma=False):
         name = item['name']
         t = item['type']
         if ignore_sigma:
-            sigma = float('nan')
+            sigma = float(1.0)
         if t == 'int' or t == 'float':
             lower = item['lower']
             upper = item['upper']

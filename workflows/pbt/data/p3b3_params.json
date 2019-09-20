@@ -1,0 +1,38 @@
+[
+
+  {
+    "name": "epochs",
+    "type": "int",
+    "lower": 5,
+    "upper": 50
+  },
+
+  {
+    "name": "dropout",
+    "type": "float",
+    "lower": 0.0,
+    "upper": 0.9
+  },
+
+  {
+    "name": "filter_size",
+    "type": "int",
+    "lower": 1,
+    "upper": 10
+  },
+
+  {
+    "name": "wv_len",
+    "type": "int",
+    "lower": 5,
+    "upper": 300
+  },
+
+  {
+    "name": "num_filters",
+    "type": "int",
+    "lower": 5,
+    "upper": 200
+  }
+
+]
