@@ -13,6 +13,10 @@ from keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau
 from sklearn.metrics import f1_score
 '''
 
+from keras.models import Sequential, Model, model_from_json, model_from_yaml
+from solr_keras import CandleRemoteMonitor, TerminateOnTimeOut
+from keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau
+
 import p3b3 as bmk
 import candle
 
@@ -59,7 +63,7 @@ def fetch_data(gParameters):
     return fpath
 
 
-def run_cnn( GP, train_x, train_y, test_x, test_y,
+def run_cnn( GP, train_x, train_y, test_x, test_y, callbacks,
     learning_rate = 0.01,
     batch_size = 10,
     epochs = 10,
@@ -126,14 +130,15 @@ def run_cnn( GP, train_x, train_y, test_x, test_y,
         epochs= epochs,
         verbose= 2,
         validation_data= validation_data,
-        callbacks = [candleRemoteMonitor, timeoutMonitor]
+#        callbacks = [candleRemoteMonitor, timeoutMonitor]
+        callbacks = callbacks
      )
 
     return history
 
 
 
-def run(gParameters):
+def run(gParameters, callbacks):
 
     fpath = fetch_data(gParameters)
     # Get default parameters for initialization and optimizer functions
@@ -173,6 +178,7 @@ def run(gParameters):
     ret = run_cnn(
         gParameters, 
         train_x, train_y, test_x, test_y,
+        callbacks,
         learning_rate = learning_rate,
         batch_size = batch_size,
         epochs = epochs,
@@ -191,8 +197,8 @@ def run(gParameters):
 
 def main():
 
-    gParameters = initialize_parameters()
-    avg_loss = run(gParameters)
+#    gParameters = initialize_parameters()
+#    avg_loss = run(gParameters)
     print( "Return: ", avg_loss )
 
 

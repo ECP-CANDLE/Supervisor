@@ -50,7 +50,7 @@ def run(hyper_parameter_map, callbacks):
         params[k] = v
 
     runner_utils.write_params(params, hyper_parameter_map)
-    history = pkg.run(params)
+    history = pkg.run(params, callbacks)
 
     runner_utils.keras_clear_session(framework)
 
