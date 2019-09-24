@@ -16,8 +16,15 @@ logger = None
 
 print("MODEL RUNNER...")
 
-sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
-sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
+# append ${BENCHMARKS_ROOT}/common to $PATH if variable is set
+benchmarks_root = os.getenv("BENCHMARKS_ROOT")
+if benchmarks_root:
+  sys.path.append(benchmarks_root+"/common")
+
+# append ${MODEL_PYTHON_DIR} to $PATH if variable is set
+python_dir = os.getenv("MODEL_PYTHON_DIR")
+if python_dir:
+  sys.path.append(python_dir)
 
 print("sys.path:")
 print(sys.path)
