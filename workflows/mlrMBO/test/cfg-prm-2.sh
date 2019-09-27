@@ -3,10 +3,10 @@
 # mlrMBO settings
 
 # Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-4}
-MAX_ITERATIONS=${MAX_ITERATIONS:-2}
-MAX_BUDGET=${MAX_BUDGET:-8}
-DESIGN_SIZE=${DESIGN_SIZE:-4}
+PROPOSE_POINTS=${PROPOSE_POINTS:-10}
+MAX_ITERATIONS=${MAX_ITERATIONS:-3}
+MAX_BUDGET=${MAX_BUDGET:-30}
+DESIGN_SIZE=${DESIGN_SIZE:-10}
 # TODO: move the following code to a utility library-
 #       this is a configuration file
 # Set the R data file for running
