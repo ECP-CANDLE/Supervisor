@@ -21,6 +21,8 @@ print("MODEL RUNNER...")
 sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
 sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
 
+import candle_lrn_crv
+
 print("sys.path:")
 for i in range(0, len(sys.path)-1):
     print("%2i: %s" % (i, sys.path[i]))
@@ -110,12 +112,13 @@ def run(hyper_parameter_map, obj_return):
 
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
-    pkg = import_pkg(framework, model_name)
+    # pkg = import_pkg(framework, model_name)
 
     runner_utils.format_params(hyper_parameter_map)
 
     # params is python dictionary
-    params = pkg.initialize_parameters()
+    # params = pkg.initialize_parameters()
+    params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
@@ -141,7 +144,8 @@ def run(hyper_parameter_map, obj_return):
     Ps = setup_perf(params)
 
     # Run the model!
-    history = pkg.run(params)
+    # history = pkg.run(params)
+    history = nn_reg0.run(params)
 
     runner_utils.keras_clear_session(framework)
 
