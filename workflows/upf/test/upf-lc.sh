@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-# TEST UPF 1
+# TEST UPF LC (Learning Curves)
 
 if (( ${#} != 1 ))
 then
