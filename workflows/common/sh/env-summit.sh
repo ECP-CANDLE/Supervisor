@@ -8,14 +8,21 @@ SWIFT_IMPL=app
 module load gcc/4.8.5
 module load spectrum-mpi/10.3.0.1-20190611
 
-ROOT=/ccs/proj/med106/gounley1/summit
+# ROOT=/ccs/proj/med106/gounley1/summit
 
-export PY=$ROOT/miniconda37
-export R=$ROOT/R-190814/lib64/R/lib
+# export PY=$ROOT/miniconda37
+# export R=$ROOT/R-190814/lib64/R/lib
 
-export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
 
-SWIFT=$ROOT/swift-t-190822
+# SWIFT=$ROOT/swift-t-190822
+# PATH=$SWIFT/stc/bin:$PATH
+
+# From Wozniak
+ROOT=/gpfs/alpine/world-shared/med106
+# SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
+# SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
+SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-04
 PATH=$SWIFT/stc/bin:$PATH
 
 # log_path PATH
