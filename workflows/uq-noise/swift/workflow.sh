@@ -59,7 +59,7 @@ source_site sched $SITE
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+export TURBINE_JOBNAME="JOB${EXPID}"
 
 RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
@@ -146,8 +146,7 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-#echo ${CMD_LINE_ARGS[@]}
-
+echo $TURBINE_OUTPUT > workflow-output.txt
 cd $TURBINE_OUTPUT
 
 swift-t -n $PROCS \
