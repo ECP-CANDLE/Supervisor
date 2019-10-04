@@ -791,6 +791,9 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     import socket
     hostname = str(socket.gethostname())
 
+    # logger = get_logger_pg()
+    # logger.info("stop_subplan(): subplan_id=%s ..." % str(subplan_id))
+
     conn = db_connect(db_path)
     csr  = conn.cursor()
     curr_time  = datetime.now()

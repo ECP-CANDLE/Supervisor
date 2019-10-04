@@ -13,7 +13,7 @@ module load spectrum-mpi/10.3.0.1-20190611
 # export PY=$ROOT/miniconda37
 # export R=$ROOT/R-190814/lib64/R/lib
 
-# export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
 
 # SWIFT=$ROOT/swift-t-190822
 # PATH=$SWIFT/stc/bin:$PATH
@@ -24,6 +24,7 @@ ROOT=/gpfs/alpine/world-shared/med106
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
 SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-04
 PATH=$SWIFT/stc/bin:$PATH
+PATH=$SWIFT/turbine/bin:$PATH
 
 # log_path PATH
 

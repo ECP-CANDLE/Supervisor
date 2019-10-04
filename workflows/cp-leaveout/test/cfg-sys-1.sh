@@ -18,7 +18,7 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-00:30:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}

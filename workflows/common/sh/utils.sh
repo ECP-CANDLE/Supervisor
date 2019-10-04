@@ -574,15 +574,17 @@ signature()
 # -
 # Variable values (typically ${*}) to be assigned to X Y Z
 # Use -H MESSAGE to provide an additional help message
+# Use -v for verbose logging of argument assignments
 {
   local L
   L=()
-  local SELF=$1 HELP=""
+  local SELF=$1 HELP="" VERBOSE=0
   shift
-  while getopts "H:" OPT
+  while getopts "H:v" OPT
   do
     case $OPT in
       H) HELP=$OPTARG ;;
+      v) VERBOSE=1    ;;
       *) return 1 ;; # Bash prints an error
     esac
   done
@@ -610,6 +612,7 @@ signature()
   local V
   for V in ${L[@]}
   do
+    (( VERBOSE )) && echo "$SELF: SIGNATURE: $V=$1"
     eval $V=$1
     shift
   done
