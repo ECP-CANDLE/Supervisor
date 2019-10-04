@@ -152,7 +152,8 @@ def run(hyper_parameter_map, obj_return):
     # Run the model!
     history = pkg.run(params)
 
-    runner_utils.keras_clear_session(framework)
+    if framework == 'keras':
+        runner_utils.keras_clear_session(framework)
 
     # Default result if there is no val_loss (as in infer.py)
     result = 0
