@@ -50,7 +50,7 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int epochs = 16;
+int epochs = 1;
 // END WORKFLOW ARGUMENTS
 
 // For compatibility with obj():
@@ -129,11 +129,7 @@ pragma worktypedef DB;
 import fcntl, sys, traceback
 import plangen
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
@@ -151,11 +147,7 @@ except Exception as e:
 import plangen
 import fcntl, sys, traceback
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
