@@ -6,9 +6,9 @@
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
 export PROCS=${PROCS:-4}
 
-# Number of processes to use for resident tasks,
-# i.e., the number of mlrMBO instances to run
-export TURBINE_RESIDENT_WORK_WORKERS=4
+# # Number of processes to use for resident tasks,
+# # i.e., the number of mlrMBO instances to run
+# export TURBINE_RESIDENT_WORK_WORKERS=4
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -18,12 +18,13 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
-export WALLTIME=${WALLTIME:-00:10:00}
+export WALLTIME=${WALLTIME:-02:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
 #export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 #export PROJECT=Candle_ECP
 
@@ -31,7 +32,7 @@ export WALLTIME=${WALLTIME:-00:10:00}
 # after the specified number of seconds.
 # If set to -1 there is no timeout.
 # This timeout is implemented with Keras callbacks
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
