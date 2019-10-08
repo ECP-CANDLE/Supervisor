@@ -8,6 +8,7 @@ SWIFT_IMPL=app
 module load gcc/4.8.5
 # module load gcc/6.4.0
 module load spectrum-mpi/10.3.0.1-20190611
+module unload darshan-runtime
 
 # ROOT=/ccs/proj/med106/gounley1/summit
 
