@@ -90,9 +90,6 @@ mkdir -pv $TURBINE_OUTPUT/run
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
 
-# Andrew: This is machine-specific I believe
-# export TURBINE_LAUNCH_OPTIONS="-cc none"
-
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
