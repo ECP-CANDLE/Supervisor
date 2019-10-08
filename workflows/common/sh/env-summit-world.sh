@@ -7,6 +7,7 @@ SWIFT_IMPL=app
 # Load basic LD_LIBRARY_PATH before changing it:
 module load gcc/4.8.5
 module load spectrum-mpi/10.3.0.1-20190611
+module unload darshan-runtime
 
 ROOT=/gpfs/alpine/world-shared/med106/sw
 
