@@ -23,7 +23,7 @@ module load spectrum-mpi/10.3.0.1-20190611
 ROOT=/gpfs/alpine/world-shared/med106
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
-SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-04
+SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-08
 PATH=$SWIFT/stc/bin:$PATH
 
 # log_path PATH
@@ -31,6 +31,7 @@ PATH=$SWIFT/stc/bin:$PATH
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
+PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
