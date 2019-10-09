@@ -67,9 +67,9 @@ arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
             "$FRAMEWORK"
             "$RUNID"
             "$BENCHMARK_TIMEOUT")
-MODEL_CMD="python -u ${arg_array[@]}"
+MODEL_CMD="python3 -u ${arg_array[@]}"
 # echo MODEL_CMD: $MODEL_CMD
-if $TIMEOUT_CMD python -u "${arg_array[@]}"
+if $TIMEOUT_CMD python3 -u "${arg_array[@]}"
 then
   : # Assume success so we can keep a failed exit code
 else

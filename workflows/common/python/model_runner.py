@@ -185,12 +185,12 @@ def run(hyper_parameter_map, obj_return):
 
 def get_obj_return():
     obj_return = os.getenv("OBJ_RETURN")
-    valid_obj_returns = [ "val_loss", "val_corr" ]
+    valid_obj_returns = [ "val_loss", "val_corr", "val_acc" ]
     if obj_return == None:
         raise Exception("No OBJ_RETURN was in the environment!")
     if obj_return not in valid_obj_returns:
         raise Exception("Invalid value for OBJ_RETURN: use: " +
-                        valid_obj_returns)
+                        str(valid_obj_returns))
     return obj_return
 
 def load_pre_post(hyper_parameter_map, key):
@@ -263,6 +263,7 @@ if __name__ == '__main__':
     print("sys.argv=" + str(sys.argv))
     result = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
-    run_post(hyper_parameter_map)
+    # output_dict = {} # TODO: Fill in useful data for the DB
+    # post_run(hyper_parameter_map, output_dict)
 
     log("RUN STOP")
