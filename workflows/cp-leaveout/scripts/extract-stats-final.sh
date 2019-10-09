@@ -14,30 +14,26 @@ SIGNATURE -H "Provide an experiment DIR (e.g., .../experiments/X042)!" \
           DIR - ${*}
 
 # The output of this script, a plottable file
-STATS_FILE=$DIR/stats.txt
+STATS_FILE=$DIR/stats_final.txt
 
 RUNS=$( ls $DIR/run )
 
 FORMAT="%-6s %-10s %-8s %-8s %-8s %-8s"
 
 {
-  printf "# $FORMAT\n" STAGE RUN R2 MSE MAE TIME
+  printf "# $FORMAT\n" STAGE RUN VAL_LOSS VAL_R2 VAL_MAE
   for RUN in $RUNS
   do
     # echo $RUN >&2 # Uncomment for progress indication
     STAGE=$(( ${#RUN} / 2 )) # Length of run label, not counting dots
     STATS=()
-    for TOKEN in r2 mae mse
+    for TOKEN in val_loss val_r2 val_mae
     do
       STATS+=( $(
-                 sed "/$TOKEN:/ {s/.*]   $TOKEN: \(.*\)/\1/ ; h}; \$!d; x" \
+                 sed "/Epoch:/ {s/\(.*\), $TOKEN: \([0-9\.\-]*\)\(.*\)/\2/ ; h}; \$!d; x" \
                      $DIR/run/$RUN/model.log
                ) )
     done
-    STATS+=( $(
-               sed "/Current time/ {s/Current time \.\.\.\.\(.*\)/\1/ ; h}; \$!d; x" \
-                   $DIR/run/$RUN/model.log
-             ) )
     if [ ${#STATS[@]} -gt 0 ]
     then
         printf "  $FORMAT\n" $STAGE $RUN ${STATS[@]}

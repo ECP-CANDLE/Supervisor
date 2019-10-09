@@ -27,11 +27,15 @@ assert $(( ${#DATE_START} > 0 )) "DATE STOP  not found!"
 
 # Get the model start/stop times from the model.logs
 T=$( mktemp extract-XXX --suffix .txt )
+echo T=$T
 MODEL_LOGS=$( find $DIR -name model.log )
 for LOG in $MODEL_LOGS
 do
   grep "model_runner: RUN" $LOG
 done | sort -k 2 > $T
+
+# Delete scrambled log lines
+sed -i '/model_runner.py:/d' $T
 
 # Make the summary
 python3 $SUPERVISOR/scratch/load/load.py \

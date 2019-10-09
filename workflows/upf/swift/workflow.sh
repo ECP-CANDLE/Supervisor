@@ -62,7 +62,7 @@ export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
-                -benchmark_timeout=600
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
               )
 
@@ -78,9 +78,6 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
-
-# Andrew: This is machine-specific I believe
-# export TURBINE_LAUNCH_OPTIONS="-cc none"
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \

@@ -18,8 +18,16 @@ logger = None
 print("MODEL RUNNER...")
 
 # Andrew: Adding the following line (switching the order of the following two lines) in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
-sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
-sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
+# append ${MODEL_PYTHON_DIR} to $PATH if variable is set
+python_dir = os.getenv("MODEL_PYTHON_DIR")
+if python_dir:
+  sys.path.append(python_dir)
+# append ${BENCHMARKS_ROOT}/common to $PATH if variable is set
+benchmarks_root = os.getenv("BENCHMARKS_ROOT")
+if benchmarks_root:
+  sys.path.append(benchmarks_root+"/common")
+
+# import candle_lrn_crv
 
 print("sys.path:")
 for i in range(0, len(sys.path)-1):
@@ -116,6 +124,7 @@ def run(hyper_parameter_map, obj_return):
 
     # params is python dictionary
     params = pkg.initialize_parameters()
+    # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
@@ -142,6 +151,7 @@ def run(hyper_parameter_map, obj_return):
 
     # Run the model!
     history = pkg.run(params)
+    # history = nn_reg0.run(params)
 
     runner_utils.keras_clear_session(framework)
 
