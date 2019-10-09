@@ -264,6 +264,6 @@ if __name__ == '__main__':
     result = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
     # output_dict = {} # TODO: Fill in useful data for the DB
-    # run_post(hyper_parameter_map, output_dict)
+    # post_run(hyper_parameter_map, output_dict)
 
     log("RUN STOP")
