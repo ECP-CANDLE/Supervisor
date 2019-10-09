@@ -65,6 +65,8 @@ string benchmark_data = argv("benchmark_data");
 int epochs = 1;
 // END WORKFLOW ARGUMENTS
 
+printf("runtype: %s", runtype);
+
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
 
