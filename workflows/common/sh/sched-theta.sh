@@ -7,3 +7,5 @@
 export QUEUE=${QUEUE:-default}
 export PROJECT=${PROJECT:-CSC249ADOA01}
 MACHINE="-m theta"
+
+export TURBINE_LAUNCH_OPTIONS="-cc none"

@@ -6,7 +6,9 @@ SWIFT_IMPL=app
 
 # Load basic LD_LIBRARY_PATH before changing it:
 module load gcc/4.8.5
+# module load gcc/6.4.0
 module load spectrum-mpi/10.3.0.1-20190611
+module unload darshan-runtime
 
 # ROOT=/ccs/proj/med106/gounley1/summit
 
@@ -22,7 +24,7 @@ export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
 ROOT=/gpfs/alpine/world-shared/med106
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
-SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-04
+SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-08
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
@@ -31,6 +33,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
+PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
