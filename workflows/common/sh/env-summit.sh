@@ -15,7 +15,7 @@ module unload darshan-runtime
 # export PY=$ROOT/miniconda37
 # export R=$ROOT/R-190814/lib64/R/lib
 
-export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=$PY/lib:$R:$LD_LIBRARY_PATH
 
 # SWIFT=$ROOT/swift-t-190822
 # PATH=$SWIFT/stc/bin:$PATH
