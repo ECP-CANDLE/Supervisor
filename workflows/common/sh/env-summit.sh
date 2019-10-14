@@ -24,7 +24,8 @@ module unload darshan-runtime
 ROOT=/gpfs/alpine/world-shared/med106
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
 # SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
-SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-08
+# SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-08 # Python, no R
+SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-14 # Python and R
 PATH=$SWIFT/stc/bin:$PATH
 
 # log_path PATH
