@@ -1,0 +1,4 @@
+{"id": "cv1_f1_s1", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 1, "shards_arr":[128, 512, 2048, 8192, 32768, 131072], "model_name": "nn_reg0"}
+{"id": "cv1_f1_s2", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 32768, 131072], "model_name": "nn_reg0"}
+{"id": "cv1_f1_s3", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}
+{"id": "cv1_f1_s4", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}
