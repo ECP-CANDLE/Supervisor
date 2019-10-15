@@ -5,8 +5,9 @@
 SWIFT_IMPL=app
 
 # Load basic LD_LIBRARY_PATH before changing it:
-module load gcc/4.8.5
+# module load gcc/4.8.5
 # module load gcc/6.4.0
+module load gcc/7.4.0
 module load spectrum-mpi/10.3.0.1-20190611
 module unload darshan-runtime
 
@@ -21,11 +22,14 @@ module unload darshan-runtime
 # PATH=$SWIFT/stc/bin:$PATH
 
 # From Wozniak
-ROOT=/gpfs/alpine/world-shared/med106
-# SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-07-10
-# SWIFT=$ROOT/gcc-6.4.0/swift-t/2019-10-02
-# SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-08 # Python, no R
-SWIFT=$ROOT/sw/gcc-4.8.5/swift-t/2019-10-14 # Python and R
+MED106=/gpfs/alpine/world-shared/med106
+# SWIFT=$MED106/gcc-6.4.0/swift-t/2019-07-10
+# SWIFT=$MED106/gcc-6.4.0/swift-t/2019-10-02
+# SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-08  # Python, no R
+# SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14  # Python and R
+# SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14b # Python and R
+SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-15    # Python, no R
+
 PATH=$SWIFT/stc/bin:$PATH
 
 # log_path PATH
@@ -33,20 +37,18 @@ PATH=$SWIFT/stc/bin:$PATH
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
-PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
+# PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
+PY=$MED106/sw/gcc-7.4.0/Python-3.5.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
 # EMEWS Queues for R
-EQR=$ROOT/EQ-R-190822
+EQR=$MED106/EQ-R-190822
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
 LOCAL=0
 CRAY=1
-
-# export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1"
-export TURBINE_LAUNCH_OPTIONS="-g1 -c7 -a1"
 
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
