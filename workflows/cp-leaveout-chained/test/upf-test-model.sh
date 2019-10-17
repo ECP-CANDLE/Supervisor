@@ -1,9 +1,12 @@
 #! /usr/bin/env bash
 set -eu
 
+module unload python
+# module list
+
 # TEST UPF 
-if [ "$#" -ne 2 ]; then
-  echo "usage: upf-test-model SITE UPF_TEXT"
+if [ "$#" -ne 4 ]; then
+  echo "usage: upf-test-model SITE CFG_SYS UPF_TEXT TURBINE_DIRECTIVE"
   exit 1
 fi
 
@@ -20,16 +23,12 @@ export EMEWS_PROJECT_ROOT
 #export PYTHON=/home/nick/anaconda3/bin/python
 
 export MODEL_NAME="model" OBJ_RETURN="val_loss"
-CFG_SYS=$THIS/cfg-sys-upf.sh
 
-# Source some utility functions used by EMEWS in this script
-source $WORKFLOWS_ROOT/common/sh/utils.sh
-# auto create expid
-EXP="-a"
-# create turbine output based on expid
-get_expid $EXP
+CFG_SYS=$THIS/$2
+UPF_TEXT=$3
 
-$EMEWS_PROJECT_ROOT/swift/upf.sh $SITE -a $CFG_SYS $2
+# For #BSUB
 
-echo $EXPID
-echo $TURBINE_OUTPUT
+export TURBINE_DIRECTIVE=$4
+
+$EMEWS_PROJECT_ROOT/swift/upf.sh $SITE -a $CFG_SYS $UPF_TEXT

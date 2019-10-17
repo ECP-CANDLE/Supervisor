@@ -5,8 +5,8 @@ def initialize_parameters():
 
 def run(params):
     outdir = params['dirpath']
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
+    #if not os.path.exists(outdir):
+    #    os.makedirs(outdir)
     fname = '{}/model_out_{}.txt'.format(outdir, params['id'])
     with open(fname, 'w') as fout:
         for p in params:

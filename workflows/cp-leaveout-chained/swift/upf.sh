@@ -95,23 +95,23 @@ mkdir -pv $TURBINE_OUTPUT/run
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 cp -v $UPF $TURBINE_OUTPUT
 
-# swift-t -n $PROCS \
-#         -o $TURBINE_OUTPUT/workflow.tic \
-#         ${MACHINE:-} \
-#         -p -I $EQR -r $EQR \
-#         -I $WORKFLOWS_ROOT/common/swift \
-#         -i obj_$SWIFT_IMPL \
-#         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-#         -e BENCHMARKS_ROOT \
-#         -e EMEWS_PROJECT_ROOT \
-#         -e MODEL_SH \
-#         -e SITE \
-#         -e BENCHMARK_TIMEOUT \
-#         -e MODEL_NAME \
-#         -e OBJ_RETURN \
-#         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-#         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
-#         -e APP_PYTHONPATH=$APP_PYTHONPATH \
-#         $( python_envs ) \
-#         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-#         $EMEWS_PROJECT_ROOT/swift/upf.swift ${CMD_LINE_ARGS[@]}
+swift-t -n $PROCS \
+        -o $TURBINE_OUTPUT/workflow.tic \
+        ${MACHINE:-} \
+        -p -I $EQR -r $EQR \
+        -I $WORKFLOWS_ROOT/common/swift \
+        -i obj_$SWIFT_IMPL \
+        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e BENCHMARKS_ROOT \
+        -e EMEWS_PROJECT_ROOT \
+        -e MODEL_SH \
+        -e SITE \
+        -e BENCHMARK_TIMEOUT \
+        -e MODEL_NAME \
+        -e OBJ_RETURN \
+        -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
+        -e APP_PYTHONPATH=$APP_PYTHONPATH \
+        $( python_envs ) \
+        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        $EMEWS_PROJECT_ROOT/swift/upf.swift ${CMD_LINE_ARGS[@]}

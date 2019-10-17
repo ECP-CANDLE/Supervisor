@@ -33,7 +33,7 @@ foreach params,i in upf_lines
   printf("params: %s", params);
   id = json_get(params, "id");
   // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
-  results[i] = obj(params, id);
+  results[i] = obj(params,  id);
 }
 
 // Join all result values into one big semicolon-delimited string

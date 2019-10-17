@@ -8,38 +8,58 @@ test_chain = """
     [
         {
             "script" : "./upf-test-model.sh",
-            "args" : ["./upf_test.txt"]
+            "args" : ["cfg-sys-4.sh", "./upf-4.txt"]
+        },
+
+        {                                                                                                                                                            
+            "script" : "./upf-test-model.sh",                                                                                                                      "args" : ["cfg-sys-8.sh", "./upf-8.txt"]                                                                                                                 
         }
     ]
+
 """
+
+def printf(msg):
+    print(msg)
+    sys.stdout.flush()
 
 def run_chain(site):
     chain = json.loads(test_chain)
-    for link in chain:
+    job_id = None
+    for i, link in enumerate(chain):
         script = link['script']
         args = [site] + link['args']
+        if job_id:
+            args += ["#BSUB -w done({})".format(job_id)]
+        else:
+            args += ["## FIRST JOB"]
+            
         outs, errs = run_script(script, args)
-        if len(errs) > 0:
-            print(errs)
-            break
-        turbine_output, exp_id, job_id = parse_run_vars(outs)
-        print(turbine_output)
-        print(exp_id)
-        print(job_id)
+        #if len(errs) > 0:
+        printf(errs)
+        #    break
+        turbine_output, job_id = parse_run_vars(outs)
+        exp_id = os.path.basename(turbine_output)
+        printf('########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
+        printf("Running: {} {}".format(script, ' '.join(args)))
+        printf('{}'.format(outs))
+        printf('TURBINE_OUTPUT: {}'.format(turbine_output))
+        printf('JOB_ID: {}\n'.format(job_id))
 
 
 def parse_run_vars(outs):
-    lines = outs.split('\n')
-    last = -1
-    if len(lines[-1]) == 0:
-        last = -2
-    exp_id = lines[last - 1]
-    turbine_output = lines[last]
-
-    with open('{}/jobid.txt'.format(turbine_output), 'r') as f_in:
-        job_id = f_in.readline().trim()
-        
-    return (turbine_output, exp_id, job_id)
+    to_prefix = 'TURBINE_OUTPUT='
+    job_id_prefix = 'JOB_ID='
+    str_io = io.StringIO(outs)
+    turbine_output = ''
+    job_id = ''
+    for line in str_io.readlines():
+        line = line.strip()
+        if line.startswith(to_prefix):
+            turbine_output = line[len(to_prefix) : ]
+        elif line.startswith(job_id_prefix):
+            job_id = line[len(job_id_prefix) : ]
+            
+    return (turbine_output, job_id)
 
 
 # def prep_script(script, new_script):
