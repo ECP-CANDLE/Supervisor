@@ -51,16 +51,22 @@ fi
 shift 5
 WORKFLOW_ARGS=$*
 
-echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
+echo "CPL-UPF-WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
 
 source_site env   $SITE
 source_site sched $SITE
 
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py            # For plangen, data_setup
+# Adding plangen from cp-leaveout
+CPL_PY=$EMEWS_PROJECT_ROOT/../cp-leaveout/py
+
+PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py:            # For plangen, data_setup
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
+PYTHONPATH+=:$CPL_PY
+
 APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
 APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
+APP_PYTHONPATH+=:$CPL_PY
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
@@ -120,15 +126,15 @@ OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
-WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-cpl-upf-workflow.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""
-if (( ${WAIT:-0} ))
-then
-  WAIT_ARG="-t w"
-  echo "Turbine will wait for job completion."
-fi
+# if (( ${WAIT:-0} ))
+# then
+#   WAIT_ARG="-t w"
+#   echo "Turbine will wait for job completion."
+# fi
 
 #echo ${CMD_LINE_ARGS[@]}
 
@@ -155,6 +161,8 @@ else
   # warnings or unusual messages
   STDOUT=""
 fi
+
+mkdir -p $TURBINE_OUTPUT/run
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \

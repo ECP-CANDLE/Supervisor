@@ -88,35 +88,37 @@ def run_script(script, args):
     # out = open('./{}_out.txt'.format(bname), 'w')
     cmd = [script] + args
     # print('{} subprocess start: {}'.format(rank, str(datetime.datetime.now())))
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    outs, errs = p.communicate()
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # stderr is redirected to stdout
+    outs, _ = p.communicate()
     # ret = err.tell() == 0
     # err.close()
     # out.close()
     # return ret
-    return (outs.decode('utf-8'), errs.decode('utf-8'))
+    return outs.decode('utf-8')
 
 def run_upfs(upfs, launch_script, site, plan_file):
+    job_id = None
+    turbine_output = None
     for i, upf in enumerate(upfs):
         # UPFS are in stage order
-        job_id = None
-        args = [site, '-a', 'cfg-sys-s{}.sh'.format(i), plan_file, upf, str(i + 1)]
+        args = [site, '-a', 'cfg-sys-s{}.sh'.format(i + 1), plan_file, upf, str(i + 1)]
         if job_id:
-            args += ["#BSUB -w done({})".format(job_id)]
+            args += [turbine_output, '#BSUB -w done({})'.format(job_id)]
         else:
-            args += ["## JOB 0"]
+            args += ['job0', '## JOB 0']
             
-        outs, errs = run_script(launch_script, args)
-        #if len(errs) > 0:
-        printf(errs)
-        #    break
+        outs = run_script(launch_script, args)
         turbine_output, job_id = parse_run_vars(outs)
         exp_id = os.path.basename(turbine_output)
-        printf('########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
+        printf('\n########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
         printf("Running: {} {}".format(launch_script, ' '.join(args)))
         printf('{}'.format(outs))
         printf('TURBINE_OUTPUT: {}'.format(turbine_output))
         printf('JOB_ID: {}\n'.format(job_id))
+        if not job_id:
+            printf("JOB_ID NOT FOUND - ABORTING RUNS")
+            break
 
 def get_plan_info(plan_file):
     plan_dict = plangen.load_plan(plan_file)
@@ -162,7 +164,7 @@ def generate_stage(parents, n_nodes, f_path):
 def run(args):
     plan_file = args.plan
     n_nodes = args.nodes
-    n_stages = args.stages
+    n_stages = args.stages + 1
 
     root_node, total_stages, total_nodes = get_plan_info(plan_file)
     if n_nodes == -1 or n_nodes > total_nodes:
@@ -172,7 +174,7 @@ def run(args):
 
     prefix = os.path.splitext(os.path.basename(plan_file))[0]
     upfs = generate_upfs(prefix, args.upf_dir, root_node, n_stages, n_nodes)
-    run_upfs(upfs, args.launch_script, args.site)
+    run_upfs(upfs, args.launch_script, args.site, plan_file)
 
 if __name__ == "__main__":
     args = parse_arguments()

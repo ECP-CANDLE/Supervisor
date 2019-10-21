@@ -33,7 +33,6 @@ import sys;
 
 // BEGIN WORKFLOW ARGUMENTS
 int stage = string2int(argv("stage"));
-file upf = input(argv("f"));
 
 string runtype;
 if (argv_contains("r"))
@@ -50,7 +49,12 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int epochs = 16;
+string parent_stage_directory = argv("parent_stage_directory", "");
+
+string turbine_output = getenv("TURBINE_OUTPUT");
+
+// initial epochs
+int epochs = 6;
 // END WORKFLOW ARGUMENTS
 
 // For compatibility with obj():
@@ -58,32 +62,34 @@ global const string FRAMEWORK = "keras";
 
 
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
-(void v) run_single(string node, string plan_id)
+(string r, string ins) run_single(string node, string plan_id)
 {
-  json_fragment = make_json_fragment(node, stage);
-  
+  json_fragment = make_json_fragment(node);  
   json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
+  printf("JSON PARAMS: %s", json);
+  r = obj(json, node);
+  ins = json;
     
-  printf("running obj(%s)", node) =>
-  // Insert the model run into the DB
-  result1 = "0"; // plangen_start(node, plan_id);
-  assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
-  if (result1 == "0")
-  {
-    // Run the model
-    s = obj(json, node) =>
-    printf("completed: node: " + node) =>
-    // Update the DB to complete the model run
-    result2 = "0"; // plangen_stop(node, plan_id);
-    assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
-    printf("stop_subplan result: %s", result2);
-    v = propagate(s);
-  }
-  else
-  {
-    printf("plan node already marked complete: %s result=%s", node, result1) =>
-      v = propagate();
-  }
+  // TODO: Add this DB stuff back-in when necessary
+  // printf("running obj(%s)", node) =>
+  // // Insert the model run into the DB
+  // result1 = "0"; // plangen_start(node, plan_id);
+  // assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
+  // if (result1 == "0")
+  // {
+  //   // Run the model
+  //   s = obj(json, node) =>
+  //   printf("completed: node: " + node) =>
+  //   // Update the DB to complete the model run
+  //   result2 = "0"; // plangen_stop(node, plan_id);
+  //   assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
+  //   printf("stop_subplan result: %s", result2);
+  // }
+  // else
+  // {
+  //   printf("plan node already marked complete: %s result=%s", node, result1) =>
+  //     s = "ERROR";
+  // }
 }
 
 // (string result) plangen_start(string node, string plan_id)
@@ -131,7 +137,7 @@ global const string FRAMEWORK = "keras";
 // }
 
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
-(string result) make_json_fragment(string this, int stage)
+(string result) make_json_fragment(string this)
 {
     int this_ep;
     if (stage > 1)
@@ -142,8 +148,9 @@ global const string FRAMEWORK = "keras";
     {
       this_ep = epochs;
     }
+    //"pre_module":     "data_setup",
     json_fragment = ----
-"pre_module":     "data_setup",
+"pre_module":     "data_setup",  
 "post_module":    "data_setup",
 "plan":           "%s",
 "config_file":    "uno_auc_model.txt",
@@ -162,8 +169,8 @@ global const string FRAMEWORK = "keras";
     parent = substring(this, 0, n-2);
     result = json_fragment + ----
 ,
-"initial_weights": "../%s/model.h5"
----- % parent;
+"initial_weights": "%s/run/%s/model.h5"
+      ---- % (parent_stage_directory, parent);
   }
   else
   {
@@ -173,55 +180,70 @@ global const string FRAMEWORK = "keras";
 
 printf("CP LEAVEOUT UPF WORKFLOW START- UPF: %s, STAGE: %i", filename(upf), stage);
 
+// TODO: Can't run this with swift because no numpy in the embedded python
+// Uncomment when proper Python available
+
 // First: simple test that we can import plangen
-check = python_persist(----
-try:
-    import plangen
-    result = 'OK'
-except Exception as e:
-    result = str(e)
-----,
-"result");
-printf("python result: import plangen: '%s'", check) =>
-  assert(check == "OK", "could not import plangen, check PYTHONPATH!");
+// check = python_persist(----
+// try:
+//     import plangen
+//     result = 'OK'
+// except Exception as e:
+//     result = str(e)
+// ----,
+// "result");
+// printf("python result: import plangen: '%s'", check) =>
+//   assert(check == "OK", "could not import plangen, check PYTHONPATH!");
 
-// Initialize the DB
-plan_id = python_persist(
-----
-import sys, traceback
-import plangen
-try:
-    result = str(plangen.plan_prep('%s', '%s', %s))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
-    sys.stdout.flush()
-    result = 'EXCEPTION'
----- % (db_file, plan_json, runtype),
-"result");
-printf("DB plan_id: %s", plan_id);
-assert(plan_id != "EXCEPTION", "Plan prep failed!");
+// // Initialize the DB
+// plan_id = python_persist(
+// ----
+// import sys, traceback
+// import plangen
+// try:
+//     result = str(plangen.plan_prep('%s', '%s', %s))
+// except Exception as e:
+//     info = sys.exc_info()
+//     s = traceback.format_tb(info[2])
+//     print(str(e) + ' ... \\n' + ''.join(s))
+//     sys.stdout.flush()
+//     result = 'EXCEPTION'
+// ---- % (db_file, plan_json, runtype),
+// "result");
+// printf("DB plan_id: %s", plan_id);
+// assert(plan_id != "EXCEPTION", "Plan prep failed!");
 
-// If the plan already exists and we are not doing a restart, abort
-assert(plan_id != "-1", "Plan already exists!");
+// // If the plan already exists and we are not doing a restart, abort
+// assert(plan_id != "-1", "Plan already exists!");
 
 // Kickoff the workflow
-
-// Read unrolled parameter file
-string upf_lines[] = file_lines(upf);
-
-// Resultant output values:
-string results[];
-
-// Evaluate each parameter set
-foreach params,i in upf_lines
-{
-  printf("params: %s", params);
-  results[i] = run_single(params, plan_id);
+(void o) write_lines(string lines[], string f) {
+  string lines_string = join(lines,"\n");
+  fname = "%s/%s" % (turbine_output, f);
+  file out <fname> = write(lines_string) =>
+  o = propagate();
 }
 
-// Join all result values into one big semicolon-delimited string
-string result = join(results, ";");
+main() {
+  // Read unrolled parameter file
+  string upf_lines[] = file_lines(upf);
 
-printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
+  // Resultant output values:
+  string results[];
+  //string inputs[];
+
+  string plan_id = "1";
+
+  // Evaluate each parameter set
+  foreach params,i in upf_lines
+  {
+    // printf("params: %s", params);
+    result, inputs = run_single(params, plan_id);
+    results[i] = "%s|%s" % (result, replace_all(inputs, "\n", " ", 0));
+    //inputs[i] = "%i|%s" % (i, inputs);                                                                                                                                             
+  }
+  // Join all result values into one big semicolon-delimited string
+  // string result = join(results, ";") =>
+  write_lines(results, "results.txt") =>
+  printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
+}

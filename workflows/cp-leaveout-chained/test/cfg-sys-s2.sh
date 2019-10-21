@@ -5,12 +5,14 @@
 # Note that 1 processes is reserved for Swift/T
 # For example, if PROCS=4 that gives you 3 workers,
 # i.e., 3 concurrent Keras runs.
-export PROCS=${PROCS:-5}
+export PROCS=${PROCS:-18}
 
 # MPI processes per node.  This should not exceed PROCS.
-# Cori has 32 cores per node, 128GB per node
 export TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1"
 export PPN=${PPN:-1}
+
+# Uncomment when one node per run
+export TURBINE_DIRECTIVE+="\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n"   
 
 #export QUEUE=${QUEUE:-batch}
 
@@ -32,16 +34,27 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-batch}
 # export PROJECT=med106
 
-export WALLTIME=${WALLTIME:-00:10:00}
-
-# export MAIL_ENABLED=1
-# export MAIL_ADDRESS=wozniak@mcs.anl.gov
-
-# Benchmark run timeout: benchmark run will timeouT
-# after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+# Benchmark run timeout: benchmark run will timeouT                                                                                             
+# after the specified number of seconds. -1 is no timeout.  
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
-# BENCHMARK_DIR=/path/to/
 # MODEL_PYTHON_SCRIPT=my_script
+
+# Shell timeout: benchmark run will be killed
+# after the specified number of seconds.
+# If set to -1 or empty there is no timeout.
+# This timeout is implemented with the shell command 'timeout'
+export SH_TIMEOUT=${SH_TIMEOUT:-}
+
+
+# Ignore errors: If 1, unknown errors will be reported to model.log
+# but will not bring down the Swift workflow.  See model.sh .
+export IGNORE_ERRORS=0
+
+
+export WALLTIME=${WALLTIME:-01:00:00}
+
+# export MAIL_ENABLED=1
+# export MAIL_ADDRESS=wozniak@mcs.anl.gov

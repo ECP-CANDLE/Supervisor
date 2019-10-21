@@ -1,0 +1,7 @@
+
+# CP LEAVEOUT CFG PRM 1
+
+# What settings are needed? -Justin 2019-05-02
+
+CACHE_DIR=$EMEWS_PROJECT_ROOT/cache
+XCORR_DATA_DIR=$EMEWS_PROJECT_ROOT/xcorr_data
