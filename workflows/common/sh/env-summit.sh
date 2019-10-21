@@ -34,7 +34,8 @@ EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 LOCAL=0
 CRAY=1
 
-export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1"
+# Turning this off to test upf-1.sh
+# export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1"
 
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
