@@ -7,13 +7,16 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-if [[ ! -d $EMEWS_PROJECT_ROOT/../../../Benchmarks ]]
-then
-  echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
-  exit 1
-fi
+
 BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
+
+if [[ ! -d $BENCHMARKS_ROOT ]]
+then
+  echo "Could not find Benchmarks in: $BENCHMARKES_ROOT"
+  exit 1
+fi
+
 BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/Uno
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
