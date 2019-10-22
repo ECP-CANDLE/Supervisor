@@ -1,27 +1,22 @@
 
 /*
-  WORKFLOW SWIFT
+  CPL-UPF-WORKFLOW.SWIFT
 
-  Simply run with: 'swift-t workflow.swift <FILE SETTINGS>'
-  Or specify the N, S values:
-  'swift-t workflow.swift -N=6 -S=6 <FILE SETTINGS>'
-  for 55,986 tasks.
-  Flags:
-  -N : Number of nodes per stage (see default in code)
-  -S : Number of stages          (see default in code)
-  -r : Use RunType.RESTART, default is RunType.RUN_ALL
-       RUN_ALL means this is a fresh run with no prior results
+  run with: 'swift-t workflow.swift <FILE SETTINGS>'
 
   FILE SETTINGS:
   These are mandatory:
   --plan_json=<FILE>     : The JSON plan for topN_to_uno
   --dataframe_csv=<FILE> : The CSV data file for topN_to_uno
   --db_file=<FILE>       : The SQLite DB file
-  --benchmark_data=<DIR> : Used by data_setup to set softlinks to
+  --benchmark_data=<DIR> : Location of Bencharks/Pilot1/Uno. 
+                           Used by data_setup to set softlinks to
                            Uno cache and uno_auc_model.txt
+  --f                    : The UPF file
+  --parent_stage_directory: The root experiment directory for the this runs parent stage.
+                            Child stages will look here for initial model weights by appending
+                            run/<parent_node_id> to this parent directory
 
-  NOTE: This workflow has some complex Python Exception handling
-  code that will be pushed into Swift/T for conciseness...
 */
 
 import assert;

@@ -1,8 +1,0 @@
-{"id": "cv1_f1_s5", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 1, "shards_arr":[128, 512, 2048, 8192, 32768, 131072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s6", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 32768, 131072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s7", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s8", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s9", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 1, "shards_arr":[128, 512, 2048, 8192, 32768, 11072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s10", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 32768, 111072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s11", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}
-{"id": "cv1_f1_s12", "dirpath": "/gpfs/alpine/proj-shared/med106/ncollier/supervisor_test", "cv_folds": 2, "shards_arr":[128, 512, 2048, 8192, 3768, 131072], "model_name": "nn_reg0"}

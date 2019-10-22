@@ -7,20 +7,6 @@ import argparse
 
 import plangen
 
-# test_chain = """
-#     [
-#         {
-#             "script" : "./upf-test-model.sh",
-#             "args" : ["cfg-sys-4.sh", "./upf-4.txt"]
-#         },
-
-#         {                                                                                                                                                            
-#             "script" : "./upf-test-model.sh",                                                                                                                      "args" : ["cfg-sys-8.sh", "./upf-8.txt"]                                                                                                                 
-#         }
-#     ]
-
-# """
-
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('--plan', type=str, default='plan.json',
@@ -33,38 +19,10 @@ def parse_arguments():
         help='the output directectory for the generated upf files')
     parser.add_argument('--site', type=str, default=None, required=True,
         help='the hpc site (e.g. summit)')
-    parser.add_argument('--launch_script', type=str, default=None, required=True,
-        help='the script to launch the upf run for each stage')
+    parser.add_argument('--submit_script', type=str, default=None, required=True,
+        help='the script to submit the job for each stage')
 
     return parser.parse_args()
-
-def printf(msg):
-    print(msg)
-    sys.stdout.flush()
-
-# def run_chain(site):
-#     chain = json.loads(test_chain)
-#     job_id = None
-#     for i, link in enumerate(chain):
-#         script = link['script']
-#         args = [site] + link['args']
-#         if job_id:
-#             args += ["#BSUB -w done({})".format(job_id)]
-#         else:
-#             args += ["## JOB 0"]
-            
-#         outs, errs = run_script(script, args)
-#         #if len(errs) > 0:
-#         printf(errs)
-#         #    break
-#         turbine_output, job_id = parse_run_vars(outs)
-#         exp_id = os.path.basename(turbine_output)
-#         printf('########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
-#         printf("Running: {} {}".format(script, ' '.join(args)))
-#         printf('{}'.format(outs))
-#         printf('TURBINE_OUTPUT: {}'.format(turbine_output))
-#         printf('JOB_ID: {}\n'.format(job_id))
-
 
 def parse_run_vars(outs):
     to_prefix = 'TURBINE_OUTPUT='
@@ -83,21 +41,13 @@ def parse_run_vars(outs):
 
 
 def run_script(script, args):
-    # bname = os.path.splitext(os.path.basename(script))[0]
-    # err = open('./{}_err.txt'.format(bname), 'w')
-    # out = open('./{}_out.txt'.format(bname), 'w')
     cmd = [script] + args
-    # print('{} subprocess start: {}'.format(rank, str(datetime.datetime.now())))
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     # stderr is redirected to stdout
     outs, _ = p.communicate()
-    # ret = err.tell() == 0
-    # err.close()
-    # out.close()
-    # return ret
     return outs.decode('utf-8')
 
-def run_upfs(upfs, launch_script, site, plan_file):
+def run_upfs(upfs, submit_script, site, plan_file):
     job_id = None
     turbine_output = None
     for i, upf in enumerate(upfs):
@@ -108,16 +58,16 @@ def run_upfs(upfs, launch_script, site, plan_file):
         else:
             args += ['job0', '## JOB 0']
             
-        outs = run_script(launch_script, args)
+        outs = run_script(submit_script, args)
         turbine_output, job_id = parse_run_vars(outs)
         exp_id = os.path.basename(turbine_output)
-        printf('\n########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
-        printf("Running: {} {}".format(launch_script, ' '.join(args)))
-        printf('{}'.format(outs))
-        printf('TURBINE_OUTPUT: {}'.format(turbine_output))
-        printf('JOB_ID: {}\n'.format(job_id))
+        print('\n########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
+        print("Running: {} {}".format(submit_script, ' '.join(args)))
+        print('{}'.format(outs))
+        print('TURBINE_OUTPUT: {}'.format(turbine_output))
+        print('JOB_ID: {}\n'.format(job_id))
         if not job_id:
-            printf("JOB_ID NOT FOUND - ABORTING RUNS")
+            print("JOB_ID NOT FOUND - ABORTING RUNS")
             break
 
 def get_plan_info(plan_file):
@@ -141,15 +91,18 @@ def generate_upfs(prefix, upf_dir, root_node, n_stages, n_nodes):
     parents = [root_node]
     upf_prefix = '{}/{}_'.format(upf_dir, prefix)
     upfs = []
-    for s in range(1, n_stages):
+    counts = []
+    for s in range(1, n_stages + 1):
         upf_path = '{}s{}_upf.txt'.format(upf_prefix, s)
-        parents = generate_stage(parents, n_nodes, upf_path)
-        upfs.append(upf_path)
+        result = generate_stage(parents, n_nodes, upf_path)
+        upfs.append(result[0])
+        counts.append(result[1])
 
-    return upfs
+    return (upfs, counts)
 
 def generate_stage(parents, n_nodes, f_path):
     children = []
+    c = 0
     with open(f_path, 'w') as f_out:
         for p in parents:
             for n in range(1, n_nodes + 1):
@@ -157,24 +110,29 @@ def generate_stage(parents, n_nodes, f_path):
                 f_out.write('{}\n'.format(child))
                 # TODO write children
                 children.append(child)
+                c += 1
     # print('Stage {}: {}'.format(stage, ' '.join(children)))
-    return children
+    return (children, c)
    
 
 def run(args):
     plan_file = args.plan
     n_nodes = args.nodes
-    n_stages = args.stages + 1
+    n_stages = args.stages
 
     root_node, total_stages, total_nodes = get_plan_info(plan_file)
     if n_nodes == -1 or n_nodes > total_nodes:
         n_nodes = total_nodes
-    if n_stages == -1 or n_stages > total_stages:
+    if n_stages == -1 or n_stages >= total_stages:
         n_stages = total_stages
 
     prefix = os.path.splitext(os.path.basename(plan_file))[0]
-    upfs = generate_upfs(prefix, args.upf_dir, root_node, n_stages, n_nodes)
-    run_upfs(upfs, args.launch_script, args.site, plan_file)
+    upfs, counts = generate_upfs(prefix, args.upf_dir, root_node, n_stages, n_nodes)
+    print("Submitting {} jobs for stages: {}, nodes: {}".format(n_stages - 1, n_stages - 1, n_nodes))
+    for i, c in enumerate(counts):
+        print("\tStage: {}, UPF: {}, Model Runs: {}".format(i + 1, upfs[i], c))
+
+    run_upfs(upfs, args.submit_script, args.site, plan_file)
 
 if __name__ == "__main__":
     args = parse_arguments()
