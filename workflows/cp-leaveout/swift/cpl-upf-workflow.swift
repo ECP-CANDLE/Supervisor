@@ -211,7 +211,7 @@ printf("CP LEAVEOUT UPF WORKFLOW START- UPF: %s, STAGE: %i", filename(upf), stag
 // // If the plan already exists and we are not doing a restart, abort
 // assert(plan_id != "-1", "Plan already exists!");
 
-// Kickoff the workflow
+
 (void o) write_lines(string lines[], string f) {
   string lines_string = join(lines,"\n");
   fname = "%s/%s" % (turbine_output, f);
@@ -234,7 +234,7 @@ main() {
   {
     // printf("params: %s", params);
     result, inputs = run_single(params, plan_id);
-    results[i] = "%s|%s" % (result, replace_all(inputs, "\n", " ", 0));
+    results[i] = "%s|%s|%s" % (params, replace_all(inputs, "\n", " ", 0), result);
     //inputs[i] = "%i|%s" % (i, inputs);                                                                                                                                             
   }
   // Join all result values into one big semicolon-delimited string
