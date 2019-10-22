@@ -12,7 +12,7 @@ def parse_arguments():
     parser.add_argument('--plan', type=str, default='plan.json',
                         help='plan data file')
     parser.add_argument('--nodes', type=int, default=1,
-                        help='number of nodes to execute each stage')
+                        help='number of nodes for stage 1')
     parser.add_argument('--stages', type=int, default=1,
                         help='number of stages to run')
     parser.add_argument('--upf_dir', type=str, default=None, required=True,
@@ -94,15 +94,14 @@ def generate_upfs(prefix, upf_dir, root_node, n_stages, n_nodes):
     counts = []
     for s in range(1, n_stages + 1):
         upf_path = '{}s{}_upf.txt'.format(upf_prefix, s)
-        result = generate_stage(parents, n_nodes, upf_path)
-        upfs.append(result[0])
-        counts.append(result[1])
+        parents = generate_stage(parents, n_nodes, upf_path)
+        upfs.append(upf_path)
+        counts.append(len(parents))
 
     return (upfs, counts)
 
 def generate_stage(parents, n_nodes, f_path):
     children = []
-    c = 0
     with open(f_path, 'w') as f_out:
         for p in parents:
             for n in range(1, n_nodes + 1):
@@ -110,9 +109,8 @@ def generate_stage(parents, n_nodes, f_path):
                 f_out.write('{}\n'.format(child))
                 # TODO write children
                 children.append(child)
-                c += 1
     # print('Stage {}: {}'.format(stage, ' '.join(children)))
-    return (children, c)
+    return children
    
 
 def run(args):
@@ -128,9 +126,9 @@ def run(args):
 
     prefix = os.path.splitext(os.path.basename(plan_file))[0]
     upfs, counts = generate_upfs(prefix, args.upf_dir, root_node, n_stages, n_nodes)
-    print("Submitting {} jobs for stages: {}, nodes: {}".format(n_stages - 1, n_stages - 1, n_nodes))
+    print("\nTotal Jobs: {}\nTotal Stages: {}\nNodes: {}\nUPF directory: {}".format(n_stages, n_stages, n_nodes, args.upf_dir))
     for i, c in enumerate(counts):
-        print("\tStage: {}, UPF: {}, Model Runs: {}".format(i + 1, upfs[i], c))
+        print("\tStage: {}, UPF: {}, Model Runs: {}".format(i + 1, os.path.basename(upfs[i]), c))
 
     run_upfs(upfs, args.submit_script, args.site, plan_file)
 
