@@ -13,6 +13,7 @@ class Config:
     STAGE_CFG_KEYS = ['stage', 'PROCS', 'TURBINE_LAUNCH_ARGS', 'TURBINE_DIRECTIVE_ARGS',
                 'WALLTIME', 'IGNORE_ERRORS', 'SH_TIMEOUT', 'BENCHMARK_TIMEOUT',
                 'PPN']
+    INT_KEYS = ['PROCS', 'PPN', 'BENCHMARK_TIMEOUT', 'SH_TIMEOUT', 'IGNORE_ERRORS']
     
     def __init__(self, cfg):
         self.cfg = cfg
@@ -47,6 +48,11 @@ class Config:
             env.update(self.stage_cfgs[stage])
         return env
 
+    def _vars_to_string(self, scfg):
+        for k in Config.INT_KEYS:
+            if k in scfg:
+                scfg[k] = str(scfg[k])
+
     def update_stage_cfgs(self, runs_per_stage):
         for i, runs in enumerate(runs_per_stage):
             stage = i + 1
@@ -54,15 +60,11 @@ class Config:
                 scfg = self.stage_cfgs[stage]
                 if "PROCS" not in scfg:
                     scfg['PROCS'] = str(runs + 1)
-                else:
-                    # make sure procs is a str
-                    scfg['PROCS'] = str(scfg['PROCS'])
                 if "PPN" not in scfg:
                     scfg['PPN'] = str(1)
-                else:
-                    # make sure ppn is a string
-                     scfg['PPN'] = str(scfg['PPN'])
-
+            
+                # update any numeric vals to str values as required for env vars
+                self._vars_to_string(scfg)
             else:
                 self.stage_cfgs[stage] = {'PROCS' : str(runs + 1), 'PPN' : str(1)}
  
@@ -153,7 +155,10 @@ def run_dry_run(upfs, cfg):
         print('\n########### DRY RUN JOB {}  ##############'.format(stage))
         print("Running: {} {}".format(cfg.submit_script, ' '.join(args)))
         env = cfg.get_stage_environment(stage)
-        env['TURBINE_DIRECTIVE_ARGS'] = args[7]
+        if 'TURBINE_DIRECTIVE_ARGS' in env:
+            env['TURBINE_DIRECTIVE_ARGS'] = '{}\\n{}'.format(args[7], env['TURBINE_DIRECTIVE_ARGS'])
+        else:
+            env['TURBINE_DIRECTIVE_ARGS'] = args[7]
         p = subprocess.Popen(['bash', "-c",  "source {}".format(cfg.stage_cfg_script)], stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, env=env)
         # stderr is redirected to stdout

@@ -49,7 +49,7 @@ DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
 export BENCHMARKS_ROOT=$SCRATCH/Benchmarks
 BENCHMARK_DATA=$BENCHMARKS_ROOT/Pilot1/Uno
 
-export TURBINE_DIRECTIVE_ARGS=$6
+export TURBINE_DIRECTIVE_ARGS+=$6
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
