@@ -61,7 +61,7 @@ global const string FRAMEWORK = "keras";
 {
   json_fragment = make_json_fragment(node);  
   json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
-  printf("JSON PARAMS: %s", json);
+  // printf("JSON PARAMS: %s", json);
   r = obj(json, node);
   ins = json;
     
