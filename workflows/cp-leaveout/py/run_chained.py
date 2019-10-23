@@ -7,20 +7,111 @@ import argparse
 
 import plangen
 
+class Config:
+    
+    REQS = ['site', 'plan', 'submit_script', 'upf_directory', 'stages', 'stage_cfg_script']
+    STAGE_CFG_KEYS = ['stage', 'PROCS', 'TURBINE_LAUNCH_ARGS', 'TURBINE_DIRECTIVE_ARGS',
+                'WALLTIME', 'IGNORE_ERRORS', 'SH_TIMEOUT', 'BENCHMARK_TIMEOUT',
+                'PPN']
+    
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.stage_cfgs = {}
+
+    def validate(self):
+        for r in Config.REQS:
+            if not r in self.cfg:
+                return (False, "Required property '{}' is missing".format(r))
+        
+        self.cfg['stages'] = int(self.cfg['stages'])
+
+        if 'stage_cfgs' in self.cfg:
+            for stage_cfg in self.cfg['stage_cfgs']:
+                if not 'stage' in stage_cfg:
+                    return (False, "A stage_cfg map is missing required 'stage' property")
+                for k in stage_cfg:
+                    if k not in Config.STAGE_CFG_KEYS:
+                        return (False, "Unknow stage configuration property {}".format(k))
+                
+                stage = int(stage_cfg['stage'])
+                # delete it as its not a proper env var
+                del stage_cfg['stage']
+                self.stage_cfgs[stage] = stage_cfg
+
+
+        return (True,)
+
+    def get_stage_environment(self, stage):
+        env = os.environ.copy()
+        if stage in self.stage_cfgs:
+            env.update(self.stage_cfgs[stage])
+        return env
+
+    def update_stage_cfgs(self, runs_per_stage):
+        for i, runs in enumerate(runs_per_stage):
+            stage = i + 1
+            if stage in self.stage_cfgs:
+                scfg = self.stage_cfgs[stage]
+                if "PROCS" not in scfg:
+                    scfg['PROCS'] = str(runs + 1)
+                else:
+                    # make sure procs is a str
+                    scfg['PROCS'] = str(scfg['PROCS'])
+                if "PPN" not in scfg:
+                    scfg['PPN'] = str(1)
+                else:
+                    # make sure ppn is a string
+                     scfg['PPN'] = str(scfg['PPN'])
+
+            else:
+                self.stage_cfgs[stage] = {'PROCS' : str(runs + 1), 'PPN' : str(1)}
+ 
+    @property
+    def site(self):
+        return self.cfg['site']
+
+    @property
+    def plan(self):
+        return self.cfg['plan']
+
+    @property
+    def submit_script(self):
+        return self.cfg['submit_script']
+
+    @property
+    def upf_directory(self):
+        return self.cfg['upf_directory']
+
+    @property
+    def stages(self):
+        return self.cfg['stages']
+    
+    @stages.setter
+    def stages(self, value):
+        self.cfg['stages'] = value
+
+    @property
+    def stage_cfg_script(self):
+        return self.cfg['stage_cfg_script']
+
+    
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--plan', type=str, default='plan.json',
-                        help='plan data file')
-    parser.add_argument('--nodes', type=int, default=1,
-                        help='number of nodes for stage 1')
-    parser.add_argument('--stages', type=int, default=1,
-                        help='number of stages to run')
-    parser.add_argument('--upf_dir', type=str, default=None, required=True,
-        help='the output directectory for the generated upf files')
-    parser.add_argument('--site', type=str, default=None, required=True,
-        help='the hpc site (e.g. summit)')
-    parser.add_argument('--submit_script', type=str, default=None, required=True,
-        help='the script to submit the job for each stage')
+    # parser.add_argument('--plan', type=str, default='plan.json',
+    #                     help='plan data file')
+    parser.add_argument('--stages', type=int, default=0,
+                        help='number of stages to run (overrides configuration file if non-0)')
+    parser.add_argument('--config', type=str, default=None, required=True,
+         help='the configuration file in json format')
+    parser.add_argument('--dry_run', action='store_true',
+         help="Runs the workflow with actual job submission, displaying each job's configuration")
+
+    # parser.add_argument('--upf_dir', type=str, default=None, required=True,
+    #     help='the output directory for the generated upf files')
+    # parser.add_argument('--site', type=str, default=None, required=True,
+    #     help='the hpc site (e.g. summit)')
+    # parser.add_argument('--submit_script', type=str, default=None, required=True,
+    #     help='the script to submit the job for each stage')
 
     return parser.parse_args()
 
@@ -40,30 +131,53 @@ def parse_run_vars(outs):
     return (turbine_output, job_id)
 
 
-def run_script(script, args):
-    cmd = [script] + args
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+def run_script(cfg, args, stage):
+    cmd = [cfg.submit_script] + args
+    env = cfg.get_stage_environment(stage)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
     # stderr is redirected to stdout
     outs, _ = p.communicate()
     return outs.decode('utf-8')
 
-def run_upfs(upfs, submit_script, site, plan_file):
+def run_dry_run(upfs, cfg):
+
+    for i, upf in enumerate(upfs):
+        # UPFS are in stage order
+        stage = i + 1
+        args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(i + 1)]
+        if i > 0:
+            args += ['parent<turbine_output>', '#BSUB -w done(<parent_job_id>)']
+        else:
+            args += ['job0', '## JOB 0']
+
+        print('\n########### DRY RUN JOB {}  ##############'.format(stage))
+        print("Running: {} {}".format(cfg.submit_script, ' '.join(args)))
+        env = cfg.get_stage_environment(stage)
+        env['TURBINE_DIRECTIVE_ARGS'] = args[7]
+        p = subprocess.Popen(['bash', "-c",  "source {}".format(cfg.stage_cfg_script)], stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, env=env)
+        # stderr is redirected to stdout
+        outs, _ = p.communicate()
+        print(outs.decode('utf-8'))
+
+def run_upfs(upfs, cfg):
     job_id = None
     turbine_output = None
     for i, upf in enumerate(upfs):
         # UPFS are in stage order
-        args = [site, '-a', 'cfg-sys-s{}.sh'.format(i + 1), plan_file, upf, str(i + 1)]
+        stage = i + 1
+        args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(stage)]
         if job_id:
             args += [turbine_output, '#BSUB -w done({})'.format(job_id)]
         else:
             args += ['job0', '## JOB 0']
-            
-        outs = run_script(submit_script, args)
+
+        outs = run_script(cfg, args, stage)
         turbine_output, job_id = parse_run_vars(outs)
         exp_id = os.path.basename(turbine_output)
-        print('\n########### JOB {} - {} - {} ##############'.format(i,exp_id, job_id))
-        print("Running: {} {}".format(submit_script, ' '.join(args)))
-        print('{}'.format(outs))
+        print('\n########### JOB {} - {} - {} ##############'.format(stage, exp_id, job_id))
+        print("Running: {} {}".format(cfg.submit_script, ' '.join(args)))
+        print(outs)
         print('TURBINE_OUTPUT: {}'.format(turbine_output))
         print('JOB_ID: {}\n'.format(job_id))
         if not job_id:
@@ -107,30 +221,49 @@ def generate_stage(parents, n_nodes, f_path):
             for n in range(1, n_nodes + 1):
                 child = '{}.{}'.format(p, n)
                 f_out.write('{}\n'.format(child))
-                # TODO write children
                 children.append(child)
     # print('Stage {}: {}'.format(stage, ' '.join(children)))
     return children
    
+def parse_config(args):
+    cfg = None
+    with open(args.config, 'r') as fin:
+        cfg = Config(json.load(fin))
+    result = cfg.validate()
+    if not result[0]:
+        print("Configuration ERROR in {}: {}".format(args.config, result[1]))
+        sys.exit()
 
+    if args.stages != 0:
+        cfg.stages = args.stages
+    
+    return cfg
+    
 def run(args):
-    plan_file = args.plan
-    n_nodes = args.nodes
-    n_stages = args.stages
+    cfg = parse_config(args)
+    root_node, total_stages, n_nodes = get_plan_info(cfg.plan)
+    if cfg.stages == -1 or cfg.stages >= total_stages:
+        cfg.stages = total_stages
 
-    root_node, total_stages, total_nodes = get_plan_info(plan_file)
-    if n_nodes == -1 or n_nodes > total_nodes:
-        n_nodes = total_nodes
-    if n_stages == -1 or n_stages >= total_stages:
-        n_stages = total_stages
+    prefix = os.path.splitext(os.path.basename(cfg.plan))[0]
+    upfs, runs_per_stage = generate_upfs(prefix, cfg.upf_directory, root_node, cfg.stages, n_nodes)
+    cfg.update_stage_cfgs(runs_per_stage)
 
-    prefix = os.path.splitext(os.path.basename(plan_file))[0]
-    upfs, counts = generate_upfs(prefix, args.upf_dir, root_node, n_stages, n_nodes)
-    print("\nTotal Jobs: {}\nTotal Stages: {}\nNodes: {}\nUPF directory: {}".format(n_stages, n_stages, n_nodes, args.upf_dir))
-    for i, c in enumerate(counts):
-        print("\tStage: {}, UPF: {}, Model Runs: {}".format(i + 1, os.path.basename(upfs[i]), c))
+    print("\nTotal Jobs: {}\nTotal Stages: {}\nNodes: {}".format(cfg.stages, cfg.stages, n_nodes))
+    print("Site: {}\nPlan: {}\nSubmit Script: {}\nStage Configuration Script:{}\nUPF directory: {}".format(cfg.site, cfg.plan,
+        cfg.submit_script,  cfg.stage_cfg_script, cfg.upf_directory))
+    for i, c in enumerate(runs_per_stage):
+        stage = i + 1
+        scfg = cfg.stage_cfgs[stage]
+        print("\tStage: {}, UPF: {}, Model Runs: {}, PROCS: {}, PPN: {}".format(stage, 
+                    os.path.basename(upfs[i]), c, scfg['PROCS'], scfg['PPN']))  
 
-    run_upfs(upfs, args.submit_script, args.site, plan_file)
+
+    # TODO Add Dry Run -- for each upf source the cfg-sys as a POpen
+    if args.dry_run:
+        run_dry_run(upfs, cfg)
+    else:
+        run_upfs(upfs, cfg)
 
 if __name__ == "__main__":
     args = parse_arguments()

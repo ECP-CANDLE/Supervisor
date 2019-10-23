@@ -13,7 +13,7 @@ export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
 
 if [[ ! -d $BENCHMARKS_ROOT ]]
 then
-  echo "Could not find Benchmarks in: $BENCHMARKES_ROOT"
+  echo "Could not find Benchmarks in: $BENCHMARKS_ROOT"
   exit 1
 fi
 

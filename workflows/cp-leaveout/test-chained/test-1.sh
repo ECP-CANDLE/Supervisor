@@ -3,7 +3,7 @@ set -eu
 
 # CP LEAVEOUT CHAIN UPF TEST 1
 
-module unload python
+# module unload python
 
 usage()
 {
@@ -35,7 +35,6 @@ export CFG_SYS=$THIS/$1
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Data files
-# PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
 SCRATCH=/gpfs/alpine/med106/scratch/ncollier/job-chain
 CANDLE_DATA=$SCRATCH/inputs
 PLAN_JSON=$2
@@ -43,14 +42,14 @@ UPF_FILE=$3
 STAGE=$4
 PARENT_STAGE_DIRECTORY=$5
 DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
+
 # Override default of shared parent directory with Supervisor
 # This is necessary as benchmarks must be writeable from a
 # compute node
 export BENCHMARKS_ROOT=$SCRATCH/Benchmarks
 BENCHMARK_DATA=$BENCHMARKS_ROOT/Pilot1/Uno
 
-export TURBINE_DIRECTIVE=$6
-
+export TURBINE_DIRECTIVE_ARGS=$6
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported

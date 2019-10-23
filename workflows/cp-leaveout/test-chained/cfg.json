@@ -1,0 +1,23 @@
+{
+    "site" : "summit",
+    "plan" : "/home/nick/tmp/plangen_cell8-p2_drug8-p2.json",
+    "submit_script" : "./test-1.sh",
+    "upf_directory" : "/home/nick/tmp",
+    "stages" : "-1",
+  
+    "stage_cfg_script" : "./cfg-sys.sh",
+
+    "stage_cfgs" : [
+        { 
+            "stage" : 1,
+            "WALLTIME" : "00:10:00",
+            "PROCS" : 5,
+            "PPN" : 1
+        }, 
+
+        { 
+            "stage" : 2,
+            "WALLTIME" : "00:20:00"
+        }
+    ]
+}
