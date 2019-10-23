@@ -3,7 +3,7 @@ set -eu
 
 # CP LEAVEOUT CHAIN UPF TEST 1
 
-# module unload python
+module unload python
 
 usage()
 {

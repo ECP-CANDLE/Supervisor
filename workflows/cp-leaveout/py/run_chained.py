@@ -146,7 +146,7 @@ def run_dry_run(upfs, cfg):
         stage = i + 1
         args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(i + 1)]
         if i > 0:
-            args += ['parent<turbine_output>', '#BSUB -w done(<parent_job_id>)']
+            args += ['<parent_turbine_output>', '#BSUB -w done(<parent_job_id>)']
         else:
             args += ['job0', '## JOB 0']
 

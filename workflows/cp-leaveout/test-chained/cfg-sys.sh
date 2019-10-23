@@ -40,6 +40,8 @@ export TURBINE_DIRECTIVE+=${TURBINE_DIRECTIVE_ARGS:-}
 TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1 "
 export TURBINE_LAUNCH_OPTIONS+=${TURBINE_LAUNCH_ARGS:-}
 
+# Dry Run uses this to print out the stage config
+# for each stage
 echo "Resovled Stage Configuration:"
 echo "   PROCS: $PROCS"
 echo "   PPN: $PPN"
