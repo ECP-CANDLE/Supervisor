@@ -1,0 +1,23 @@
+{
+    "site" : "summit",
+    "plan" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs/plangen_cell1593-p4_drug1779-p1.json",
+    "submit_script" : "./test-1.sh",
+    "upf_directory" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs",
+    "stages" : "-1",
+  
+    "stage_cfg_script" : "./cfg-sys.sh",
+
+    "stage_cfgs" : [
+        { 
+            "stage" : 1,
+            "WALLTIME" : "01:00:00",
+            "PROCS" : 5,
+            "PPN" : 1
+        }, 
+
+        { 
+            "stage" : 2,
+            "WALLTIME" : "00:45:00"
+        }
+    ]
+}
