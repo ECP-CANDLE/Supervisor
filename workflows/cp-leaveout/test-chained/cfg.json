@@ -6,7 +6,7 @@
     "job_chain_arg" : "#BSUB -w done(<parent_job_id>)",
     "stages" : "-1",
   
-    "stage_cfg_script" : "./cfg-sys.sh",
+    "stage_cfg_script" : "./cfg-stage-sys.sh",
 
     "stage_cfgs" : [
         { 

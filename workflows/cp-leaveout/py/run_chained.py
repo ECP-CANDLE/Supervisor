@@ -101,7 +101,7 @@ class Config:
         return self.cfg['job_chain_arg']
 
     def create_job_chain_directive(self, job_id):
-        return '#{}'.format(self.job_chain_arg.replace('<parent_job_id>', job_id))
+        return self.job_chain_arg.replace('<parent_job_id>', job_id)
 
     
 def parse_arguments():
@@ -155,7 +155,7 @@ def run_dry_run(upfs, cfg):
         stage = i + 1
         args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(i + 1)]
         if i > 0:
-            args += ['<parent_turbine_output>', '#{}'.format(cfg.job_chain_arg)]
+            args += ['<parent_turbine_output>', '{}'.format(cfg.job_chain_arg)]
         else:
             args += ['job0', '## JOB 0']
 
