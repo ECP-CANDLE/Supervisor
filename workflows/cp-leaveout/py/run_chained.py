@@ -9,7 +9,7 @@ import plangen
 
 class Config:
     
-    REQS = ['site', 'plan', 'submit_script', 'upf_directory', 'stages', 'stage_cfg_script']
+    REQS = ['site', 'plan', 'submit_script', 'upf_directory', 'stages', 'stage_cfg_script', 'job_chain_arg']
     STAGE_CFG_KEYS = ['stage', 'PROCS', 'TURBINE_LAUNCH_ARGS', 'TURBINE_DIRECTIVE_ARGS',
                 'WALLTIME', 'IGNORE_ERRORS', 'SH_TIMEOUT', 'BENCHMARK_TIMEOUT',
                 'PPN']
@@ -96,6 +96,13 @@ class Config:
     def stage_cfg_script(self):
         return self.cfg['stage_cfg_script']
 
+    @property
+    def job_chain_arg(self):
+        return self.cfg['job_chain_arg']
+
+    def create_job_chain_directive(self, job_id):
+        return '#{}'.format(self.job_chain_arg.replace('<parent_job_id>', job_id))
+
     
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -148,7 +155,7 @@ def run_dry_run(upfs, cfg):
         stage = i + 1
         args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(i + 1)]
         if i > 0:
-            args += ['<parent_turbine_output>', '#BSUB -w done(<parent_job_id>)']
+            args += ['<parent_turbine_output>', '#{}'.format(cfg.job_chain_arg)]
         else:
             args += ['job0', '## JOB 0']
 
@@ -173,7 +180,7 @@ def run_upfs(upfs, cfg):
         stage = i + 1
         args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(stage)]
         if job_id:
-            args += [turbine_output, '#BSUB -w done({})'.format(job_id)]
+            args += [turbine_output, cfg.create_job_chain_directive(job_id)]
         else:
             args += ['job0', '## JOB 0']
 

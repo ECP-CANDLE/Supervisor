@@ -3,6 +3,7 @@
     "plan" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs/plangen_cell1593-p4_drug1779-p1.json",
     "submit_script" : "./test-1.sh",
     "upf_directory" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs",
+    "job_chain_arg" : "#BSUB -w done(<parent_job_id>)",
     "stages" : "-1",
   
     "stage_cfg_script" : "./cfg-sys.sh",

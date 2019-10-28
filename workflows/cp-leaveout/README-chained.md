@@ -1,10 +1,10 @@
 # Challenge Problem: Leave Out - Job Chained Workflow #
 
 This workflow runs the CP Leave Out workflow using job chaining. Each stage
-of the workflow will be submitted as a separate job, and subsequent stages are
+of the workflow will be submitted as a separate job where subsequent stages are
 only run when the previous job on which they depend has successfully completed.
 For example, if the workflow configuration consists of an initial 4 Uno model runs, and a 
-subsequent 16 model run where each of those models require the trained weights 
+subsequent 16 model runs where each of those model runs require the trained weights 
 of one of the initial 4 as input, then the first 4 will be submitted as a job, and 
 the second 16 as a job that will only begin running when the first has successfully 
 completed.
@@ -16,33 +16,34 @@ completed.
   * Edit uno_baseline_keras2.py to replace uno_default_model.txt  with uno_auc_model.txt
   * Set `BENCHMARKS_ROOT` in your submission script (see below),
 e.g., test-1.sh, to this compute node writable Benchmarks directory.
-* Data:
-  * plan json file (e.g., `plangen_cell1593-p4_drug1779-p1.json`)
-  * dataframe csv (e.g., `top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather`), a feather or parquet
+* The following data files are required:
+  * A plan json file (e.g., `plangen_cell1593-p4_drug1779-p1.json`)
+  * A dataframe file (e.g., `top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather`), a feather or parquet
   file will be faster.
 
 
 ## Running the Workflow ##
 
-Sample files for configuing and running the workflow are in the `test-chained` directory. 
+Sample files for configuring and running the workflow are in the `test-chained` directory. 
 The workflow itself is launched using the python script `py/run_chained.py`. Essentially,
 `run_chained.py` does the following:
 
-1. reads a configuration specifying what files to use, how many stages to run,
-and how to configure those stages (e.g. PROCS, WALLTIME, etc.),
-2. generates a UPF file for each stage where each upf file contains the node ids to run for that stage,
-3. runs each stage as a separate UPF workflow job, managing the job and parent model weight location dependencies appropriately. 
+1. Reads a configuration file specifying what data files to use, how many stages to run,
+and how to configure each of those stages (e.g. PROCS, WALLTIME, etc.),
+2. Generates a UPF file for each stage where each UPF file contains the node ids to run for that stage,
+3. Runs each stage as a separate UPF-style workflow job, managing the job and parent model weight location dependencies appropriately. 
 
-The individual stage job submission follows the pattern of the other Supervisor workflows where
+Each individual stage job submission launched by `run_chained.py` follows the pattern of the other Supervisor workflows where
 a *test* submission script is executed which in turn sources *sys* and *prm* configurations, and then
-calls an other script (e.g., `swift/cpl-upf-workflow.sh`) and the executes the swift script 
+calls another script (e.g., `swift/cpl-upf-workflow.sh`) that performs further configuration and executes the swift script 
 (e.g., `swift/cpl-upf-workflow.swift`).
 
 `run_chained.py` performs this individual job submission for each stage by:
 
-1. adding environment variables such as PROCS and WALLTIME to the environment
-2. running the submission script (e.g. test-1.sh) with this environment
+1. Ading environment variables such as PROCS and WALLTIME to the environment
+2. Running the submission script (e.g. test-1.sh) with this new environment
 
+### Arguments
 
 `run_chained.py` takes 3 arguments:
 
@@ -52,32 +53,31 @@ usage: run_chained.py [-h] [--stages STAGES] --config CONFIG [--dry_run]
 
 * --config - the path of the workflow configuration file
 * --stages - the number of stages to run. This will override the value specified in the configuration file
-* --dry_run - executes the workflow, displaying the configuration for each stage, but does not submit any jobs
+* --dry_run - executes the workflow, displaying the configuration for each stage, but does **not** submit any jobs
 
 Of these only `--config` is required.
 
+`run_chained.py` should be run from within the test-chained directory.
+
+### Workflow Configuration File Format
 
 The configuration file has the following json format (see `test-chained/cfg.json` for an example):
 
 * site: the name of the hpc site (e.g. "summit")
 * plan: the path to the challenge problem leave one out plan file
 * submit_script: the script used for the individual stage job submission (e.g. test-chained/test-1.sh)
-* upf_directory: the directory where the upf files are written out to,
-* stages: the number of stages to run. -1 means run all the stages
-* stage_cfg_script: the configuration script (e.g. test-chained/cfg-stage-sys.sh) sourced by the 
-submit script to set the configuration (WALLTIME etc.) for each stage run. 
-Environment variables specified in the "stage_cfgs", see below, will override
-those in this file.
-* stage_cfgs: a list of optional stage configurations, where each configuration is a json map. If no
+* upf_directory: the directory where the upf files are written out to
+* stages: the number of stages to run. -1 = run all the stages
+* stage_cfg_script: the staget configuration script (e.g. `test-chained/cfg-stage-sys.sh`) sourced by the 
+submit script to set the configuration (WALLTIME etc.) for each individual stage run. 
+Environment variables specified in the "stage_cfgs" (see below) will override those in this file.
+* stage_cfgs: a list of optional stage configurations, where each configuration is a json map. By default, if no
 stage configuration is defined for a particular stage or PROCS and PPN are not defined in that 
 stage configuration, then PROCS will be set to the number of plan nodes to run (i.e., the length of the UPF file) + 1 and PPN will be set to 1. In this way, the default is to run all the Uno model runs 
 concurrently. For the other environment variables in a stage configuration, the defaults in the
 stage_cfg_script will be used. All the key value pairs in a stage configuration except for *stage* are preserved as environment variables when the submit_script is called and will override those (e.g., WALLTIME, etc.) in the stage_cfg_script. A stage configuration map can have the following entries. 
   * stage: the stage number
   * X: where X is an environment variable from the stage_cfg_script, e.g. WALLTIME, PROCS, PPN, etc.
-
-
-`run_chained.py` should be run from within the test-chained directory.
   
 
 ### An Example Run
