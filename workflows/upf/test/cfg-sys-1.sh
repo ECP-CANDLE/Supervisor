@@ -9,7 +9,7 @@ export PROCS=${PROCS:-2}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-6}
 
 #export QUEUE=${QUEUE:-batch}
 
@@ -29,10 +29,10 @@ export QUEUE=${QUEUE:-debug-flat-quad}
 export PROJECT=CSC249ADOA01
 
 # Summit:
-# export QUEUE=${QUEUE:-batch}
-# export PROJECT=med106
+export QUEUE=${QUEUE:-batch}
+export PROJECT=med106
 
-export WALLTIME=${WALLTIME:-00:10:00}
+export WALLTIME=${WALLTIME:-0:30}
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov
