@@ -1,0 +1,39 @@
+
+= Installing Swift/T on Summit
+
+Run a subshell with the correct modules loaded, namely
+* a specific GCC version
+* spectrum-mpi
+* nothing else (darshan, etc.)
+
+== Install Tcl
+
+$ ./configure
+  --prefix=/gpfs/alpine/world-shared/med106/sw/gcc-7.4.0/tcl-8.6.6
+  --enable-shared
+
+$ nice make -j binaries libraries
+$ make install-binaries install-libraries install-headers
+
+== Install Python
+
+$ ./configure 
+  --prefix=/gpfs/alpine/world-shared/med106/sw/gcc-7.4.0/Python-3.5.1
+  --enable-shared
+$ nice make -j
+$ make install
+
+== Install Swift/T
+
+See ./swift-t-settings-summit.sh
+You can diff this against the default to see the notable settings.
+
+Paste this into the top of build-swift-t.sh:
+
+----
+. /sw/summit/lmod/7.7.10/rhel7.3_gnu4.8.5/lmod/7.7.10/init/bash
+----
+
+Then:
+
+$ nice ./build-swift-t.sh

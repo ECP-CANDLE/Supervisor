@@ -85,3 +85,12 @@ The workflow:
 . constructs the training H5 input file model.h5,
 . and sets up symlinks to other data, the Uno cache and the uno_auc_model.txt .
 . The available 'post_module' is currently unused.
+
+== Cache
+
+Uno tries to cache certain data which greatly speeds up training start.
+This cache is specified in the JSON fragment (workflow.swift:make_json_fragment()).  It is a relative path to the run directory.  data_setup.py:pre_run() will try to create a soft link to the cache at $BENCHMARK_DATA/cache .  BENCHMARK_DATA is specified in test-*.sh.  If you want this to be a soft link to a big FS, you must create that soft link before running the workflow.
+
+To delete the cache, simply remove the contents of the cache directory.
+
+If you change the data set, the cache will be inconsistent and Uno will fail.  You must delete the cache so it will be rebuilt.

@@ -10,8 +10,9 @@
 # STC=/projects/Candle_ECP/swift/pyr/stc
 # STC=/projects/Candle_ECP/swift/2017-12-20/stc
 # SWIFT=/projects/Candle_ECP/swift/2018-03-07
-SWIFT=/projects/Candle_ECP/swift/2019-02-27
+# SWIFT=/projects/Candle_ECP/swift/2019-02-27 # good
 # SWIFT=/projects/Candle_ECP/swift/2018-04-25
+SWIFT=/projects/Candle_ECP/swift/2019-10-28
 
 # This has:
 # using Python: /lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native/lib python2.7
@@ -26,11 +27,18 @@ export R=/projects/Candle_ECP/swift/deps/R-3.4.1/lib64/R
 TCL_LIB=/home/wozniak/Public/sfw/theta/tcl-8.6.6-mt-g/lib
 export LD_LIBRARY_PATH=$TCL_LIB:$R/lib:${LD_LIBRARY_PATH:-}
 COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-PYTHONPATH=$EMEWS_PROJECT_ROOT/python:$BENCHMARK_DIR:$COMMON_DIR:$SWIFT/turbine/py
-PYTHONPATH=$PYTHONPATH:/projects/Candle_ECP/swift/deps/Python-2.7.12/lib/python2.7/site-packages/
+# Do not export PYTHONPATH, PYTHONHOME - this will break Cobalt
+PYTHONPATH=$EMEWS_PROJECT_ROOT/python
+PYTHONPATH+=:$BENCHMARK_DIR
+PYTHONPATH+=:$COMMON_DIR
+PYTHONPATH+=:$PY/lib/python2.7/site-packages
+PYTHONPATH+=:$SWIFT/turbine/py
 PYTHONHOME=$PY
 
-export PATH=$SWIFT/stc/bin:$TCL/bin:$PY/bin:$PATH
+PATH=$SWIFT/stc/bin:$PATH
+PATH=$PY/bin:$PATH
+
+log_path PYTHONPATH
 
 # EMEWS Queues for R
 EQR=/home/wozniak/Public/sfw/theta/EQ-R

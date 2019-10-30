@@ -24,7 +24,7 @@ export WALLTIME=${WALLTIME:-12:00:00}
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
 #export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
-export TURBINE_DIRECTIVE="#BSUB -alloc_flags NVME"
+export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 #export PROJECT=Candle_ECP
 
