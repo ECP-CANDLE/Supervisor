@@ -59,8 +59,6 @@ fi
 # If "py", use in-memory Python functions
 SWIFT_IMPL="app"
 
-export TURBINE_LAUNCH_OPTIONS="-cc none"
-
 # Log settings to output
 echo "Programs:"
 which python swift-t | nl
