@@ -2,35 +2,26 @@
 # LANGS APP THETA SH
 
 # Theta / Tensorflow env vars
-export KMP_BLOCKTIME=30
+export KMP_BLOCKTIME=0
 export KMP_SETTINGS=1
 export KMP_AFFINITY=granularity=fine,verbose,compact,1,0
 export OMP_NUM_THREADS=128
 export NUM_INTER_THREADS=1
 export NUM_INTRA_THREADS=128
 
-# export PYTHONHOME="/lus/theta-fs
 APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
 
 # Clear anything set by the system or Swift/T environment
 unset PYTHONPATH
 unset LD_LIBRARY_PATH
 
-# export PYTHONHOME="/lus/theta-fs0/projects/Candle_ECP/ncollier/py2_tf_gcc6.3_eigen3_native"
-module load datascience/tensorflow-1.10
-module load datascience/keras-2.2.2
-export PYTHONHOME="/opt/intel/python/2017.0.035/intelpython35"
+module load datascience/tensorflow-1.14
+module load datascience/keras-2.2.4
+export PYTHONHOME=/soft/interpreters/python/3.6/intel/2019.3.075/
 
-APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
-PYTHONPATH+=":/lus/theta-fs0/projects/CSC249ADOA01/hsyoo/candle_py_deps/"
+PYTHONPATH=$PYTHONPATH:/soft/interpreters/python/3.6/intel/2019.3.075/lib/python3.6/site-packages/:/projects/CSC249ADOA01/hsyoo/.conda3/keras/lib/python3.6/site-packages:$APP_PYTHONPATH
 
-PYTHON="$PYTHONHOME/bin/python"
-export LD_LIBRARY_PATH="$PYTHONHOME/lib"
-export PATH="$PYTHONHOME/bin:$PATH"
-
-COMMON_DIR=$EMEWS_PROJECT_ROOT/../common/python
-PYTHONPATH+=":$PYTHONHOME/lib/python3.5:"
-PYTHONPATH+=":$COMMON_DIR:"
-PYTHONPATH+="$PYTHONHOME/lib/python3.5/site-packages:$APP_PYTHONPATH"
-echo "APP PYTHONPATH: $PYTHONPATH"
+echo "APP_PYTHONPATH: $APP_PYTHONPATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PYTHONHOME: $PYTHONHOME"
 export PYTHONPATH
