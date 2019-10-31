@@ -11,7 +11,7 @@ import files;
 import string;
 import sys;
 
-string FRAMEWORK = "pytorch";
+string FRAMEWORK = "keras";
 
 // Scan command line
 file   upf        = input(argv("f"));
