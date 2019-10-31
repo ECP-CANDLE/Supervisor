@@ -19,7 +19,7 @@ module load datascience/tensorflow-1.14
 module load datascience/keras-2.2.4
 export PYTHONHOME=/soft/interpreters/python/3.6/intel/2019.3.075/
 
-PYTHONPATH=$PYTHONPATH:/soft/interpreters/python/3.6/intel/2019.3.075/lib/python3.6/site-packages/:/projects/CSC249ADOA01/hsyoo/.conda3/keras/lib/python3.6/site-packages:$APP_PYTHONPATH
+PYTHONPATH=$PYTHONPATH:/soft/interpreters/python/3.6/intel/2019.3.075/lib/python3.6/site-packages/:/projects/CSC249ADOA01/hsyoo/candle_py36_deps/lib/python3.6/site-packages/:$APP_PYTHONPATH
 
 echo "APP_PYTHONPATH: $APP_PYTHONPATH"
 echo "PYTHONPATH: $PYTHONPATH"
