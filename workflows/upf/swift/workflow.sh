@@ -40,9 +40,12 @@ fi
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
 source_site env   $SITE
 source_site sched   $SITE
+
+log_path PYTHONPATH
 
 if [[ ${EQR:-} == "" ]]
 then
@@ -79,6 +82,16 @@ mkdir -pv $TURBINE_OUTPUT/run
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
 
+which mpicc
+which swift-t
+
+module list
+
+cp -v $UPF $TURBINE_OUTPUT
+cd $TURBINE_OUTPUT
+
+TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
@@ -94,7 +107,12 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e TURBINE_MPI_THREAD=1 \
         $( python_envs ) \
+        -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
+        -e PYTHONUNBUFFERED=1 \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+
+#        -e PYTHONVERBOSE=1
+#         -e PATH=$PATH
