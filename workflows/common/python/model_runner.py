@@ -46,7 +46,10 @@ def import_pkg(framework, model_name):
     print ("module_name:", module_name)
     pkg = importlib.import_module(module_name)
 
+    # For Summit:
     from tensorflow.keras import backend as K
+    # For other systems:
+    # from keras import backend as K
     if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
         import tensorflow as tf
         inter_threads = int(os.environ['NUM_INTER_THREADS'])
