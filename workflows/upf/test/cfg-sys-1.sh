@@ -9,7 +9,7 @@ export PROCS=${PROCS:-2}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-6}
+export PPN=${PPN:-1}
 
 #export QUEUE=${QUEUE:-batch}
 
