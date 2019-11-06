@@ -70,7 +70,7 @@ def keras_clear_session(framework):
         # works around this error:
         # https://github.com/tensorflow/tensorflow/issues/3388
         try:
-            from keras import backend as K
+            from tensorflow.keras import backend as K
             K.clear_session()
         except AttributeError:      # theano does not have this function
             pass
