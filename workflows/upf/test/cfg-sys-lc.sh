@@ -9,7 +9,10 @@ export PROCS=${PROCS:-18}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-6}
+export PPN=${PPN:-1}
+
+export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1"
+# export TURBINE_LAUNCH_OPTIONS="-g1 -c42 -a1"
 
 #export QUEUE=${QUEUE:-batch}
 
