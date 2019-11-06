@@ -21,11 +21,11 @@ print("MODEL RUNNER...")
 # append ${MODEL_PYTHON_DIR} to $PATH if variable is set
 python_dir = os.getenv("MODEL_PYTHON_DIR")
 if python_dir:
-  sys.path.append(python_dir)
+    sys.path.append(python_dir)
 # append ${BENCHMARKS_ROOT}/common to $PATH if variable is set
 benchmarks_root = os.getenv("BENCHMARKS_ROOT")
 if benchmarks_root:
-  sys.path.append(benchmarks_root+"/common")
+    sys.path.append(benchmarks_root+"/common")
 
 # import candle_lrn_crv
 
@@ -38,29 +38,40 @@ def import_pkg(framework, model_name):
     # The model_name is the short form of the Benchmark: e.g., 'nt3'
     # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
     print("model_name: ", model_name)
-    if framework != 'keras':
-        raise ValueError("Invalid framework: '{}'".format(framework))
     module_name = os.getenv("MODEL_PYTHON_SCRIPT")
-    if module_name == None or module_name == "":
-        module_name = "{}_baseline_keras2".format(model_name)
-    print ("module_name:", module_name)
-    pkg = importlib.import_module(module_name)
+    if framework == 'keras':
+        if module_name == None or module_name == "":
+            module_name = "{}_baseline_keras2".format(model_name)
+        print ("module_name:", module_name)
+        pkg = importlib.import_module(module_name)
 
-    # For Summit:
-    from tensorflow.keras import backend as K
-    # For other systems:
-    # from keras import backend as K
-    if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
-        import tensorflow as tf
-        inter_threads = int(os.environ['NUM_INTER_THREADS'])
-        intra_threads = int(os.environ['NUM_INTRA_THREADS'])
-        print("Configuring tensorflow with {} inter threads and {} intra threads"
-              .format(inter_threads, intra_threads))
-        cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
-                             intra_op_parallelism_threads=intra_threads)
-        sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
-        K.set_session(sess)
+        # For Summit:
+        from tensorflow.keras import backend as K
+        # For other systems:
+        # from keras import backend as K
+        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+            import tensorflow as tf
+            inter_threads = int(os.environ['NUM_INTER_THREADS'])
+            intra_threads = int(os.environ['NUM_INTRA_THREADS'])
+            print("Configuring tensorflow with {} inter threads and " +
+                                              "{} intra threads"
+                  .format(inter_threads, intra_threads))
+            cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
+                                 intra_op_parallelism_threads=intra_threads)
+            sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
+            K.set_session(sess)
+    elif framework == 'pytorch':
+        import torch
+        if module_name == None or module_name == "":
+            module_name = "{}_baseline_pytorch".format(model_name)
+            print ("module_name:", module_name)
+        pkg = importlib.import_module(module_name)
+    else:
+        raise ValueError("Framework must either be `keras' or `pytorch' " +
+                         "got `{}'!".format(framework))
+
     return pkg
+
 
 def log(msg):
     global logger
@@ -156,7 +167,8 @@ def run(hyper_parameter_map, obj_return):
     history = pkg.run(params)
     # history = nn_reg0.run(params)
 
-    runner_utils.keras_clear_session(framework)
+    if framework == 'keras':
+        runner_utils.keras_clear_session(framework)
 
     # Default result if there is no val_loss (as in infer.py)
     result = 0
