@@ -12,7 +12,6 @@ import string;
 import sys;
 
 import candle_utils;
-
 report_env();
 
 string FRAMEWORK = "keras";
