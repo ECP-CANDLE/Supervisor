@@ -35,7 +35,8 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14  # Python and R
 # SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14b # Python and R
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-15    # Python, no R
-SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-18    # Python (ibm-wml), no R
+# SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-18  # Python (ibm-wml), no R
+SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-11-06  # Python (ibm-wml) and R
 
 PATH=$SWIFT/stc/bin:$PATH
 
@@ -45,13 +46,12 @@ PATH=$SWIFT/stc/bin:$PATH
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
 PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
-# PY=$MED106/sw/gcc-7.4.0/Python-3.5.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PY/lib
 
-# PATH=$PY/bin:$PATH
+PATH=$PY/bin:$PATH
 
 # EMEWS Queues for R
 EQR=$MED106/EQ-R-190822
