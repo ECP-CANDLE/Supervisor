@@ -27,7 +27,7 @@ try:
   hyper_parameter_map['run_id'] = '%s'
   hyper_parameter_map['timeout'] = %d
 
-  model_runner.run(hyper_parameter_map, 'val_loss')
+  model_runner.run_model(hyper_parameter_map)
 
 except Exception as e:
   info = sys.exc_info()

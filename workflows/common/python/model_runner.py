@@ -231,6 +231,29 @@ def run_post(hyper_parameter_map):
         module.post_run(hyper_parameter_map)
         logger.debug("POST RUN STOP")
 
+def run_model(hyper_parameter_map):
+    global logger
+    logger = log_tools.get_logger(logger, "MODEL RUNNER")
+    obj_return = get_obj_return()
+    result = run_pre(hyper_parameter_map)
+    if result == ModelResult.ERROR:
+        print("run_pre() returned ERROR!")
+        exit(1)
+    elif result == ModelResult.SKIP:
+        print("run_pre() returned SKIP ...")
+        exit(0)
+    else:
+        assert(result == ModelResult.SUCCESS) # proceed...
+
+    # Call to Benchmark!
+    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    result = run(hyper_parameter_map, obj_return)
+    runner_utils.write_output(result, instance_directory)
+    # output_dict = {} # TODO: Fill in useful data for the DB
+    # run_post(hyper_parameter_map, output_dict)
+   
+    log("RUN STOP")
+
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
@@ -243,8 +266,6 @@ if __name__ == '__main__':
       framework,
       runid,
       benchmark_timeout ) = sys.argv
-
-    obj_return = get_obj_return()
 
     hyper_parameter_map = runner_utils.init(param_string,
                                             instance_directory,
@@ -262,23 +283,6 @@ if __name__ == '__main__':
     # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
+    run_model(hyper_parameter_map)
 
-    result = run_pre(hyper_parameter_map)
-    if result == ModelResult.ERROR:
-        print("run_pre() returned ERROR!")
-        exit(1)
-    elif result == ModelResult.SKIP:
-        print("run_pre() returned SKIP ...")
-        exit(0)
-    else:
-        assert(result == ModelResult.SUCCESS) # proceed...
 
-    # Call to Benchmark!
-    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
-    print("sys.argv=" + str(sys.argv))
-    result = run(hyper_parameter_map, obj_return)
-    runner_utils.write_output(result, instance_directory)
-    # output_dict = {} # TODO: Fill in useful data for the DB
-    # post_run(hyper_parameter_map, output_dict)
-
-    log("RUN STOP")
