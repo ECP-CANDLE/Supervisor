@@ -65,6 +65,7 @@ CPL_PY=$EMEWS_PROJECT_ROOT/../cp-leaveout/py
 PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py:            # For plangen, data_setup
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
 PYTHONPATH+=:$CPL_PY
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks    
 
 APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
@@ -165,7 +166,8 @@ else
   STDOUT=""
 fi
 
-mkdir -p $TURBINE_OUTPUT/run
+#echo "MODEL_NAME: $MODEL_NAME"
+#echo "BENCHMARK_TIMEOUT: $BENCHMARK_TIMEOUT"
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \

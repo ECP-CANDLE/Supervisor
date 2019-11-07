@@ -48,6 +48,11 @@ string parent_stage_directory = argv("parent_stage_directory", "");
 
 string turbine_output = getenv("TURBINE_OUTPUT");
 
+# These 3 are used in obj_py so we need to initialize them here
+int    benchmark_timeout = toint(getenv("BENCHMARK_TIMEOUT"));
+string model_name     = getenv("MODEL_NAME");
+string exp_id         = getenv("EXPID");
+
 // initial epochs
 int epochs = 6;
 // END WORKFLOW ARGUMENTS
@@ -61,9 +66,10 @@ global const string FRAMEWORK = "keras";
 {
   json_fragment = make_json_fragment(node);  
   json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
+  json2 = replace_all(json, "\n", " ", 0);
   // printf("JSON PARAMS: %s", json);
-  r = obj(json, node);
-  ins = json;
+  r = obj(json2, node);
+  ins = json2;
     
   // TODO: Add this DB stuff back-in when necessary
   // printf("running obj(%s)", node) =>
