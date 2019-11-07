@@ -32,9 +32,12 @@ export IGNORE_ERRORS=${IGNORE_ERRORS:-0}
 # job walltime
 export WALLTIME=${WALLTIME:-02:00:00}
 
+# queue
+export QUEUE=killable
+
 # += is necessary here as the job dependency args are 
 # set via TURBINE_DIRECTIVE
-TURBINE_DIRECTIVE="\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n" 
+TURBINE_DIRECTIVE="\n#BSUB -q $QUEUE\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n" 
 export TURBINE_DIRECTIVE+=${TURBINE_DIRECTIVE_ARGS:-}
 
 TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1 "
