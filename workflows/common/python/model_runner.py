@@ -126,7 +126,7 @@ def setup_perf_nvidia(params):
     return P
 
 def run(hyper_parameter_map, obj_return):
-
+    os.chdir(hyper_parameter_map['instance_directory'])
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
 
@@ -232,6 +232,7 @@ def run_post(hyper_parameter_map):
         logger.debug("POST RUN STOP")
 
 def run_model(hyper_parameter_map):
+    os.chdir(hyper_parameter_map['instance_directory'])
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
     obj_return = get_obj_return()
