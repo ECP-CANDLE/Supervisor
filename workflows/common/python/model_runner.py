@@ -232,7 +232,8 @@ def run_post(hyper_parameter_map):
         logger.debug("POST RUN STOP")
 
 def run_model(hyper_parameter_map):
-    os.chdir(hyper_parameter_map['instance_directory'])
+    instance_directory = hyper_parameter_map['instance_directory']
+    os.chdir(instance_directory)
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
     obj_return = get_obj_return()
