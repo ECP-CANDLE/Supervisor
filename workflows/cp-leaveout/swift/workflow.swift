@@ -50,8 +50,14 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int epochs = 16;
+int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string model_name     = getenv("MODEL_NAME");
+string exp_id         = getenv("EXPID");
+string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
+
+int epochs = 1;
+
 
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
