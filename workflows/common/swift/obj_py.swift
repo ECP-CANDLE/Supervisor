@@ -4,7 +4,7 @@
 */
 
 string code_template =
-"""
+----
 try:
   import sys, traceback, json, os
   import model_runner
@@ -18,7 +18,7 @@ try:
   if not os.path.exists(outdir):
       os.makedirs(outdir)
 
-  hyper_parameter_map = json.loads('%s')
+  hyper_parameter_map = json.loads("""%s""")
   hyper_parameter_map['framework'] = 'keras'
   hyper_parameter_map['save'] = '{}/output'.format(outdir)
   hyper_parameter_map['instance_directory'] = outdir
@@ -32,10 +32,11 @@ try:
 except Exception as e:
   info = sys.exc_info()
   s = traceback.format_tb(info[2])
-  print('EXCEPTION: \\n' + repr(e) + ' ... \\n' + ''.join(s))
+  sys.stdout.write('EXCEPTION: \\n' + repr(e) + ' ... \\n' + ''.join(s))
+  sys.stdout.write('\\n')
   sys.stdout.flush()
   validation_loss = 'EXCEPTION'
-""";
+----;
 
 (string obj_result) obj(string params, string iter_indiv_id) {
   string outdir = "%s/run/%s" % (turbine_output, iter_indiv_id);
