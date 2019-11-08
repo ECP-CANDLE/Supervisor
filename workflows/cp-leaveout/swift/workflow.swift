@@ -36,7 +36,7 @@ import sys;
 int N;
 N_s = argv("N", "2");
 if (strlen(N_s) > 0)
-{  
+{
   N = string2int(N_s);
 }
 else
