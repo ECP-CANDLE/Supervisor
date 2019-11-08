@@ -39,6 +39,7 @@ MED106=/gpfs/alpine/world-shared/med106
 SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-11-06  # Python (ibm-wml) and R
 
 PATH=$SWIFT/stc/bin:$PATH
+PATH=$SWIFT/turbine/bin:$PATH
 
 # log_path PATH
 
