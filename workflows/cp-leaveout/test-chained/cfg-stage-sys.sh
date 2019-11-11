@@ -33,7 +33,7 @@ export IGNORE_ERRORS=${IGNORE_ERRORS:-0}
 export WALLTIME=${WALLTIME:-02:00:00}
 
 # queue
-export QUEUE=killable
+export QUEUE=${QUEUE:-default}
 
 # += is necessary here as the job dependency args are 
 # set via TURBINE_DIRECTIVE
