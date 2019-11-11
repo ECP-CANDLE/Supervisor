@@ -52,8 +52,11 @@ PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
 R=/gpfs/alpine/world-shared/med106/sw/R-190927
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PY/lib:$R/lib64/R/lib
+export LD_LIBRARY_PATH
+LD_LIBRARY_PATH+=:$PY/lib
+LD_LIBRARY_PATH+=:$R/lib64/R/lib
 
+# This is needed so Python can configure itself
 PATH=$PY/bin:$PATH
 
 # EMEWS Queues for R
