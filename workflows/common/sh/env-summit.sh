@@ -55,7 +55,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PY/lib
 PATH=$PY/bin:$PATH
 
 # EMEWS Queues for R
-EQR=$MED106/EQ-R-190822
+EQR=/ccs/proj/med106/gounley1/summit/EQ-R-190822
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
