@@ -50,7 +50,9 @@ PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PY/lib
+R=/gpfs/alpine/world-shared/med106/sw/R-190927
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PY/lib:$R/lib64/R/lib
 
 PATH=$PY/bin:$PATH
 
