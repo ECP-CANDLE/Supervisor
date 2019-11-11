@@ -62,6 +62,8 @@ PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 source_site env   $SITE
 source_site sched $SITE
 
+PYTHONPATH+=$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
+
 if [[ ${EQR:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
@@ -126,7 +128,6 @@ then
   WAIT_ARG="-t w"
   echo "Turbine will wait for job completion."
 fi
-
 
 TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
