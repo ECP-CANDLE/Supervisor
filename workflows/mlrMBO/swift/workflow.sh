@@ -128,6 +128,10 @@ then
 fi
 
 
+TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+mkdir -pv $TURBINE_OUTPUT/out
+
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
