@@ -14,6 +14,11 @@ import EQR;
 import R;
 import assert;
 import python;
+/* Helper for reporting environment variables common/swift/candle_utils.swift
+* import candle_utils;
+* 
+* report_env();
+*/
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
@@ -29,8 +34,12 @@ int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
 
+string model_name     = getenv("MODEL_NAME");
+
 printf("CANDLE mlrMBO Workflow");
 printf("TURBINE_OUTPUT: " + turbine_output);
+
+
 
 string restart_number = argv("restart_number", "1");
 string site = argv("site");

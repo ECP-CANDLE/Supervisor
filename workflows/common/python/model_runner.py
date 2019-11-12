@@ -18,8 +18,16 @@ logger = None
 print("MODEL RUNNER...")
 
 # Andrew: Adding the following line (switching the order of the following two lines) in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
-sys.path.append(os.getenv("MODEL_PYTHON_DIR"))
-sys.path.append(os.getenv("BENCHMARKS_ROOT")+"/common")
+# append ${MODEL_PYTHON_DIR} to $PATH if variable is set
+python_dir = os.getenv("MODEL_PYTHON_DIR")
+if python_dir:
+    sys.path.append(python_dir)
+# append ${BENCHMARKS_ROOT}/common to $PATH if variable is set
+benchmarks_root = os.getenv("BENCHMARKS_ROOT")
+if benchmarks_root:
+    sys.path.append(benchmarks_root+"/common")
+
+# import candle_lrn_crv
 
 print("sys.path:")
 for i in range(0, len(sys.path)-1):
@@ -30,26 +38,40 @@ def import_pkg(framework, model_name):
     # The model_name is the short form of the Benchmark: e.g., 'nt3'
     # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
     print("model_name: ", model_name)
-    if framework != 'keras':
-        raise ValueError("Invalid framework: '{}'".format(framework))
     module_name = os.getenv("MODEL_PYTHON_SCRIPT")
-    if module_name == None or module_name == "":
-        module_name = "{}_baseline_keras2".format(model_name)
-    print ("module_name:", module_name)
-    pkg = importlib.import_module(module_name)
+    if framework == 'keras':
+        if module_name == None or module_name == "":
+            module_name = "{}_baseline_keras2".format(model_name)
+        print ("module_name:", module_name)
+        pkg = importlib.import_module(module_name)
 
-    from keras import backend as K
-    if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
-        import tensorflow as tf
-        inter_threads = int(os.environ['NUM_INTER_THREADS'])
-        intra_threads = int(os.environ['NUM_INTRA_THREADS'])
-        print("Configuring tensorflow with {} inter threads and {} intra threads"
-              .format(inter_threads, intra_threads))
-        cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
-                             intra_op_parallelism_threads=intra_threads)
-        sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
-        K.set_session(sess)
+        # For Summit:
+        from tensorflow.keras import backend as K
+        # For other systems:
+        # from keras import backend as K
+        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
+            import tensorflow as tf
+            inter_threads = int(os.environ['NUM_INTER_THREADS'])
+            intra_threads = int(os.environ['NUM_INTRA_THREADS'])
+            print("Configuring tensorflow with {} inter threads and " +
+                                              "{} intra threads"
+                  .format(inter_threads, intra_threads))
+            cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
+                                 intra_op_parallelism_threads=intra_threads)
+            sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
+            K.set_session(sess)
+    elif framework == 'pytorch':
+        import torch
+        if module_name == None or module_name == "":
+            module_name = "{}_baseline_pytorch".format(model_name)
+            print ("module_name:", module_name)
+        pkg = importlib.import_module(module_name)
+    else:
+        raise ValueError("Framework must either be `keras' or `pytorch' " +
+                         "got `{}'!".format(framework))
+
     return pkg
+
 
 def log(msg):
     global logger
@@ -104,7 +126,7 @@ def setup_perf_nvidia(params):
     return P
 
 def run(hyper_parameter_map, obj_return):
-
+    os.chdir(hyper_parameter_map['instance_directory'])
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
 
@@ -116,6 +138,7 @@ def run(hyper_parameter_map, obj_return):
 
     # params is python dictionary
     params = pkg.initialize_parameters()
+    # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
         #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
@@ -142,8 +165,10 @@ def run(hyper_parameter_map, obj_return):
 
     # Run the model!
     history = pkg.run(params)
+    # history = nn_reg0.run(params)
 
-    runner_utils.keras_clear_session(framework)
+    if framework == 'keras':
+        runner_utils.keras_clear_session(framework)
 
     # Default result if there is no val_loss (as in infer.py)
     result = 0
@@ -175,12 +200,12 @@ def run(hyper_parameter_map, obj_return):
 
 def get_obj_return():
     obj_return = os.getenv("OBJ_RETURN")
-    valid_obj_returns = [ "val_loss", "val_corr" ]
+    valid_obj_returns = [ "val_loss", "val_corr", "val_acc" ]
     if obj_return == None:
         raise Exception("No OBJ_RETURN was in the environment!")
     if obj_return not in valid_obj_returns:
         raise Exception("Invalid value for OBJ_RETURN: use: " +
-                        valid_obj_returns)
+                        str(valid_obj_returns))
     return obj_return
 
 def load_pre_post(hyper_parameter_map, key):
@@ -206,6 +231,31 @@ def run_post(hyper_parameter_map):
         module.post_run(hyper_parameter_map)
         logger.debug("POST RUN STOP")
 
+def run_model(hyper_parameter_map):
+    instance_directory = hyper_parameter_map['instance_directory']
+    os.chdir(instance_directory)
+    global logger
+    logger = log_tools.get_logger(logger, "MODEL RUNNER")
+    obj_return = get_obj_return()
+    result = run_pre(hyper_parameter_map)
+    if result == ModelResult.ERROR:
+        print("run_pre() returned ERROR!")
+        exit(1)
+    elif result == ModelResult.SKIP:
+        print("run_pre() returned SKIP ...")
+        exit(0)
+    else:
+        assert(result == ModelResult.SUCCESS) # proceed...
+
+    # Call to Benchmark!
+    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
+    result = run(hyper_parameter_map, obj_return)
+    runner_utils.write_output(result, instance_directory)
+    # output_dict = {} # TODO: Fill in useful data for the DB
+    # run_post(hyper_parameter_map, output_dict)   
+
+    log("RUN STOP")
+    return result 
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
@@ -218,8 +268,6 @@ if __name__ == '__main__':
       framework,
       runid,
       benchmark_timeout ) = sys.argv
-
-    obj_return = get_obj_return()
 
     hyper_parameter_map = runner_utils.init(param_string,
                                             instance_directory,
@@ -237,22 +285,6 @@ if __name__ == '__main__':
     # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
+    run_model(hyper_parameter_map)
 
-    result = run_pre(hyper_parameter_map)
-    if result == ModelResult.ERROR:
-        print("run_pre() returned ERROR!")
-        exit(1)
-    elif result == ModelResult.SKIP:
-        print("run_pre() returned SKIP ...")
-        exit(0)
-    else:
-        assert(result == ModelResult.SUCCESS) # proceed...
 
-    # Call to Benchmark!
-    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
-    print("sys.argv=" + str(sys.argv))
-    result = run(hyper_parameter_map, obj_return)
-    runner_utils.write_output(result, instance_directory)
-    run_post(hyper_parameter_map)
-
-    log("RUN STOP")

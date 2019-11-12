@@ -33,10 +33,22 @@ import sys;
 
 // BEGIN WORKFLOW ARGUMENTS
 // Data split factor with default
-N = string2int(argv("N", "2"));
+int N;
+N_s = argv("N", "2");
+if (strlen(N_s) > 0)
+{
+  N = string2int(N_s);
+}
+else
+{
+  N = 0;
+}
 // Maximum stage number with default
 // (tested up to S=7, 21,844 dummy tasks)
-S = string2int(argv("S", "2"));
+int S;
+S_s = argv("S", "2");
+assert(strlen(S_s) > 0, "Set argument S with -S=<S>") =>
+  S = string2int(S_s);
 string runtype;
 if (argv_contains("r"))
 {
@@ -50,8 +62,14 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int epochs = 16;
+int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string model_name     = getenv("MODEL_NAME");
+string exp_id         = getenv("EXPID");
+string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
+
+int epochs = 1;
+
 
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";

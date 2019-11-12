@@ -6,8 +6,9 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+
 export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P1B2
+BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
 
@@ -40,9 +41,12 @@ fi
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
 source_site env   $SITE
 source_site sched   $SITE
+
+log_path PYTHONPATH
 
 if [[ ${EQR:-} == "" ]]
 then
@@ -62,7 +66,7 @@ export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
-                -benchmark_timeout=600
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
               )
 
@@ -79,8 +83,15 @@ mkdir -pv $TURBINE_OUTPUT/run
 # Used by init.sh to copy the UPF to TURBINE_OUTPUT
 export UPF
 
-# Andrew: This is machine-specific I believe
-# export TURBINE_LAUNCH_OPTIONS="-cc none"
+which mpicc
+which swift-t
+
+module list
+
+cp -v $UPF $TURBINE_OUTPUT
+cd $TURBINE_OUTPUT
+
+TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
@@ -97,7 +108,12 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e TURBINE_MPI_THREAD=1 \
         $( python_envs ) \
+        -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -t i:$EMEWS_PROJECT_ROOT/swift/init.sh \
+        -e PYTHONUNBUFFERED=1 \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+
+#        -e PYTHONVERBOSE=1
+#         -e PATH=$PATH

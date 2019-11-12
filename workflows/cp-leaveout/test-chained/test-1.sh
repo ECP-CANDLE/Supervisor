@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eu
 
-# CP LEAVEOUT TEST 512
+# CP LEAVEOUT CHAIN UPF TEST 1
+
+module unload python
 
 usage()
 {
@@ -19,7 +21,7 @@ RUN_DIR=$2
 shift 2
 WORKFLOW_ARGS=$*
 
-export MODEL_NAME=uno # nt3
+export MODEL_NAME=uno #model
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
@@ -29,16 +31,25 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-512.sh
+export CFG_SYS=$THIS/$1
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Data files
-# PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
-SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
-CANDLE_DATA=$SCRATCH/Milestone13
-PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
-DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
-BENCHMARK_DATA=$SCRATCH/Milestone13/Benchmarks/Pilot1/Uno
+SCRATCH=/gpfs/alpine/med106/scratch/ncollier/job-chain
+CANDLE_DATA=$SCRATCH/inputs
+PLAN_JSON=$2
+UPF_FILE=$3
+STAGE=$4
+PARENT_STAGE_DIRECTORY=$5
+DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
+
+# Override default of shared parent directory with Supervisor
+# This is necessary as benchmarks must be writeable from a
+# compute node
+export BENCHMARKS_ROOT=$SCRATCH/Benchmarks
+BENCHMARK_DATA=$BENCHMARKS_ROOT/Pilot1/Uno
+
+export TURBINE_DIRECTIVE_ARGS+=$6
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
@@ -59,11 +70,14 @@ do
 done
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+$EMEWS_PROJECT_ROOT/swift/cpl-upf-workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $WORKFLOW_ARGS       \
                                       --plan_json=$PLAN_JSON           \
                                       --dataframe_csv=$DATAFRAME_CSV   \
-                                      --benchmark_data=$BENCHMARK_DATA
+                                      --benchmark_data=$BENCHMARK_DATA \
+                                      --stage=$STAGE \
+                                      --parent_stage_directory=$PARENT_STAGE_DIRECTORY \
+                                      --f=$UPF_FILE
 
 # Check job output
 TURBINE_OUTPUT=$( readlink turbine-output )
@@ -71,11 +85,11 @@ OUTPUT=turbine-output/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 
 # Wait for job
-queue_wait
+#queue_wait
 
 SCRIPT=$( basename $0 .sh )
-check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID
-check_output "EXIT CODE: 0" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+#check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID
+#check_output "EXIT CODE: 0" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
 

@@ -70,6 +70,6 @@ def pre_run(params):
     print("data_setup.pre_run() done.")
     return ModelResult.SUCCESS
 
-def post_run(params):
+def post_run(params, output_dict):
     print("post_run")
     return ModelResult.SUCCESS

@@ -50,12 +50,10 @@ fi
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
-# Wait for job
-queue_wait
 
-#cp $0 $TURBINE_OUTPUT
-TURBINE_OUTPUT=$1+"_"
 # Check job output
+TURBINE_OUTPUT=$( readlink turbine-output )
+echo $TURBINE_OUTPUT
 OUTPUT=$TURBINE_OUTPUT/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 

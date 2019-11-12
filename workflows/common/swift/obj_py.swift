@@ -4,30 +4,44 @@
 */
 
 string code_template =
-"""
-import nt3_tc1_runner
-import json, os
+----
+try:
+  import sys, traceback, json, os
+  import model_runner
+  import tensorflow 
+  from tensorflow import keras 
 
-outdir = '%s'
+  validation_loss = '-100'
 
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
+  outdir = '%s'
 
-hyper_parameter_map = json.loads('%s')
-hyper_parameter_map['framework'] = 'keras'
-hyper_parameter_map['save'] = '{}/output'.format(outdir)
-hyper_parameter_map['instance_directory'] = outdir
-hyper_parameter_map['model_name'] = '%s'
-hyper_parameter_map['experiment_id'] = '%s'
-hyper_parameter_map['run_id'] = '%s'
-hyper_parameter_map['timeout'] = %d
+  if not os.path.exists(outdir):
+      os.makedirs(outdir)
 
-validation_loss = nt3_tc1_runner.run(hyper_parameter_map)
-""";
+  hyper_parameter_map = json.loads("""%s""")
+  hyper_parameter_map['framework'] = 'keras'
+  hyper_parameter_map['save'] = '{}/output'.format(outdir)
+  hyper_parameter_map['instance_directory'] = outdir
+  hyper_parameter_map['model_name'] = '%s'
+  hyper_parameter_map['experiment_id'] = '%s'
+  hyper_parameter_map['run_id'] = '%s'
+  hyper_parameter_map['timeout'] = %d
+
+  validation_loss = model_runner.run_model(hyper_parameter_map)
+  
+except Exception as e:
+  info = sys.exc_info()
+  s = traceback.format_tb(info[2])
+  sys.stdout.write('EXCEPTION: \\n' + repr(e) + ' ... \\n' + ''.join(s))
+  sys.stdout.write('\\n')
+  sys.stdout.flush()
+  validation_loss = 'EXCEPTION'
+----;
 
 (string obj_result) obj(string params, string iter_indiv_id) {
-  string outdir = "%s/run_%s" % (turbine_output, iter_indiv_id);
-  string code = code_template % (outdir, params, model_name, exp_id, iter_indiv_id, benchmark_timeout);
+  string outdir = "%s/run/%s" % (turbine_output, iter_indiv_id);
+  string code = code_template % (outdir, params, model_name,
+                                 exp_id, iter_indiv_id, benchmark_timeout);
   obj_result = python_persist(code, "str(validation_loss)");
-  printf(obj_result);
+  printf("obj_result:", obj_result);
 }
