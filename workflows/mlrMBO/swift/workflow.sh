@@ -62,7 +62,7 @@ PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 source_site env   $SITE
 source_site sched $SITE
 
-PYTHONPATH+=$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
 
 if [[ ${EQR:-} == "" ]]
 then
@@ -129,7 +129,7 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
 
@@ -153,6 +153,7 @@ swift-t -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e SH_TIMEOUT \
+        -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}

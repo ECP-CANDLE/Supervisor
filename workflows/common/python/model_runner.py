@@ -252,10 +252,10 @@ def run_model(hyper_parameter_map):
     result = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
     # output_dict = {} # TODO: Fill in useful data for the DB
-    # run_post(hyper_parameter_map, output_dict)
-   
-    log("RUN STOP")
+    # run_post(hyper_parameter_map, output_dict)   
 
+    log("RUN STOP")
+    return result 
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':

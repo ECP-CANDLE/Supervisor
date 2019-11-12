@@ -12,6 +12,7 @@ class fake_history:
 def run(params):
     print("RUNNING DUMMY: " + str(params))
     import random
-    value = float(len(str(params))) + random.random()
+    #value = float(len(str(params))) + random.random()
+    value = random.random()
     result = fake_history(value)
     return result
