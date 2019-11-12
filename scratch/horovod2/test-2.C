@@ -1,7 +1,9 @@
 
 #include <stdio.h>
 
-#include "operations.h"
+#include <mpi.h>
+
+#include "controller.h"
 
 int
 main()
