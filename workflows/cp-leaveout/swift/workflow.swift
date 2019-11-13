@@ -257,5 +257,5 @@ assert(plan_id != "-1", "Plan already exists!");
 
 // Kickoff the workflow
 stage = 0;
-run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype) =>
-  printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
+run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype);
+// printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
