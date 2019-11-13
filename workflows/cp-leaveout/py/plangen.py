@@ -409,11 +409,14 @@ _runhist_ddl = """
         start_time      TEXT NOT NULL,
         stop_time       TEXT,
         run_mins        INT,
+        loss            REAL,
         mae             REAL,
-        mse             REAL,
-        r_square        REAL,
+        r2              REAL,
+        val_loss        REAL,
+        val_mae         REAL,
+        val_r2          REAL,
+        lr              REAL,
         other_info      TEXT,
-        weights_fn      TEXT,
         PRIMARY KEY (plan_id, subplan_id)
     ); """
 
@@ -425,27 +428,35 @@ RunhistRow = namedtuple('RunhistRow',
         'start_time',
         'stop_time',
         'run_mins',
+        'loss',
         'mae',
-        'mse',
-        'r_square',
-        'other_info',
-        'weights_fn'
+        'r2',
+        'val_loss',
+        'val_mae',
+        'val_r2',
+        'lr',
+        'other_info'
     ]
 )
 
 _select_row_from_runhist = """
     SELECT plan_id, subplan_id, status,
            start_time, stop_time, run_mins,
-           mae, mse, r_square, other_info, weights_fn
+           loss, mae, r2,
+           val_loss, val_mae, val_r2,
+           lr, other_info
     FROM runhist
     WHERE plan_id = {} and subplan_id = '{}'
     """
 
 _insupd_scheduled_runhist = """
     REPLACE INTO runhist(plan_id, subplan_id, status, start_time,
-        stop_time, run_mins, mae, mse, r_square, other_info, weights_fn)
+        stop_time, run_mins,
+        loss, mae, r2,
+        val_loss, val_mae, val_r2,
+        lr, other_info)
     VALUES({}, '{}', '{}', '{}',
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
     """
 
 _insupd_completed_runhist = """
@@ -453,11 +464,14 @@ _insupd_completed_runhist = """
         status = '{}',
         stop_time = '{}',
         run_mins = {},
+        loss = {},
         mae = {},
-        mse = {},
-        r_square = {},
-        other_info = '{}',
-        weights_fn = '{}'
+        r2 = {},
+        val_loss = {},
+        val_mae = {},
+        val_r2 = {},
+        lr = {},
+        other_info = '{}'
     WHERE
         plan_id = {} AND subplan_id='{}'
      """
@@ -654,7 +668,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
     partitions   = get_plan_fs_parts(plan_dict)
     nbr_subplans    = get_plan_nbr_subplans(plan_dict)
 
-    # de    termine if a plan of the given name has already been registered 
+    # determine if a plan of the given name has already been registered 
     conn = db_connect(db_path)
     plan_key = _get_planstat_key(plan_path)
     stmt = _select_row_from_planstat.format(plan_key)
@@ -792,9 +806,13 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     curr_time  = datetime.now()
     stop_time = curr_time.isoformat(timespec=ISO_TIMESTAMP)
 
-    comp_dict = dict(mae=0.0, mse=0.0, r_square=0.0, weights_fn='N/A', unprocessed='')
-    remainder = _acquire_actuals(comp_dict, comp_info_dict)
+    comp_dict = dict(
+        loss=0.0, mae=0.0, r2=0.0,
+        val_loss=0.0, val_mae=0.0, val_r2=0.0,
+        lr=0.0
+    )
 
+    remainder = _acquire_actuals(comp_dict, comp_info_dict)
     if len(remainder) == 0:
         other_info = ''
     else:
@@ -818,11 +836,14 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
                 RunStat.COMPLETE.name,
                 stop_time,
                 run_mins,
+                comp_dict['loss'],
                 comp_dict['mae'],
-                comp_dict['mse'],
-                comp_dict['r_square'],
+                comp_dict['r2'],
+                comp_dict['val_loss'],
+                comp_dict['val_mae'],
+                comp_dict['val_r2'],
+                comp_dict['lr'],
                 other_info,
-                comp_dict['weights_fn'],
                # key spec    
                 plan_id,
                 subplan_id
@@ -1348,16 +1369,16 @@ def main():
         pp(args.plan_dict, width=160)               # DEBUG comment this out for large plans
 
     if args.test:
-        test1(json_abspath, "test1_sql.db")
-        # test2(json_abspath, "test2_sql.db")
+        # test1(json_abspath, "test1_sql.db")
+        test2(json_abspath, "test3_sql.db")
 
 #----------------------------------------------------------------------------------
-# test plan navigation and subplan entry retrieval
+# sqlite3 API functions
 #----------------------------------------------------------------------------------
 
 def test2(plan_path, db_path):
-    run_type = RunType.RESTART
-   #run_type = RunType.RUN_ALL
+   #run_type = RunType.RESTART
+    run_type = RunType.RUN_ALL
 
     plan_name = os.path.basename(plan_path)
     plan_id   = plan_prep(db_path, plan_name, run_type)
@@ -1391,9 +1412,15 @@ def test2(plan_path, db_path):
         )
 
         if status < 0:
+            print("RESTART bypassing COMPLETED subplan: %s" % curr_subplan)
             continue
 
-        completion_status = dict(mse=1.1, mae=2.2, r_square=.555)
+        completion_status = dict(
+            loss=1.1, mae=2.2, r2=3.3,
+            val_loss=6.6, val_mae=7.7, val_r2=8.8,
+            lr=0.9,
+            some_new_thing='abc'
+        )
 
         stop_subplan(
             db_path,
