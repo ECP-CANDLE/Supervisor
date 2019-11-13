@@ -129,7 +129,7 @@ def run(hyper_parameter_map, obj_return):
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
     global logger
-    logger = log_tools.get_logger(logger, "MODEL RUNNER")
+    logger = log_tools.get_logger(logger, 'MODEL RUNNER')
 
     with open(directory + "/rank.txt", "w") as fp:
         fp.write("my rank: " + str(os.getenv("ADLB_RANK_SELF")))
@@ -140,8 +140,14 @@ def run(hyper_parameter_map, obj_return):
 
     runner_utils.format_params(hyper_parameter_map)
 
+    params_arg = {}
+    if 'config_file' in hyper_parameter_map:
+        config_file = hyper_parameter_map['config_file']
+        logger.info('specified config_file: "%s"' % config_file)
+        params_arg = { 'default_model': config_file }
+
     # params is python dictionary
-    params = pkg.initialize_parameters()
+    params = pkg.initialize_parameters(**params_arg)
     # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
@@ -256,10 +262,10 @@ def run_model(hyper_parameter_map):
     result = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
     # output_dict = {} # TODO: Fill in useful data for the DB
-    # run_post(hyper_parameter_map, output_dict)
-   
-    log("RUN STOP")
+    # run_post(hyper_parameter_map, output_dict)   
 
+    log("RUN STOP")
+    return result 
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':

@@ -563,7 +563,7 @@ print_json() {
     while read line
     do
       printf "  "
-      pad_keys $line
+      pad_keys "$line"
     done
 }
 
