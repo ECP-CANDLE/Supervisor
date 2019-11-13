@@ -31,6 +31,10 @@ import python;
 import string;
 import sys;
 
+import candle_utils;
+
+report_env();
+
 // BEGIN WORKFLOW ARGUMENTS
 // Data split factor with default
 int N;
