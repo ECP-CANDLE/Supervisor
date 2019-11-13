@@ -136,8 +136,14 @@ def run(hyper_parameter_map, obj_return):
 
     runner_utils.format_params(hyper_parameter_map)
 
+    params_arg = {}
+    if 'config_file' in hyper_parameter_map:
+        config_file = hyper_parameter_map['config_file']
+        logger.info('specified config_file: "%s"' % config_file)
+        params_arg = { 'default_model': config_file }
+
     # params is python dictionary
-    params = pkg.initialize_parameters()
+    params = pkg.initialize_parameters(**params_arg)
     # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
