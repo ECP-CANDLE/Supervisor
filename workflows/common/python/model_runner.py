@@ -128,7 +128,7 @@ def setup_perf_nvidia(params):
 def run(hyper_parameter_map, obj_return):
     os.chdir(hyper_parameter_map['instance_directory'])
     global logger
-    logger = log_tools.get_logger(logger, "MODEL RUNNER")
+    logger = log_tools.get_logger(logger, 'MODEL RUNNER')
 
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
