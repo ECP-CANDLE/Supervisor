@@ -95,6 +95,11 @@ python_envs()
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
+  if [[ ${PYTHONUSERBASE:-} != "" ]]
+  then
+    RESULT+=( -e PYTHONUSERBASE=$PYTHONUSERBASE )
+  fi
+
   # Cannot use echo due to "-e" in RESULT
   R=${RESULT[@]} # Suppress word splitting
   printf -- "%s\n" $R
