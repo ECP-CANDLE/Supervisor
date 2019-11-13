@@ -126,10 +126,14 @@ def setup_perf_nvidia(params):
     return P
 
 def run(hyper_parameter_map, obj_return):
-    os.chdir(hyper_parameter_map['instance_directory'])
+    directory = hyper_parameter_map['instance_directory']
+    os.chdir(directory)
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
 
+    with open(directory + "/rank.txt", "w") as fp:
+        fp.write("my rank: " + str(os.getenv("ADLB_RANK_SELF")))
+    
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
