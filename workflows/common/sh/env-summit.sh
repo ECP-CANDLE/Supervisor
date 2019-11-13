@@ -52,6 +52,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
+export PYTHONUSERBASE=/gpfs/alpine/med106/scratch/wozniak/proj/python-ibm-wml-pip
 
 R=/gpfs/alpine/world-shared/med106/sw/R-190927
 
