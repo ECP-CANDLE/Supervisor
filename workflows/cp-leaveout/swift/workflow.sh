@@ -159,6 +159,9 @@ else
   STDOUT=""
 fi
 
+TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+mkdir -pv $TURBINE_OUTPUT/out
+
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -169,7 +172,9 @@ swift-t -O 0 -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
+        -e PYTHONUNBUFFERED=1 \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
