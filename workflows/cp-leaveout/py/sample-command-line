@@ -1,0 +1,1 @@
+python plangen.py  --verbose --test --in_dir ./scripts --out_dir './' --overwrite --fs_names cell drug --fs_parts 2 2 --fs_paths sample-cell-features-8.txt sample-drug-features-8.txt

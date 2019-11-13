@@ -7,7 +7,7 @@ import sys
 import glob
 import argparse
 
-partitioning_strategies = ['windows', 'undefine1', 'undefined2']         # to be completed ?????????????
+partitioning_strategies = ['leaveout', 'undefined1', 'undefined2']         # to be completed ?????????????
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -57,13 +57,30 @@ def parse_arguments():
                         nargs='+',
                         help='Specify a list of partition counts')
 
+    parser.add_argument('--first_parts',
+                        required=False,
+                        type=int,
+                        nargs='+',
+                        help='Optionally, specify a list of first pass partition counts')
+
+    # misc 
+
+    parser.add_argument('--maxdepth',
+                        type=int,
+                        default=0,
+                        help='Apply a constraint to the plan tree depth')
+
     parser.add_argument('--verbose',
                         action='store_true',
                         help='Verbosity')
 
     parser.add_argument('--debug',
                         action='store_true',
-                        help='Data structure dumps, etc')
+                        help='Show complete plan tree structure')
+
+    parser.add_argument('--print_tree',
+                        action='store_true',
+                        help='Dump the complete plan tree - potentially lengthy!')
 
     parser.add_argument('--test',
                         action='store_true',
