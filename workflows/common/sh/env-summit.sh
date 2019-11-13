@@ -3,7 +3,7 @@
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 
 # SWIFT_IMPL=app
-SWIFT_IMPL=py
+SWIFT_IMPL=app
 
 # Load basic LD_LIBRARY_PATH before changing it:
 # module load gcc/4.8.5

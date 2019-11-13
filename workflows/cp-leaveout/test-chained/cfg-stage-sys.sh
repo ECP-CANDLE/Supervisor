@@ -30,10 +30,10 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 export IGNORE_ERRORS=${IGNORE_ERRORS:-0}
 
 # job walltime
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-00:10:00}
 
 # queue
-export QUEUE=killable
+export QUEUE=${QUEUE:-batch}
 
 # += is necessary here as the job dependency args are 
 # set via TURBINE_DIRECTIVE
