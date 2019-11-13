@@ -11,7 +11,7 @@ try:
   import tensorflow 
   from tensorflow import keras 
 
-  validation_loss = '-1'
+  validation_loss = '-100'
 
   outdir = '%s'
 
@@ -27,8 +27,8 @@ try:
   hyper_parameter_map['run_id'] = '%s'
   hyper_parameter_map['timeout'] = %d
 
-  model_runner.run_model(hyper_parameter_map)
-
+  validation_loss = model_runner.run_model(hyper_parameter_map)
+  
 except Exception as e:
   info = sys.exc_info()
   s = traceback.format_tb(info[2])
@@ -43,5 +43,5 @@ except Exception as e:
   string code = code_template % (outdir, params, model_name,
                                  exp_id, iter_indiv_id, benchmark_timeout);
   obj_result = python_persist(code, "str(validation_loss)");
-  printf(obj_result);
+  printf("obj_result:", obj_result);
 }
