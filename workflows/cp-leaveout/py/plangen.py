@@ -857,6 +857,33 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     conn.close()
 
 
+def extract_history(history):
+    """Extract CANDLE benchmark model training/validation statistics.
+
+    CANDLE models return a history object containing a dictionary of
+    training and validation statistics, loss and R2 for example. Each
+    value is either a scalar or a list, where each list entry contains
+    a score associated with the corresponding epoch. This function
+    returns a new dictionary having the same keys as found in the
+    argument with scalar values taken from the last epoch, i.e. the
+    end of the list.
+
+    Args
+        history:        model training/validation result dictionary
+
+    Returns
+        A dictionary, possibly empty, containing the keyas and final
+        values of the given history dictionary is returned.
+    """
+    final = {}
+
+    for key, value in history.items():
+        if type(value) is list:
+            value = value[-1]
+        final[key] = value
+    return final
+
+
 def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
     """Return the RunhistRow record for a given plan/subplan.
 
@@ -881,6 +908,7 @@ def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
         plan_rec = RunhistRow._make(row)
 
     return plan_rec
+
 
 def _acquire_actuals(dft_dict, actuals_dict):
     """Extract values from dictionary overlaying defaults."""
@@ -1416,17 +1444,21 @@ def test2(plan_path, db_path):
             continue
 
         completion_status = dict(
-            loss=1.1, mae=2.2, r2=3.3,
+            loss=['dont', 'want', 'this', 1.1],
+            mae=['nope', 2.2],
+            r2=[3.3],
             val_loss=6.6, val_mae=7.7, val_r2=8.8,
             lr=0.9,
             some_new_thing='abc'
         )
 
+        scalar_dict = extract_history(completion_status)
+
         stop_subplan(
             db_path,
             plan_id=plan_id,
             subplan_id=curr_subplan,
-            comp_info_dict=completion_status
+            comp_info_dict=scalar_dict
         )
         print("Completing subplan %6d" % iloop)
 
