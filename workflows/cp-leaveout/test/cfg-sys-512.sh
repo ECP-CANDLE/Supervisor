@@ -1,5 +1,5 @@
 
-# CP LEAVEOUT CFG SYS 1
+# CP LEAVEOUT CFG SYS 512
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
