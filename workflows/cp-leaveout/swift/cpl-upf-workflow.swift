@@ -56,7 +56,7 @@ string model_name     = getenv("MODEL_NAME");
 string exp_id         = getenv("EXPID");
 
 // initial epochs
-int epochs = 1;
+int epochs = 6;
 // END WORKFLOW ARGUMENTS
 
 // For compatibility with obj():

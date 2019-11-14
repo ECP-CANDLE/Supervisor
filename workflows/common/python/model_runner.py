@@ -236,11 +236,11 @@ def run_pre(hyper_parameter_map):
         logger.debug("PRE RUN STOP")
     return result
 
-def run_post(hyper_parameter_map):
+def run_post(hyper_parameter_map, output_map):
     module = load_pre_post(hyper_parameter_map, 'post_module')
     if module != None:
         logger.debug("POST RUN START")
-        module.post_run(hyper_parameter_map)
+        module.post_run(hyper_parameter_map, output_map)
         logger.debug("POST RUN STOP")
 
 def run_model(hyper_parameter_map):
@@ -263,9 +263,9 @@ def run_model(hyper_parameter_map):
     log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
     result, history = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
-    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder), instance_directory, 'history.txt'))
-
-    run_post(hyper_parameter_map)   
+    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder), instance_directory, 'history.txt')
+    # TODO: will we do anything with the output map
+    run_post(hyper_parameter_map, {})   
     log("RUN STOP")
     return (result, history)
 

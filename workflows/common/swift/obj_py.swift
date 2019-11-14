@@ -34,7 +34,7 @@ except Exception as e:
   sys.stdout.write('EXCEPTION: \\n' + repr(e) + ' ... \\n' + ''.join(s))
   sys.stdout.write('\\n')
   sys.stdout.flush()
-  validation_loss = 'EXCEPTION'
+  obj_result = 'EXCEPTION'
 ----;
 
 (string obj_result) obj(string params, string iter_indiv_id) {
