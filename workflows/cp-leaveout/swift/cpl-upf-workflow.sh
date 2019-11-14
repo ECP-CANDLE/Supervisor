@@ -172,6 +172,7 @@ fi
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
+        -I $EMEWS_PROJECT_ROOT/swift \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
@@ -190,6 +191,7 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
+        -e TURBINE_DB_WORKERS=1 \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
   tee $STDOUT
@@ -198,7 +200,7 @@ swift-t -O 0 -n $PROCS \
 
 if (( ${PIPESTATUS[0]} ))
 then
-  echo "workflow.sh: swift-t exited with error!"
+  echo "cpl-upf-workflow.sh: swift-t exited with error!"
   exit 1
 fi
 

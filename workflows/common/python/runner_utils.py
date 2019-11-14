@@ -9,8 +9,19 @@ except NameError:
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
-def write_output(result, instance_directory):
-    with open('{}/result.txt'.format(instance_directory), 'w') as f_out:
+class FromNPEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(FromNPEncoder, self).default(obj)
+
+def write_output(result, instance_directory, fname='result.txt'):
+    with open('{}/{}'.format(instance_directory, fname), 'w') as f_out:
         f_out.write("{}\n".format(result))
 
 def init(param_string, instance_directory, framework, out_dir_key):

@@ -59,14 +59,16 @@ class Config:
             if stage in self.stage_cfgs:
                 scfg = self.stage_cfgs[stage]
                 if "PROCS" not in scfg:
-                    scfg['PROCS'] = str(runs + 1)
+                    # + 2: one for swift and one for db rank
+                    scfg['PROCS'] = str(runs + 2)
                 if "PPN" not in scfg:
                     scfg['PPN'] = str(1)
             
                 # update any numeric vals to str values as required for env vars
                 self._vars_to_string(scfg)
             else:
-                self.stage_cfgs[stage] = {'PROCS' : str(runs + 1), 'PPN' : str(1)}
+                # + 2: one for swift and one for db rank
+                self.stage_cfgs[stage] = {'PROCS' : str(runs + 2), 'PPN' : str(1)}
  
     @property
     def site(self):
