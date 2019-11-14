@@ -38,9 +38,6 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-18  # Python (ibm-wml), no R
 SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-11-06  # Python (ibm-wml) and R
 
-
-export PYTHONUSERBASE=/ccs/proj/med106/wozniak/Public/sfw/summit/python-ibm-wml-pip
-
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
@@ -52,7 +49,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
-export PYTHONUSERBASE=/gpfs/alpine/med106/scratch/wozniak/proj/python-ibm-wml-pip
+export PYTHONUSERBASE=/ccs/proj/med106/wozniak/Public/sfw/summit/python-ibm-wml-pip
 
 R=/gpfs/alpine/world-shared/med106/sw/R-190927
 
