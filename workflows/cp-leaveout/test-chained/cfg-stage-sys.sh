@@ -40,7 +40,7 @@ export QUEUE=${QUEUE:-batch}
 TURBINE_DIRECTIVE="\n#BSUB -q $QUEUE\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n" 
 export TURBINE_DIRECTIVE+=${TURBINE_DIRECTIVE_ARGS:-}
 
-TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1 "
+TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1"
 export TURBINE_LAUNCH_OPTIONS+=${TURBINE_LAUNCH_ARGS:-}
 
 # Dry Run uses this to print out the stage config

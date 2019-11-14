@@ -12,13 +12,12 @@
         { 
             "stage" : 1,
             "WALLTIME" : "00:10:00",
-            "PROCS" : 6,
-            "PPN" : 1
+            "PROCS" : 6
         }, 
 
         { 
             "stage" : 2,
             "WALLTIME" : "00:10:00"
-        }
+	}
     ]
 }

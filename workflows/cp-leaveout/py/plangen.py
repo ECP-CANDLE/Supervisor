@@ -812,6 +812,8 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
         lr=0.0
     )
 
+    comp_info_dict = extract_history(comp_info_dict)
+
     remainder = _acquire_actuals(comp_dict, comp_info_dict)
     if len(remainder) == 0:
         other_info = ''

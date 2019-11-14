@@ -62,7 +62,14 @@ int epochs = 1;
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
 
-
+(string h_json) read_history(string node) {
+  string history_file  = "%s/run/%s/history.txt" % (turbine_output, node);
+  if (file_exists(history_file)) {
+    h_json = read(input(history_file));
+  } else {
+    h_json = "{}";
+  }
+}
 
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
 (string r, string ins) run_single(string node, string plan_id)
@@ -74,9 +81,8 @@ global const string FRAMEWORK = "keras";
   ins = json2;
   assert(db_start_result != "EXCEPTION", "Exception in plangen_start()!");
   if (db_start_result == "0") {
-    string history_file  = "%s/run/%s/history.txt" % (turbine_output, node);
     r = obj(json2, node) =>
-      string hist_json = read(input(history_file)) =>
+      string hist_json = read_history(node);
       db_stop_result = plangen_stop(db_file, node, plan_id, hist_json) =>
     assert(db_stop_result != "EXCEPTION", "Exception in plangen_stop()!") =>                                   printf("stop_subplan result: %s", db_stop_result);
   } else {

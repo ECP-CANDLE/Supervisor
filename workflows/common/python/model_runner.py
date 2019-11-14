@@ -258,7 +258,7 @@ def run_model(hyper_parameter_map):
     # run_post(hyper_parameter_map, output_dict)
    
     log("RUN STOP")
-    return result
+    return (result, history)
 
 
 # Usage: see how sys.argv is unpacked below:
