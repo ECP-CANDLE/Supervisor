@@ -1,5 +1,4 @@
-
-# MLRMBO CFG SYS 1
+# MLRMBO CFG SYS SUMMIT
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
