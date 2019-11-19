@@ -5,6 +5,8 @@
     "upf_directory" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs",
     "job_chain_arg" : "#BSUB -w done(<parent_job_id>)",
     "stages" : "-1",
+    "first_stage" : 1,
+    "first_stage_parent_directory" : "",
   
     "stage_cfg_script" : "./cfg-stage-sys.sh",
 

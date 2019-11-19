@@ -83,6 +83,22 @@ class Config:
         return self.cfg['submit_script']
 
     @property
+    def first_stage(self):
+        return self.cfg['first_stage']
+
+    @property
+    def first_stage_parent_directory(self):
+        return self.cfg['first_stage_parent_directory']
+
+    @first_stage.setter
+    def first_stage(self, value):
+        self.cfg['first_stage'] = value
+
+    @first_stage_parent_directory.setter
+    def first_stage_parent_directory(self, value):
+        self.cfg['first_stage_parent_directory'] = value
+
+    @property
     def upf_directory(self):
         return self.cfg['upf_directory']
 
@@ -110,12 +126,15 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     # parser.add_argument('--plan', type=str, default='plan.json',
     #                     help='plan data file')
-    parser.add_argument('--stages', type=int, default=0,
+    parser.add_argument('--stages', type=int, default=-1,
                         help='number of stages to run (overrides configuration file if non-0)')
     parser.add_argument('--config', type=str, default=None, required=True,
          help='the configuration file in json format')
     parser.add_argument('--dry_run', action='store_true',
          help="Runs the workflow with actual job submission, displaying each job's configuration")
+
+    parser.add_argument('--first_stage', type=int, default=1, help='the stage to begin the workflow with')
+    parser.add_argument('--first_stage_parent_directory', type=str, default='', help='the directory containing the parent model runs for the initial stage, if initial_stage > 1')
 
     # parser.add_argument('--upf_dir', type=str, default=None, required=True,
     #     help='the output directory for the generated upf files')
@@ -154,10 +173,12 @@ def run_dry_run(upfs, cfg):
 
     for i, upf in enumerate(upfs):
         # UPFS are in stage order
-        stage = i + 1
-        args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(i + 1)]
+        stage = i + cfg.first_stage
+        args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(stage)]
         if i > 0:
             args += ['<parent_turbine_output>', '{}'.format(cfg.job_chain_arg)]
+        elif cfg.first_stage > 1:
+            args += [cfg.first_stage_parent_directory, '## JOB 0']
         else:
             args += ['job0', '## JOB 0']
 
@@ -179,10 +200,13 @@ def run_upfs(upfs, cfg):
     turbine_output = None
     for i, upf in enumerate(upfs):
         # UPFS are in stage order
-        stage = i + 1
+        stage = i + cfg.first_stage
         args = [cfg.site, '-a', cfg.stage_cfg_script, cfg.plan, upf, str(stage)]
         if job_id:
+            # at least second iteration
             args += [turbine_output, cfg.create_job_chain_directive(job_id)]
+        elif cfg.first_stage > 1:
+            args += [cfg.first_stage_parent_directory, '## JOB 0']
         else:
             args += ['job0', '## JOB 0']
 
@@ -215,12 +239,12 @@ def get_plan_info(plan_file):
     
     return (root_node, total_stages, total_nodes)
 
-def generate_upfs(prefix, upf_dir, root_node, n_stages, n_nodes):
-    parents = [root_node]
-    upf_prefix = '{}/{}_'.format(upf_dir, prefix)
+def generate_upfs(prefix, cfg, root_nodes, n_nodes):
+    parents = root_nodes
+    upf_prefix = '{}/{}_'.format(cfg.upf_directory, prefix)
     upfs = []
     counts = []
-    for s in range(1, n_stages + 1):
+    for s in range(cfg.first_stage, cfg.first_stage + cfg.stages):
         upf_path = '{}s{}_upf.txt'.format(upf_prefix, s)
         parents = generate_stage(parents, n_nodes, upf_path)
         upfs.append(upf_path)
@@ -251,24 +275,55 @@ def parse_config(args):
     if args.stages != 0:
         cfg.stages = args.stages
     
+    if args.first_stage != 1:
+        cfg.first_stage = args.first_stage
+    
+    if args.first_stage_parent_directory != '':
+        cfg.first_stage_parent_directory = args.first_stage_parent_directory
+
     return cfg
+
+def compute_parent_nodes(root_node, stage, n_nodes):
+    """ Computes the the parents nodes of the specified stage """
+    root_nodes = [root_node]
+    for _ in range(1, stage):
+        children = []
+        for r in root_nodes:
+            for n in range(1, n_nodes + 1):
+                child = '{}.{}'.format(r, n)
+                children.append(child)
+        root_nodes = children
+    
+    return root_nodes
+
     
 def run(args):
     cfg = parse_config(args)
     root_node, total_stages, n_nodes = get_plan_info(cfg.plan)
+
+    if cfg.first_stage > total_stages:
+        print("First stage must be less than or equal to total number of stages")
+        sys.exit()
+
+    if cfg.first_stage > 1 and ('first_stage_parent_directory' not in cfg.cfg or 
+            cfg.cfg['first_stage_parent_directory'] == ''):
+        print("Missing required 'first_stage_parent_directory' argument, when first_stage > 1")
+        sys.exit()
+
     if cfg.stages == -1 or cfg.stages >= total_stages:
-        cfg.stages = total_stages
+        cfg.stages = total_stages - cfg.first_stage + 1
 
     prefix = os.path.splitext(os.path.basename(cfg.plan))[0]
-    upfs, runs_per_stage = generate_upfs(prefix, cfg.upf_directory, root_node, cfg.stages, n_nodes)
+    root_nodes = compute_parent_nodes(root_node, cfg.first_stage, n_nodes)
+    upfs, runs_per_stage = generate_upfs(prefix, cfg, root_nodes, n_nodes)
     cfg.update_stage_cfgs(runs_per_stage)
 
     print("\nTotal Jobs: {}\nTotal Stages: {}\nNodes: {}".format(cfg.stages, cfg.stages, n_nodes))
     print("Site: {}\nPlan: {}\nSubmit Script: {}\nStage Configuration Script:{}\nUPF directory: {}".format(cfg.site, cfg.plan,
         cfg.submit_script,  cfg.stage_cfg_script, cfg.upf_directory))
     for i, c in enumerate(runs_per_stage):
-        stage = i + 1
-        scfg = cfg.stage_cfgs[stage]
+        stage = cfg.first_stage + i
+        scfg = cfg.stage_cfgs[i + 1]
         print("\tStage: {}, UPF: {}, Model Runs: {}, PROCS: {}, PPN: {}".format(stage, 
                     os.path.basename(upfs[i]), c, scfg['PROCS'], scfg['PPN']))  
 
