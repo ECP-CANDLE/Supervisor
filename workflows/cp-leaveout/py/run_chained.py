@@ -55,7 +55,7 @@ class Config:
 
     def update_stage_cfgs(self, runs_per_stage):
         for i, runs in enumerate(runs_per_stage):
-            stage = i + 1
+            stage = i + self.first_stage
             if stage in self.stage_cfgs:
                 scfg = self.stage_cfgs[stage]
                 if "PROCS" not in scfg:
@@ -66,6 +66,7 @@ class Config:
             
                 # update any numeric vals to str values as required for env vars
                 self._vars_to_string(scfg)
+                print(scfg)
             else:
                 # + 2: one for swift and one for db rank
                 self.stage_cfgs[stage] = {'PROCS' : str(runs + 2), 'PPN' : str(1)}
@@ -323,7 +324,7 @@ def run(args):
         cfg.submit_script,  cfg.stage_cfg_script, cfg.upf_directory))
     for i, c in enumerate(runs_per_stage):
         stage = cfg.first_stage + i
-        scfg = cfg.stage_cfgs[i + 1]
+        scfg = cfg.stage_cfgs[stage]
         print("\tStage: {}, UPF: {}, Model Runs: {}, PROCS: {}, PPN: {}".format(stage, 
                     os.path.basename(upfs[i]), c, scfg['PROCS'], scfg['PPN']))  
 
