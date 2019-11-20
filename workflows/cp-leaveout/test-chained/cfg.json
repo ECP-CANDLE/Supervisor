@@ -13,13 +13,19 @@
     "stage_cfgs" : [
         { 
             "stage" : 1,
-            "WALLTIME" : "00:10:00",
+            "WALLTIME" : "02:00:00",
             "PROCS" : 6
         }, 
 
         { 
             "stage" : 2,
-            "WALLTIME" : "00:10:00"
+            "WALLTIME" : "01:00:00"
+	},
+
+	{
+	    "stage" : 3,
+	    "WALLTIME" : "01:00:00"
+
 	}
     ]
 }

@@ -152,8 +152,11 @@ main() {
 
   if (stage > 1) {
     file pif = input("%s/plan_id.txt" % parent_stage_directory);
-    file parent_db = input("%s/%s" % (parent_stage_directory, basename_string(db_file)));
-    file dbf <db_file> = cp(parent_db) =>
+    string parent_db_fname = "%s/%s" % (parent_stage_directory, basename_string(db_file));
+    if (file_exists(parent_db_fname)) {
+      file parent_db = input(parent_db_fname);
+      file dbf <db_file> = cp(parent_db);
+    }
     plan_id = trim(read(pif));
   } else {
     plan_id = init_plangen(db_file, plan_json, runtype);

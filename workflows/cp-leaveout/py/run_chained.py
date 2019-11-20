@@ -66,7 +66,6 @@ class Config:
             
                 # update any numeric vals to str values as required for env vars
                 self._vars_to_string(scfg)
-                print(scfg)
             else:
                 # + 2: one for swift and one for db rank
                 self.stage_cfgs[stage] = {'PROCS' : str(runs + 2), 'PPN' : str(1)}
@@ -183,7 +182,7 @@ def run_dry_run(upfs, cfg):
         else:
             args += ['job0', '## JOB 0']
 
-        print('\n########### DRY RUN JOB {}  ##############'.format(stage))
+        print('\n########### DRY RUN JOB {}, Stage {}  ##############'.format(stage - cfg.first_stage + 1, stage))
         print("Running: {} {}".format(cfg.submit_script, ' '.join(args)))
         env = cfg.get_stage_environment(stage)
         if 'TURBINE_DIRECTIVE_ARGS' in env:
@@ -214,7 +213,7 @@ def run_upfs(upfs, cfg):
         outs = run_script(cfg, args, stage)
         turbine_output, job_id = parse_run_vars(outs)
         exp_id = os.path.basename(turbine_output)
-        print('\n########### JOB {} - {} - {} ##############'.format(stage, exp_id, job_id))
+        print('\n########### JOB {} - Stage {} - {} - {} ##############'.format(stage - cfg.first_stage + 1,stage, exp_id, job_id))
         print("Running: {} {}".format(cfg.submit_script, ' '.join(args)))
         print(outs)
         print('TURBINE_OUTPUT: {}'.format(turbine_output))
