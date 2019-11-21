@@ -151,13 +151,23 @@ main() {
   string plan_id;
 
   if (stage > 1) {
+    int b;
     file pif = input("%s/plan_id.txt" % parent_stage_directory);
     string parent_db_fname = "%s/%s" % (parent_stage_directory, basename_string(db_file));
     if (file_exists(parent_db_fname)) {
       file parent_db = input(parent_db_fname);
-      file dbf <db_file> = cp(parent_db);
+      file dbf <db_file> = cp(parent_db) =>
+      b = 0;
+    } else {
+      b = 0;
     }
-    plan_id = trim(read(pif));
+
+    // wait for db file to be copied to experiment directory
+    // b waits for dbf to be created if its needs to be
+    wait(b) {
+      plan_id = trim(read(pif));
+    }
+
   } else {
     plan_id = init_plangen(db_file, plan_json, runtype);
   }
@@ -173,9 +183,6 @@ main() {
 
   // Resultant output values:
   string results[];
-  //string inputs[];
-
-  //string plan_id = "1";
 
   // Evaluate each parameter set
   foreach params,i in upf_lines
@@ -183,9 +190,8 @@ main() {
     // printf("params: %s", params);
     result, inputs = run_single(params, plan_id);
     results[i] = "%s|%s|%s" % (params, replace_all(inputs, "\n", " ", 0), result);
-    //inputs[i] = "%i|%s" % (i, inputs);
   }
-  // Join all result values into one big semicolon-delimited string
+
   // string result = join(results, ";") =>
   file out<"%s/plan_id.txt" % turbine_output> = write("%s\n" % plan_id);
   write_lines(results, "results.txt") => 
