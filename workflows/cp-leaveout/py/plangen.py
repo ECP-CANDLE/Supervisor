@@ -70,13 +70,17 @@ def validate_args(args):
     params = {}
     verbose = args.verbose
 
+    if not args.first_parts:
+        args.first_parts = args.fs_parts
+
     fs_names_len = len(args.fs_names)
     fs_paths_len = len(args.fs_paths)
     fs_parts_len = len(args.fs_parts)
+    fs_first_len = len(args.first_parts)
 
     nbr_feature_sets = fs_names_len
-    test_lengths = [fs_names_len, fs_paths_len, fs_parts_len]
-    reqd_lengths = [nbr_feature_sets] * 3
+    test_lengths = [fs_names_len, fs_paths_len, fs_parts_len, fs_first_len]
+    reqd_lengths = [nbr_feature_sets] * 4
 
     if test_lengths != reqd_lengths:
         sys.exit("Error: The lengths of all feature set definition args (fs_<>) must be identical")
@@ -84,9 +88,11 @@ def validate_args(args):
     if nbr_feature_sets <= 1:
         sys.exit("Error: Partitioning requires multiple feature sets")
 
-    for nparts in args.fs_parts:
+    for fparts, nparts in zip(args.first_parts, args.fs_parts):
         if nparts < 1 or nparts >= 8:
             sys.exit("Error: Invalid partitioning value %d" % nparts)
+        if fparts < 1 or fparts >= 8:
+            sys.exit("Error: Invalid 'first' partitioning value %d" % fparts)
 
     # validate input and output directories
     if args.in_dir and not os.path.isdir(args.in_dir):
@@ -141,7 +147,7 @@ class SubsetGenerator(ABC):
     """Abstract class implementing a data partitioning method.
 
     The SubsetGenerator class provides a template for subclasses that implement
-    mechanisms for dividing sets of lists into sublists for the purpose of 
+    mechanisms for dividing sets of lists into sublists for the purpose of
     defining unique ML training and validation sets.
 
     Subclasses must implement those methods defined as @abstractmethod.
@@ -403,11 +409,14 @@ _runhist_ddl = """
         start_time      TEXT NOT NULL,
         stop_time       TEXT,
         run_mins        INT,
+        loss            REAL,
         mae             REAL,
-        mse             REAL,
-        r_square        REAL,
+        r2              REAL,
+        val_loss        REAL,
+        val_mae         REAL,
+        val_r2          REAL,
+        lr              REAL,
         other_info      TEXT,
-        weights_fn      TEXT,
         PRIMARY KEY (plan_id, subplan_id)
     ); """
 
@@ -419,27 +428,35 @@ RunhistRow = namedtuple('RunhistRow',
         'start_time',
         'stop_time',
         'run_mins',
+        'loss',
         'mae',
-        'mse',
-        'r_square',
-        'other_info',
-        'weights_fn'
+        'r2',
+        'val_loss',
+        'val_mae',
+        'val_r2',
+        'lr',
+        'other_info'
     ]
 )
 
 _select_row_from_runhist = """
     SELECT plan_id, subplan_id, status,
            start_time, stop_time, run_mins,
-           mae, mse, r_square, other_info, weights_fn
+           loss, mae, r2,
+           val_loss, val_mae, val_r2,
+           lr, other_info
     FROM runhist
     WHERE plan_id = {} and subplan_id = '{}'
     """
 
 _insupd_scheduled_runhist = """
     REPLACE INTO runhist(plan_id, subplan_id, status, start_time,
-        stop_time, run_mins, mae, mse, r_square, other_info, weights_fn)
+        stop_time, run_mins,
+        loss, mae, r2,
+        val_loss, val_mae, val_r2,
+        lr, other_info)
     VALUES({}, '{}', '{}', '{}',
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
     """
 
 _insupd_completed_runhist = """
@@ -447,11 +464,14 @@ _insupd_completed_runhist = """
         status = '{}',
         stop_time = '{}',
         run_mins = {},
+        loss = {},
         mae = {},
-        mse = {},
-        r_square = {},
-        other_info = '{}',
-        weights_fn = '{}'
+        r2 = {},
+        val_loss = {},
+        val_mae = {},
+        val_r2 = {},
+        lr = {},
+        other_info = '{}'
     WHERE
         plan_id = {} AND subplan_id='{}'
      """
@@ -648,7 +668,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
     partitions   = get_plan_fs_parts(plan_dict)
     nbr_subplans    = get_plan_nbr_subplans(plan_dict)
 
-    # de    termine if a plan of the given name has already been registered 
+    # determine if a plan of the given name has already been registered 
     conn = db_connect(db_path)
     plan_key = _get_planstat_key(plan_path)
     stmt = _select_row_from_planstat.format(plan_key)
@@ -786,9 +806,15 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     curr_time  = datetime.now()
     stop_time = curr_time.isoformat(timespec=ISO_TIMESTAMP)
 
-    comp_dict = dict(mae=0.0, mse=0.0, r_square=0.0, weights_fn='N/A', unprocessed='')
-    remainder = _acquire_actuals(comp_dict, comp_info_dict)
+    comp_dict = dict(
+        loss=0.0, mae=0.0, r2=0.0,
+        val_loss=0.0, val_mae=0.0, val_r2=0.0,
+        lr=0.0
+    )
 
+    comp_info_dict = extract_history(comp_info_dict)
+
+    remainder = _acquire_actuals(comp_dict, comp_info_dict)
     if len(remainder) == 0:
         other_info = ''
     else:
@@ -812,11 +838,14 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
                 RunStat.COMPLETE.name,
                 stop_time,
                 run_mins,
+                comp_dict['loss'],
                 comp_dict['mae'],
-                comp_dict['mse'],
-                comp_dict['r_square'],
+                comp_dict['r2'],
+                comp_dict['val_loss'],
+                comp_dict['val_mae'],
+                comp_dict['val_r2'],
+                comp_dict['lr'],
                 other_info,
-                comp_dict['weights_fn'],
                # key spec    
                 plan_id,
                 subplan_id
@@ -828,6 +857,33 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
     csr.close()
     conn.commit()
     conn.close()
+
+
+def extract_history(history):
+    """Extract CANDLE benchmark model training/validation statistics.
+
+    CANDLE models return a history object containing a dictionary of
+    training and validation statistics, loss and R2 for example. Each
+    value is either a scalar or a list, where each list entry contains
+    a score associated with the corresponding epoch. This function
+    returns a new dictionary having the same keys as found in the
+    argument with scalar values taken from the last epoch, i.e. the
+    end of the list.
+
+    Args
+        history:        model training/validation result dictionary
+
+    Returns
+        A dictionary, possibly empty, containing the keyas and final
+        values of the given history dictionary is returned.
+    """
+    final = {}
+
+    for key, value in history.items():
+        if type(value) is list:
+            value = value[-1]
+        final[key] = value
+    return final
 
 
 def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
@@ -854,6 +910,7 @@ def get_subplan_runhist(db_path, plan_id=None, subplan_id=None):
         plan_rec = RunhistRow._make(row)
 
     return plan_rec
+
 
 def _acquire_actuals(dft_dict, actuals_dict):
     """Extract values from dictionary overlaying defaults."""
@@ -1146,6 +1203,8 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
     for i in range(len(args.fs_names)):
         group = feature_set_content[i]
         count = args.fs_parts[i]
+        if depth == 0:
+            count = args.first_parts[i]
         feature_set_name = args.fs_names[i]
         partitions = args.generator.partition(feature_set_content[i], count=count)
         all_parts.append(partitions)
@@ -1340,16 +1399,16 @@ def main():
         pp(args.plan_dict, width=160)               # DEBUG comment this out for large plans
 
     if args.test:
-        test1(json_abspath, "test1_sql.db")
-        # test2(json_abspath, "test2_sql.db")
+        # test1(json_abspath, "test1_sql.db")
+        test2(json_abspath, "test3_sql.db")
 
 #----------------------------------------------------------------------------------
-# test plan navigation and subplan entry retrieval
+# sqlite3 API functions
 #----------------------------------------------------------------------------------
 
 def test2(plan_path, db_path):
-    run_type = RunType.RESTART
-   #run_type = RunType.RUN_ALL
+   #run_type = RunType.RESTART
+    run_type = RunType.RUN_ALL
 
     plan_name = os.path.basename(plan_path)
     plan_id   = plan_prep(db_path, plan_name, run_type)
@@ -1383,15 +1442,25 @@ def test2(plan_path, db_path):
         )
 
         if status < 0:
+            print("RESTART bypassing COMPLETED subplan: %s" % curr_subplan)
             continue
 
-        completion_status = dict(mse=1.1, mae=2.2, r_square=.555)
+        completion_status = dict(
+            loss=['dont', 'want', 'this', 1.1],
+            mae=['nope', 2.2],
+            r2=[3.3],
+            val_loss=6.6, val_mae=7.7, val_r2=8.8,
+            lr=0.9,
+            some_new_thing='abc'
+        )
+
+        scalar_dict = extract_history(completion_status)
 
         stop_subplan(
             db_path,
             plan_id=plan_id,
             subplan_id=curr_subplan,
-            comp_info_dict=completion_status
+            comp_info_dict=scalar_dict
         )
         print("Completing subplan %6d" % iloop)
 
@@ -1449,22 +1518,21 @@ def test1(plan_path, db_path):
         parent_name = get_predecessor(plan_dict, select_one)
         print("%-16s is a successor of %-16s - all successors: %s" % (select_one, parent_name, successor_names))
 
-# ???????????????????????????????????????????????????????????
+        # test feature lists retrieval API get_subplan_features
         value,_ = get_subplan(plan_dict, select_one)
 
         if i < 3:
             for pf in [False, True]:
                 _, fs_name_list, train_list, val_list = get_subplan_features(plan_dict, select_one, parent_features=pf)
-                print("\nsubplan original:", select_one, "parent features:", pf)
-                pp(plan_dict[select_one])
-                print("\nflattened TRAIN")
-                pp(train_list)
-                print("\nflattened VAL")
-                pp(val_list)
+                if False:   # very verbose, use only as needed! ???????????????????????????????????????????????????????
+                    print("\nsubplan original:", select_one, "parent features:", pf)
+                    pp(plan_dict[select_one])
+                    print("\nflattened TRAIN")
+                    pp(train_list)
+                    print("\nflattened VAL")
+                    pp(val_list)
 
-# ???????????????????????????????????????????????????????????
-
-        # test retrieval api
+        # test runhist retrieval api
         row = get_subplan_runhist(db_path, plan_id=plan_id, subplan_id=select_one)
         #print(row)
 

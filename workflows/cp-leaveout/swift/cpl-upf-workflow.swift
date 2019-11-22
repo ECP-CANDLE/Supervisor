@@ -9,7 +9,7 @@
   --plan_json=<FILE>     : The JSON plan for topN_to_uno
   --dataframe_csv=<FILE> : The CSV data file for topN_to_uno
   --db_file=<FILE>       : The SQLite DB file
-  --benchmark_data=<DIR> : Location of Bencharks/Pilot1/Uno. 
+  --benchmark_data=<DIR> : Location of Bencharks/Pilot1/Uno.
                            Used by data_setup to set softlinks to
                            Uno cache and uno_auc_model.txt
   --f                    : The UPF file
@@ -25,6 +25,8 @@ import files;
 import python;
 import string;
 import sys;
+import plangen;
+import unix;
 
 // BEGIN WORKFLOW ARGUMENTS
 int stage = string2int(argv("stage"));
@@ -60,82 +62,34 @@ int epochs = 6;
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
 
+(string h_json) read_history(string node) {
+  string history_file  = "%s/run/%s/history.txt" % (turbine_output, node);
+  if (file_exists(history_file)) {
+    h_json = read(input(history_file));
+  } else {
+    h_json = "{}";
+  }
+}
 
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
 (string r, string ins) run_single(string node, string plan_id)
 {
-  json_fragment = make_json_fragment(node);  
+  json_fragment = make_json_fragment(node);
   json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
   json2 = replace_all(json, "\n", " ", 0);
-  // printf("JSON PARAMS: %s", json);
-  r = obj(json2, node);
+  db_start_result = plangen_start(db_file, plan_json, node, plan_id, runtype);
   ins = json2;
-    
-  // TODO: Add this DB stuff back-in when necessary
-  // printf("running obj(%s)", node) =>
-  // // Insert the model run into the DB
-  // result1 = "0"; // plangen_start(node, plan_id);
-  // assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
-  // if (result1 == "0")
-  // {
-  //   // Run the model
-  //   s = obj(json, node) =>
-  //   printf("completed: node: " + node) =>
-  //   // Update the DB to complete the model run
-  //   result2 = "0"; // plangen_stop(node, plan_id);
-  //   assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
-  //   printf("stop_subplan result: %s", result2);
-  // }
-  // else
-  // {
-  //   printf("plan node already marked complete: %s result=%s", node, result1) =>
-  //     s = "ERROR";
-  // }
+  assert(db_start_result != "EXCEPTION", "Exception in plangen_start()!");
+  if (db_start_result == "0") {
+    r = obj(json2, node) =>
+      string hist_json = read_history(node);
+      db_stop_result = plangen_stop(db_file, node, plan_id, hist_json) =>
+    assert(db_stop_result != "EXCEPTION", "Exception in plangen_stop()!") =>                                   printf("stop_subplan result: %s", db_stop_result);
+  } else {
+    printf("plan node already marked complete: %s result=%s", node, db_start_result) =>
+      r = "error";
+  }
 }
-
-// (string result) plangen_start(string node, string plan_id)
-// {
-//   result = python_persist(
-// ----
-// import fcntl, sys, traceback
-// import plangen
-// try:
-//     fp = open("lock", "w+")
-//     fcntl.flock(fp, fcntl.LOCK_EX)
-//     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-//     fcntl.flock(fp, fcntl.LOCK_UN)
-//     fp.close()
-// except Exception as e:
-//     info = sys.exc_info()
-//     s = traceback.format_tb(info[2])
-//     print(str(e) + ' ... \\n' + ''.join(s))
-//     sys.stdout.flush()
-//     result = "EXCEPTION"
-// ----  % (db_file, plan_json, plan_id, node, runtype),
-//     "result");
-// }
-
-// (string result) plangen_stop(string node, string plan_id)
-// {
-//   result = python_persist(
-// ----
-// import plangen
-// import fcntl, sys, traceback
-// try:
-//     fp = open("lock", "w+")
-//     fcntl.flock(fp, fcntl.LOCK_EX)
-//     result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-//     fcntl.flock(fp, fcntl.LOCK_UN)
-//     fp.close()
-// except Exception as e:
-//     info = sys.exc_info()
-//     s = traceback.format_tb(info[2])
-//     print(str(e) + ' ... \\n' + ''.join(s))
-//     sys.stdout.flush()
-//     result = 'EXCEPTION'
-// ---- % (db_file, plan_id, node),
-//       "result");
-// }
 
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this)
@@ -151,7 +105,7 @@ global const string FRAMEWORK = "keras";
     }
     //"pre_module":     "data_setup",
     json_fragment = ----
-"pre_module":     "data_setup",  
+"pre_module":     "data_setup",
 "post_module":    "data_setup",
 "plan":           "%s",
 "config_file":    "uno_auc_model.txt",
@@ -181,43 +135,6 @@ global const string FRAMEWORK = "keras";
 
 printf("CP LEAVEOUT UPF WORKFLOW START- UPF: %s, STAGE: %i", filename(upf), stage);
 
-// TODO: Can't run this with swift because no numpy in the embedded python
-// Uncomment when proper Python available
-
-// First: simple test that we can import plangen
-// check = python_persist(----
-// try:
-//     import plangen
-//     result = 'OK'
-// except Exception as e:
-//     result = str(e)
-// ----,
-// "result");
-// printf("python result: import plangen: '%s'", check) =>
-//   assert(check == "OK", "could not import plangen, check PYTHONPATH!");
-
-// // Initialize the DB
-// plan_id = python_persist(
-// ----
-// import sys, traceback
-// import plangen
-// try:
-//     result = str(plangen.plan_prep('%s', '%s', %s))
-// except Exception as e:
-//     info = sys.exc_info()
-//     s = traceback.format_tb(info[2])
-//     print(str(e) + ' ... \\n' + ''.join(s))
-//     sys.stdout.flush()
-//     result = 'EXCEPTION'
-// ---- % (db_file, plan_json, runtype),
-// "result");
-// printf("DB plan_id: %s", plan_id);
-// assert(plan_id != "EXCEPTION", "Plan prep failed!");
-
-// // If the plan already exists and we are not doing a restart, abort
-// assert(plan_id != "-1", "Plan already exists!");
-
-
 (void o) write_lines(string lines[], string f) {
   string lines_string = join(lines,"\n");
   fname = "%s/%s" % (turbine_output, f);
@@ -226,6 +143,27 @@ printf("CP LEAVEOUT UPF WORKFLOW START- UPF: %s, STAGE: %i", filename(upf), stag
 }
 
 main() {
+  string check = check_plangen() =>
+    printf("python result: import plangen: '%s'", check) =>
+    assert(check == "OK", "could not import plangen, check PYTHONPATH!");
+
+  string plan_id;
+
+  if (stage > 1) {
+    file pif = input("%s/plan_id.txt" % parent_stage_directory);
+    file parent_db = input("%s/%s" % (parent_stage_directory, basename_string(db_file)));
+    file dbf <db_file> = cp(parent_db) =>
+    plan_id = trim(read(pif));
+  } else {
+    plan_id = init_plangen(db_file, plan_json, runtype);
+  }
+
+  // string plan_id = init_plangen(db_file, plan_json, runtype);
+  printf("DB plan_id: %s", plan_id) =>
+  assert(plan_id != "EXCEPTION", "Plan prep failed!");
+  // If the plan already exists and we are not doing a restart, abort
+  assert(plan_id != "-1", "Plan already exists!");
+
   // Read unrolled parameter file
   string upf_lines[] = file_lines(upf);
 
@@ -233,7 +171,7 @@ main() {
   string results[];
   //string inputs[];
 
-  string plan_id = "1";
+  //string plan_id = "1";
 
   // Evaluate each parameter set
   foreach params,i in upf_lines
@@ -241,10 +179,11 @@ main() {
     // printf("params: %s", params);
     result, inputs = run_single(params, plan_id);
     results[i] = "%s|%s|%s" % (params, replace_all(inputs, "\n", " ", 0), result);
-    //inputs[i] = "%i|%s" % (i, inputs);                                                                                                                                             
+    //inputs[i] = "%i|%s" % (i, inputs);
   }
   // Join all result values into one big semicolon-delimited string
   // string result = join(results, ";") =>
-  write_lines(results, "results.txt") =>
+  file out<"%s/plan_id.txt" % turbine_output> = write("%s\n" % plan_id);
+  write_lines(results, "results.txt") => 
   printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
 }

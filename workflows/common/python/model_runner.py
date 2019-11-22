@@ -182,6 +182,7 @@ def run(hyper_parameter_map, obj_return):
 
     # Default result if there is no val_loss (as in infer.py)
     result = 0
+    history_result = {}
     if history != None:
         # Return the history entry that the user requested.
         values = history.history[obj_return]
@@ -202,11 +203,12 @@ def run(hyper_parameter_map, obj_return):
                              framework)
 
         print("result: " + obj_return + ": " + str(result))
+        history_result = history.history.copy()
 
     for s in ['top', 'nvidia']:
         if Ps[s] is not None:
             Ps[s].terminate()
-    return result
+    return (result, history_result)
 
 def get_obj_return():
     obj_return = os.getenv("OBJ_RETURN")
@@ -234,11 +236,11 @@ def run_pre(hyper_parameter_map):
         logger.debug("PRE RUN STOP")
     return result
 
-def run_post(hyper_parameter_map):
+def run_post(hyper_parameter_map, output_map):
     module = load_pre_post(hyper_parameter_map, 'post_module')
     if module != None:
         logger.debug("POST RUN START")
-        module.post_run(hyper_parameter_map)
+        module.post_run(hyper_parameter_map, output_map)
         logger.debug("POST RUN STOP")
 
 def run_model(hyper_parameter_map):
@@ -259,13 +261,14 @@ def run_model(hyper_parameter_map):
 
     # Call to Benchmark!
     log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
-    result = run(hyper_parameter_map, obj_return)
+    result, history = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
-    # output_dict = {} # TODO: Fill in useful data for the DB
-    # run_post(hyper_parameter_map, output_dict)   
-
+    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder), instance_directory, 'history.txt')
+    # TODO: will we do anything with the output map
+    run_post(hyper_parameter_map, {})   
     log("RUN STOP")
-    return result 
+    return (result, history)
+
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
