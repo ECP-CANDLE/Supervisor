@@ -1,5 +1,4 @@
 
-
 This is a single one-shot combination of Swift/T and NT3 for use in evaluating data management strategies.
 
 This is currently only set up for Theta.
