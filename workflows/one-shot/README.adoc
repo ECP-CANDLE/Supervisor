@@ -45,3 +45,10 @@ $ ./workflow.sh
 This runs +workflow.swift+, which runs +run-nt3.sh+ once. +
 The output goes into a newly created +out-*/output.txt+ for each run.
 
+== Finding the model output
+
+In +Benchmarks/Pilot1/NT3/nt3_baseline_keras2.py+ , turn on the call to:
+
+----
+model.save_weights("{}/{}.weights.h5", ...)
+----
