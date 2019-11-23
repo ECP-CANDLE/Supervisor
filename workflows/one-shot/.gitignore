@@ -1,0 +1,12 @@
+# Job outputs:
+out*
+*.cobaltlog
+
+# NT3 outputs:
+Output
+*.json
+*.log
+
+# Swift/T stuff:
+turbine-output
+*.tic
