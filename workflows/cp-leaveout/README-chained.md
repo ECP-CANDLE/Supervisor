@@ -40,22 +40,30 @@ calls another script (e.g., `swift/cpl-upf-workflow.sh`) that performs further c
 
 `run_chained.py` performs this individual job submission for each stage by:
 
-1. Ading environment variables such as PROCS and WALLTIME to the environment
-2. Running the submission script (e.g. test-1.sh) with this new environment
+1. Exporting environment variables such as PROCS and WALLTIME to an environment
+2. Running the submission script (e.g. `test-1.sh`) with this new environment
 
 ### Arguments
 
-`run_chained.py` takes 3 arguments:
+`run_chained.py` takes 5 arguments, 4 of which are optional:
 
 ```
-usage: run_chained.py [-h] [--stages STAGES] --config CONFIG [--dry_run]
+usage: run_chained.py [-h] --config CONFIG [--stages STAGES] [--dry_run]
+                      [--first_stage FIRST_STAGE]
+                      [--first_stage_parent_directory FIRST_STAGE_PARENT_DIRECTORY]
 ```
 
 * --config - the path of the workflow configuration file
 * --stages - the number of stages to run. This will override the value specified in the configuration file
 * --dry_run - executes the workflow, displaying the configuration for each stage, but does **not** submit any jobs
+* --first_stage - the stage at which to start the workflow. The stage count starts with *1* and a `first_stage` of *1* corresponds to the initial parentless stage. This will override the value specified in the configuration file
+* --first_stage_parent_directory - the file system location of the first stage's parent stage, when `first_stage` is greater than 1. This will override the value specified in the configuration file
 
 Of these only `--config` is required.
+
+The `first_stage` argument can be used to continue a previously run job chaining workflow. For
+example, if the previous workflow ran stages 1 and 2. Then a `first_stage` argument of 3 and
+a `first_stage_parent_directory` argument that points to the experiment directory of the previously run stage 2 will continue the previous workflow starting at stage 3. 
 
 `run_chained.py` should be run from within the test-chained directory.
 
@@ -68,6 +76,8 @@ The configuration file has the following json format (see `test-chained/cfg.json
 * submit_script: the script used for the individual stage job submission (e.g. test-chained/test-1.sh)
 * upf_directory: the directory where the upf files are written out to
 * stages: the number of stages to run. -1 = run all the stages
+* first_stage: the stage at which to start the workflow. A value of 1 means the initial parentless stage.
+* first_stage_parent_directory: the file system location of the first stage's parent stage, when `first_stage` is greater than 1. 
 * stage_cfg_script: the staget configuration script (e.g. `test-chained/cfg-stage-sys.sh`) sourced by the 
 submit script to set the configuration (WALLTIME etc.) for each individual stage run. 
 Environment variables specified in the "stage_cfgs" (see below) will override those in this file.
