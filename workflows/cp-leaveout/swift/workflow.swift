@@ -21,7 +21,9 @@
                            Uno cache and uno_auc_model.txt
 
   NOTE: This workflow has some complex Python Exception handling
-  code that will be pushed into Swift/T for conciseness...
+        code that will be pushed into Swift/T for conciseness...
+  NOTE: On Summit, you have to use sys.stdout.flush() after
+        Python output on stdout
 */
 
 import assert;
