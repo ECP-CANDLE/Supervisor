@@ -3,6 +3,7 @@
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 
 # SWIFT_IMPL=app
+# SWIFT_IMPL=echo
 SWIFT_IMPL=py
 
 # Load basic LD_LIBRARY_PATH before changing it:
