@@ -138,18 +138,29 @@ run_stage(int N, int S, string this, int stage, void block,
   }
 }
 
+pragma worktypedef DB;
+
+@dispatch=DB
+(string output) python_db(string code, string expr="repr(0)")
+"turbine" "0.1.0"
+ [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
+
+python_db(
+----
+import os, sys
+print("This rank is the DB rank: %s" % os.getenv("ADLB_RANK_SELF"))
+sys.stdout.flush()
+----
+);
+
 (string result) plangen_start(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import fcntl, sys, traceback
 import plangen
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
@@ -162,16 +173,12 @@ except Exception as e:
 
 (string result) plangen_stop(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import plangen
 import fcntl, sys, traceback
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
