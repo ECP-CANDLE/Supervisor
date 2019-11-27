@@ -67,18 +67,6 @@ APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-RESTART_FILE_ARG=""
-if [[ ${RESTART_FILE:-} != "" ]]
-then
-  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
-fi
-
-RESTART_NUMBER_ARG=""
-if [[ ${RESTART_NUMBER:-} != "" ]]
-then
-  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
-fi
-
 if [ -z ${GPU_STRING+x} ];
 then
   GPU_ARG=""
