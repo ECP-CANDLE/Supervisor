@@ -47,8 +47,10 @@ Any additional arguments appended to the end of this command line will be passed
 === Restart
 
 ----
-$ test/test-1.sh <SITE> <EXPID> -r
+$ test/test-1.sh <SITE> <EXPID> -r <OTHER WORKFLOW ARGS...>
 ----
+
+The -r must be the first workflow argument!
 
 EXPID should be a previously completed experiment (e.g., X001, X002, ...)
 
