@@ -114,22 +114,25 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      result1 = "0"; // plangen_start(node, plan_id);
+      result1 = plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
       // Run the model
-      s = obj(json, node) =>
-        printf("completed: node: " + node) =>
-        // Update the DB to complete the model run
-        result2 = "0"; // plangen_stop(node, plan_id);
+      obj_result = obj(json, node);
+      printf("completed: node: '%s' result: '%s'", node, obj_result);
+      // Update the DB to complete the model run
+      obj_result => result2 = plangen_stop(node, plan_id);
+      assert(obj_result != "EXCEPTION" && obj_result != "",
+             "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("stop_subplan result: %s", result2);
-      v = propagate(s);
+      v = propagate(obj_result);
     }
     else
     {
-      printf("plan node already marked complete: %s result=%s", node, result1) =>
+      printf("plan node already marked complete: " +
+             "%s result=%s", node, result1) =>
         v = propagate();
     }
   }
