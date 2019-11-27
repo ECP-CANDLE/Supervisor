@@ -193,6 +193,20 @@ get_expid()
 
 }
 
+next()
+# Obtain next available numbered file name matching pattern
+# E.g., 'next out-%02i' returns 'out-02' if out-00 and out-01 exist.
+{
+  local PATTERN=$1 FILE="" i=0
+  while true
+  do
+    FILE=$( printf $PATTERN $i )
+    [[ ! -e $FILE ]] && break
+    let i++ || true # Don't fail under set -e
+  done
+  REPLY=$FILE
+}
+
 get_cfg_sys()
 # Obtain the CFG_SYS script file from the command line and source it
 # Also sets CFG_SYS as a global variable
