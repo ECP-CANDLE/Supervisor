@@ -98,6 +98,23 @@ CMD_LINE_ARGS=( --benchmark_timeout=$BENCHMARK_TIMEOUT
                 $WORKFLOW_ARGS
               )
 
+if [[ $WORKFLOW_ARGS = "-r"* ]]; then
+  echo "Restart requested ..."
+  if [[ ! -r $TURBINE_OUTPUT/output.txt ]]
+  then
+    echo "No prior run found!  (tried $TURBINE_OUTPUT/output.txt)"
+    exit 1
+  fi
+  next $TURBINE_OUTPUT/restarts-%i
+  PRIOR_RUN=$REPLY
+  mkdir -pv $PRIOR_RUN
+  PRIORS=( $TURBINE_OUTPUT/output.txt
+           $TURBINE_OUTPUT/out
+           $TURBINE_OUTPUT/turbine*
+           $TURBINE_OUTPUT/jobid.txt )
+  mv -v ${PRIORS[@]} $PRIOR_RUN
+fi
+
 USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
