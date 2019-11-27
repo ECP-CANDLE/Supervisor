@@ -15,7 +15,7 @@ module unload darshan-runtime
 
 module list
 
-log_path PATH
+# log_path PATH
 
 # ROOT=/ccs/proj/med106/gounley1/summit
 
