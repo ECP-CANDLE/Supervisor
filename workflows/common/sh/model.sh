@@ -9,7 +9,8 @@ usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
   echo "The environment should have:"
-  echo "  EMEWS_PROJECT_ROOT TURBINE_OUTPUT SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "  EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
+  echo "  SITE OBJ_RETURN BENCHMARK_TIMEOUT"
   echo "  and MODEL_NAME EXPID for model_runner.py"
   echo "If SH_TIMEOUT is provided, we run under the shell command timeout"
 }
@@ -48,7 +49,10 @@ echo "MODEL_NAME: $MODEL_NAME"
 echo "RUNID: $RUNID"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
-WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+if [[ ${WORKFLOWS_ROOT:-} == "" ]]
+then
+  WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+fi
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 

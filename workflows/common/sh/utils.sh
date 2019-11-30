@@ -95,6 +95,11 @@ python_envs()
   then
     RESULT+=( -e PYTHONHOME=$PYTHONHOME )
   fi
+  if [[ ${PYTHONUSERBASE:-} != "" ]]
+  then
+    RESULT+=( -e PYTHONUSERBASE=$PYTHONUSERBASE )
+  fi
+
   # Cannot use echo due to "-e" in RESULT
   R=${RESULT[@]} # Suppress word splitting
   printf -- "%s\n" $R
@@ -186,6 +191,20 @@ get_expid()
     mv metadata.json $TURBINE_OUTPUT
   fi
 
+}
+
+next()
+# Obtain next available numbered file name matching pattern
+# E.g., 'next out-%02i' returns 'out-02' if out-00 and out-01 exist.
+{
+  local PATTERN=$1 FILE="" i=0
+  while true
+  do
+    FILE=$( printf $PATTERN $i )
+    [[ ! -e $FILE ]] && break
+    let i++ || true # Don't fail under set -e
+  done
+  REPLY=$FILE
 }
 
 get_cfg_sys()
@@ -563,7 +582,7 @@ print_json() {
     while read line
     do
       printf "  "
-      pad_keys $line
+      pad_keys "$line"
     done
 }
 

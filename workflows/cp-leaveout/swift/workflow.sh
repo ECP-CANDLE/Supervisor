@@ -19,6 +19,8 @@ BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/Uno
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
+PYTHONPATH=${PYTHONPATH:-}:$BENCHMARK_DIR
+
 SCRIPT_NAME=$(basename $0)
 
 export FRAMEWORK="keras"
@@ -58,24 +60,12 @@ source_site env   $SITE
 source_site sched $SITE
 
 PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py            # For plangen, data_setup
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools, model_runner
 APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
 APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
-
-RESTART_FILE_ARG=""
-if [[ ${RESTART_FILE:-} != "" ]]
-then
-  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
-fi
-
-RESTART_NUMBER_ARG=""
-if [[ ${RESTART_NUMBER:-} != "" ]]
-then
-  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
-fi
 
 if [ -z ${GPU_STRING+x} ];
 then
@@ -107,6 +97,23 @@ CMD_LINE_ARGS=( --benchmark_timeout=$BENCHMARK_TIMEOUT
                 $GPU_ARG
                 $WORKFLOW_ARGS
               )
+
+if [[ $WORKFLOW_ARGS = "-r"* ]]; then
+  echo "Restart requested ..."
+  if [[ ! -r $TURBINE_OUTPUT/output.txt ]]
+  then
+    echo "No prior run found!  (tried $TURBINE_OUTPUT/output.txt)"
+    exit 1
+  fi
+  next $TURBINE_OUTPUT/restarts-%i
+  PRIOR_RUN=$REPLY
+  mkdir -pv $PRIOR_RUN
+  PRIORS=( $TURBINE_OUTPUT/output.txt
+           $TURBINE_OUTPUT/out
+           $TURBINE_OUTPUT/turbine*
+           $TURBINE_OUTPUT/jobid.txt )
+  mv -v ${PRIORS[@]} $PRIOR_RUN
+fi
 
 USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
@@ -157,6 +164,9 @@ else
   STDOUT=""
 fi
 
+TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+mkdir -pv $TURBINE_OUTPUT/out
+
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
@@ -167,7 +177,9 @@ swift-t -O 0 -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
+        -e PYTHONUNBUFFERED=1 \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+        -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
@@ -178,6 +190,7 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
+        -e TURBINE_DB_WORKERS=1 \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} | \
   tee $STDOUT

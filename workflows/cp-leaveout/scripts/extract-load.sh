@@ -19,7 +19,7 @@ OUTPUT=$DIR/output.txt
 SUMMARY=$DIR/summary.txt
 
 # Get the overall start/stop times from the Turbine stdout
-check "test -f $OUTPUT" "Could not find: $OUTPUT"
+check "test -r $OUTPUT" "Could not find: $OUTPUT"
 DATE_START=$( sed -n 's/.*DATE START: \(.*\)/\1/p' $DIR/output.txt )
 DATE_STOP=$(  sed -n 's/.*DATE STOP:  \(.*\)/\1/p' $DIR/output.txt )
 assert $(( ${#DATE_START} > 0 )) "DATE START not found!"

@@ -19,7 +19,9 @@ class TopN_Args:
         self.output = output 
 
 def pre_run(params):
+    import sys, time
     print("data_setup.pre_run()...")
+    sys.stdout.flush()
 
     # check NVMe disk is available
     username = os.environ['USER']
@@ -31,10 +33,14 @@ def pre_run(params):
             src = Path(params["dataframe_from"])
             dest = Path("/mnt/bb/{}/{}".format(username, src.name))
             if not dest.exists():
+                start = time.time()
                 dest.write_bytes(src.read_bytes())
-                print("File copy completed. Original dataframe copied to NVMe disk.\n")
+                stop = time.time()
+                print("File copy completed. Original dataframe " +
+                      "copied to NVM in %0i seconds.\n" %
+                      (stop-start))
             else:
-                print("File copy skipped. Original dataframe already exists.\n")
+                print("File copy skipped. Original dataframe already exists in NVM.\n")
         except Exception as e:
             print("Error occurred in copying original dataframe\n" + str(e))
             traceback.print_exc()

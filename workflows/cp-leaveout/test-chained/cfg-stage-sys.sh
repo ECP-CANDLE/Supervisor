@@ -30,17 +30,17 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 export IGNORE_ERRORS=${IGNORE_ERRORS:-0}
 
 # job walltime
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-00:10:00}
 
 # queue
-export QUEUE=${QUEUE:-default}
+export QUEUE=${QUEUE:-batch}
 
 # += is necessary here as the job dependency args are 
 # set via TURBINE_DIRECTIVE
 TURBINE_DIRECTIVE="\n#BSUB -q $QUEUE\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n" 
 export TURBINE_DIRECTIVE+=${TURBINE_DIRECTIVE_ARGS:-}
 
-TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1 "
+TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1"
 export TURBINE_LAUNCH_OPTIONS+=${TURBINE_LAUNCH_ARGS:-}
 
 # Dry Run uses this to print out the stage config

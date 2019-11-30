@@ -21,7 +21,9 @@
                            Uno cache and uno_auc_model.txt
 
   NOTE: This workflow has some complex Python Exception handling
-  code that will be pushed into Swift/T for conciseness...
+        code that will be pushed into Swift/T for conciseness...
+  NOTE: On Summit, you have to use sys.stdout.flush() after
+        Python output on stdout
 */
 
 import assert;
@@ -30,6 +32,10 @@ import files;
 import python;
 import string;
 import sys;
+
+import candle_utils;
+
+report_env();
 
 // BEGIN WORKFLOW ARGUMENTS
 // Data split factor with default
@@ -110,39 +116,53 @@ run_stage(int N, int S, string this, int stage, void block,
     block =>
       printf("running obj(%s)", node) =>
       // Insert the model run into the DB
-      result1 = "0"; // plangen_start(node, plan_id);
+      result1 = plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
       // Run the model
-      s = obj(json, node) =>
-        printf("completed: node: " + node) =>
+      obj_result = obj(json, node)
         // Update the DB to complete the model run
-        result2 = "0"; // plangen_stop(node, plan_id);
+        => result2 = plangen_stop(node, plan_id);
+      printf("completed: node: '%s' result: '%s'", node, obj_result);
+      assert(obj_result != "EXCEPTION" && obj_result != "",
+             "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("stop_subplan result: %s", result2);
-      v = propagate(s);
+      v = propagate(obj_result);
     }
     else
     {
-      printf("plan node already marked complete: %s result=%s", node, result1) =>
+      printf("plan node already marked complete: " +
+             "%s result=%s", node, result1) =>
         v = propagate();
     }
   }
 }
 
+pragma worktypedef DB;
+
+@dispatch=DB
+(string output) python_db(string code, string expr="repr(0)")
+"turbine" "0.1.0"
+ [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
+
+python_db(
+----
+import os, sys
+print("This rank is the DB rank: %s" % os.getenv("ADLB_RANK_SELF"))
+sys.stdout.flush()
+----
+);
+
 (string result) plangen_start(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import fcntl, sys, traceback
 import plangen
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
@@ -155,16 +175,12 @@ except Exception as e:
 
 (string result) plangen_stop(string node, string plan_id)
 {
-  result = python_persist(
+  result = python_db(
 ----
 import plangen
 import fcntl, sys, traceback
 try:
-    fp = open("lock", "w+")
-    fcntl.flock(fp, fcntl.LOCK_EX)
     result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-    fcntl.flock(fp, fcntl.LOCK_UN)
-    fp.close()
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
@@ -253,5 +269,5 @@ assert(plan_id != "-1", "Plan already exists!");
 
 // Kickoff the workflow
 stage = 0;
-run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype) =>
-  printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
+run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype);
+// printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");

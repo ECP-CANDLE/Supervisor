@@ -69,6 +69,7 @@ do
   fi
 done
 
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/cpl-upf-workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $WORKFLOW_ARGS       \

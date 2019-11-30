@@ -30,7 +30,7 @@ fi
 
 if ! {
   get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
+  get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
   get_cfg_sys $3
   UPF=$4
  }
@@ -67,7 +67,7 @@ export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -f=$( basename $UPF ) # Copied to TURBINE_OUTPUT by init.sh
+                -f=$TURBINE_OUTPUT/$UPF # Copied to TURBINE_OUTPUT below
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -80,16 +80,12 @@ cp $CFG_SYS $TURBINE_OUTPUT
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-# Used by init.sh to copy the UPF to TURBINE_OUTPUT
-export UPF
-
 which mpicc
 which swift-t
 
 module list
 
 cp -v $UPF $TURBINE_OUTPUT
-cd $TURBINE_OUTPUT
 
 TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 
