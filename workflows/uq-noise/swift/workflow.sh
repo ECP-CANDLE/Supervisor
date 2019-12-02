@@ -106,6 +106,7 @@ then
 fi
 
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -exp_id=$EXPID
                 -site=$SITE
                 -db_file=$DB_FILE
                 $GPU_ARG
@@ -146,6 +147,27 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+# use for summit (slurm needs two %)
+#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+mkdir -pv $TURBINE_OUTPUT/out
+
+if [[ ${MACHINE:-} == "" ]]
+then
+  STDOUT=$TURBINE_OUTPUT/output.txt
+  # The turbine-output link is only created on scheduled systems,
+  # so if running locally, we create it here so the test*.sh wrappers
+  # can find it
+  [[ -L turbine-output ]] && rm turbine-output
+  ln -s $TURBINE_OUTPUT turbine-output
+else
+  # When running on a scheduled system, Swift/T automatically redirects
+  # stdout to the turbine-output directory.  This will just be for
+  # warnings or unusual messages
+  STDOUT=""
+fi
+
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
@@ -157,6 +179,7 @@ swift-t -n $PROCS \
         -i $OBJ_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
+        -e TURBINE_STDOUT \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
@@ -175,4 +198,17 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} |& \
+  tee $STDOUT
+
+
+if (( ${PIPESTATUS[0]} ))
+then
+  echo "workflow.sh: swift-t exited with error!"
+  exit 1
+fi
+
+# echo "EXIT CODE: 0" | tee -a $STDOUT
+
+# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
+echo $TURBINE_OUTPUT > turbine-directory.txt

@@ -21,6 +21,10 @@ string preprocess_rnaseq = getenv("PREPROP_RNASEQ");
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 
+string exp_id = argv("exp_id");
+int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string model_name = getenv("MODEL_NAME");
+
 printf("UQ NOISE WORKFLOW.SWIFT");
 printf("TURBINE_OUTPUT: " + turbine_output);
 
