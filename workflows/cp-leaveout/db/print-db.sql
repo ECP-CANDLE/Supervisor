@@ -1,7 +1,7 @@
 
 /*
- CHECK DB SH
- For now, just dump the tables for human inspection
+ PRINT DB SQL
+ Just dump the tables for human inspection
 */
 
 .headers on
