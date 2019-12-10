@@ -130,11 +130,13 @@ then
 fi
 
 # use for summit (slurm needs two %)
-#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+if [ "${SITE:-}" == "summit" ]; then
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+fi
 
-export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
-
 
 #swift-t -n $PROCS \
 #        -o $TURBINE_OUTPUT/workflow.tic \
