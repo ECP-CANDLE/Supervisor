@@ -32,7 +32,7 @@ configure
 turbine-directory.txt
 .Rproj.user
 
-# BG/Q stuff
+# Cobalt stuff
 *.cobaltlog
 *.error
 *.output
@@ -55,3 +55,6 @@ templates/scripts/archive/
 # Turbine outputs
 **/turbine-output
 **/experiments
+
+# SQLite database files
+*.db
