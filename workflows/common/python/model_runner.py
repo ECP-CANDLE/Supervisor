@@ -76,7 +76,7 @@ def import_pkg(framework, model_name):
 
 def log(msg):
     global logger
-    logger.debug("model_runner: " + msg)
+    logger.debug(msg)
 
 def timestamp():
     from datetime import datetime
@@ -114,8 +114,8 @@ def setup_perf_nvidia(params):
     try:
         delay = int(params['perf_nvidia'])
     except:
-        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: got: "%s"' % \
-              params['perf_nvidia']
+        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: ' + \
+              'got: "%s"' % params['perf_nvidia']
         print(msg)
         raise Exception(msg)
     import subprocess
@@ -153,6 +153,7 @@ def run(hyper_parameter_map, obj_return):
 
     # params is python dictionary
     params = pkg.initialize_parameters(**params_arg)
+    log("PARAM UPDATE START")
     # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
@@ -169,8 +170,9 @@ def run(hyper_parameter_map, obj_return):
             cp_str = v
             v = list()
             v.append(cp_str)
-        log("PARAM OVERWRITE: " + str(k) + " = " + str(v))
+        log(str(k) + " = " + str(v))
         params[k] = v
+    log("PARAM UPDATE STOP")
 
     log("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
@@ -264,8 +266,9 @@ def run_model(hyper_parameter_map):
         print("run_pre() returned ERROR!")
         exit(1)
     elif result == ModelResult.SKIP:
-        print("run_pre() returned SKIP ...")
-        exit(0)
+        log("run_pre() returned SKIP ...")
+        sys.stdout.flush()
+        return ("SKIP", "HISTORY_EMPTY")
     else:
         assert(result == ModelResult.SUCCESS) # proceed...
 
