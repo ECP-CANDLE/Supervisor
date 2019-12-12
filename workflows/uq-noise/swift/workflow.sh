@@ -57,6 +57,8 @@ source_site sched $SITE
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
+
 export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
@@ -148,9 +150,9 @@ then
 fi
 
 # use for summit (slurm needs two %)
-#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 
-export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
 if [[ ${MACHINE:-} == "" ]]
@@ -171,6 +173,7 @@ fi
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
