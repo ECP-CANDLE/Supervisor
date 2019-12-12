@@ -13,7 +13,7 @@ def get_logger(logger, name, stream=sys.stdout):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     h = logging.StreamHandler(stream=stream)
-    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-9s %(message)s',
+    fmtr = logging.Formatter('%(asctime)s %(name)s %(levelname)-6s %(message)s',
                              datefmt='%Y-%m-%d %H:%M:%S')
     h.setFormatter(fmtr)
     logger.addHandler(h)
