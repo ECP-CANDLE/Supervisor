@@ -595,7 +595,7 @@ signature()
 # Use -H MESSAGE to provide an additional help message
 # Use -v for verbose logging of argument assignments
 {
-  local L
+  local L # The list of variable names
   L=()
   local SELF=$1 HELP="" VERBOSE=0
   shift
@@ -628,11 +628,11 @@ signature()
     fi
     exit 1
   fi
-  local V
-  for V in ${L[@]}
+  local VARIABLE
+  for VARIABLE in ${L[@]}
   do
-    (( VERBOSE )) && echo "$SELF: SIGNATURE: $V=$1"
-    eval $V=$1
+    (( VERBOSE )) && echo "$SELF: signature(): $VARIABLE=$1"
+    eval $VARIABLE=$1
     shift
   done
 }
