@@ -42,5 +42,5 @@ except Exception as e:
   string code = code_template % (outdir, params, model_name,
                                  exp_id, iter_indiv_id, benchmark_timeout);
   obj_result = python_persist(code, "str(obj_result)");
-  printf("obj_result:", obj_result);
+  printf("obj_py:obj(): obj_result: '%s'", obj_result);
 }
