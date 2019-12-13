@@ -98,21 +98,37 @@ CMD_LINE_ARGS=( --benchmark_timeout=$BENCHMARK_TIMEOUT
                 $WORKFLOW_ARGS
               )
 
-if [[ $WORKFLOW_ARGS = "-r"* ]]; then
+if [[ $WORKFLOW_ARGS = "-r"* ]]
+then
   echo "Restart requested ..."
-  if [[ ! -r $TURBINE_OUTPUT/output.txt ]]
+  if [[ ! -d $TURBINE_OUTPUT ]]
   then
     echo "No prior run found!  (tried $TURBINE_OUTPUT/output.txt)"
     exit 1
   fi
-  next $TURBINE_OUTPUT/restarts-%i
-  PRIOR_RUN=$REPLY
-  mkdir -pv $PRIOR_RUN
-  PRIORS=( $TURBINE_OUTPUT/output.txt
-           $TURBINE_OUTPUT/out
-           $TURBINE_OUTPUT/turbine*
-           $TURBINE_OUTPUT/jobid.txt )
-  mv -v ${PRIORS[@]} $PRIOR_RUN
+  if [[ ! -f $TURBINE_OUTPUT/output.txt ]]
+  then
+    # If output.txt does not exist, assume the moves already happened
+    echo "The outputs were already moved from $EXPID"
+  else
+    next $TURBINE_OUTPUT/restarts/%i
+    PRIOR_RUN=$REPLY
+    echo "Moving old outputs to $PRIOR_RUN"
+    mkdir -pv $PRIOR_RUN
+    PRIORS=( $TURBINE_OUTPUT/output.txt
+             $TURBINE_OUTPUT/out
+             $TURBINE_OUTPUT/turbine*
+             $TURBINE_OUTPUT/jobid.txt )
+    mv -v ${PRIORS[@]} $PRIOR_RUN
+    cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
+  fi
+else
+  if [[ -f $TURBINE_OUTPUT/output.txt ]]
+  then
+    echo "TURBINE_OUTPUT already exists- you must specify restart!"
+    echo "TURBINE_OUTPUT=$TURBINE_OUTPUT"
+    exit 1
+  fi
 fi
 
 USER_VARS=( $CMD_LINE_ARGS )
