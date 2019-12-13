@@ -3,7 +3,7 @@
 # PRINT DB SH
 # Just print the tables for human inspection
 
-if [[ ${#} != 1 ]]
+if [ ${#} != 1 ]
 then
   echo "Provide a DB file!"
   exit 1

@@ -11,3 +11,4 @@
 
 select * from planstat;
 select * from runhist;
+-- select subplan_id, status from runhist;
