@@ -173,7 +173,7 @@ fi
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $WORKFLOW_ROOT/uq-noise/swift/workflow.swift  $TURBINE_OUTPUT
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
