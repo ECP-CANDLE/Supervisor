@@ -1,4 +1,3 @@
-
 /*
   UQ NOISE SWIFT
   Main workflow
@@ -28,20 +27,30 @@ string model_name = getenv("MODEL_NAME");
 printf("UQ NOISE WORKFLOW.SWIFT");
 printf("TURBINE_OUTPUT: " + turbine_output);
 
-float noise_step = 25.0; // Difference between noises
-float num_noises = 3; // Number of noise levels to try
+float noise_step = 3.0; // Difference between noises
 int num_trials = 1;
 
-float noise_levels[] = [0:num_noises];
+float x_num_noises = 10; // Number of noise levels to try
+float y_num_noises = 10; // Number of noise levels to try
+
+
+float y_noise_levels[] = [0:y_num_noises];
 int trials[]       = [0:num_trials-1];
 
-foreach level, i in noise_levels
+float x_noise_levels[] = [0:x_num_noises];
+
+foreach levelx, i in x_noise_levels
 {
-  foreach trial, j in trials
+  foreach levely, j in y_noise_levels
   {
-    run_id = "%02i-%02i" % (i, j);
-    noise_level = level * noise_step;
-    result = obj("{\"noise_level\":%f}"%noise_level, run_id);
-    printf("result %s : noise %0.3f : %s", run_id, noise_level, result);
+    foreach trial, k in trials
+    {
+      y_noise_level = levely * noise_step;
+      x_noise_level = levelx * noise_step;
+      run_id = "%0.0f-%0.0f-%01i" % (x_noise_level, y_noise_level, k);
+      result = obj("{\"x_noise_level\":%f, \"y_noise_level\":%f}" %(x_noise_level, y_noise_level), run_id);
+      printf("result %s : x_noise %0.3f y_noise %0.3f : %s", run_id, x_noise_level, y_noise_level, result);
+    }
   }
 }
+

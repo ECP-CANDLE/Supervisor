@@ -20,7 +20,7 @@ export WALLTIME=${WALLTIME:-02:00:00}
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
-#export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 #export PROJECT=Candle_ECP
@@ -29,7 +29,7 @@ export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 # after the specified number of seconds.
 # If set to -1 there is no timeout.
 # This timeout is implemented with Keras callbacks
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
