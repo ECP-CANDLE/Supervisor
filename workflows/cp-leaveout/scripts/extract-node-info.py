@@ -25,7 +25,7 @@ node_pkl = args.directory + "/node-info.pkl"
 def read_log_filenames(log_list):
     result = []
     count = 0
-    limit = 10
+    limit = 2000 # Reduce this for debugging
     try:
         print("try")
         with open(log_list) as fp:
@@ -42,19 +42,19 @@ def read_log_filenames(log_list):
     return result
 
 def parse_logs(log_files):
+    # Dict mapping Node id to Node for all complete Nodes
+    nodes = {}
     print("Opening %i log files..." % len(log_files))
     try:
         for log_file in log_files:
             print("Opening: " + log_file)
             with open(log_file) as fp:
-                parse_log(fp)
+                parse_log(fp, nodes)
     except IOError as e:
         abort(e, os.EX_IOERR, "Could not read: " + log_file)
+    return nodes
 
-# Dict mapping Node id to Node for all complete Nodes
-nodes = {}
-
-def parse_log(log_fp):
+def parse_log(log_fp, nodes):
     nodes_found = 0
     node_current = None
     while True:
@@ -83,8 +83,10 @@ def parse_log(log_fp):
             node_current = None
     print("Found %i nodes in log." % nodes_found)
 
+# List of log file names
 log_files = read_log_filenames(log_list)
-parse_logs(log_files)
+# Dict mapping Node id to Node for all complete Nodes
+nodes = parse_logs(log_files)
 
 print("Found %i nodes in total." % len(nodes))
 
