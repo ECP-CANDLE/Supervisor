@@ -15,3 +15,5 @@ NODE=$2
 sqlite3 $DB <<EOF
 UPDATE runhist SET status="RESET" WHERE (subplan_id LIKE "${NODE}%") ;
 EOF
+
+# update runhist SET status="RESET" where (length(subplan_id) > 5 );
