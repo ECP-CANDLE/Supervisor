@@ -33,7 +33,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
 # export CFG_SYS=$THIS/cfg-sys-small.sh
-export CFG_SYS=$THIS/cfg-sys-small.sh
+export CFG_SYS=$THIS/cfg-sys-big.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # What to return from the objective function (Keras model)
@@ -50,6 +50,7 @@ $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NA
 
 # Wait for job
 queue_wait
+TURBINE_OUTPUT=$( readlink turbine-output )
 
 # Check job output
 OUTPUT=$TURBINE_OUTPUT/output.txt

@@ -30,8 +30,8 @@ printf("TURBINE_OUTPUT: " + turbine_output);
 float noise_step = 3.0; // Difference between noises
 int num_trials = 1;
 
-float x_num_noises = 10; // Number of noise levels to try
-float y_num_noises = 10; // Number of noise levels to try
+float x_num_noises = 4; // Number of noise levels to try
+float y_num_noises = 2; // Number of noise levels to try
 
 
 float y_noise_levels[] = [0:y_num_noises];
@@ -45,9 +45,9 @@ foreach levelx, i in x_noise_levels
   {
     foreach trial, k in trials
     {
+      run_id = "%03i-%03i-%01i" % (i, j, k);
       y_noise_level = levely * noise_step;
       x_noise_level = levelx * noise_step;
-      run_id = "%0.0f-%0.0f-%01i" % (x_noise_level, y_noise_level, k);
       result = obj("{\"x_noise_level\":%f, \"y_noise_level\":%f}" %(x_noise_level, y_noise_level), run_id);
       printf("result %s : x_noise %0.3f y_noise %0.3f : %s", run_id, x_noise_level, y_noise_level, result);
     }
