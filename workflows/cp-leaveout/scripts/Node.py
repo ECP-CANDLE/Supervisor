@@ -87,7 +87,7 @@ __init__()
 
 2019-12-14 09:46:32 MODEL RUNNER DEBUG  node = 1.4.2.1
 
-parse_epochs()
+parse_epochs() ==> self.epochs_planned
 
 2019-12-14 09:46:32 MODEL RUNNER DEBUG  epochs = 5
 
@@ -98,4 +98,7 @@ Epoch 00004: early stopping
 training_done()
 
 16092/16092 [==============================] - 315s 20ms/step - loss: 0.0065 - mae: 0.0565 - r2: -0.6208 - val_loss: 0.0139 - val_mae: 0.0575 - val_r2: -0.3959
+
+==> self.epochs_actual, self.val_loss, self.time, self.complete
+
 '''
