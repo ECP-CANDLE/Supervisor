@@ -32,7 +32,7 @@ def read_log_filenames(log_list):
                 count += 1
                 if count >= limit:
                     break
-                if len(line) == 0:
+                if len(line) <= 1:
                     continue
                 line = line.strip()
                 result.append(line)
