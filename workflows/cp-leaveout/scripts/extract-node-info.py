@@ -27,7 +27,6 @@ def read_log_filenames(log_list):
     count = 0
     limit = 2000 # Reduce this for debugging
     try:
-        print("try")
         with open(log_list) as fp:
             for line in fp.readlines():
                 count += 1
