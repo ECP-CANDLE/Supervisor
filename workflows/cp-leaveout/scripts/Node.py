@@ -12,7 +12,8 @@ class Node:
     training_done = "[==============================]" 
     
     def __init__(self, node_id):
-        self.id = node_id
+        # The ID is e.g.: "1.2.3"
+        self.id = node_id 
         # Use string length of id to deduce stage:
         self.stage = (len(self.id) - 1) / 2
         self.steps = 0
