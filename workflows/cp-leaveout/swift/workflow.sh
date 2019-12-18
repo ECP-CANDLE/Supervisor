@@ -45,13 +45,14 @@ if ! {
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
+  EPOCH_MODE=${6:-log} # Default to log mode
  }
 then
   usage
   exit 1
 fi
 
-shift 5
+shift 6
 WORKFLOW_ARGS=$*
 
 echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
@@ -119,7 +120,7 @@ then
              $TURBINE_OUTPUT/out
              $TURBINE_OUTPUT/turbine*
              $TURBINE_OUTPUT/jobid.txt )
-    mv -v ${PRIORS[@]} $PRIOR_RUN
+    mv    ${PRIORS[@]}            $PRIOR_RUN
     cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
   fi
 else
@@ -143,6 +144,8 @@ OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+
+EPOCH_MODE_MODULE="compute_epochs_$EPOCH_MODE"
 
 WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
@@ -188,12 +191,13 @@ swift-t -O 0 -n $PROCS \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
+        -I $EMEWS_PROJECT_ROOT/swift \
+        -i $EPOCH_MODE_MODULE \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
-        -e PYTHONUNBUFFERED=1 \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e OBJ_RETURN \
@@ -212,6 +216,7 @@ swift-t -O 0 -n $PROCS \
   tee $STDOUT
 
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
+# -e PYTHONUNBUFFERED=1 # May be needed if error output is being lost
 
 if (( ${PIPESTATUS[0]} ))
 then

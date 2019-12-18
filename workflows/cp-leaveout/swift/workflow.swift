@@ -29,6 +29,7 @@
 import assert;
 import io;
 import files;
+import math;
 import python;
 import string;
 import sys;
@@ -68,14 +69,15 @@ string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+int    epoch_mode       = string2int(argv("epoch_mode", "1"));
+int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 string model_name     = getenv("MODEL_NAME");
 string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
 
-int epochs = 1;
 
+int max_epochs = 20; // This is just under 2h on Summit.
 
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
@@ -105,13 +107,13 @@ run_stage(int N, int S, string this, int stage, void block,
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
 (void v) run_single(string node, int stage, void block, string plan_id)
 {
-  json_fragment = make_json_fragment(node, stage);
   if (stage == 0)
   {
     v = propagate();
   }
   else
   {
+    json_fragment = make_json_fragment(node, stage);
     json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
     block =>
       printf("run_single(): running obj(%s)", node) =>
@@ -141,6 +143,10 @@ run_stage(int N, int S, string this, int stage, void block,
   }
 }
 
+// This DB configuration and python_db() function will put all
+// calls to python_db() on rank DB corresponding to
+// environment variable TURBINE_DB_WORKERS:
+
 pragma worktypedef DB;
 
 @dispatch=DB
@@ -148,6 +154,7 @@ pragma worktypedef DB;
 "turbine" "0.1.0"
  [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
 
+// Simply use python_db() to log the DB rank:
 python_db(
 ----
 import os, sys
@@ -185,7 +192,7 @@ try:
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
+    sys.stdout.write(str(e) + ' ... \\n' + ''.join(s) + '\\n')
     sys.stdout.flush()
     result = 'EXCEPTION'
 ---- % (db_file, plan_id, node),
@@ -195,16 +202,8 @@ except Exception as e:
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this, int stage)
 {
-    int this_ep;
-    if (stage > 1)
-    {
-      this_ep = max_integer(epochs %/ float2int(pow_integer(2, (stage - 1))), 1);
-    }
-    else
-    {
-      this_ep = epochs;
-    }
-    json_fragment = ----
+  int epochs = compute_epochs(stage);
+  json_fragment = ----
 "pre_module":     "data_setup",
 "post_module":    "data_setup",
 "plan":           "%s",
@@ -214,10 +213,11 @@ except Exception as e:
 "save_weights":   "model.h5",
 "gpus": "0",
 "epochs": %i,
+"es": "True",
 "use_exported_data": "topN.uno.h5",
 "benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv, this_ep, benchmark_data);
+(plan_json, dataframe_csv, epochs, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);
