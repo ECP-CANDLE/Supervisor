@@ -37,12 +37,13 @@ class Node:
              self.val_loss, special)
 
     def str_table(self):
+        ''' Like str() but uses fixed-width fields '''
         special = ""
         if not self.complete:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-10s : %i : %2i / %2i : %0.4f : %s" % \
+        return "%-12s : %i : %2i / %2i : %0.5f : %s" % \
             (self.id, self.stage, 
              self.epochs_actual, self.epochs_planned,
              self.val_loss, special)
