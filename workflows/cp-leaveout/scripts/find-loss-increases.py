@@ -21,18 +21,17 @@ node_pkl = args.directory + "/node-info.pkl"
 
 try: 
     with open(node_pkl, 'rb') as fp:
+        # This is a dict ("node_id" -> Node)
         data = pickle.load(fp)
 except IOError as e:
     abort(e, os.EX_IOERR, "Could not read: " + node_pkl)
 
-# print(data)
 increases = 0
 total     = 0
 for node_id in data.keys():
-    parent = node_id[0:-2]
+    parent = node_id[0:-2] # "1.2.3" -> "1.2"
     if len(parent) == 1: # stage=1
         continue
-    # print(node_id + " " + parent)
     if data[node_id].val_loss > data[parent].val_loss:
         increases += 1
     total += 1
