@@ -3,7 +3,7 @@ set -eu
 
 # FIND LOSS INCREASES SH
 
-# Checks that all nodes in the DB are in the PKL
+# Does val_loss and val_loss delta analysis across the run
 
 # Input:  Provide an experiment directory
 # Output: Information printed to screen (pipe this into less)
