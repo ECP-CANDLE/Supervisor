@@ -65,6 +65,9 @@ else
 {
   runtype = "plangen.RunType.RUN_ALL";
 }
+E_s = argv("E", "20");
+assert(strlen(E_s) > 0, "workflow.swift: you must provide an argument to -E");
+int max_epochs = string2int(E_s); // epochs=20 is just under 2h on Summit.
 string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
@@ -75,9 +78,6 @@ string model_name     = getenv("MODEL_NAME");
 string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
-
-
-int max_epochs = 20; // This is just under 2h on Summit.
 
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
