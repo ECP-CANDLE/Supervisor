@@ -36,10 +36,12 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "Node [%i]: %s (epochs=%i/%i, val_loss=%0.4f)%s" % \
+        return "Node [%i]: %s (epochs=%i/%s, val_loss=%s)%s" % \
             (self.stage, self.id,
-             self.epochs_actual, self.epochs_planned,
-             self.val_loss, special)
+             self.epochs_actual,
+             Node.maybe_str_integer(self.epochs_planned),
+             Node.maybe_str_float(self.val_loss, "%0.4f"),
+             special)
 
     def str_table(self):
         ''' Like str() but uses fixed-width fields '''
@@ -52,7 +54,17 @@ class Node:
             (self.id, self.stage, 
              self.epochs_actual, self.epochs_planned,
              self.val_loss, special)
-            
+
+    def maybe_str_integer(i):
+        if i is None:
+            return "?"
+        return str(i)
+
+    def maybe_str_float(f, spec):
+        if f is None:
+            return "?"
+        return spec % f
+
     def parse_epochs(self, line):
         tokens = line.split()
         self.epochs_planned = int(tokens[-1].strip())

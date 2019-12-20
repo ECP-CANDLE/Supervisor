@@ -9,15 +9,20 @@
 import argparse, os, pickle, sys
 
 from Node import Node
-from utils import abort
+from utils import fail
 
-filename = 'node-info'
+STAGE_ANY = 0
 
 parser = argparse.ArgumentParser(description='Finds loss increases.')
 parser.add_argument('directory',
                     help='The experiment directory (EXPID)')
-parser.add_argument('--filename', '-f', default='node-info',
+parser.add_argument('--filename', '-f',
+                    default='node-info',
                     help='Change the node pkl file name')
+parser.add_argument('--stage', '-S',
+                    type=int,
+                    default=STAGE_ANY,
+                    help='Select the stage')
 
 args = parser.parse_args()
 
@@ -28,31 +33,45 @@ try:
         # This is a dict ('node_id' -> Node)
         data = pickle.load(fp)
 except IOError as e:
-    abort(e, os.EX_IOERR, 'Could not read: ' + node_pkl)
+    fail(e, os.EX_IOERR, 'Could not read: ' + node_pkl)
 
-val_loss_worst = 0    
-val_loss_best  = 1000
-    
+# Artificial nodes for comparison:
+node_worst = Node("WORST")
+node_worst.val_loss = 0
+node_best  = Node("BEST")
+node_best.val_loss = 1000
+
+if args.stage != STAGE_ANY:
+    print("STAGE: %i" % args.stage)
+
+# List of Nodes where val_loss increased:
 increases = []
-total     = 0
+# Total Node count:
+total = 0
 for node_id in data.keys():
     parent_id = node_id[0:-2] # '1.2.3' -> '1.2'
     if len(parent_id) == 1: # stage=1
         continue
     current = data[node_id]
     parent  = data[parent_id]
+    if not (args.stage == STAGE_ANY or args.stage == current.stage):
+        continue
     current.val_loss_delta = current.val_loss - parent.val_loss
     if current.val_loss_delta > 0:
         increases.append(current)
-    if current.val_loss > val_loss_worst: val_loss_worst = current.val_loss
-    if current.val_loss < val_loss_best:  val_loss_best  = current.val_loss
+    if current.val_loss > node_worst.val_loss: node_worst = current
+    if current.val_loss < node_best.val_loss:  node_best  = current
     total += 1
 
-fraction = 100.0 * len(increases) / total
-print('increases/total = %i / %i %02.f%%' % (len(increases), total, fraction))
+if total == 0: fail('No matching Nodes found!')
 
-print('val_loss_worst: %f' % val_loss_worst)
-print('val_loss_best:  %f' % val_loss_best)
+fraction = 100.0 * len(increases) / total
+print('increases/total = %i / %i (%02.f%%)' % (len(increases), total, fraction))
+
+print('worst val_loss: ' + str(node_worst))
+print('best  val_loss: ' + str(node_best))
+
+print('DELTAS:')
 
 increases.sort(key=Node.get_val_loss_delta)
 stopped_early = 0
@@ -61,17 +80,18 @@ for i in increases:
     if i.stopped_early: stopped_early += 1
 
 def print_delta(prefix, node):
-    print(prefix, str(node), 'delta: %f' % node.val_loss_delta,
-          node.stopped_early)
+    print(prefix, str(node), 'delta: %f' % node.val_loss_delta)
     
 worst = increases[-1]
 print_delta('worst:    ', worst)
 
-n_01p = int(len(increases) / 100) # Worst 1 percentile
+n_01p = int(round(len(increases) / 100)) # Worst 1 percentile
+if n_01p == 0: n_01p = 1
 worst_01p = increases[-n_01p]
 print_delta('worst  1%:', worst_01p)
 
-n_10p = int(len(increases) / 10) # Worst 10 percentile
+n_10p = int(round(len(increases) / 10)) # Worst 10 percentile
+if n_10p == 0: n_10p = 1
 worst_10p = increases[-n_10p]
 print_delta('worst 10%:', worst_10p)
 
