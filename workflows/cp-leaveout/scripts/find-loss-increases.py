@@ -11,13 +11,17 @@ import argparse, os, pickle, sys
 from Node import Node
 from utils import abort
 
+filename = "node-info"
+
 parser = argparse.ArgumentParser(description='Finds loss increases.')
 parser.add_argument('directory',
                     help='The experiment directory (EXPID)')
+parser.add_argument('--filename', '-f', default='node-info',
+                    help='Change the node pkl file name')
 
 args = parser.parse_args()
 
-node_pkl = args.directory + "/node-info.pkl"
+node_pkl = args.directory + "/" + args.filename + ".pkl"
 
 try: 
     with open(node_pkl, 'rb') as fp:
