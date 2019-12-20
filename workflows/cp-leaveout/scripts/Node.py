@@ -16,13 +16,17 @@ class Node:
         self.id = node_id 
         # Use string length of id to deduce stage:
         self.stage = (len(self.id) - 1) / 2
-        self.steps = 0
-        self.val_loss = 0
-        self.epochs_planned = 0
+        self.steps = None
+        self.val_loss = None
+        # Difference wrt parent (lower is better)
+        self.val_loss_delta = None
+        self.epochs_planned = None
         self.epochs_actual  = 0
         self.time = 0
-        self.stopped_early = False # Did EarlyStopping stop this node?
-        self.complete = False # Did training complete for this node?
+        # Did EarlyStopping stop this node?
+        self.stopped_early = False
+        # Did training complete for this node?
+        self.complete = False 
         self.verbose = False
         self.debug("START: " + str(self))
 
@@ -76,6 +80,12 @@ class Node:
             self.complete = True
             self.debug("COMPLETE")
 
+    def get_val_loss_delta(node):
+        ''' For sorting '''
+        if node.val_loss_delta == None:
+            raise ValueError("No val_loss_delta!")
+        return node.val_loss_delta
+            
     def debug(self, message):
         if not self.verbose:
             return

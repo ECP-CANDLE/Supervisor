@@ -23,3 +23,5 @@ except IOError as e:
 # print(data)
 for item in data.values():
     print(item.str_table())
+
+# print(len(data))
