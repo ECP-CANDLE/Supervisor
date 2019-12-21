@@ -9,7 +9,7 @@
 
 import argparse, os, pickle, sys
 
-from utils import abort
+from utils import fail
 from Node import Node
 
 parser = argparse.ArgumentParser(description='Parse all log files')
