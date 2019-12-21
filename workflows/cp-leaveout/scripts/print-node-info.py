@@ -4,7 +4,7 @@
 import argparse, os, pickle, sys
 
 from Node import Node
-from utils import abort
+from utils import fail
 
 parser = argparse.ArgumentParser(description='Parse all log files')
 parser.add_argument('directory',
@@ -18,7 +18,7 @@ try:
     with open(node_pkl, 'rb') as fp:
         data = pickle.load(fp)
 except IOError as e:
-    abort(e, os.EX_IOERR, "Could not read: " + node_pkl)
+    fail(e, os.EX_IOERR, "Could not read: " + node_pkl)
 
 # print(data)
 for item in data.values():
