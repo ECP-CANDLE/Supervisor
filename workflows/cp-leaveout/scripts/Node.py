@@ -16,7 +16,7 @@ class Node:
         self.id = node_id 
         # Use string length of id to deduce stage:
         self.stage = (len(self.id) - 1) / 2
-        self.steps = None
+        self.steps = 0
         self.val_loss = None
         # Difference wrt parent (lower is better)
         self.val_loss_delta = None
