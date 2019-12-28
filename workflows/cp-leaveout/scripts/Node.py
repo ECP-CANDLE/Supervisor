@@ -11,17 +11,19 @@ class Node:
     # TensorFlow is done when you see this
     training_done = "[==============================]" 
     
-    def __init__(self, node_id):
+    def __init__(self):
         # The ID is e.g.: "1.2.3"
-        self.id = node_id 
+        self.id = None 
         # Use string length of id to deduce stage:
-        self.stage = (len(self.id) - 1) / 2
+        self.stage = None
         self.steps = 0
         self.val_loss = None
         # Difference wrt parent (lower is better)
         self.val_loss_delta = None
         self.epochs_planned = None
         self.epochs_actual  = 0
+        self.date_start = None
+        self.date_stop  = None
         self.time = 0
         # Did EarlyStopping stop this node?
         self.stopped_early = False
@@ -30,14 +32,19 @@ class Node:
         self.verbose = False
         self.debug("START: " + str(self))
 
+    def set_id(self, id):
+        self.id = id
+        self.stage = (len(self.id) - 1) / 2
+        
     def __str__(self):
         special = ""
         if not self.complete:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "Node [%i]: %s (epochs=%i/%s, val_loss=%s)%s" % \
-            (self.stage, self.id,
+        return "Node [%s]: %s (epochs=%i/%s, val_loss=%s)%s" % \
+            (Node.maybe_str_integer(self.stage),
+             self.id,
              self.epochs_actual,
              Node.maybe_str_integer(self.epochs_planned),
              Node.maybe_str_float(self.val_loss, "%0.4f"),
@@ -50,10 +57,12 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-12s : %i : %2i / %2i : %0.5f : %s" % \
+        return "%-12s : %i : %2i / %2i : %0.5f : %s - %s : %s" % \
             (self.id, self.stage, 
              self.epochs_actual, self.epochs_planned,
-             self.val_loss, special)
+             self.val_loss,
+             self.date_start, self.date_stop,
+             special)
 
     def maybe_str_integer(i):
         if i is None:
@@ -72,8 +81,19 @@ class Node:
 
     def stop_early(self):
         self.stopped_early = True
-        self.complete = True
         self.debug("STOP EARLY")
+
+    def parse_date_start(self, line):
+        tokens = line.split()
+        self.date_start = tokens[0] + " " + tokens[1]
+
+    def parse_date_stop(self, line):
+        tokens = line.split()
+        self.date_stop = tokens[0] + " " + tokens[1]
+        if self.epochs_actual == self.epochs_planned or \
+           self.stopped_early:
+            self.complete = True
+            self.debug("COMPLETE")
         
     def parse_training_done(self, line):
         self.epochs_actual += 1
@@ -88,10 +108,7 @@ class Node:
         self.time += int(time_s[0:-1])
         # Always collect val_loss: early stopping could happen:
         self.val_loss = float(tokens[td+15])
-        if self.epochs_actual == self.epochs_planned:
-            self.complete = True
-            self.debug("COMPLETE")
-
+            
     def get_val_loss_delta(node):
         ''' For sorting '''
         if node.val_loss_delta == None:

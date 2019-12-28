@@ -7,7 +7,7 @@
 # Use print-node-info to print the node info
 # See Node.py for the data structure
 
-import argparse, os, pickle, sys
+import argparse, logging, os, pickle, sys
 
 from utils import fail
 from Node import Node
@@ -21,6 +21,7 @@ args = parser.parse_args()
 log_list = args.directory + "/log-list.txt"
 node_pkl = args.directory + "/node-info.pkl"
 
+logging.basicConfig(level=logging.WARN, format="%(message)s")
 
 def read_log_filenames(log_list):
     result = []
@@ -43,10 +44,10 @@ def read_log_filenames(log_list):
 def parse_logs(log_files):
     # Dict mapping Node id to Node for all complete Nodes
     nodes = {}
-    print("Opening %i log files..." % len(log_files))
+    logging.warning("Opening %i log files..." % len(log_files))
     try:
         for log_file in log_files:
-            print("Opening: " + log_file)
+            logging.info("Opening: " + log_file)
             with open(log_file) as fp:
                 parse_log(fp, nodes)
     except IOError as e:
@@ -60,36 +61,39 @@ def parse_log(log_fp, nodes):
         line = log_fp.readline()
         if line == "":
             break
+        if "PARAM UPDATE START" in line:
+            node_current = Node()
+            node_current.parse_date_start(line)
         if "MODEL RUNNER DEBUG  node =" in line:
             tokens = line.split()
             node_id = tokens[-1].strip()
-            # print("node: " + node_id)
-            node_current = Node(node_id)
-            # print(node_current)
+            node_current.set_id(node_id)
         elif "MODEL RUNNER DEBUG  epochs =" in line:
-             node_current.parse_epochs(line)
+            node_current.parse_epochs(line)
         elif Node.training_done in line:
              node_current.parse_training_done(line)
         elif "early stopping" in line:
             if node_current != None:
                 # TensorFlow may report early stopping even if at max epochs:
                 node_current.stop_early()
+        elif "DONE: run_id" in line:
+            node_current.parse_date_stop(line)
         if node_current != None and node_current.complete:
             # Store a complete Node
             nodes[node_current.id] = node_current
             nodes_found += 1
-            # print(str(node_current))
             node_current = None
-    print("Found %i nodes in log." % nodes_found)
+
+    logging.info("Found %i nodes in log." % nodes_found)
 
 # List of log file names
 log_files = read_log_filenames(log_list)
 # Dict mapping Node id to Node for all complete Nodes
 nodes = parse_logs(log_files)
 
-print("Found %i nodes in total." % len(nodes))
+logging.warning("Found %i nodes in total." % len(nodes))
 
 with open(node_pkl, "wb") as fp:
     pickle.dump(nodes, fp)
 
-print("Wrote %s ." % node_pkl)
+logging.warning("Wrote %s ." % node_pkl)

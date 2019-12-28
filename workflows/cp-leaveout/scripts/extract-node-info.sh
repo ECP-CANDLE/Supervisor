@@ -19,10 +19,11 @@ then
   exit 1
 fi
 
-# The stdout from the workflow (read by this script)
-OUTPUT=$DIR/output.txt
-# The output of this script, a plottable file
-SUMMARY=$DIR/summary.txt
+
+# # The stdout from the workflow (read by this script)
+# OUTPUT=$DIR/output.txt
+# # The output of this script, a plottable file
+# SUMMARY=$DIR/summary.txt
 
 # Put all matching file names in this file, one per line
 # (this could contain thousands of entries, too long for command line):
