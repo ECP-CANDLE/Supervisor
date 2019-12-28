@@ -22,4 +22,6 @@ SELECT COUNT(status) FROM runhist ;
 EOF
 )
 
-echo "COMPLETE / TOTAL = $COMPLETE / $TOTAL"
+REMAIN=$(( $TOTAL - $COMPLETE ))
+
+echo "COMPLETE / TOTAL = $COMPLETE / $TOTAL : $REMAIN remaining."
