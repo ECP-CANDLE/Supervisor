@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 node_pkl = args.directory + "/node-info.pkl"
 
-try: 
+try:
     with open(node_pkl, 'rb') as fp:
         data = pickle.load(fp)
 except IOError as e:
