@@ -1,12 +1,12 @@
 
-# EXTRACT NODE INFO PY
+# PRINT NODE INFO PY
 
 import argparse, os, pickle, sys
 
 from Node import Node
 from utils import fail
 
-parser = argparse.ArgumentParser(description='Parse all log files')
+parser = argparse.ArgumentParser(description='Print Node info stats')
 parser.add_argument('directory',
                     help='The experiment directory (EXPID)')
 
