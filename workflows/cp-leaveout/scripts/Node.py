@@ -9,11 +9,11 @@ import math
 class Node:
 
     # TensorFlow is done when you see this
-    training_done = "[==============================]" 
-    
+    training_done = "[==============================]"
+
     def __init__(self):
         # The ID is e.g.: "1.2.3"
-        self.id = None 
+        self.id = None
         # Use string length of id to deduce stage:
         self.stage = None
         self.steps = 0
@@ -28,7 +28,7 @@ class Node:
         # Did EarlyStopping stop this node?
         self.stopped_early = False
         # Did training complete for this node?
-        self.complete = False 
+        self.complete = False
         self.verbose = False
         self.debug("START: " + str(self))
 
@@ -58,7 +58,7 @@ class Node:
         if self.stopped_early:
             special = " EARLY STOP!"
         return "%-12s : %i : %2i / %2i : %0.5f : %s - %s : %s" % \
-            (self.id, self.stage, 
+            (self.id, self.stage,
              self.epochs_actual, self.epochs_planned,
              self.val_loss,
              self.date_start, self.date_stop,
@@ -94,7 +94,7 @@ class Node:
            self.stopped_early:
             self.complete = True
             self.debug("COMPLETE")
-        
+
     def parse_training_done(self, line):
         self.epochs_actual += 1
         # Find the location of training_done (td) (to accommodate prefixes)
@@ -108,13 +108,13 @@ class Node:
         self.time += int(time_s[0:-1])
         # Always collect val_loss: early stopping could happen:
         self.val_loss = float(tokens[td+15])
-            
+
     def get_val_loss_delta(node):
         ''' For sorting '''
         if node.val_loss_delta == None:
             raise ValueError("No val_loss_delta!")
         return node.val_loss_delta
-            
+
     def debug(self, message):
         if not self.verbose:
             return
