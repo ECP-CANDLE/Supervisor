@@ -16,6 +16,8 @@ $ D=experiments/X100
 
 In these scripts, we generate a Pickle containing the training statistics for each workflow Node, then run analysis scripts against the Pickle.  This is much faster than repeatedly scanning the logs.
 
+See Node.py , it is the most important file.
+
 ==== Quick run status check (check-run)
 
 Did the run succeed or produce an error message?
