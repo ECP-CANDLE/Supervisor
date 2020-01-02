@@ -16,14 +16,18 @@ class Node:
         self.id = None
         # Use string length of id to deduce stage:
         self.stage = None
+        # Number of training steps performed
         self.steps = 0
         self.val_loss = None
         # Difference wrt parent (lower is better)
         self.val_loss_delta = None
+        # Epochs prescribed by the workflow
         self.epochs_planned = None
+        # Epochs actually run (consider early stopping)
         self.epochs_actual  = 0
         self.date_start = None
         self.date_stop  = None
+        # Training time in seconds
         self.time = 0
         # Did EarlyStopping stop this node?
         self.stopped_early = False
