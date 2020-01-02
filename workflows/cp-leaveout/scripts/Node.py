@@ -11,9 +11,9 @@ class Node:
     # TensorFlow is done when you see this
     training_done = "[==============================]"
 
-    def __init__(self):
+    def __init__(self, id=None):
         # The ID is e.g.: "1.2.3"
-        self.id = None
+        self.id = id
         # Use string length of id to deduce stage:
         self.stage = None
         # Number of training steps performed
