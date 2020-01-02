@@ -12,6 +12,9 @@ parser.add_argument('directory',
 
 args = parser.parse_args()
 
+if not os.path.isdir(args.directory):
+    fail("No such directory: " + args.directory)
+
 node_pkl = args.directory + "/node-info.pkl"
 
 try:
