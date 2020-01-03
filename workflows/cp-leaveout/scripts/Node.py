@@ -133,7 +133,7 @@ class Node:
         parent = self.parent()
         if parent == None:
             return self.time
-        return self.time + nodes[parent].total_time()
+        return self.time + nodes[parent].total_time(nodes)
 
 '''
 EXAMPLES:
