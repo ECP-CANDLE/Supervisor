@@ -88,9 +88,12 @@ class Statter:
 epochs = Statter("epochs   by stage", token=args.token)
 stops  = Statter("stops    by stage", token=args.token)
 losses = Statter("val_loss by stage", token=args.token)
+times  = Statter("times    by stage", token=args.token)
 count = 0   # Total Nodes
 steps = 0   # Training steps
 tm_s  = 0.0 # Total training time
+best_val_loss = Node(id="BEST")
+best_val_loss.val_loss = 1000
 for node in data.values():
     count += 1
     steps += node.steps
@@ -98,6 +101,8 @@ for node in data.values():
     epochs.add(node.stage, node.epochs_actual)
     stops .add(node.stage, node.stopped_early)
     losses.add(node.stage, node.val_loss)
+    times.add(node.stage,  node.total_time(data))
+    if node.val_loss < best_val_loss.val_loss: best_val_loss = node
 
 tm_m = tm_s / 60
 tm_h = tm_m / 60
@@ -125,3 +130,6 @@ def do_percentiles():
 
 if args.percentiles:
     do_percentiles()
+
+print("best_val_loss: %s %0.2f hours" %
+      (str(best_val_loss), (best_val_loss.total_time(data)/3600)))
