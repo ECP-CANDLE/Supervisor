@@ -116,7 +116,7 @@ epochs.report_avg()
 stops.report_avg()
 
 def do_percentiles():
-    for percentile in [0.00, 0.25, 0.50, 0.75, 0.90]:
+    for percentile in [0.99, 0.75, 0.50, 0.25, 0.10]:
         report = losses.string_percentile(percentile)
         filename = 'percentile-%s-%0.2f.data' % \
             (args.token, percentile)
