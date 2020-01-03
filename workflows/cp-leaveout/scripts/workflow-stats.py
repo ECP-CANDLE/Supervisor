@@ -58,7 +58,7 @@ class Statter:
         return total / len(self.data[stage])
 
     def percentile(self, stage, percentile):
-        self.data[stage].sort()
+        self.data[stage].sort(reverse=True)
         n = len(self.data[stage])
         i = round(percentile * n) - 1
         if i < 0: i = 0
