@@ -40,6 +40,11 @@ class Node:
         self.id = id
         self.stage = int(len(self.id) - 1) // 2
 
+    def parent(self):
+        if self.stage == 1:
+            return None
+        return self.id[0:-2]
+
     def __str__(self):
         special = ""
         if not self.complete:
@@ -123,6 +128,12 @@ class Node:
         if not self.verbose:
             return
         print("NODE: " + message)
+
+    def total_time(self, nodes):
+        parent = self.parent()
+        if parent == None:
+            return self.time
+        return self.time + nodes[parent].total_time()
 
 '''
 EXAMPLES:
