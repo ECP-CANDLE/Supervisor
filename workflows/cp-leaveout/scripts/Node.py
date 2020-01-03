@@ -38,7 +38,7 @@ class Node:
 
     def set_id(self, id):
         self.id = id
-        self.stage = int(len(self.id) - 1) // 2
+        self.stage = (len(self.id) - 1 ) // 2
 
     def parent(self):
         if self.stage == 1:
