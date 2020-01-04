@@ -131,5 +131,7 @@ def do_percentiles():
 if args.percentiles:
     do_percentiles()
 
-print("best_val_loss: %s %0.2f hours" %
-      (str(best_val_loss), (best_val_loss.total_time(data)/3600)))
+print("best_val_loss: %s %0.2f hours , %i steps" %
+      (str(best_val_loss),
+       best_val_loss.total_time(data)/3600,
+       best_val_loss.steps))
