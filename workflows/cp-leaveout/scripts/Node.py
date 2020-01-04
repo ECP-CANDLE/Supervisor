@@ -56,7 +56,7 @@ class Node:
              self.id,
              self.epochs_actual,
              Node.maybe_str_integer(self.epochs_planned),
-             Node.maybe_str_float(self.val_loss, "%0.4f"),
+             Node.maybe_str_float(self.val_loss, "%0.6f"),
              special)
 
     def str_table(self):
