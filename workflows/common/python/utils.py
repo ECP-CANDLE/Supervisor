@@ -17,3 +17,17 @@ def fail3(e, code, message):
     print(message)
     print(str(e))
     exit(code)
+
+def avg(values):
+    total = 0.0
+    for v in values:
+        total += v
+    return total / len(values)
+
+def append(filename, text):
+    try:
+        with open(filename, 'a') as fp:
+            fp.write(text)
+            fp.write('\n')
+    except Exception as e:
+        fail(e, os.EX_IOERR, 'Could not append to: ' + filename)
