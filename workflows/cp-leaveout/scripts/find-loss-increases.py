@@ -33,7 +33,7 @@ if args.token == None:
 
 node_pkl = args.directory + '/' + args.filename + '.pkl'
 
-try: 
+try:
     with open(node_pkl, 'rb') as fp:
         # This is a dict ('node_id' -> Node)
         data = pickle.load(fp)
@@ -89,7 +89,7 @@ for i in increases:
 
 def print_delta(prefix, node):
     print(prefix, str(node), 'delta: %f' % node.val_loss_delta)
-    
+
 worst = increases[-1]
 print_delta('worst:    ', worst)
 
