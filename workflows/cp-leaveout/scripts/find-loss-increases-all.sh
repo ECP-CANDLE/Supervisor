@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # FIND LOSS INCREASES ALL SH
 
