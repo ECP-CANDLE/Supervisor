@@ -113,4 +113,8 @@ for node in increases:
 avg_increase = avg(values_increase)
 avg_val_loss = avg(values_val_loss)
 print('avg increase: %f' % avg_increase)
-print('avg increase fraction: %f' % (avg_increase / avg_val_loss)) # node_best.val_loss
+delta_ratio = 100.0 * avg_increase / avg_val_loss
+print('avg increase fraction: %f' % delta_ratio)
+
+file_increase_deltas = "increase-deltas-%s.data" % args.token
+append(file_increase_deltas, "%i %5.1f" % (args.stage, delta_ratio))
