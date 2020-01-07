@@ -68,12 +68,25 @@ class Statter:
         report = self.string_avg()
         print(report)
 
+    def report_avg_pct(self):
+        report = self.string_avg_pct()
+        print(report)
+
     def string_avg(self):
         keys = list(self.data.keys())
         keys.sort()
         result = "# %s: avg\n" % self.name
         for key in keys:
             result += "%i %0.2f\n" % (key, self.avg(key))
+        return result
+
+    def string_avg_pct(self):
+        ''' Average as percentage, i.e., x100 '''
+        keys = list(self.data.keys())
+        keys.sort()
+        result = "# %s: avg %%\n" % self.name
+        for key in keys:
+            result += "%i %6.2f\n" % (key, 100*self.avg(key))
         return result
 
     def string_percentile(self, percentile):
@@ -116,9 +129,9 @@ print("time (m):  %11.3f " % tm_m)
 print("time (h):  %10.2f " % tm_h)
 
 print("")
-epochs.report_avg()
+stops.report_avg_pct()
 
-stops.report_avg()
+epochs.report_avg()
 
 def do_percentiles():
     for percentile in [0.99, 0.75, 0.50, 0.25, 0.10]:
