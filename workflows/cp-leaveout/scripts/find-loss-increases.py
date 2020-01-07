@@ -9,7 +9,7 @@
 import argparse, os, pickle, sys
 
 from Node import Node
-from utils import fail
+from utils import append, avg, fail
 
 STAGE_ANY = 0
 
@@ -23,8 +23,13 @@ parser.add_argument('--stage', '-S',
                     type=int,
                     default=STAGE_ANY,
                     help='Select the stage')
+parser.add_argument('--token', '-T', default=None,
+                    help='User-readable naming token')
 
 args = parser.parse_args()
+
+if args.token == None:
+    args.token = os.path.basename(args.directory)
 
 node_pkl = args.directory + '/' + args.filename + '.pkl'
 
@@ -68,6 +73,9 @@ if total == 0: fail('No matching Nodes found!')
 fraction = 100.0 * len(increases) / total
 print('increases/total = %i / %i (%02.f%%)' % (len(increases), total, fraction))
 
+file_increases = "increases-%s.data" % args.token
+append(file_increases, "%i %5.1f" % (args.stage, fraction))
+
 print('worst val_loss: ' + str(node_worst))
 print('best  val_loss: ' + str(node_best))
 
@@ -96,3 +104,13 @@ worst_10p = increases[-n_10p]
 print_delta('worst 10%:', worst_10p)
 
 print('increases that stopped early: %i' % stopped_early)
+
+values_increase = []
+values_val_loss = []
+for node in increases:
+    values_increase.append(node.get_val_loss_delta())
+    values_val_loss.append(node.val_loss)
+avg_increase = avg(values_increase)
+avg_val_loss = avg(values_val_loss)
+print('avg increase: %f' % avg_increase)
+print('avg increase fraction: %f' % (avg_increase / avg_val_loss)) # node_best.val_loss
