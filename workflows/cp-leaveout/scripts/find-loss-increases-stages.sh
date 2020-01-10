@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# FIND LOSS INCREASES ALL SH
+# FIND LOSS INCREASES STAGES SH
 
-# Runs find-loss-increases for all stages
+# Runs find-loss-increases for each individual stage
 
 # Input:  Provide an experiment directory
 # Output: Information printed to screen (pipe this into less)
