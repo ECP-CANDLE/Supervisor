@@ -32,6 +32,8 @@ $ cp ~wozniak/Public/data/nt*.csv /WORK/DIR/Benchmarks/Data/Pilot1
 $ ./submit.sh
 ----
 
+This script runs with settings from +settings.sh+ .
+
 This submits +job.sh+, which runs +aprun+ on +run-nt3.sh+ . +
 The output goes into +./output.txt+ ; the old output.txt is backed up.
 
