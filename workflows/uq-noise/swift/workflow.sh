@@ -124,12 +124,6 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# use for summit (slurm needs two %)
-export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-
-#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-mkdir -pv $TURBINE_OUTPUT/out
-
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
