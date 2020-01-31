@@ -18,7 +18,7 @@ source $SPACK_ROOT/share/spack/setup-env.sh
 
 spack load stc
 spack load turbine
-spack load eqr
+# spack load eqr
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
