@@ -36,20 +36,20 @@ PATH=$TURBINE_PY/bin:$PATH
 
 SWIFT_IMPL="app"
 
-# EMEWS Queues for R
-EQR=$( spack find -p eqr | sed -n 's/eqr@[.0-9]*//p' )
-EQR=$( echo $EQR ) # Trim whitespace
-export EQR
-if [[ ! -d "$EQR" ]]
-then
-  abort "could not find EQ/R!"
-fi
+# # EMEWS Queues for R
+# EQR=$( spack find -p eqr | sed -n 's/eqr@[.0-9]*//p' )
+# EQR=$( echo $EQR ) # Trim whitespace
+# export EQR
+# if [[ ! -d "$EQR" ]]
+# then
+#   abort "could not find EQ/R!"
+# fi
 
-R=$( spack find -p r | sed -n 's/r@[.0-9]*//p' )
-R=$( echo $R ) # Trim whitespace
+# R=$( spack find -p r | sed -n 's/r@[.0-9]*//p' )
+# R=$( echo $R ) # Trim whitespace
 
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
-LD_LIBRARY_PATH+=$R/rlib/R/lib
+# LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
+# LD_LIBRARY_PATH+=$R/rlib/R/lib
 
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
 then

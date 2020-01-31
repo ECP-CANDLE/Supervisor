@@ -32,8 +32,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
-# export CFG_SYS=$THIS/cfg-sys-small.sh
-export CFG_SYS=$THIS/cfg-sys-big.sh
+export CFG_SYS=$THIS/cfg-sys-small.sh
+# export CFG_SYS=$THIS/cfg-sys-big.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # What to return from the objective function (Keras model)
