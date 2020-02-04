@@ -149,6 +149,11 @@ fi
 cd $TURBINE_OUTPUT
 cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
 
+if [[ ${SITE} == "summit" ]]
+then
+  export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+fi
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
