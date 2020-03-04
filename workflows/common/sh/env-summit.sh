@@ -11,7 +11,7 @@ SWIFT_IMPL=py
 # module load gcc/6.4.0
 module load gcc/7.4.0
 module load spectrum-mpi/10.3.0.1-20190611
-module load ibm-wml
+module load ibm-wml-ce
 module unload darshan-runtime
 
 module list
@@ -37,7 +37,7 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14b # Python and R
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-15    # Python, no R
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-18  # Python (ibm-wml), no R
-SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-11-06  # Python (ibm-wml) and R
+SWIFT=$MED106/gounley1/sandbox/swift-t-200304  # Python (ibm-wml) and R
 
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
@@ -47,12 +47,12 @@ PATH=$SWIFT/turbine/bin:$PATH
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
-PY=/sw/summit/ibm-wml/anaconda-powerai-1.6.1
+PY=$MED106/gounley1/sandbox/.envs
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
-export PYTHONUSERBASE=/ccs/proj/med106/wozniak/Public/sfw/summit/python-ibm-wml-pip
+export PYTHONUSERBASE=$MED106/gounley1/sandbox/.envs
 
-R=/gpfs/alpine/world-shared/med106/sw/R-190927
+R=/gpfs/alpine/world-shared/med106/gounley1/sandbox/R-200304
 
 export LD_LIBRARY_PATH
 LD_LIBRARY_PATH+=:$PY/lib
@@ -62,7 +62,7 @@ LD_LIBRARY_PATH+=:$R/lib64/R/lib
 PATH=$PY/bin:$PATH
 
 # EMEWS Queues for R
-EQR=/ccs/proj/med106/gounley1/summit/EQ-R-190822
+EQR=/gpfs/alpine/world-shared/med106/gounley1/sandbox/EQ-R-200304
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
