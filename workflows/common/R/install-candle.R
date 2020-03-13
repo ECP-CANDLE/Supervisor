@@ -4,19 +4,27 @@
 # Run this via install-candle.sh
 # Installs all R packages needed for Supervisor workflows
 
+# Installation settings:
 r <- getOption("repos")
-r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+# r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+r["CRAN"] <- "http://cran.wustl.edu/"
 options(repos = r)
+NCPUS = 8
 
-install.packages("RInside", Ncpus=4)
-
-# Force Plotly 4.5.6 - not latest! Do not want shiny/httpuv, it does not work on Cooley!
+# Force Plotly 4.5.6 - not latest!
 install.packages("https://cran.r-project.org/src/contrib/Archive/plotly/plotly_4.5.6.tar.gz")
-install.packages("smoof", Ncpus=4)
-# mlrMBO may need APT packages libxml2-dev libssl-dev
-install.packages("mlrMBO", Ncpus=4)
-install.packages("rgenoud", Ncpus=4)
-install.packages("DiceKriging", Ncpus=4)
-install.packages("randomForest", Ncpus=4)
-install.packages("jsonlite", Ncpus=4)
-install.packages("parallelMap", Ncpus=4)
+
+PKGS = list("DiceKriging",
+            "jsonlite",
+            # mlrMBO may need APT packages libxml2-dev libssl-dev
+            "mlrMBO",
+            "parallelMap",
+            "randomForest",
+            "rgenoud",
+            "RInside",
+            "smoof"
+            )
+
+for (pkg in PKGS) {
+  install.packages(pkg, Ncpus=NCPUS)
+}
