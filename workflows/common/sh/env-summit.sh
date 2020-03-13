@@ -10,9 +10,10 @@ SWIFT_IMPL=py
 # module load gcc/4.8.5
 # module load gcc/6.4.0
 module load gcc/7.4.0
-module load spectrum-mpi/10.3.0.1-20190611
-module load ibm-wml-ce
-module unload darshan-runtime
+module load spectrum-mpi/10.3.1.2-20200121
+module load ibm-wml-ce/1.6.2-3
+module load cuda/10.1.243
+module unload xalt
 
 module list
 
@@ -37,7 +38,7 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/sw/gcc-4.8.5/swift-t/2019-10-14b # Python and R
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-15    # Python, no R
 # SWIFT=$MED106/sw/gcc-7.4.0/swift-t/2019-10-18  # Python (ibm-wml), no R
-SWIFT=$MED106/gounley1/sandbox/swift-t-200304  # Python (ibm-wml) and R
+SWIFT=$MED106/gounley1/sandbox2/swift-t-200312  # Python (ibm-wml) and R
 
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
@@ -47,16 +48,16 @@ PATH=$SWIFT/turbine/bin:$PATH
 # We do not export PYTHONPATH or PYTHONHOME
 # We pass them through swift-t -e, which exports them later
 # This is to avoid misconfiguring Python on the login node
-PY=$MED106/gounley1/sandbox/.envs
+PY=$MED106/gounley1/sandbox2/.envs
 PYTHONHOME=$PY
 PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}${SWIFT}/turbine/py
-export PYTHONUSERBASE=$MED106/gounley1/sandbox/.envs
+export PYTHONUSERBASE=$MED106/gounley1/sandbox2/.envs
 
-R=/gpfs/alpine/world-shared/med106/gounley1/sandbox/R-200304
+# R=/gpfs/alpine/world-shared/med106/gounley1/sandbox/R-200304
 
 export LD_LIBRARY_PATH
 LD_LIBRARY_PATH+=:$PY/lib
-LD_LIBRARY_PATH+=:$R/lib64/R/lib
+# LD_LIBRARY_PATH+=:$R/lib64/R/lib
 
 # This is needed so Python can configure itself
 PATH=$PY/bin:$PATH
