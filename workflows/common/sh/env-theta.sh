@@ -1,6 +1,6 @@
 
-# LANGS Theta
-# Language settings for Theta (Swift, Python, R, Tcl, etc.)
+# ENV THETA
+# Environment settings for Theta (Swift, Python, R, Tcl, etc.)
 
 # TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
 # export R=/home/wozniak/Public/sfw/theta/R-3.4.0/lib64/R
