@@ -7,11 +7,8 @@
 SWIFT_IMPL=py
 
 # Load basic LD_LIBRARY_PATH before changing it:
-# module load gcc/4.8.5
-# module load gcc/6.4.0
 module load gcc/7.4.0
 module load spectrum-mpi/10.3.1.2-20200121
-module load ibm-wml-ce/1.6.2-3
 module load cuda/10.1.243
 module unload xalt
 
