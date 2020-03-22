@@ -191,6 +191,11 @@ get_expid()
     mv metadata.json $TURBINE_OUTPUT
   fi
 
+  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
+  if [ -f "$CANDLE_INPUT_FILE" ]; then
+    cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+  fi
+
 }
 
 next()
