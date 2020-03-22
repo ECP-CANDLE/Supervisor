@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# EXTRACT STATS SH
+# EXTRACT STATS FINAL SH
 # Extract stats: r2, mse, mae
 # Provide a directory full of model.logs
 

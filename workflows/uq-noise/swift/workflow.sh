@@ -63,26 +63,6 @@ export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-RESTART_FILE_ARG=""
-if [[ ${RESTART_FILE:-} != "" ]]
-then
-  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
-fi
-
-RESTART_NUMBER_ARG=""
-if [[ ${RESTART_NUMBER:-} != "" ]]
-then
-  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
-fi
-
-R_FILE_ARG=""
-if [[ ${R_FILE:-} == "" ]]
-then
-  R_FILE="mlrMBO1.R"
-fi
-
-R_FILE_ARG="--r_file=$R_FILE"
-
 if [ -z ${GPU_STRING+x} ];
 then
   GPU_ARG=""
@@ -113,11 +93,6 @@ CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -db_file=$DB_FILE
                 $GPU_ARG
                 -cache_dir=$CACHE_DIR
-                # -rna_seq_data=$RNA_SEQ_DATA
-                # -drug_response_data=$DRUG_REPSONSE_DATA
-                $RESTART_FILE_ARG
-                $RESTART_NUMBER_ARG
-                $R_FILE_ARG
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -149,12 +124,6 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# use for summit (slurm needs two %)
-export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-
-#export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-mkdir -pv $TURBINE_OUTPUT/out
-
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -167,20 +136,30 @@ else
   # When running on a scheduled system, Swift/T automatically redirects
   # stdout to the turbine-output directory.  This will just be for
   # warnings or unusual messages
+  # use for summit (slurm needs two %)
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+
+  #export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+  mkdir -pv $TURBINE_OUTPUT/out
   STDOUT=""
 fi
 
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
+
+if [[ ${SITE} == "summit" ]]
+then
+  export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+fi
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
-        -p -I $EQR -r $EQR \
+        -p \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e TURBINE_STDOUT \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
@@ -213,5 +192,3 @@ fi
 
 # echo "EXIT CODE: 0" | tee -a $STDOUT
 
-# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt

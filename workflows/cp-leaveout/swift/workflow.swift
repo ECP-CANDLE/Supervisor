@@ -29,6 +29,7 @@
 import assert;
 import io;
 import files;
+import math;
 import python;
 import string;
 import sys;
@@ -64,18 +65,19 @@ else
 {
   runtype = "plangen.RunType.RUN_ALL";
 }
+E_s = argv("E", "20");
+assert(strlen(E_s) > 0, "workflow.swift: you must provide an argument to -E");
+int max_epochs = string2int(E_s); // epochs=20 is just under 2h on Summit.
 string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
 string benchmark_data = argv("benchmark_data");
-int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+int    epoch_mode       = string2int(argv("epoch_mode", "1"));
+int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 string model_name     = getenv("MODEL_NAME");
 string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
-
-int epochs = 1;
-
 
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
@@ -105,16 +107,16 @@ run_stage(int N, int S, string this, int stage, void block,
 /** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
 (void v) run_single(string node, int stage, void block, string plan_id)
 {
-  json_fragment = make_json_fragment(node, stage);
   if (stage == 0)
   {
     v = propagate();
   }
   else
   {
+    json_fragment = make_json_fragment(node, stage);
     json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
     block =>
-      printf("running obj(%s)", node) =>
+      printf("run_single(): running obj(%s)", node) =>
       // Insert the model run into the DB
       result1 = plangen_start(node, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
@@ -124,21 +126,26 @@ run_stage(int N, int S, string this, int stage, void block,
       obj_result = obj(json, node)
         // Update the DB to complete the model run
         => result2 = plangen_stop(node, plan_id);
-      printf("completed: node: '%s' result: '%s'", node, obj_result);
+      printf("run_single(): completed: node: '%s' result: '%s'",
+             node, obj_result);
       assert(obj_result != "EXCEPTION" && obj_result != "",
              "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
-      printf("stop_subplan result: %s", result2);
+      printf("run_single(): stop_subplan result: '%s'", result2);
       v = propagate(obj_result);
     }
     else
     {
-      printf("plan node already marked complete: " +
+      printf("run_single(): plan node already marked complete: " +
              "%s result=%s", node, result1) =>
         v = propagate();
     }
   }
 }
+
+// This DB configuration and python_db() function will put all
+// calls to python_db() on rank DB corresponding to
+// environment variable TURBINE_DB_WORKERS:
 
 pragma worktypedef DB;
 
@@ -147,6 +154,7 @@ pragma worktypedef DB;
 "turbine" "0.1.0"
  [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
 
+// Simply use python_db() to log the DB rank:
 python_db(
 ----
 import os, sys
@@ -184,7 +192,7 @@ try:
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
+    sys.stdout.write(str(e) + ' ... \\n' + ''.join(s) + '\\n')
     sys.stdout.flush()
     result = 'EXCEPTION'
 ---- % (db_file, plan_id, node),
@@ -194,16 +202,8 @@ except Exception as e:
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this, int stage)
 {
-    int this_ep;
-    if (stage > 1)
-    {
-      this_ep = max_integer(epochs %/ float2int(pow_integer(2, (stage - 1))), 1);
-    }
-    else
-    {
-      this_ep = epochs;
-    }
-    json_fragment = ----
+  int epochs = compute_epochs(stage);
+  json_fragment = ----
 "pre_module":     "data_setup",
 "post_module":    "data_setup",
 "plan":           "%s",
@@ -213,10 +213,11 @@ except Exception as e:
 "save_weights":   "model.h5",
 "gpus": "0",
 "epochs": %i,
+"es": "True",
 "use_exported_data": "topN.uno.h5",
 "benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv, this_ep, benchmark_data);
+(plan_json, dataframe_csv, epochs, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);

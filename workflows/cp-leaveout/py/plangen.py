@@ -502,7 +502,7 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
         conn:           An open database connection handle
         stmt:           A fully instantiated SQL statement
 
-        cursor:         Optionally, a cursor managed by the caller. If
+        cursor:         Optionally, a cursor managed by the caller. If None then
                         local cursor is used. Provide a cursor if you must
                         operate on it after completion, fetchall() for example.
 

@@ -1,0 +1,135 @@
+
+This directory contains a suite of Python scripts to analyze the workflow logs.
+
+== Analyzing workflow logs
+
+Convention:
+
+Set shell variable D to the experiment directory you are working on, e.g.:
+
+----
+$ cd Supervisor/workflows/cp-leaveout
+$ D=experiments/X100
+----
+
+=== Main analysis scripts
+
+In these scripts, we generate a Pickle containing the training statistics for each workflow Node, then run analysis scripts against the Pickle.  This is much faster than repeatedly scanning the logs.
+
+See Node.py , it is the most important file.
+
+==== Quick run status check (check-run)
+
+Did the run succeed or produce an error message?
+
+----
+$ scripts/check-run.sh $D
+EXPID=X100
+JOBID=801740
+Job completed normally.
+TURBINE: MPIEXEC TIME: 5553.473
+COMPLETE / TOTAL = 1364 / 1364 : 0 remaining.
+----
+
+==== Generate a Node Pickle (extract-node-info)
+
+This is a Python Pickle containing the Node data.  See Node.py .
+This avoids needing to walk all logs all the time (which takes tens of seconds).
+
+----
+$ scripts/extract-node-info.sh $D
+----
+
+==== Print Node info (print-node-info)
+
+Prints a big table of all Node statistics:
+
+Format:
+
+NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
+
+----
+$ scripts/print-node-info.sh $D
+...
+1.3.4.3.1.3  : 5 :  1 /  1 : 0.01340 : 2019-12-23 18:17:41 - 2019-12-23 18:22:17 :
+1.1.2.3.2.1  : 5 :  1 /  1 : 0.00850 : 2019-12-23 18:23:48 - 2019-12-23 18:28:26 :
+1.1.2.3      : 3 :  4 /  5 : 0.03090 : 2019-12-23 17:42:11 - 2019-12-23 18:00:20 :  EARLY STOP!
+1.1.1.2.4.3  : 5 :  1 /  1 : 0.01510 : 2019-12-23 18:01:51 - 2019-12-23 18:06:28 :
+...
+----
+
+==== Find loss increases (find-loss-increases)
+
+Brettin email 2019-12-18:
+Analysis 2: a list of validation samples,
+that when added to the training samples,
+cause the performance of the node/model to decrease.
+
+Also finds Nodes that stopped early, best and worst losses, etc.
+
+==== Find all loss increases (find-loss-increases-all)
+
+Finds loss increases across all individual stages.
+
+==== Check DB against Pickle (check-db-pkl)
+
+Compare the contents of the Pickle and the DB.
+
+==== Compute Node count (compute-node-count)
+
+Analytically determine the number of Nodes in the workflow given N and S.
+
+==== Workflow stats
+
+Compile workflow statistics
+
+=== Analysis for model.log files
+
+These are not really supported for Summit runs because we are using in-memory Python,
+but they could be easily fixed.  Also, they run against the model.logs and not the Pickle, so they are slow.
+
+==== extract-stats.sh
+
+==== extract-stats-final.sh
+
+==== extract-load.sh
+
+==== extract-loss.sh
+
+==== extract-time.sh
+
+==== extract-time-all.sh
+
+==== plot-load.sh
+
+with load.cfg for JWPlot for extract-load plots
+
+==== loss-histogram
+
+for extract-loss plots
+
+==== stage-avg
+
+for use with extract-stats
+
+==== avg-utils.sh
+
+Average GPU utilization
+
+=== Miscellaneous
+
+==== List Nodes (list-nodes)
+
+List the Nodes from the JSON file.
+
+==== tar experiment
+
+Make backup tars for experiment data
+
+==== time-dataframe
+
+Get average time to build input dataframe
+
+==== time-nvm
+
+Get average time to copy data to NVM

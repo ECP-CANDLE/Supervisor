@@ -6,6 +6,7 @@
 import sys
 import json
 import os
+import time
 import numpy as np
 import importlib
 import runner_utils
@@ -75,7 +76,7 @@ def import_pkg(framework, model_name):
 
 def log(msg):
     global logger
-    logger.debug("model_runner: " + msg)
+    logger.debug(msg)
 
 def timestamp():
     from datetime import datetime
@@ -113,8 +114,8 @@ def setup_perf_nvidia(params):
     try:
         delay = int(params['perf_nvidia'])
     except:
-        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: got: "%s"' % \
-              params['perf_nvidia']
+        msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: ' + \
+              'got: "%s"' % params['perf_nvidia']
         print(msg)
         raise Exception(msg)
     import subprocess
@@ -126,14 +127,18 @@ def setup_perf_nvidia(params):
     return P
 
 def run(hyper_parameter_map, obj_return):
-    directory = hyper_parameter_map['instance_directory']
-    os.chdir(directory)
+    start = time.time()
     global logger
     logger = log_tools.get_logger(logger, 'MODEL RUNNER')
 
-    with open(directory + "/rank.txt", "w") as fp:
-        fp.write("my rank: " + str(os.getenv("ADLB_RANK_SELF")))
-    
+    log("START:")
+
+    directory = hyper_parameter_map['instance_directory']
+    os.chdir(directory)
+
+    with open(directory + '/rank.txt', 'w') as fp:
+        fp.write(str(os.getenv('ADLB_RANK_SELF')) + '\n')
+
     framework = hyper_parameter_map['framework']
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
@@ -148,6 +153,7 @@ def run(hyper_parameter_map, obj_return):
 
     # params is python dictionary
     params = pkg.initialize_parameters(**params_arg)
+    log("PARAM UPDATE START")
     # params = nn_reg0.initialize_parameters()
     for k,v in hyper_parameter_map.items():
         #if not k in params:
@@ -164,8 +170,9 @@ def run(hyper_parameter_map, obj_return):
             cp_str = v
             v = list()
             v.append(cp_str)
-        log("PARAM OVERWRITE: " + str(k) + " = " + str(v))
+        log(str(k) + " = " + str(v))
         params[k] = v
+    log("PARAM UPDATE STOP")
 
     log("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
@@ -208,6 +215,11 @@ def run(hyper_parameter_map, obj_return):
     for s in ['top', 'nvidia']:
         if Ps[s] is not None:
             Ps[s].terminate()
+
+    finish = time.time()
+    duration = finish - start
+    log(" DONE: run_id %s in %0.2f seconds." %
+        (hyper_parameter_map["run_id"], duration))
     return (result, history_result)
 
 def get_obj_return():
@@ -254,8 +266,9 @@ def run_model(hyper_parameter_map):
         print("run_pre() returned ERROR!")
         exit(1)
     elif result == ModelResult.SKIP:
-        print("run_pre() returned SKIP ...")
-        exit(0)
+        log("run_pre() returned SKIP ...")
+        sys.stdout.flush()
+        return ("SKIP", "HISTORY_EMPTY")
     else:
         assert(result == ModelResult.SUCCESS) # proceed...
 
