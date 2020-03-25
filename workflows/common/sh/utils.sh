@@ -192,8 +192,10 @@ get_expid()
   fi
 
   # Andrew: Copy the CANDLE input file to the current experiments directory for reference
-  if [ -f "$CANDLE_INPUT_FILE" ]; then
-    cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
+    if [ -f "$CANDLE_INPUT_FILE" ]; then
+      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+    fi
   fi
 
 }

@@ -14,6 +14,8 @@ DESIGN_SIZE=${DESIGN_SIZE:-15}
 # Set the R data file for running
 if [ "$MODEL_NAME" = "combo" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/combo_nightly.R}
+elif [ "$MODEL_NAME" = "attn" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/attn_nightly.R}
 elif [ "$MODEL_NAME" = "p1b1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b1_nightly.R}
 elif [ "$MODEL_NAME" = "nt3" ]; then
