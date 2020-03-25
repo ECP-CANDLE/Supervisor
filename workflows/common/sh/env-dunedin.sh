@@ -33,7 +33,7 @@ fi
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 #LD_LIBRARY_PATH+=$R_HOME/lib
 # LD_LIBRARY_PATH+=:/home/wozniak/Public/sfw/anaconda3/lib
-
+LD_LIBRARY_PATH=/usb2/wozniak/Public/sfw/R-3.5.3/lib/R/lib:$LD_LIBRARY_PATH
 show LD_LIBRARY_PATH
 
 # For test output processing:
