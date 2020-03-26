@@ -20,7 +20,8 @@ SWIFT_IMPL="app"
 
 # EMEWS Queues for R
 # EQR=/opt/EQ-R
-EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+#EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+EQR=/usb2/wozniak/Public/sfw/EQ-R
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
 then
