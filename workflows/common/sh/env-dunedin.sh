@@ -20,7 +20,8 @@ SWIFT_IMPL="app"
 
 # EMEWS Queues for R
 # EQR=/opt/EQ-R
-EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+#EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+EQR=/usb2/wozniak/Public/sfw/EQ-R
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
 then
@@ -33,7 +34,7 @@ fi
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 #LD_LIBRARY_PATH+=$R_HOME/lib
 # LD_LIBRARY_PATH+=:/home/wozniak/Public/sfw/anaconda3/lib
-
+LD_LIBRARY_PATH=/usb2/wozniak/Public/sfw/R-3.5.3/lib/R/lib:$LD_LIBRARY_PATH
 show LD_LIBRARY_PATH
 
 # For test output processing:
