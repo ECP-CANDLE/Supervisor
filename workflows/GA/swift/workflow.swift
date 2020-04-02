@@ -26,7 +26,7 @@ float mut_prob = string2float(argv("mutation_prob", "0.2"));
 
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
-
+string model_name     = getenv("MODEL_NAME");
 printf("TURBINE_OUTPUT: " + turbine_output);
 
 string restart_number = argv("restart_number", "1");
