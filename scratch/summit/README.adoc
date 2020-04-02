@@ -1,0 +1,14 @@
+
+This is a stand-alone Swift/T test for Summit.
+
+Use
+
+----
+./workflow.sh hello.swift
+----
+
+or
+
+----
+./workflow.sh pyr.swift
+----
