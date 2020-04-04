@@ -5,7 +5,8 @@
 # Installs all R packages needed for Supervisor workflows
 
 r <- getOption("repos")
-r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+# r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+r["CRAN"] <- "http://cran.wustl.edu/"
 options(repos = r)
 
 install.packages("RInside", Ncpus=4)
@@ -20,3 +21,5 @@ install.packages("DiceKriging", Ncpus=4)
 install.packages("randomForest", Ncpus=4)
 install.packages("jsonlite", Ncpus=4)
 install.packages("parallelMap", Ncpus=4)
+install.packages("Rcpp", Ncpus=4)
+install.packages("RInside", Ncpus=4)
