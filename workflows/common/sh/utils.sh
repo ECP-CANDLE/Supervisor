@@ -62,6 +62,7 @@ show()
 
 log_path()
 # Pretty print a colon-separated variable
+# Provide the name of the variable (no dollar sign)
 {
   echo ${1}:
   eval echo \$$1 | tr : '\n' | nl
