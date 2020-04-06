@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# MINPATH SUMMIT
+# Reset PATH to minimal settings, then run given command
+
+PATH=
+PATH=/usr/bin:$PATH
+PATH=/usr/sbin:$PATH
+PATH=/autofs/nccs-svm1_sw/summit/.swci/1-compute/opt/spack/20180914/linux-rhel7-ppc64le/gcc-6.4.0/spectrum-mpi-10.3.1.2-20200121-awz2q5brde7wgdqqw4ugalrkukeub4eb/bin:$PATH
+PATH=/sw/summit/ibm-wml-ce/anaconda-base/condabin:$PATH
+PATH=/sw/sources/lsf-tools/2.0/summit/bin:$PATH
+PATH=/opt/ibm/spectrumcomputing/lsf/10.1.0.9/linux3.10-glibc2.17-ppc64le-csm/etc:$PATH
+PATH=/opt/ibm/spectrumcomputing/lsf/10.1.0.9/linux3.10-glibc2.17-ppc64le-csm/bin:$PATH
+PATH=/usr/local/sbin:$PATH
+PATH=/usr/local/bin:$PATH
+PATH=/sbin:$PATH
+PATH=/bin:$PATH
+PATH=/sw/xk6/bin:$PATH
+PATH=/opt/ibm/flightlog/bin:$PATH
+PATH=/opt/ibutils/bin:$PATH
+PATH=/opt/ibm/spectrum_mpi/jsm_pmix/bin:$PATH
+PATH=/opt/puppetlabs/bin:$PATH
+PATH=/usr/lpp/mmfs/bin:$PATH
+
+# Run the user command given in the arguments:
+$*
+
+# Local Variables:
+# mode: sh
+# End:
