@@ -28,8 +28,6 @@ PATH=$SWIFT/turbine/bin:$PATH
 
 IBM_WML_CE=/autofs/nccs-svm1_sw/summit/ibm-wml-ce/anaconda-base/envs/ibm-wml-ce-1.6.2-3
 
-echo llp $LD_LIBRARY_PATH
-
 export LD_LIBRARY_PATH
 LD_LIBRARY_PATH=$IBM_WML_CE/lib:$LD_LIBRARY_PATH
 
