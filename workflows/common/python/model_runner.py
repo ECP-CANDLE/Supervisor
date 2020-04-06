@@ -132,6 +132,7 @@ def run(hyper_parameter_map, obj_return):
     logger = log_tools.get_logger(logger, 'MODEL RUNNER')
 
     log("START:")
+    sys.stdout.flush()
 
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
