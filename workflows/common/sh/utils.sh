@@ -90,7 +90,9 @@ python_envs()
   RESULT=()
   if [[ ${PYTHONPATH:-} != "" ]]
   then
-    RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    # We do not currently need this-
+    # Swift/T should grab PYTHONPATH automatically
+    : # RESULT+=( -e PYTHONPATH=$PYTHONPATH )
   fi
   if [[ ${PYTHONHOME:-} != "" ]]
   then
@@ -101,9 +103,12 @@ python_envs()
     RESULT+=( -e PYTHONUSERBASE=$PYTHONUSERBASE )
   fi
 
-  # Cannot use echo due to "-e" in RESULT
-  R=${RESULT[@]} # Suppress word splitting
-  printf -- "%s\n" $R
+  if (( ${#RESULT[@]} )) # RESULT may be empty
+  then
+    # Cannot use echo due to "-e" in RESULT
+    R=${RESULT[@]} # Suppress word splitting
+    printf -- "%s\n" $R
+  fi
 }
 
 get_site()
@@ -606,11 +611,12 @@ signature()
   local L # The list of variable names
   L=()
   local SELF=$1 HELP="" VERBOSE=0
+  local NL="\n"
   shift
   while getopts "H:v" OPT
   do
     case $OPT in
-      H) HELP=$OPTARG ;;
+      H) HELP+="$NL$OPTARG" ;;
       v) VERBOSE=1    ;;
       *) return 1 ;; # Bash prints an error
     esac
@@ -632,7 +638,7 @@ signature()
     echo "$SELF: Required arguments: ${L[@]}"
     if (( ${#HELP} ))
     then
-      echo "$SELF: Usage: $HELP"
+      printf "$SELF: Usage: $HELP\n" # Need printf for NLs in HELP
     fi
     exit 1
   fi
