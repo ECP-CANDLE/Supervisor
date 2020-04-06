@@ -38,7 +38,7 @@ LD_LIBRARY_PATH=$IBM_WML_CE/lib:$LD_LIBRARY_PATH
 export TURBINE_PRELAUNCH="PATH=$IBM_WML_CE/bin:\$PATH"
 
 # EMEWS Queues for R
-EQR=/ccs/proj/med106/gounley1/summit/EQ-R-190822
+EQR=$MED106/wozniak/sw/gcc-6.4.0/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 
 # For test output processing:
