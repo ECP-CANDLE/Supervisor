@@ -48,7 +48,7 @@ LOCAL=0
 CRAY=1
 
 # Resident task workers and ranks
-if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} != "" ]]
 then
     # Resident task workers and ranks
     export TURBINE_RESIDENT_WORK_WORKERS=1
