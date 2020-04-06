@@ -45,10 +45,13 @@ EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 LOCAL=0
 CRAY=1
 
-# Resident task workers and ranks
-if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} != "" ]]
+# Resident task worker count and rank list
+# If this is already set, we respect the user settings
+# If this is unset, we set it to 1
+#    and run the algorithm on the 2nd highest rank
+# This value is only read in HPO workflows
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} == "" ]]
 then
-    # Resident task workers and ranks
     export TURBINE_RESIDENT_WORK_WORKERS=1
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
