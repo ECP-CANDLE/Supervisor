@@ -13,9 +13,11 @@ then
   echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
   exit 1
 fi
-BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/Attn1:$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4
+BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3
+# $BENCHMARKS_ROOT/Pilot1/Attn1:$BENCHMARKS_ROOT/Pilot1/TC1:
+# :$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
@@ -129,11 +131,12 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# use for summit (slurm needs two %)
-if [ "${SITE:-}" == "summit" ]; then
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-else
+# Use for Summit (LSF needs two %)
+if [[ ${SITE:-} == "summit" ]]
+then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 fi
 
 mkdir -pv $TURBINE_OUTPUT/out
