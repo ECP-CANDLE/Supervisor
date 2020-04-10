@@ -188,7 +188,7 @@ def run(hyper_parameter_map, obj_return):
 
 def get_obj_return():
     obj_return = os.getenv("OBJ_RETURN")
-    valid_obj_returns = [ "val_loss", "val_corr", "val_acc" ]
+    valid_obj_returns = [ "loss", "val_loss", "val_corr", "val_acc" ]
     if obj_return == None:
         raise Exception("No OBJ_RETURN was in the environment!")
     if obj_return not in valid_obj_returns:
