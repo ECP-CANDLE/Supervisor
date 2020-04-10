@@ -86,6 +86,7 @@ def setup_perf(params):
     return { 'top':    setup_perf_top(params),
              'nvidia': setup_perf_nvidia(params) }
 
+
 def setup_perf_top(params):
     if 'perf_top' not in params:
         return None
@@ -126,6 +127,13 @@ def setup_perf_nvidia(params):
                              stderr=subprocess.STDOUT)
     return P
 
+
+def stop_perf(Ps):
+    for s in ['top', 'nvidia']:
+        if Ps[s] is not None:
+            Ps[s].terminate()
+
+
 def run(hyper_parameter_map, obj_return):
     start = time.time()
     global logger
@@ -152,38 +160,13 @@ def run(hyper_parameter_map, obj_return):
         logger.info('specified config_file: "%s"' % config_file)
         params_arg = { 'default_model': config_file }
 
-    # params is python dictionary
-    params = pkg.initialize_parameters(**params_arg)
-    log("PARAM UPDATE START")
-    # params = nn_reg0.initialize_parameters()
-    for k,v in hyper_parameter_map.items():
-        #if not k in params:
-        #    raise Exception("Parameter '{}' not found in set of valid arguments".format(k))
-        if(k=="dense"):
-            if(type(v) != list):
-                v=v.split(" ")
-            v = [int(i) for i in v]
-        if(k=="dense_feature_layers"):
-            if(type(v) != list):
-                v=v.split(" ")
-            v = [int(i) for i in v]
-        if(k=="cell_features"):
-            cp_str = v
-            v = list()
-            v.append(cp_str)
-        log(str(k) + " = " + str(v))
-        params[k] = v
-    log("PARAM UPDATE STOP")
-
-    log("WRITE_PARAMS START")
-    runner_utils.write_params(params, hyper_parameter_map)
-    log("WRITE_PARAMS STOP")
+    # params is a python dictionary
+    params = setup_params(pkg, hyper_parameter_map, params_arg)
 
     Ps = setup_perf(params)
 
     # Run the model!
     history = pkg.run(params)
-    # history = nn_reg0.run(params)
 
     if framework == 'keras':
         runner_utils.keras_clear_session(framework)
@@ -192,36 +175,16 @@ def run(hyper_parameter_map, obj_return):
     result = 0
     history_result = {}
     if history != None:
-        # Return the history entry that the user requested.
-        values = history.history[obj_return]
-        # Return a large number for nan and flip sign for val_corr
-        if(obj_return == "val_loss"):
-            if(math.isnan(values[-1])):
-                result = 999999999
-            else:
-                result = values[-1]
-        elif(obj_return == "val_corr" or obj_return == "val_dice_coef"): # allow for the return variable to be the val_dice_coef, which is sometimes used by arbitrary models instead of val_corr
-            if(math.isnan(val_loss[-1])):
-                result = 999999999
-            else:
-                result = -values[-1] # Note negative sign
-        else:
-            raise ValueError("Unsupported objective function " +
-                             "(use obj_param to specify val_corr or val_loss): " +
-                             framework)
+        result, history_result = get_results(history, obj_return)
 
-        print("result: " + obj_return + ": " + str(result))
-        history_result = history.history.copy()
-
-    for s in ['top', 'nvidia']:
-        if Ps[s] is not None:
-            Ps[s].terminate()
+    stop_perf(Ps)
 
     finish = time.time()
     duration = finish - start
     log(" DONE: run_id %s in %0.2f seconds." %
         (hyper_parameter_map["run_id"], duration))
     return (result, history_result)
+
 
 def get_obj_return():
     obj_return = os.getenv("OBJ_RETURN")
@@ -273,16 +236,64 @@ def run_model(hyper_parameter_map):
     else:
         assert(result == ModelResult.SUCCESS) # proceed...
 
-    # Call to Benchmark!
-    log("CALL BENCHMARK " + hyper_parameter_map['model_name'])
     result, history = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, instance_directory)
-    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder), instance_directory, 'history.txt')
-    # TODO: will we do anything with the output map
-    run_post(hyper_parameter_map, {})   
+    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder),
+                              instance_directory, 'history.txt')
+
+    run_post(hyper_parameter_map, {})
     log("RUN STOP")
     return (result, history)
 
+def setup_params(pkg, hyper_parameter_map, params_arg):
+    params = pkg.initialize_parameters(**params_arg)
+    log("PARAM UPDATE START")
+    for k,v in hyper_parameter_map.items():
+        if k == "dense" or k == "dense_feature_layers":
+            if(type(v) != list):
+                v = v.split(" ")
+            v = [int(i) for i in v]
+        if k == "cell_features":
+            cp_str = v
+            v = list()
+            v.append(cp_str)
+        log(str(k) + " = " + str(v))
+        params[k] = v
+    log("PARAM UPDATE STOP")
+
+    log("WRITE_PARAMS START")
+    runner_utils.write_params(params, hyper_parameter_map)
+    log("WRITE_PARAMS STOP")
+    return params
+
+
+def get_results(history, obj_return):
+    """
+    Return the history entry that the user requested.
+    history: The Keras history object
+    """
+    values = history.history[obj_return]
+    # Default: the last value in the history
+    result = values[-1]
+
+    known_params = [ "loss", "val_loss", "val_corr", "val_dice_coef" ]
+    if obj_return not in known_params:
+        raise ValueError("Unsupported objective function: " +
+                         "use obj_param to specify one of " +
+                         str(known_params))
+
+    # Fix NaNs:
+    if math.isnan(result):
+        if obj_return == "val_corr" or obj_return == "val_dice_coef":
+            # Return the negative result
+            result = -result
+        else:
+            # Just return a large number
+            result = 999999999
+
+    print("result: " + obj_return + ": " + str(result))
+    history_result = history.history.copy()
+    return result, history_result
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
@@ -313,5 +324,3 @@ if __name__ == '__main__':
     # sys.argv  = ['nt3_tc1']
     sys.argv = ['null']
     run_model(hyper_parameter_map)
-
-
