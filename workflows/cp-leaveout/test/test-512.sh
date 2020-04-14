@@ -8,7 +8,7 @@ usage()
   echo "Usage: test SITE EXPID WORKFLOW_ARGS"
 }
 
-if (( ${#} == 0 ))
+if (( ${#} < 2 ))
 then
   usage
   exit 1
