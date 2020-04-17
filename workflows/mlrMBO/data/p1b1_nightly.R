@@ -37,7 +37,7 @@ param.set <- makeParamSet(
                     
   makeDiscreteParam("warmup_lr", values=c(1, 0)),
                     
-  makeNumericParam("drop", lower=0, upper=0.9),
+  makeNumericParam("dropout", lower=0, upper=0.9),
                     
   makeIntegerParam("epochs", lower=2, upper=3)
 )

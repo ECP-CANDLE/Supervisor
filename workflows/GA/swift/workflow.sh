@@ -62,6 +62,9 @@ source_site sched   $SITE
 EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY
 
+
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python/
+
 export TURBINE_JOBNAME="JOB:${EXPID}"
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED

@@ -77,7 +77,7 @@
   },
 
   {
-    "name": "drop",
+    "name": "dropout",
     "type": "float",
     "lower": 0.0,
     "upper": 0.9,
