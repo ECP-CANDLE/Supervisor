@@ -118,6 +118,9 @@ cp $WORKFLOWS_ROOT/async-search/python/$PY_PACKAGE.py $CFG_SYS $CFG_PRM $TURBINE
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+echo "OBJ_MODULE: $OBJ_MODULE"
+echo "OBJ_DIR: $OBJ_DIR"
+
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 

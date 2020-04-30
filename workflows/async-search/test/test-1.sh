@@ -48,7 +48,7 @@ export OBJ_RETURN="val_loss"
 
 # Set OBJ_DIR
 export OBJ_DIR=$EMEWS_PROJECT_ROOT/obj_folder
-# export OBJ_MODULE=
+export OBJ_MODULE=obj_app
 
 if [[ $SITE == "theta" ]]
 then
@@ -58,18 +58,20 @@ fi
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM
 
+# Check job output
+TURBINE_OUTPUT=$( readlink turbine-output )
+OUTPUT=turbine-output/output.txt
+WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
+
 # Wait for job
 queue_wait
 
-cp $0 $TURBINE_OUTPUT
-# Check job output
-OUTPUT=$TURBINE_OUTPUT/output.txt
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
-
 SCRIPT=$( basename $0 .sh )
-check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID
+check_output "EXIT CODE: 0" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
+
 
 # Local Variables:
 # c-basic-offset: 2;
