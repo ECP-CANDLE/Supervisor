@@ -215,7 +215,7 @@ next()
   do
     FILE=$( printf $PATTERN $i )
     [[ ! -e $FILE ]] && break
-    let i++ || true # Don't fail under set -e
+    let ++i
   done
   REPLY=$FILE
 }
