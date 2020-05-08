@@ -1,2 +1,31 @@
 
-Tests for the new Horovod API, 2019.
+= C interface for the Horovod API
+
+The goal here is to provide a simple C interface that accepts a communicator and a fragment of Python code that will run Horovod.  An overarching C framework could thus create many communicators and run many Horovods on them.
+
+The communicator that Horovod should use is passed from the C level to the Python level through an environment variable.
+
+The module that connect C to Python is called the Controller.
+
+== Usage
+
+Edit the Makefile to configure your system.
+
+== Tests
+
++test-1.c+::
+Test that the Makefile and C compiler work.
+
++test-2.c+::
+Test that you can +#include+ the Controller.
+
++test-3.c+::
+Test that MPI works in C.
+
++test-4.c+::
+Test that the Controller can run Python from C.
+
++test-5.c+::
+Test that you can initialize Horovod from C.
+Pass this a file containing the Python code you want to run,
+e.g., test-5-1.py .

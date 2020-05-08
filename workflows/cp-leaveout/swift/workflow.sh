@@ -123,7 +123,7 @@ then
     mv    ${PRIORS[@]}            $PRIOR_RUN
     cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
   fi
-else
+else # Not a restart
   if [[ -f $TURBINE_OUTPUT/output.txt ]]
   then
     echo "TURBINE_OUTPUT already exists- you must specify restart!"

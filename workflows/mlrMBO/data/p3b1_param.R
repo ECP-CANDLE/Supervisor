@@ -12,6 +12,6 @@ param.set <- makeParamSet(
   # makeDiscreteParam("batch_size", values = c( 16, 32, 48, 64, 80, 96, 112, 128 )),
   makeIntegerParam("batch_size", lower = 16, upper = 32),
   makeIntegerParam("epochs", lower = 5, upper = 50),
-  makeNumericParam("drop", lower = 0.0, upper = 0.9)
+  makeNumericParam("dropout", lower = 0.0, upper = 0.9)
   # makeDiscreteParam("optimizer", values = c( 'adam', 'adadelta', 'sgd', 'rmsprop' )),
 )

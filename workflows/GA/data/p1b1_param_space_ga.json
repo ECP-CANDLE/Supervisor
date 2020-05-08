@@ -16,7 +16,7 @@
   {
     "name": "use_landmark_genes",
     "type": "constant",
-    "value": 1
+    "value": 0
   },
 
   {
@@ -77,7 +77,7 @@
   },
 
   {
-    "name": "drop",
+    "name": "dropout",
     "type": "float",
     "lower": 0.0,
     "upper": 0.9,
@@ -87,8 +87,8 @@
   {
     "name": "epochs",
     "type": "int",
-    "lower": 100,
-    "upper": 500,
+    "lower": 20,
+    "upper": 20,
     "sigma": 20
   },
 
