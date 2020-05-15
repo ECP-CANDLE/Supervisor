@@ -15,7 +15,7 @@ PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
 export PATH=$SWIFT_T/turbine/bin:$SWIFT_T/stc/bin:$PATH
 echo $PATH
-SWIFT_IMPL="app"
+SWIFT_IMPL="py"
 
 # EMEWS Queues for R
 EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
