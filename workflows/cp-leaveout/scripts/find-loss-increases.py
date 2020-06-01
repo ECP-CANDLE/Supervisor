@@ -40,6 +40,8 @@ try:
 except IOError as e:
     fail(e, os.EX_IOERR, 'Could not read: ' + node_pkl)
 
+print("total nodes: %i" % len(data))
+
 # Artificial nodes for comparison:
 node_worst = Node("WORST")
 node_worst.val_loss = 0
@@ -49,16 +51,23 @@ node_best.val_loss = 1000
 if args.stage != STAGE_ANY:
     print("STAGE: %i" % args.stage)
 
+leaves = 0 # stage 5 Nodes
+
 # List of Nodes where val_loss increased:
 increases = []
 # Total Node count:
 total = 0
 for node_id in data.keys():
+    print("node: " + node_id)
     parent_id = node_id[0:-2] # '1.2.3' -> '1.2'
     if len(parent_id) == 1: # stage=1
         continue
+    if parent_id not in data:
+        print("parent not found.")
+        continue
     current = data[node_id]
     parent  = data[parent_id]
+    if current.stage == 5: leaves += 1
     if not (args.stage == STAGE_ANY or args.stage == current.stage):
         continue
     current.val_loss_delta = current.val_loss - parent.val_loss
@@ -67,6 +76,8 @@ for node_id in data.keys():
     if current.val_loss > node_worst.val_loss: node_worst = current
     if current.val_loss < node_best.val_loss:  node_best  = current
     total += 1
+
+print("leaves: %i" % leaves)
 
 if total == 0: fail('No matching Nodes found!')
 
@@ -107,9 +118,11 @@ print('increases that stopped early: %i' % stopped_early)
 
 values_increase = []
 values_val_loss = []
+
 for node in increases:
     values_increase.append(node.get_val_loss_delta())
     values_val_loss.append(node.val_loss)
+
 avg_increase = avg(values_increase)
 avg_val_loss = avg(values_val_loss)
 print('avg increase: %f' % avg_increase)
@@ -118,3 +131,35 @@ print('avg increase fraction: %f' % delta_ratio)
 
 file_increase_deltas = "increase-deltas-%s.data" % args.token
 append(file_increase_deltas, "%i %5.1f" % (args.stage, delta_ratio))
+
+outliers_file = "outliers-%s.data" % args.token
+print("avg_increase", str(avg_increase))
+print("avg_val_loss", str(avg_val_loss))
+
+print("%-2s %-12s %-8s %-8s %-8s %-8s" % \
+      ("", "node", "val_loss", "parent", "delta", "ratio"))
+
+increases.sort(key=Node.get_val_loss_delta, reverse=True)
+ratios = []
+index = 1
+for node in increases:
+    parent = data[node.parent()]
+    ratio = node.get_val_loss_delta() / parent.val_loss
+    print("%2i %-12s %0.6f %0.6f %0.6f %0.6f" %
+          (index, node.id, node.val_loss, parent.val_loss,
+           node.get_val_loss_delta(), ratio))
+    ratios.append(ratio)
+    index += 1
+ratios.sort()
+
+with open(outliers_file, "w") as fp:
+    i = 0
+    for ratio in ratios:
+        fp.write("%4i %0.7f\n" % (i, ratio))
+        i += 1
+
+# with open(outliers_file, "w") as fp:
+#     i = 0
+#     for ratio in ratios:
+#         fp.write("%4i %0.7f\n" % (i, ratio))
+#         i += 1
