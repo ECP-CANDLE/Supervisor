@@ -1,3 +1,4 @@
 experiments
 turbine-output
+*.data
 *.pkl

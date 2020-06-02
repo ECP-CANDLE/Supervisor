@@ -85,8 +85,11 @@ Compile workflow statistics
 
 === Analysis for model.log files
 
-These are not really supported for Summit runs because we are using in-memory Python,
-but they could be easily fixed.  Also, they run against the model.logs and not the Pickle, so they are slow.
+These are not really supported for Summit runs
+because we are using in-memory Python,
+but they could be easily fixed.
+Also, they run against the model.logs and not the Pickle,
+so they are slow.
 
 ==== extract-stats.sh
 
