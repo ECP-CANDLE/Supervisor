@@ -1,7 +1,6 @@
 
-# LANGS LOCAL
-# Language settings for any local machine like Ubuntu
-# Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
+# ENV MCS
+# Environment settings for ANL/MCS compute nodes
 
 export PY=/homes/jain/anaconda3/bin/python/
 export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
