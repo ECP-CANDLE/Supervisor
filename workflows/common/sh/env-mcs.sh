@@ -37,6 +37,6 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}${LD_LIBRARY_PATH:+:}
 export LOCAL=1
 export CRAY=0
 
-# Cf. utils.s
+# Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
