@@ -90,9 +90,13 @@ python_envs()
   RESULT=()
   if [[ ${PYTHONPATH:-} != "" ]]
   then
-    # We do not currently need this-
+    # We do not currently need this except on MCS:
     # Swift/T should grab PYTHONPATH automatically
-    : # RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    if [[ ${SITE} == "mcs" ]]
+    then
+      # MCS discards PYTHONPATH in subshells
+      RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    fi
   fi
   if [[ ${PYTHONHOME:-} != "" ]]
   then
