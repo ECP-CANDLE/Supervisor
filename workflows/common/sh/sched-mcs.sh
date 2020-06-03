@@ -1,5 +1,5 @@
 
-# SCHED LOCAL
+# SCHED MCS
 # Scheduler settings for Swift/MCS
 
 MACHINE=""
