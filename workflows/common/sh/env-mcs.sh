@@ -5,7 +5,8 @@
 export PY=/homes/jain/anaconda3/bin/python/
 export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
 # Modify to specify the location of SWIFT_T installation
-export SWIFT_T=${SWIFT_T:-/homes/jain/install/swift-t/}
+# export SWIFT_T=${SWIFT_T:-/homes/jain/install/swift-t/}
+export SWIFT_T=$HOME/Public/sfw/x86_64/swift-t/2020-05-29
 export LD_LIBRARY_PATH+=:$R/lib:$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
@@ -17,7 +18,8 @@ echo $PATH
 SWIFT_IMPL="py"
 
 # EMEWS Queues for R
-EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+# EQR=$WORKFLOWS_ROOT/common/ext/EQ-R
+EQR=/home/wozniak/Public/sfw/x86_64/EQ-R
 EQPy=$WORKFLOWS_ROOT/common/ext/EQ-Py
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
