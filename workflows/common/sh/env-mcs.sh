@@ -7,7 +7,8 @@ export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
 # Modify to specify the location of SWIFT_T installation
 # export SWIFT_T=${SWIFT_T:-/homes/jain/install/swift-t/}
 export SWIFT_T=/homes/wozniak/Public/sfw/x86_64/swift-t/2020-06-04
-LD_LIBRARY_PATH=/homes/jain/anaconda3/lib/:/nfs2/jain/spack/opt/spack/linux-ubuntu14-x86_64/gcc-4.4.7/cuda-8.0.61-kxwh3jwkxjybyo3n3nnajezfyq3epo5y/lib:/usr/lib:$LD_LIBRARY_PATH
+
+export LD_LIBRARY_PATH+=/homes/jain/anaconda3/lib/:/nfs2/jain/spack/opt/spack/linux-ubuntu14-x86_64/gcc-4.4.7/cuda-8.0.61-kxwh3jwkxjybyo3n3nnajezfyq3epo5y/lib:/usr/lib
 export LD_LIBRARY_PATH+=:$R/lib:$SWIFT_T/stc/lib:$SWIFT_T/turbine/lib/:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
 
 # Python
