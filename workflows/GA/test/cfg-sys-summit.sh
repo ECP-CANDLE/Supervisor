@@ -1,5 +1,5 @@
-
-# MLRMBO CFG SYS 1
+#
+# COMBO CFG SYS 1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -14,7 +14,7 @@ export WALLTIME=${WALLTIME:-06:00:00}
 
 #export PROJECT=Candle_ECP
 
-# Benchmark run timeout: benchmark run will timeout
+#  Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.
 # If set to -1 there is no timeout.
 # This timeout is implemented with Keras callbacks
@@ -33,3 +33,12 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 # Ignore errors: If 1, unknown errors will be reported to model.log
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=0
+
+# if the deap python package is not installed with swift-t's embedded python
+# it may be ncessary to include its location in the PYTHONPATH
+# export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+
+# for running locally, edit as necessary
+# export PYTHONHOME=$HOME/anaconda3
+# export PYTHON=python3.6
+# export SWIFT_T=$HOME/sfw/swift-t-4c8f0afd
