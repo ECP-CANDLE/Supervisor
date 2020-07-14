@@ -110,9 +110,9 @@ then
   if [[ ! -f $TURBINE_OUTPUT/output.txt ]]
   then
     # If output.txt does not exist, assume the moves already happened
-    echo "The outputs were already moved from $EXPID"
+    echo "WARNING: The outputs were already moved from $EXPID"
   else
-    next $TURBINE_OUTPUT/restarts/%i
+    next $TURBINE_OUTPUT/restarts/%i # cf. utils.sh:next()
     PRIOR_RUN=$REPLY
     echo "Moving old outputs to $PRIOR_RUN"
     mkdir -pv $PRIOR_RUN
@@ -122,6 +122,18 @@ then
              $TURBINE_OUTPUT/jobid.txt )
     mv    ${PRIORS[@]}            $PRIOR_RUN
     cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
+    echo $TURBINE_OUTPUT/run/*/save
+    for D in $TURBINE_OUTPUT/run/*/save
+    do
+      cd $D
+      echo D=$D
+      shopt -s nullglob
+      for f in *.json *.h5 *.log
+      do
+        : # cp -v --backup=numbered $f $f.bak
+      done
+      cd -
+    done
   fi
 else
   if [[ -f $TURBINE_OUTPUT/output.txt ]]
