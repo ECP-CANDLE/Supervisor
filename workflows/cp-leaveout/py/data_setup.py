@@ -27,8 +27,8 @@ def pre_run(params):
 
     # check NVMe disk is available
     username = os.environ['USER']
-    nvme_enabled = Path('/mnt/bb/{}'.format(username)).exists()
-
+    # nvme_enabled = Path('/mnt/bb/{}'.format(username)).exists()
+    nvme_enabled = False
     if nvme_enabled:
         # copy original datafrom to NVMe disk space
         try:
@@ -81,7 +81,7 @@ def pre_run(params):
         print("data_setup: caught ValueError for node: '%s'" %
               params["node"]) # new 2019-12-02
         traceback.print_exc(file=sys.stdout)
-        return ModelResult.SKIP
+        return ModelResult.ERROR
     except Exception as e:
         print("data_setup: error in build_dataframe!\n" + str(e))
         traceback.print_exc()
