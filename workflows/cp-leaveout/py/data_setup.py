@@ -51,10 +51,10 @@ def pre_run(params):
             return ModelResult.ERROR
         params["dataframe_from"] = dest.resolve()
         params["use_exported_data"] = "/mnt/bb/{}/{}".format(username, params["use_exported_data"])
-        
+
     # softlink to cache & config file
     # build node specific training/validation dataset
-    
+
     args = TopN_Args(params["dataframe_from"],
                      params["node"],
                      params["plan"],
