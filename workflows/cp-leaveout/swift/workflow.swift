@@ -65,7 +65,7 @@ else
 {
   runtype = "plangen.RunType.RUN_ALL";
 }
-E_s = argv("E", "20");
+E_s = argv("E", "50");
 assert(strlen(E_s) > 0, "workflow.swift: you must provide an argument to -E");
 int max_epochs = string2int(E_s); // epochs=20 is just under 2h on Summit.
 string plan_json      = argv("plan_json");
