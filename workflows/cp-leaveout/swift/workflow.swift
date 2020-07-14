@@ -167,14 +167,15 @@ sys.stdout.flush()
 {
   result = python_db(
 ----
-import fcntl, sys, traceback
+import sys, traceback
 import plangen
 try:
     result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
+    print('EXCEPTION in plangen_start()\\n' +
+          str(e) + ' ... \\n' + ''.join(s))
     sys.stdout.flush()
     result = "EXCEPTION"
 ----  % (db_file, plan_json, plan_id, node, runtype),
@@ -192,7 +193,8 @@ try:
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
-    sys.stdout.write(str(e) + ' ... \\n' + ''.join(s) + '\\n')
+    sys.stdout.write('EXCEPTION in plangen_stop()\\n' +
+                     str(e) + ' ... \\n' + ''.join(s) + '\\n')
     sys.stdout.flush()
     result = 'EXCEPTION'
 ---- % (db_file, plan_id, node),
@@ -210,7 +212,7 @@ except Exception as e:
 "config_file":    "uno_auc_model.txt",
 "cache":          "cache/top6_auc",
 "dataframe_from": "%s",
-"save_weights":   "model.h5",
+"save_weights":   "save/model.h5",
 "gpus": "0",
 "epochs": %i,
 "es": "True",
@@ -224,7 +226,7 @@ except Exception as e:
     parent = substring(this, 0, n-2);
     result = json_fragment + ----
 ,
-"initial_weights": "../%s/model.h5"
+"initial_weights": "../%s/save/model.h5"
 ---- % parent;
   }
   else
