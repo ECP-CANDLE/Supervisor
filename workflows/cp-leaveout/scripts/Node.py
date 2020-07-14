@@ -89,6 +89,14 @@ class Node:
         self.epochs_planned = int(tokens[-1].strip())
         self.debug("epochs_planned: %i" % self.epochs_planned)
 
+    def parse_epoch_status(self, line):
+        tokens = line.split()
+        assert len(tokens) == 2, "bad line: " + line
+        ints = tokens[1].split("/")
+        assert len(tokens) == 2
+        self.epochs_actual = int(ints[0])
+        self.debug("epochs_actual: " + str(self.epochs_actual))
+        
     def stop_early(self):
         self.stopped_early = True
         self.debug("STOP EARLY")
@@ -106,8 +114,10 @@ class Node:
             self.debug("COMPLETE")
 
     def parse_training_done(self, line):
-        self.epochs_actual += 1
-        # Find the location of training_done (td) (to accommodate prefixes)
+        # The current epoch should already be set
+        #     by parse_epoch_status()
+        # First, find the location of training_done (td)
+        #      (to accommodate prefixes)
         tokens = line.split()
         td = 0
         while tokens[td] != Node.training_done:
@@ -146,6 +156,10 @@ __init__()
 parse_epochs() ==> self.epochs_planned
 
 2019-12-14 09:46:32 MODEL RUNNER DEBUG  epochs = 5
+
+parse_epoch_status() (from Keras)
+
+Epoch 29/50
 
 stop_early()
 
