@@ -10,6 +10,7 @@ import os
 import sys
 import sqlite3
 from sqlite3 import Error as db_Error
+import traceback
 
 import planargs
 
@@ -529,8 +530,14 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
 
     except db_Error as e:
         db_exception = True
+        print('execute_sql_stmt: caught exception')
         print('execute_sql_stmt:', stmt)
         print('execute_sql_stmt:', e)
+        info = sys.exc_info()
+        s = traceback.format_tb(info[2])
+        print('PLANGEN TRACEBACK:\n' +
+              str(e) + ' ... \n' + ''.join(s))
+        sys.stdout.flush()
         if not trap_exception:
             raise
     finally:
