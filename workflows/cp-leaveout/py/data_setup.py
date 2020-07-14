@@ -16,7 +16,9 @@ class TopN_Args:
         self.plan = plan
         self.fold = None
         self.incremental = 'True'
-        self.output = output 
+        self.cell_feature_selection = None
+        self.drug_feature_selection = None
+        self.output = output
 
 def pre_run(params):
     import sys, time
