@@ -21,7 +21,7 @@ args = parser.parse_args()
 log_list = args.directory + "/log-list.txt"
 node_pkl = args.directory + "/node-info.pkl"
 
-logging.basicConfig(level=logging.WARN, format="%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 def read_log_filenames(log_list):
     result = []
@@ -46,10 +46,15 @@ def parse_logs(log_files):
     nodes = {}
     logging.warning("Opening %i log files..." % len(log_files))
     try:
+        total = len(log_files)
+        index = 0
         for log_file in log_files:
-            logging.info("Opening: " + log_file)
+            progress = "%4i/%4i (%2.f%%)" % \
+                       (index, total, 100.0*index/total)
+            logging.info("Opening: %12s %s" % (progress, log_file))
             with open(log_file) as fp:
                 parse_log(fp, nodes)
+            index += 1
     except IOError as e:
         abort(e, os.EX_IOERR, "Could not read: " + log_file)
     return nodes

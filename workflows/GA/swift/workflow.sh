@@ -108,9 +108,36 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+# Use for Summit (LSF needs two %)
+if [[ ${SITE:-} == "summit" ]]
+then
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+fi
+
+mkdir -pv $TURBINE_OUTPUT/out
+
+#swift-t -n $PROCS \
+#        -o $TURBINE_OUTPUT/workflow.tic \
+if [[ ${MACHINE:-} == "" ]]
+then
+  STDOUT=$TURBINE_OUTPUT/output.txt
+  # The turbine-output link is only created on scheduled systems,
+  # so if running locally, we create it here so the test*.sh wrappers
+  # can find it
+  [[ -L turbine-output ]] && rm turbine-output
+  ln -s $TURBINE_OUTPUT turbine-output
+else
+  # When running on a scheduled system, Swift/T automatically redirects
+  # stdout to the turbine-output directory.  This will just be for
+  # warnings or unusual messages
+  STDOUT=""
+fi
+
 # echo's anything following this to standard out
 
-swift-t -n $PROCS \
+swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPY -r $EQPY \
         -I $OBJ_DIR \
@@ -131,5 +158,18 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
-        
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
+    tee $STDOUT
+
+
+if (( ${PIPESTATUS[0]} ))
+then
+  echo "workflow.sh: swift-t exited with error!"
+  exit 1
+fi
+
+# echo "EXIT CODE: 0" | tee -a $STDOUT
+
+# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
+echo $TURBINE_OUTPUT > turbine-directory.txt
+      

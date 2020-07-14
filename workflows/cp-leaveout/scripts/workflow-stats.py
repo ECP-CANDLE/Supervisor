@@ -115,7 +115,8 @@ for node in data.values():
     stops .add(node.stage, node.stopped_early)
     losses.add(node.stage, node.val_loss)
     times.add(node.stage,  node.total_time(data))
-    if node.val_loss < best_val_loss.val_loss: best_val_loss = node
+    if node.stage == 5 and node.val_loss < best_val_loss.val_loss:
+        best_val_loss = node
 
 tm_m = tm_s / 60
 tm_h = tm_m / 60

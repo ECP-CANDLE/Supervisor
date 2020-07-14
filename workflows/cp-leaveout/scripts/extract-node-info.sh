@@ -3,7 +3,8 @@ set -eu
 
 # EXTRACT NODE INFO SH
 # Extract all data from all logs in given experiment directory
-# Provide an experiment directory
+# Provide an experiment directory DIR
+# Creates $DIR/node-info.pkl
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
