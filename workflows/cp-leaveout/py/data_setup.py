@@ -62,7 +62,7 @@ def pre_run(params):
 
     data = params["benchmark_data"]
     try:
-        for filename in [ "cache", "uno_auc_model.txt" ]:
+        for filename in [ "uno_auc_model.txt" ]: # "cache",
             if not os.path.islink(filename):
                 os.symlink(f"{data}/{filename}", filename)
     except Exception as e:
