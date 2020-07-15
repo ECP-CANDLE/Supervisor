@@ -4,11 +4,14 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-46}
+export PROCS=${PROCS:-276}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-6}
+
+# for summit use these options
+export TURBINE_LAUNCH_OPTIONS="-a 1 -g 1 -c 1"
 
 export WALLTIME=${WALLTIME:-06:00:00}
 

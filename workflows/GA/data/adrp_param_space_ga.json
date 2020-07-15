@@ -1,4 +1,4 @@
-i[
+[
   {
     "name": "dense",
     "type": "categorical",
@@ -28,8 +28,8 @@ i[
   {
     "name": "epochs",
     "type": "int",
-    "lower": 90,
-    "upper": 90,
+    "lower": 200,
+    "upper": 200,
     "sigma": 20
   },
   {
