@@ -156,6 +156,7 @@ swift-t -O 0 -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e SH_TIMEOUT \
+        -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
