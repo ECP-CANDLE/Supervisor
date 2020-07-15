@@ -18,6 +18,9 @@ class Node:
         self.stage = None
         # Number of training steps performed
         self.steps = 0
+        self.loss = None
+        # Difference wrt parent (lower is better)
+        self.loss_delta = None
         self.val_loss = None
         # Difference wrt parent (lower is better)
         self.val_loss_delta = None
@@ -67,10 +70,10 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-12s : %i : %2i / %2i : %0.5f : %s - %s : %s" % \
+        return "%-12s : %i : %2i / %2i : loss: %0.5f vl: %0.5f : %s - %s : %s" % \
             (self.id, self.stage,
              self.epochs_actual, self.epochs_planned,
-             self.val_loss,
+             self.loss, self.val_loss,
              self.date_start, self.date_stop,
              special)
 
@@ -126,7 +129,8 @@ class Node:
         self.steps += int(stepii[0])
         time_s = tokens[td+2] # e.g., "321s"
         self.time += int(time_s[0:-1])
-        # Always collect val_loss: early stopping could happen:
+        # Always collect losses: early stopping could happen:
+        self.loss     = float(tokens[td+6])
         self.val_loss = float(tokens[td+15])
 
     def get_val_loss_delta(node):

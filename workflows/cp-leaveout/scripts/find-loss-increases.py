@@ -43,10 +43,46 @@ except IOError as e:
 print("total nodes: %i" % len(data))
 
 # Artificial nodes for comparison:
-node_worst = Node("WORST")
-node_worst.val_loss = 0
-node_best  = Node("BEST")
-node_best.val_loss = 1000
+node_loss_worst = Node("WORST")
+node_loss_worst.loss = 0
+node_loss_best  = Node("BEST")
+node_loss_best.loss = 1000
+
+# List of Nodes where loss increased:
+increases_loss = []
+# Total Node count:
+total = 0
+# Stage 5 Nodes
+leaves = 0 
+for node_id in data.keys():
+    # print("node: " + node_id)
+    parent_id = node_id[0:-2] # '1.2.3' -> '1.2'
+    if len(parent_id) == 1: # stage=1
+        continue
+    if parent_id not in data:
+        print("parent not found.")
+        continue
+    current = data[node_id]
+    parent  = data[parent_id]
+    if current.stage == 5: leaves += 1
+    if not (args.stage == STAGE_ANY or args.stage == current.stage):
+        continue
+    current.loss_delta = current.loss - parent.loss
+    if current.loss_delta > 0:
+        increases_loss.append(current)
+    if current.val_loss > node_loss_worst.loss: node_worst = current
+    if current.val_loss < node_loss_best.loss:  node_best  = current
+    total += 1
+
+fraction = 100.0 * len(increases_loss) / total
+print('increases_loss/total = %i / %i (%02.f%%)' % \
+      (len(increases_loss), total, fraction))
+    
+# Artificial nodes for comparison:
+node_vl_worst = Node("WORST")
+node_vl_worst.val_loss = 0
+node_vl_best  = Node("BEST")
+node_vl_best.val_loss = 1000
 
 if args.stage != STAGE_ANY:
     print("STAGE: %i" % args.stage)
@@ -54,11 +90,11 @@ if args.stage != STAGE_ANY:
 leaves = 0 # stage 5 Nodes
 
 # List of Nodes where val_loss increased:
-increases = []
+increases_vl = []
 # Total Node count:
 total = 0
 for node_id in data.keys():
-    print("node: " + node_id)
+    # print("node: " + node_id)
     parent_id = node_id[0:-2] # '1.2.3' -> '1.2'
     if len(parent_id) == 1: # stage=1
         continue
@@ -72,23 +108,26 @@ for node_id in data.keys():
         continue
     current.val_loss_delta = current.val_loss - parent.val_loss
     if current.val_loss_delta > 0:
-        increases.append(current)
-    if current.val_loss > node_worst.val_loss: node_worst = current
-    if current.val_loss < node_best.val_loss:  node_best  = current
+        increases_vl.append(current)
+    if current.val_loss > node_vl_worst.val_loss: node_worst = current
+    if current.val_loss < node_vl_best.val_loss:  node_best  = current
     total += 1
 
 print("leaves: %i" % leaves)
 
 if total == 0: fail('No matching Nodes found!')
 
-fraction = 100.0 * len(increases) / total
-print('increases/total = %i / %i (%02.f%%)' % (len(increases), total, fraction))
+fraction = 100.0 * len(increases_vl) / total
+print('increases_vl/total = %i / %i (%02.f%%)' % \
+      (len(increases_vl), total, fraction))
 
-file_increases = "increases-%s.data" % args.token
-append(file_increases, "%i %5.1f" % (args.stage, fraction))
+file_increases_vl = "increases-vl-%s.data" % args.token
+append(file_increases_vl, "%i %5.1f" % (args.stage, fraction))
 
 print('worst val_loss: ' + str(node_worst))
 print('best  val_loss: ' + str(node_best))
+
+exit()
 
 print('DELTAS:')
 
