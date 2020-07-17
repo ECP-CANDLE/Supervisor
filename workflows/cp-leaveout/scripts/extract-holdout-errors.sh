@@ -29,4 +29,4 @@ for NODE in $NODES
 do
   LOG=$DIR/run/$NODE/save/python.log
   awk -f $EXTRACT_HOLDOUT_ERRORS_AWK -v node=$NODE < $LOG
-done > $DIR/holdout-errors2.txt
+done > $DIR/holdout-errors.txt
