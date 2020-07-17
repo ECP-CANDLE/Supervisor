@@ -24,10 +24,9 @@ fi
 
 EXTRACT_HOLDOUT_ERRORS_AWK=$THIS/extract-holdout-errors.awk
 
-RUNS=$( ls $DIR/run )
-for RUN in $RUNS
+NODES=$( ls $DIR/run )
+for NODE in $NODES
 do
-  NODE=$( basename $RUN )
-  LOG=$DIR/run/$RUN/save/python.log
+  LOG=$DIR/run/$NODE/save/python.log
   awk -f $EXTRACT_HOLDOUT_ERRORS_AWK -v node=$NODE < $LOG
-done > $DIR/holdout-errors.txt
+done > $DIR/holdout-errors2.txt
