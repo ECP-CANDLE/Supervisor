@@ -87,10 +87,18 @@ def parse_log(log_fp, nodes):
         if node_current != None and node_current.complete:
             # Store a complete Node in global dict nodes
             nodes[node_current.id] = node_current
+            find_val_data(node_current)
             nodes_found += 1
             node_current = None
 
     logging.info("Found %i nodes in log." % nodes_found)
+
+def find_val_data(node):
+    python_log = args.directory + "/run/%s/save/python.log" % node.id
+    with open(python_log) as fp:
+        node.parse_val_data(fp)
+    if node.val_data == None:
+        logging.fatal("Could not find val data for node: " + node.id)
 
 # List of log file names
 log_files = read_log_filenames(log_list)

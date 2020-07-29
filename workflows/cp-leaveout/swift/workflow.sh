@@ -195,8 +195,10 @@ else
   STDOUT=""
 fi
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+TURBINE_STDOUT="" # "$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
+
+echo PROCS $PROCS
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \

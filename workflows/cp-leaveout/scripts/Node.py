@@ -4,7 +4,7 @@
 # The training node information as stored in the logs
 # See the footer of this file for example log text that is parsed here
 
-import math
+# import math
 
 class Node:
 
@@ -22,7 +22,10 @@ class Node:
         # Difference wrt parent (lower is better)
         self.loss_delta = None
         self.val_loss = None
-        # Difference wrt parent (lower is better)
+        # Validation set size
+        self.val_data = None
+        # Differences wrt parent (lower is better)
+        self.loss_delta = None
         self.val_loss_delta = None
         # Epochs prescribed by the workflow
         self.epochs_planned = None
@@ -55,11 +58,12 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "Node [%s]: %s (epochs=%i/%s, val_loss=%s)%s" % \
+        return "Node [%s]: %s (epochs=%i/%s, loss=%s, val_loss=%s)%s" % \
             (Node.maybe_str_integer(self.stage),
              self.id,
              self.epochs_actual,
              Node.maybe_str_integer(self.epochs_planned),
+             Node.maybe_str_float(self.loss,     "%0.6f"),
              Node.maybe_str_float(self.val_loss, "%0.6f"),
              special)
 
@@ -99,7 +103,7 @@ class Node:
         assert len(tokens) == 2
         self.epochs_actual = int(ints[0])
         self.debug("epochs_actual: " + str(self.epochs_actual))
-        
+
     def stop_early(self):
         self.stopped_early = True
         self.debug("STOP EARLY")
@@ -133,8 +137,29 @@ class Node:
         self.loss     = float(tokens[td+6])
         self.val_loss = float(tokens[td+15])
 
+    def parse_val_data(self, fp):
+        """
+        fp is the file pointer to save/python.log
+        If val data is not found, node.val_data will remain None
+        """
+        marker = "val data = "
+        marker_length = len(marker)
+        while True:
+            line = fp.readline()
+            if line == "": break
+            index = line.find("val data =")
+            if index == -1: continue
+            tail = line[index+marker_length:]
+            comma = tail.find(",")
+            value_string = tail[:comma]
+            self.val_data = int(value_string)
+
+    def get_loss_delta(node):
+        if node.loss_delta == None:
+            raise ValueError("No loss_delta!")
+        return node.loss_delta
+
     def get_val_loss_delta(node):
-        ''' For sorting '''
         if node.val_loss_delta == None:
             raise ValueError("No val_loss_delta!")
         return node.val_loss_delta
@@ -164,6 +189,10 @@ parse_epochs() ==> self.epochs_planned
 parse_epoch_status() (from Keras)
 
 Epoch 29/50
+
+parse_val_data() ==> self.val_data
+
+2020-04-15 13:45:41 CV fold 0: train data = 5265, val data = 1400, test data = 0
 
 stop_early()
 

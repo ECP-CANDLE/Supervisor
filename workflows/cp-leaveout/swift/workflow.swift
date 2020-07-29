@@ -34,6 +34,10 @@ import python;
 import string;
 import sys;
 
+
+printf("OK");
+
+
 import candle_utils;
 
 report_env();
@@ -79,7 +83,7 @@ string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
 
-// For compatibility with obj():
+// // For compatibility with obj():
 global const string FRAMEWORK = "keras";
 
 /** RUN STAGE: A recursive function that manages the stage dependencies */
