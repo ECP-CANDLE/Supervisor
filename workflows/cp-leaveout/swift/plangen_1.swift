@@ -1,3 +1,9 @@
+
+/*
+  PLANGEN 1 SWIFT
+  An early attempt at plangen with FS locks - did not work.
+*/
+
 import python;
 
 pragma worktypedef DB;
