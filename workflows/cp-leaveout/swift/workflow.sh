@@ -207,7 +207,7 @@ swift-t -O 0 -n $PROCS \
         -i $OBJ_MODULE \
         -I $EMEWS_PROJECT_ROOT/swift \
         -i $EPOCH_MODE_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
