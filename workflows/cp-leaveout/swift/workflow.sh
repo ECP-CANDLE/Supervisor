@@ -202,7 +202,7 @@ echo PROCS $PROCS
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
-        -p -I $EQR -r $EQR \
+        -p \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
         -I $EMEWS_PROJECT_ROOT/swift \
