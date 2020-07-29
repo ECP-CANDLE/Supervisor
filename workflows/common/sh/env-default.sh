@@ -15,3 +15,5 @@ then
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
 
+# This can be used for an OpenMPI hosts file
+# export TURBINE_LAUNCH_OPTIONS="--hostfile $HOME/hosts.txt"
