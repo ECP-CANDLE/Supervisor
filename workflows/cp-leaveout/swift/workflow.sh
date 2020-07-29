@@ -30,22 +30,24 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME EPOCH_MODE"
+  echo "             EPOCH_MODE is one of the compute_epochs_*.swift modules."
 }
 
-if (( ${#} < 5 ))
+if (( ${#} < 6 ))
 then
   usage
   exit 1
 fi
 
+set -x
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
-  EPOCH_MODE=${6:-log} # Default to log mode
+  EPOCH_MODE=$6
  }
 then
   usage
@@ -56,6 +58,8 @@ shift 6
 WORKFLOW_ARGS=$*
 
 echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
+
+set +x
 
 source_site env   $SITE
 source_site sched $SITE
@@ -197,8 +201,6 @@ fi
 
 TURBINE_STDOUT="" # "$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
-
-echo PROCS $PROCS
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
