@@ -40,7 +40,6 @@ then
   exit 1
 fi
 
-set -x
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
@@ -171,15 +170,6 @@ if (( ${WAIT:-0} ))
 then
   WAIT_ARG="-t w"
   echo "Turbine will wait for job completion."
-fi
-
-#echo ${CMD_LINE_ARGS[@]}
-
-if [[ ${MACHINE:-} == "" ]]
-then
-  # Why? -Justin 2019-05-31
-  # rm turbine-output
-  :
 fi
 
 # which python swift-t java
