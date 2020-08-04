@@ -49,6 +49,8 @@ PLAN_JSON=""
 DATAFRAME_CSV=""
 BENCHMARK_DATA=""
 
+PYTHONPATH+=:$HOME/proj/ai-apps/resnet-50
+export PYTHONPATH
 export RESNET50_TRAIN_DIR=/tmp
 export RESNET50_VAL_DIR=/tmp
 
