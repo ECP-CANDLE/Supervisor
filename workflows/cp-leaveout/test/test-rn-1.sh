@@ -49,6 +49,9 @@ PLAN_JSON=""
 DATAFRAME_CSV=""
 BENCHMARK_DATA=""
 
+export RESNET50_TRAIN_DIR=/tmp
+export RESNET50_VAL_DIR=/tmp
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $EPOCH_MODE $WORKFLOW_ARGS \

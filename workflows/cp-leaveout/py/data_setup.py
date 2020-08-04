@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 import traceback
 from runner_utils import ModelResult
-import topN_to_uno
 
 class TopN_Args:
     def __init__(self, dataframe_from, node, plan, output):
@@ -21,9 +20,22 @@ class TopN_Args:
         self.output = output
 
 def pre_run(params):
-    import sys, time
+    ''' returns a ModelResult '''
+    import importlib, sys, time
     print("data_setup.pre_run(): node: '%s' ..." % params["node"])
     sys.stdout.flush()
+
+    if "data_setup_pkg_name" not in params:
+        print("data_setup: no params[data_setup_pkg_name].")
+        return ModelResult.SUCCESS
+
+    data_setup_pkg_name = params["data_setup_pkg_name"]
+    print("data_setup.pre_run(): importing: '%s' ..." %
+          data_setup_pkg_name)
+    data_setup_pkg = importlib.import_module(data_setup_pkg_name)
+    print("data_setup.pre_run(): imported: '%s' ..." %
+          data_setup_pkg_name)
+    # import topN_to_uno
 
     # check NVMe disk is available
     username = os.environ['USER']
@@ -70,12 +82,13 @@ def pre_run(params):
         return ModelResult.ERROR
 
     try:
-        print("data_setup: build_dataframe() ...")
+        print("data_setup: setup() ...")
         start = time.time()
-        topN_to_uno.build_dataframe(args)
+        # topN_to_uno.build_dataframe(args)
+        data_setup_pkg.setup(params)
         stop = time.time()
         duration = stop - start
-        print("data_setup: build_dataframe() OK : " +
+        print("data_setup: setup() OK : " +
               "%0.1f seconds." % duration)
     except ValueError:
         print("data_setup: caught ValueError for node: '%s'" %
@@ -83,7 +96,7 @@ def pre_run(params):
         traceback.print_exc(file=sys.stdout)
         return ModelResult.ERROR
     except Exception as e:
-        print("data_setup: error in build_dataframe!\n" + str(e))
+        print("data_setup: error in data_setup_pkg.setup()!\n" + str(e))
         traceback.print_exc()
         return ModelResult.ERROR
     print("data_setup.pre_run() done.")

@@ -160,7 +160,8 @@ run_stage(int N, int S, string this, int stage, void block,
 "epochs": %i,
 "es": "True",
 "use_exported_data": "topN.uno.h5",
-"benchmark_data": "%s"
+"benchmark_data": "%s",
+"data_setup_pkg_name": "resnet50_baseline_keras2"
 ---- %
 (plan_json, dataframe_csv, epochs, benchmark_data);
   if (stage > 1)
