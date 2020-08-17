@@ -6,7 +6,7 @@ set -eu
 # in given experiment directory
 # Provide an experiment directory DIR
 # Creates $DIR/holdout-errors.txt
-# See extract-holdout-errors.awk
+# See extract-holdout-errors.awk for file formats
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
