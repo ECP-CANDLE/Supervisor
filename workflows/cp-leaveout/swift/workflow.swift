@@ -34,11 +34,8 @@ import python;
 import string;
 import sys;
 
-
-printf("OK");
-
-
 import candle_utils;
+import plangen_0;
 
 report_env();
 
@@ -147,64 +144,6 @@ run_stage(int N, int S, string this, int stage, void block,
   }
 }
 
-// This DB configuration and python_db() function will put all
-// calls to python_db() on rank DB corresponding to
-// environment variable TURBINE_DB_WORKERS:
-
-pragma worktypedef DB;
-
-@dispatch=DB
-(string output) python_db(string code, string expr="repr(0)")
-"turbine" "0.1.0"
- [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
-
-// Simply use python_db() to log the DB rank:
-python_db(
-----
-import os, sys
-print("This rank is the DB rank: %s" % os.getenv("ADLB_RANK_SELF"))
-sys.stdout.flush()
-----
-);
-
-(string result) plangen_start(string node, string plan_id)
-{
-  result = python_db(
-----
-import sys, traceback
-import plangen
-try:
-    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    print('EXCEPTION in plangen_start()\\n' +
-          str(e) + ' ... \\n' + ''.join(s))
-    sys.stdout.flush()
-    result = "EXCEPTION"
-----  % (db_file, plan_json, plan_id, node, runtype),
-    "result");
-}
-
-(string result) plangen_stop(string node, string plan_id)
-{
-  result = python_db(
-----
-import plangen
-import fcntl, sys, traceback
-try:
-    result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    sys.stdout.write('EXCEPTION in plangen_stop()\\n' +
-                     str(e) + ' ... \\n' + ''.join(s) + '\\n')
-    sys.stdout.flush()
-    result = 'EXCEPTION'
----- % (db_file, plan_id, node),
-      "result");
-}
-
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
 (string result) make_json_fragment(string this, int stage)
 {
@@ -242,32 +181,10 @@ except Exception as e:
 printf("CP LEAVEOUT WORKFLOW: START: N=%i S=%i", N, S);
 
 // First: simple test that we can import plangen
-check = python_persist(----
-try:
-    import plangen
-    result = 'OK'
-except Exception as e:
-    result = str(e)
-----,
-"result");
-printf("python result: import plangen: '%s'", check) =>
-  assert(check == "OK", "could not import plangen, check PYTHONPATH!");
+check = plangen_check();
+assert(check == "OK", "could not import plangen, check PYTHONPATH!");
 
-// Initialize the DB
-plan_id = python_persist(
-----
-import sys, traceback
-import plangen
-try:
-    result = str(plangen.plan_prep('%s', '%s', %s))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
-    sys.stdout.flush()
-    result = 'EXCEPTION'
----- % (db_file, plan_json, runtype),
-"result");
+plan_id = plangen_prep(db_file, plan_json, "NOTHING");
 printf("DB plan_id: %s", plan_id);
 assert(plan_id != "EXCEPTION", "Plan prep failed!");
 
