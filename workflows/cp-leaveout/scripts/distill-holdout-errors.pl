@@ -1,3 +1,10 @@
+
+# DISTILL HOLDOUT ERRORS PL
+# Original holdout error plotting scripts from Brettin
+#          Slack #cp-leaveout 2020-07-24
+# Input:  holdout-errors.txt from extract-holdout-errors
+# Output: Plottable file for plot-holdout-errors.py
+
 $class = uc(shift @ARGV);
 if($class eq "MSE") {$idx=1}
 elsif($class eq "MAE") {$idx=2}
@@ -22,3 +29,4 @@ foreach $s (sort keys %h) {
         print $h{"1.$1.$2.$3.$4.$5"}, "\t";
         print "$class\n";
     }
+}
