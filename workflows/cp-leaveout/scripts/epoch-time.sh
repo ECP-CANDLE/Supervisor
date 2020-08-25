@@ -33,10 +33,9 @@ echo "epoch-time.sh: found ${#NODES[@]} nodes ..."
   do
     echo "epoch-time: node $NODE"
     PYTHON_LOG=$DIR/run/$NODE/save/python.log
-    if [[ ! -e $PYTHON_LOG ]]
+    if [[ -e $PYTHON_LOG ]]
     then
-      continue
+      cat $PYTHON_LOG
     fi
-    cat $PYTHON_LOG
   done
 } | python $THIS/epoch-time.py
