@@ -33,7 +33,7 @@ COMPLETE / TOTAL = 1364 / 1364 : 0 remaining.
 
 ==== Generate a Node Pickle (extract-node-info)
 
-This is a Python Pickle containing the Node data.  See Node.py .
+This makes the Python Pickle containing the Node data.  See Node.py .
 This avoids needing to walk all logs all the time (which takes tens of seconds).
 
 ----
@@ -42,11 +42,11 @@ $ scripts/extract-node-info.sh $D
 
 ==== Print Node info (print-node-info)
 
-Prints a big table of all Node statistics:
+Prints a big table of all Node statistics using the Node Pickle.
 
 Format:
 
-NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
+NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX LOSS VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
 
 ----
 $ scripts/print-node-info.sh $D

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# MLRMBO TEST 1
+# MLRMBO TEST NIGHTLY
 
 usage()
 {

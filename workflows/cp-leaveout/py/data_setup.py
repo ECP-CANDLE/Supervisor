@@ -16,7 +16,9 @@ class TopN_Args:
         self.plan = plan
         self.fold = None
         self.incremental = 'True'
-        self.output = output 
+        self.cell_feature_selection = None
+        self.drug_feature_selection = None
+        self.output = output
 
 def pre_run(params):
     import sys, time
@@ -25,8 +27,8 @@ def pre_run(params):
 
     # check NVMe disk is available
     username = os.environ['USER']
-    nvme_enabled = Path('/mnt/bb/{}'.format(username)).exists()
-
+    # nvme_enabled = Path('/mnt/bb/{}'.format(username)).exists()
+    nvme_enabled = False
     if nvme_enabled:
         # copy original datafrom to NVMe disk space
         try:
@@ -49,10 +51,10 @@ def pre_run(params):
             return ModelResult.ERROR
         params["dataframe_from"] = dest.resolve()
         params["use_exported_data"] = "/mnt/bb/{}/{}".format(username, params["use_exported_data"])
-        
+
     # softlink to cache & config file
     # build node specific training/validation dataset
-    
+
     args = TopN_Args(params["dataframe_from"],
                      params["node"],
                      params["plan"],
@@ -60,7 +62,7 @@ def pre_run(params):
 
     data = params["benchmark_data"]
     try:
-        for filename in [ "cache", "uno_auc_model.txt" ]:
+        for filename in [ "uno_auc_model.txt" ]: # "cache",
             if not os.path.islink(filename):
                 os.symlink(f"{data}/{filename}", filename)
     except Exception as e:
@@ -79,7 +81,7 @@ def pre_run(params):
         print("data_setup: caught ValueError for node: '%s'" %
               params["node"]) # new 2019-12-02
         traceback.print_exc(file=sys.stdout)
-        return ModelResult.SKIP
+        return ModelResult.ERROR
     except Exception as e:
         print("data_setup: error in build_dataframe!\n" + str(e))
         traceback.print_exc()

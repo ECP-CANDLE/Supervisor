@@ -64,17 +64,18 @@ def parse_log(log_fp, nodes):
     node_current = None
     while True:
         line = log_fp.readline()
-        if line == "":
-            break
+        if line == "": break
         if "PARAM UPDATE START" in line:
             node_current = Node()
             node_current.parse_date_start(line)
-        if "MODEL RUNNER DEBUG  node =" in line:
+        if "MODEL RUNNER DEBUG node =" in line:
             tokens = line.split()
             node_id = tokens[-1].strip()
             node_current.set_id(node_id)
-        elif "MODEL RUNNER DEBUG  epochs =" in line:
+        elif "MODEL RUNNER DEBUG epochs =" in line:
             node_current.parse_epochs(line)
+        elif line.startswith("Epoch ") and "/" in line:
+            node_current.parse_epoch_status(line)
         elif Node.training_done in line:
              node_current.parse_training_done(line)
         elif "early stopping" in line:
@@ -84,12 +85,20 @@ def parse_log(log_fp, nodes):
         elif "DONE: run_id" in line:
             node_current.parse_date_stop(line)
         if node_current != None and node_current.complete:
-            # Store a complete Node
+            # Store a complete Node in global dict nodes
             nodes[node_current.id] = node_current
+            find_val_data(node_current)
             nodes_found += 1
             node_current = None
 
     logging.info("Found %i nodes in log." % nodes_found)
+
+def find_val_data(node):
+    python_log = args.directory + "/run/%s/save/python.log" % node.id
+    with open(python_log) as fp:
+        node.parse_val_data(fp)
+    if node.val_data == None:
+        logging.fatal("Could not find val data for node: " + node.id)
 
 # List of log file names
 log_files = read_log_filenames(log_list)

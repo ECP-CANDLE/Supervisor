@@ -22,6 +22,5 @@ a = ds[:,:,:]
 # print(ds.shape)
 # print(ds.dtype)
 a8 = a.astype('float64')
-# print(a[0,0,0])
 
 a8.tofile(args.output)

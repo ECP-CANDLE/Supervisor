@@ -30,22 +30,24 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME EPOCH_MODE"
+  echo "             EPOCH_MODE is one of the compute_epochs_*.swift modules."
 }
 
-if (( ${#} < 5 ))
+if (( ${#} < 6 ))
 then
   usage
   exit 1
 fi
 
+set -x
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
-  EPOCH_MODE=${6:-log} # Default to log mode
+  EPOCH_MODE=$6
  }
 then
   usage
@@ -56,6 +58,8 @@ shift 6
 WORKFLOW_ARGS=$*
 
 echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
+
+set +x
 
 source_site env   $SITE
 source_site sched $SITE
@@ -110,9 +114,9 @@ then
   if [[ ! -f $TURBINE_OUTPUT/output.txt ]]
   then
     # If output.txt does not exist, assume the moves already happened
-    echo "The outputs were already moved from $EXPID"
+    echo "WARNING: The outputs were already moved from $EXPID"
   else
-    next $TURBINE_OUTPUT/restarts/%i
+    next $TURBINE_OUTPUT/restarts/%i # cf. utils.sh:next()
     PRIOR_RUN=$REPLY
     echo "Moving old outputs to $PRIOR_RUN"
     mkdir -pv $PRIOR_RUN
@@ -122,6 +126,18 @@ then
              $TURBINE_OUTPUT/jobid.txt )
     mv    ${PRIORS[@]}            $PRIOR_RUN
     cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
+    echo $TURBINE_OUTPUT/run/*/save
+    for D in $TURBINE_OUTPUT/run/*/save
+    do
+      cd $D
+      echo D=$D
+      shopt -s nullglob
+      for f in *.json *.h5 *.log
+      do
+        : # cp -v --backup=numbered $f $f.bak
+      done
+      cd -
+    done
   fi
 else # Not a restart
   if [[ -f $TURBINE_OUTPUT/output.txt ]]
@@ -183,17 +199,17 @@ else
   STDOUT=""
 fi
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+TURBINE_STDOUT="" # "$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
-        -p -I $EQR -r $EQR \
+        -p \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
         -I $EMEWS_PROJECT_ROOT/swift \
         -i $EPOCH_MODE_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \

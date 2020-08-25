@@ -1,0 +1,38 @@
+
+== DB Tools
+
+Tools for the CP SQLite DB.
+
+=== print-db
+
+Dump a DB file to text output
+
+----
+$ ./print-db.sh workflow-1.db
+----
+
+=== diff-dbs
+
+Show difference between two DB files
+
+----
+$ ./diff-dbs.sh workflow-1.db workflow-2.db
+----
+
+=== print-stats
+
+Show short DB stats.
+
+----
+$ ./print-stats.sh workflow-1.db
+COMPLETE / TOTAL = 1364 / 1364 : 0 remaining.
+----
+
+=== reset-node
+
+Reset (delete) DB nodes, forcing them to be re-run
+
+----
+$ db/reset-node.sh experiments/X085/restarts-1/cplo.db 1.2.3.2
+----
+

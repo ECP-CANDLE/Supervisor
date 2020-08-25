@@ -168,7 +168,12 @@ get_expid()
   then
     shift
     # Search for free experiment number
-    mkdir -pv $EXPERIMENTS
+    if ! mkdir -pv $EXPERIMENTS
+    then
+      echo "get_expid(): could not make experiments directory:" \
+           $EXPERIMENTS
+      return 1
+    fi
     EXPS=( $( ls $EXPERIMENTS ) )
     if (( ${#EXPS[@]} != 0 ))
     then
