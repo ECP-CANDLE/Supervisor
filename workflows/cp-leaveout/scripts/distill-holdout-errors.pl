@@ -37,12 +37,11 @@ foreach $id (sort keys %h) {
     if (/$id\./ ~~ %h) { next; }
 
     # Construct a line for the output TSV via prepend:
+    # Gets the parent ids for each id (drops 2 trailing chars)
+    #      until the id is too short
     @line = ();
-    while (1) {
+    for ( ; length $id > 2 ; $id = substr $id, 0, -2) {
         unshift(@line, "$h{$id}\t");
-        # Get the parent id for this id (drop 2 trailing chars):
-        $id = substr $id, 0, -2;
-        if (length $id < 2) { last; }
     }
     # Fill in any missing stages (pandas can handle a blank value):
     while (scalar @line < $stages) {
