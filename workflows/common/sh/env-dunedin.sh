@@ -4,7 +4,7 @@
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 
 # Python
-PY=/home/wozniak/Public/sfw/anaconda3
+PY=/home/wozniak/Public/sfw/anaconda3-tf
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 export PYTHONHOME=$PY
