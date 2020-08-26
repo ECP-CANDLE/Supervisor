@@ -33,7 +33,7 @@ use experimental 'smartmatch';
 
 # Plot one line for each "leaf" node - a node ID with no children
 foreach $id (sort keys %h) {
-    # Loop if there any children of this node in the hash
+    # Loop if there are any children of this node in the hash
     if (/$id\./ ~~ %h) { next; }
 
     # Construct a line for the output TSV via prepend:
