@@ -58,8 +58,6 @@ WORKFLOW_ARGS=$*
 
 echo "WORKFLOW.SH: Running model: $MODEL_NAME for EXPID: $EXPID"
 
-set +x
-
 source_site env   $SITE
 source_site sched $SITE
 
