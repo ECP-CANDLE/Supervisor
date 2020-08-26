@@ -7,7 +7,7 @@ import sys
 import json
 import os
 import time
-import numpy as np
+# import numpy as np # unused? -Wozniak 2020-07-29
 import importlib
 import runner_utils
 from runner_utils import ModelResult
