@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes for Swift/T and the DB
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-4}
+export PROCS=${PROCS:-2}
 
 # # Number of processes to use for resident tasks,
 # # i.e., the number of mlrMBO instances to run
