@@ -43,7 +43,6 @@ except IOError as e:
 print("total nodes: %i" % len(data))
 
 # Artificial nodes for comparison:
-# !! Updated upstream
 node_loss_worst = Node("WORST")
 node_loss_worst.loss = 0
 node_loss_best  = Node("BEST")
@@ -84,7 +83,6 @@ node_vl_worst = Node("WORST")
 node_vl_worst.val_loss = 0
 node_vl_best  = Node("BEST")
 node_vl_best.val_loss = 1000
-# ==
 # val_loss:
 node_worst_val_loss = Node("WORST VAL_LOSS")
 node_worst_val_loss.val_loss = 0
@@ -95,12 +93,10 @@ node_worst_loss = Node("WORST LOSS")
 node_worst_loss.loss = 0
 node_best_loss  = Node("BEST LOSS")
 node_best_loss.loss = 1000
-# !! Stashed changes
 
 if args.stage != STAGE_ANY:
     print("STAGE: %i" % args.stage)
 
-# !! Updated upstream
 leaves = 0 # stage 5 Nodes
 
 # List of Nodes where val_loss increased:
@@ -126,7 +122,7 @@ for node_id in data.keys():
     if current.val_loss > node_vl_worst.val_loss: node_worst = current
     if current.val_loss < node_vl_best.val_loss:  node_best  = current
     total += 1
-# ==
+
 def get_increases():
     # List of Nodes where loss increased:
     global increases_loss
@@ -181,20 +177,18 @@ def get_increases():
 # total:  count of Nodes
 # leaves: count of stage 5 Nodes
 total, leaves = get_increases()
-# !! Stashed changes
 
 print("leaves: %i" % leaves)
 
 if total == 0: fail('No matching Nodes found!')
 
-# !! Updated upstream
 fraction = 100.0 * len(increases_vl) / total
 print('increases_vl/total = %i / %i (%02.f%%)' % \
       (len(increases_vl), total, fraction))
 
 file_increases_vl = "increases-vl-%s.data" % args.token
 append(file_increases_vl, "%i %5.1f" % (args.stage, fraction))
-# ==
+
 fraction = 100.0 * len(increases_loss) / total
 print('increases_loss/total = %i / %i (%02.f%%)' % \
       (len(increases_loss), total, fraction))
@@ -206,14 +200,11 @@ print('increases_val_loss/total = %i / %i (%02.f%%)' % \
       (len(increases_val_loss), total, fraction))
 filename = "increases-val_loss-%s.data" % args.token
 append(filename, "%i %5.1f" % (args.stage, fraction))
-# !! Stashed changes
 
 print('worst loss:     ' + str(node_worst_loss))
 print('best  loss:     ' + str(node_best_loss))
 print('worst val_loss: ' + str(node_worst_val_loss))
 print('best  val_loss: ' + str(node_best_val_loss))
-
-exit()
 
 print('DELTAS:')
 
