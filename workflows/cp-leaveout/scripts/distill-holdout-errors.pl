@@ -33,16 +33,15 @@ use experimental 'smartmatch';
 
 # Plot one line for each "leaf" node - a node ID with no children
 foreach $id (sort keys %h) {
-    # Loop if there any children of this node in the hash
+    # Loop if there are any children of this node in the hash
     if (/$id\./ ~~ %h) { next; }
 
     # Construct a line for the output TSV via prepend:
+    # Gets the parent ids for each id (drops 2 trailing chars)
+    #      until the id is too short
     @line = ();
-    while (1) {
+    for ( ; length $id > 2 ; $id = substr $id, 0, -2) {
         unshift(@line, "$h{$id}\t");
-        # Get the parent id for this id (drop 2 trailing chars):
-        $id = substr $id, 0, -2;
-        if (length $id < 2) { last; }
     }
     # Fill in any missing stages (pandas can handle a blank value):
     while (scalar @line < $stages) {
