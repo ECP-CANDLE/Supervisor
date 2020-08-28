@@ -115,7 +115,7 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 # log_path PYTHONPATH
 
-WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow-noise.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""
@@ -148,7 +148,7 @@ fi
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow-noise.swift $TURBINE_OUTPUT
 
 if [[ ${SITE} == "summit" ]]
 then

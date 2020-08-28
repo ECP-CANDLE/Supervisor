@@ -6,7 +6,7 @@ set -eu
 # in given experiment directory
 # Provide an experiment directory DIR
 # Creates $DIR/holdout-errors.txt
-# See extract-holdout-errors.awk
+# See extract-holdout-errors.awk for file formats
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
@@ -24,9 +24,21 @@ fi
 
 EXTRACT_HOLDOUT_ERRORS_AWK=$THIS/extract-holdout-errors.awk
 
-NODES=$( ls $DIR/run )
-for NODE in $NODES
+# Missing python.logs (usually due to no data):
+MISSING=0 
+NODES=( $( ls $DIR/run ) )
+# set -x
+echo "NODES: ${#NODES[@]}"
+# echo ${NODES[@]}
+for NODE in ${NODES[@]}
 do
   LOG=$DIR/run/$NODE/save/python.log
-  awk -f $EXTRACT_HOLDOUT_ERRORS_AWK -v node=$NODE < $LOG
+  if [[ -r $LOG ]]
+  then
+    awk -f $EXTRACT_HOLDOUT_ERRORS_AWK -v node=$NODE < $LOG
+  else
+    MISSING=$(( MISSING + 1 ))
+  fi
 done > $DIR/holdout-errors.txt
+
+echo "Missing python.logs: $MISSING"
