@@ -51,11 +51,16 @@ BENCHMARK_DATA=""
 
 PYTHONPATH+=:$HOME/proj/ai-apps/resnet-50
 export PYTHONPATH
+
+# DATA_DIR should contain tiny-imagenet-200/ which has train/ and val/
 # export RESNET50_TRAIN_DIR=/tmp
 # export RESNET50_VAL_DIR=/tmp
 # export RESNET50_TRAIN_DIR=/dev/shm/tiny-imagenet-200/train
 # export RESNET50_VAL_DIR=/dev/shm/tiny-imagenet-200/val
-export RESNET50_DATA_DIR=/dev/shm
+# Stan:
+# export RESNET50_DATA_DIR=/dev/shm
+# Dunedin:
+export RESNET50_DATA_DIR=/usb2/wozniak/ResNet-Data
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
