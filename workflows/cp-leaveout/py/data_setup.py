@@ -77,6 +77,9 @@ def pre_run(params):
         duration = stop - start
         print("data_setup: build_dataframe() OK : " +
               "%0.1f seconds." % duration)
+    except topN_to_uno.topN_NoDataException:
+        print("data_setup: caught topN_NoDataException: SKIP")
+        return ModelResult.SKIP
     except ValueError:
         print("data_setup: caught ValueError for node: '%s'" %
               params["node"]) # new 2019-12-02
