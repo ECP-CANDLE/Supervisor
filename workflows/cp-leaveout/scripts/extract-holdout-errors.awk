@@ -24,6 +24,6 @@ $3 == "Comparing" {
   mae = $3 " " $4
   getline
   r2 = $3 " " $4
-  printf "%-12s %s %s %s\n", node, mse, mae, r2
+  printf "%-14s %s %s %s\n", node, mse, mae, r2
   exit
 }
