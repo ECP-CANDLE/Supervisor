@@ -46,7 +46,7 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow-noise.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
+$EMEWS_PROJECT_ROOT/swift/workflow-gnoise.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
 # Wait for job
 TURBINE_OUTPUT=$( readlink turbine-output )
