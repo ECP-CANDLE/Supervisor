@@ -5,6 +5,7 @@
 MACHINE="-m lsf"
 
 # Default PROJECT for CANDLE
-export PROJECT=${PROJECT:-MED106}
+#export QUEUE=${QUEUE:-batch-hm}
+export PROJECT=${PROJECT:-MED110}
 
 # export TURBINE_OUTPUT_SOFTLINK=/dev/null

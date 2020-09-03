@@ -109,13 +109,13 @@ mkdir -pv $TURBINE_OUTPUT/hpo_log
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_IMPL="py"
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+OBJ_MODULE=${OBJ_MODULE:-obj_abstention_$SWIFT_IMPL}
 # This is used by the obj_app objective function
-export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
+export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model_abstention.sh
 
 # log_path PYTHONPATH
 
-WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow-abstention.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""
@@ -148,15 +148,12 @@ fi
 #echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow-noise.swift $TURBINE_OUTPUT
 
 if [[ ${SITE} == "summit" ]]
 then
   export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 fi
-
-
-export TURBINE_DIRECTIVE="#BSUB -q batch-hm"
 TURBINE_RESIDENT_WORK_WORKERS=1
 
 swift-t -n $PROCS \
