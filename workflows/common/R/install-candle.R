@@ -16,11 +16,11 @@ options(repos = r)
 # Force Plotly 4.5.6 - not latest! Do not want shiny/httpuv, it does not work on Cooley!
 install.packages("https://cran.r-project.org/src/contrib/Archive/plotly/plotly_4.5.6.tar.gz")
 
-PKGS=(
+PKGS <- list(
     "smoof",
     "rgenoud",
     "DiceKriging",
-    "randomForest"
+    "randomForest",
     "jsonlite",
     "parallelMap",
     "RInside",
