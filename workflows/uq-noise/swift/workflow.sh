@@ -154,6 +154,9 @@ if [[ ${SITE} == "summit" ]]
 then
   export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 fi
+
+
+export TURBINE_DIRECTIVE="#BSUB -q batch-hm"
 TURBINE_RESIDENT_WORK_WORKERS=1
 
 swift-t -n $PROCS \

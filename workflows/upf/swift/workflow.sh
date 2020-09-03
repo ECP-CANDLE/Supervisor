@@ -88,6 +88,11 @@ module list
 
 cp -v $UPF $TURBINE_OUTPUT
 
+if [[ ${SITE} == "summit" ]]
+then
+  export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
+fi
+
 TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 
 swift-t -n $PROCS \
