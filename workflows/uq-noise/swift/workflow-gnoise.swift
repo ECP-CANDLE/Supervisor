@@ -39,6 +39,7 @@ int trials[]       = [0:num_trials-1];
 int feature_col = 50;
 float feature_threshold = 0.02;
 string add_noise = "false";
+string gaussian_noise = "true";
 string noise_correlated = "false";
 
 foreach level, i in std_dev_array
@@ -48,12 +49,13 @@ foreach level, i in std_dev_array
       std_dev = level * std_dev_step;
       run_id = "%0.3f-%01i" % (std_dev, k);
       params = ("{ \"std_dev\" : %f , "  +
+		" \"add_noise\" : %s, "  +
 		" \"gaussian_noise\" : %s, "  +
 		" \"noise_correlated\" : %s, "  +
 		" \"feature_threshold\" : %f, "  +
 		" \"feature_col\" : %i, "  +
                 "  \"epochs\"        : 200  } ") %
-                (std_dev, add_noise, noise_correlated, feature_threshold, feature_col);
+                (std_dev, add_noise, gaussian_noise, noise_correlated, feature_threshold, feature_col);
       printf("running: %s", params);
       result = obj(params, run_id);
       printf("result %s : std_dev %0.2f : %s",

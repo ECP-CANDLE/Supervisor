@@ -152,7 +152,7 @@ cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow-noise.swift $TURBIN
 
 if [[ ${SITE} == "summit" ]]
 then
-  export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+  export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
 fi
 TURBINE_RESIDENT_WORK_WORKERS=1
 

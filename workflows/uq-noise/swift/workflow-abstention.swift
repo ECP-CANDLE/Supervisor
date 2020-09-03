@@ -29,14 +29,14 @@ printf("UQ NOISE WORKFLOW.SWIFT");
 printf("TURBINE_OUTPUT: " + turbine_output);
 
 float std_dev_step = 0.05; // Difference between noises
-int num_trials = 1;
+int num_trials = 2;
 
 float num_std_dev_noise= 20; // Number of noise levels to try
 
 float std_dev_array[] = [0:num_std_dev_noise];
 int trials[]       = [0:num_trials-1];
 
-int feature_col = 11180;
+int feature_col = 50;
 float feature_threshold = 0.01;
 string add_noise = "false";
 string noise_correlated = "true";
