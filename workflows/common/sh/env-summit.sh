@@ -23,8 +23,8 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-02
 # Python (med106/sw/condaenv-200408) and R:
 # SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-08
-# SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-11
-SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-08-19
+SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-11
+# SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-08-19
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
@@ -50,6 +50,7 @@ PY=/gpfs/alpine/world-shared/med106/sw/condaenv-200408
 LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
 
+export PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/bin:$PATH
 export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$LD_LIBRARY_PATH
 
 # EMEWS Queues for R
