@@ -22,5 +22,6 @@ export OBJ_RETURN="val_loss"
 CFG_SYS=$THIS/cfg-sys-1.sh
 
 export TURBINE_LAUNCH_OPTIONS="-g1"
+export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt
