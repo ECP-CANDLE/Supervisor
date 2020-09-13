@@ -199,7 +199,7 @@ else
   STDOUT=""
 fi
 
-TURBINE_STDOUT="" # "$TURBINE_OUTPUT/out/out-%%r.txt"
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
 swift-t -O 0 -n $PROCS \

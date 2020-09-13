@@ -37,29 +37,37 @@ float std_dev_array[] = [0:num_std_dev_noise];
 int trials[]       = [0:num_trials-1];
 
 int feature_col = 50;
-float feature_threshold = 0.02;
+float feature_threshold = 0.01;
 string add_noise = "false";
-string gaussian_noise = "true";
 string noise_correlated = "false";
+string gaussian_noise = "true";
+
+
+float abs_vals[]  = [0.01964286183, 0.01785714711, 0.01785714711, 0.02500000596, 0.02500000596, 0.03035715009, 0.03392857526, 0.03392857526, 0.05892858122, 0.05714286438, 0.08928572493, 0.1000000047, 0.1053571467, 0.1821428537, 0.1732142823, 0.2124999974, 0.2339285719, 0.1982142861, 0.3696428559, 0.2250000026, 0.2999999991];
 
 foreach level, i in std_dev_array
 {
     foreach trial, k in trials
     {
       std_dev = level * std_dev_step;
-      run_id = "%0.3f-%01i" % (std_dev, k);
-      params = ("{ \"std_dev\" : %f , "  +
-		" \"add_noise\" : %s, "  +
-		" \"gaussian_noise\" : %s, "  +
-		" \"noise_correlated\" : %s, "  +
-		" \"feature_threshold\" : %f, "  +
-		" \"feature_col\" : %i, "  +
-                "  \"epochs\"        : 200  } ") %
-                (std_dev, add_noise, gaussian_noise, noise_correlated, feature_threshold, feature_col);
+      run_id = "%0.2f-%01i" % (std_dev, k);
+
+      max_abs = abs_vals[i];
+
+      params = ("{ \"label_noise\" : %f , "  +
+                " \"max_abs\" : %f, "  +
+                " \"std_dev\" : %f, "  +
+                " \"gaussian_noise\" : %s, "  +
+                " \"noise_correlated\" : %s, "  +
+                " \"feature_col\" : %i, "  +
+                " \"feature_threshold\" : %f, "  +
+                "  \"epochs\"        : 100  } ") %
+                (std_dev, max_abs, std_dev, gaussian_noise, noise_correlated, feature_col, feature_threshold);
       printf("running: %s", params);
       result = obj(params, run_id);
       printf("result %s : std_dev %0.2f : %s",
              run_id, std_dev, result);
     }
 }
+
 
