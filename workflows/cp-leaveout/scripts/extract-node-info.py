@@ -95,6 +95,8 @@ def parse_log(log_fp, nodes):
 
 def find_val_data(node):
     python_log = args.directory + "/run/%s/save/python.log" % node.id
+    if not os.path.exists(python_log):
+        return
     with open(python_log) as fp:
         node.parse_val_data(fp)
     if node.val_data == None:
