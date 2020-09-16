@@ -38,7 +38,7 @@ def read_log_filenames(log_list):
                 line = line.strip()
                 result.append(line)
     except IOError as e:
-        abort(e, os.EX_IOERR, "Could not read: " + log_list)
+        fail(e, os.EX_IOERR, "Could not read: " + log_list)
     return result
 
 def parse_logs(log_files):
@@ -56,7 +56,7 @@ def parse_logs(log_files):
                 parse_log(fp, nodes)
             index += 1
     except IOError as e:
-        abort(e, os.EX_IOERR, "Could not read: " + log_file)
+        fail(e, os.EX_IOERR, "Could not read: " + log_file)
     return nodes
 
 def parse_log(log_fp, nodes):
