@@ -6,7 +6,11 @@
 if [ "x$USE_OPENMPI" == "x1" ]; then # probably always use this on Biowulf as it's the best supported
     #module load gcc/7.3.0 openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181 # Note I had to stop using openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 because at least as of 6/19/19 Biowulf seemed to stop supporting it (it was available only as a "hidden" module)
     #module load gcc/7.3.0 openmpi/3.1.3/cuda-9.2/gcc-7.3.0-pmi2 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
-    module load gcc/9.2.0 openmpi/4.0.4/cuda-10.2/gcc-9.2.0 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/12.0.1 pcre2/10.21 GSL/2.6_gcc-9.2.0 # new stack on 8/14/20 - note, per my emails with Biowulf, they disabled development in PMI2 OpenMPI environments; further added pcre2/10.21 on 9/2/20 as otherwise installing Supervisor's R packages wouldn't work as R could not start at all; further added GSL/2.6_gcc-9.2.0 on 9/2/20 as otherwise the ggplot2 installation for Supervisor failed
+
+    #module load gcc/9.2.0 openmpi/4.0.4/cuda-10.2/gcc-9.2.0 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/12.0.1 pcre2/10.21 GSL/2.6_gcc-9.2.0 # new stack on 8/14/20 - note, per my emails with Biowulf, they disabled development in PMI2 OpenMPI environments; further added pcre2/10.21 on 9/2/20 as otherwise installing Supervisor's R packages wouldn't work as R could not start at all; further added GSL/2.6_gcc-9.2.0 on 9/2/20 as otherwise the ggplot2 installation for Supervisor failed; this seems to work up to a "Source option 6 is no longer supported. Use 7 or later", seemingly Java-related error
+    #module load gcc/9.2.0 openmpi/4.0.4/cuda-10.2/gcc-9.2.0 tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_211 pcre2/10.21 GSL/2.6_gcc-9.2.0 # going from java/12.0.1 --> java/1.8.0_211 seems to fix the Java-related error above
+    module load gcc/9.2.0 openmpi/4.0.4/cuda-10.2/gcc-9.2.0 ant/1.10.3 java/1.8.0_211 pcre2/10.21 GSL/2.6_gcc-9.2.0 # removing tcl_tk in order to use the one we just built on 9/12/20
+
     export OMPI_MCA_mpi_warn_on_fork=0
 else
     module load tcl_tk/8.6.8_gcc-7.2.0 ant/1.10.3 java/1.8.0_181
@@ -19,6 +23,22 @@ else
     export CPATH=/data/BIDS-HPC/public/software/builds/mpich-3.3-3/include:$CPATH
 fi
 
+
+export PATH="/data/BIDS-HPC/public/software/builds/tcl/bin:$PATH"
+export LD_LIBRARY_PATH="/data/BIDS-HPC/public/software/builds/tcl/lib:$LD_LIBRARY_PATH"
+export MANPATH="/data/BIDS-HPC/public/software/builds/tcl/man:$MANPATH"
+
+
+# Set variables for CANDLE dependencies (mostly, Swift/T dependencies)
+export CANDLE_DEP_MPI="/usr/local/OpenMPI/4.0.4/CUDA-10.2/gcc-9.2.0"
+#export CANDLE_DEP_TCL="/usr/local/Tcl_Tk/8.6.8/gcc_7.2.0"
+export CANDLE_DEP_TCL="/data/BIDS-HPC/public/software/builds/tcl"
+export CANDLE_DEP_PY="/usr/local/Anaconda/envs/py3.7"
+export CANDLE_DEP_R="/usr/local/apps/R/4.0/4.0.0/lib64/R"
+export CANDLE_DEP_R_SITE="/usr/local/apps/R/4.0/site-library_4.0.0"
+export CANDLE_DEP_ANT="/usr/local/apps/ant/1.10.3"
+export CANDLE_LAUNCHER_OPTION="--with-launcher=/usr/local/slurm/bin/srun"
+
 # Load R/4.0.0 paths manually since we can't load the module on the Biowulf submit nodes (part of new stack on 8/13/20)
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/GSL/gcc-7.2.0/2.4/lib:/usr/local/geos/3.6.2/lib:/usr/local/intel/compilers_and_libraries_2018.1.163/linux/mkl/lib/intel64
 #export PATH=$PATH:/usr/local/GSL/gcc-7.2.0/2.4/bin:/usr/local/apps/R/3.5/3.5.0_build2/bin
@@ -28,7 +48,7 @@ export PATH="$PATH:/usr/local/apps/R/4.0/4.0.0/bin"
 export LIBRARY_PATH="$LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2019.1.144/linux/mkl/lib/intel64"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2019.1.144/linux/mkl/lib/intel64"
 export R_LIBS_USER="$R_LIBS_USER:~/R/%v/library"
-export R_LIBS_SITE="/usr/local/apps/R/4.0/site-library_4.0.0"
+export R_LIBS_SITE="$CANDLE_DEP_R_SITE"
 export R_LIBS="$CANDLE/R/libs"
 
 # Swift/T setup
