@@ -58,8 +58,10 @@ export EQPy="$CANDLE/Supervisor/workflows/common/ext/EQ-Py"
 
 # This is how Tim Miller told me to run interactive and batch MPI jobs on Biowulf GPU nodes recently (Aug/Sep 2020)
 if [ "x$SLURM_JOB_PARTITION" == "xinteractive" ]; then
+    #export TURBINE_LAUNCH_OPTIONS=("--mpi=pmix" "--mem=0")
     export TURBINE_LAUNCH_OPTIONS="--mpi=pmix --mem=0"
 else
+    #export TURBINE_LAUNCH_OPTIONS=("--mpi=pmix")
     export TURBINE_LAUNCH_OPTIONS="--mpi=pmix"
 fi
 ####################################################################################################################################
