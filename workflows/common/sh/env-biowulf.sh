@@ -2,8 +2,8 @@
 
 # Prerequisite: Assume the candle module is loaded as usual
 
-#### Load the stack ################################################################################################################
 
+#### Load the stack ################################################################################################################
 # Load the lmod environment modules
 module load gcc/9.2.0 openmpi/4.0.4/cuda-10.2/gcc-9.2.0 ant/1.10.3 java/1.8.0_211 pcre2/10.21 GSL/2.6_gcc-9.2.0
 
@@ -19,10 +19,10 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/intel/compilers_and_librarie
 export R_LIBS_USER="$R_LIBS_USER:~/R/%v/library"
 export R_LIBS_SITE="$CANDLE_DEP_R_SITE"
 export R_LIBS="$CANDLE/R/libs"
+####################################################################################################################################
 
 
 #### Set variables for CANDLE dependencies (mostly, Swift/T dependencies) ##########################################################
-
 # This is for building CANDLE/Swift/T but it doesn't hurt to set these always
 export CANDLE_DEP_MPI="/usr/local/OpenMPI/4.0.4/CUDA-10.2/gcc-9.2.0"
 export CANDLE_DEP_TCL="/data/BIDS-HPC/public/software/builds/tcl"
@@ -31,10 +31,10 @@ export CANDLE_DEP_R="/usr/local/apps/R/4.0/4.0.0/lib64/R"
 export CANDLE_DEP_R_SITE="/usr/local/apps/R/4.0/site-library_4.0.0"
 export CANDLE_DEP_ANT="/usr/local/apps/ant/1.10.3"
 export CANDLE_LAUNCHER_OPTION="--with-launcher=/usr/local/slurm/bin/srun"
+####################################################################################################################################
 
 
 #### Swift/T/MPI setup #############################################################################################################
-
 # Basic Swift/T settings
 export SWIFT_T_INSTALL="$CANDLE/swift-t-install"
 export PATH="$PATH:$SWIFT_T_INSTALL/stc/bin"
@@ -62,13 +62,14 @@ if [ "x$SLURM_JOB_PARTITION" == "xinteractive" ]; then
 else
     export TURBINE_LAUNCH_OPTIONS="--mpi=pmix"
 fi
+####################################################################################################################################
 
 
 #### Miscellaneous settings/output #################################################################################################
-
 # Add the Supervisor workflows scripts to the Python path
 export PYTHONPATH="$PYTHONPATH:$CANDLE/Supervisor/workflows/common/python"
 
 # Log settings to output
 command -v python || echo "WARNING: Program 'python' not found"
 command -v swift-t || echo "WARNING: Program 'swift-t' not found"
+####################################################################################################################################
