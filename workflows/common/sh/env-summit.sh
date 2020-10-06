@@ -53,7 +53,10 @@ LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
 
 # ALW 9/28/20: This path is already added, albeit to the end rather than the beginning, in the LD_LIBRARY_PATH+=:$PY/lib line above
-#export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$
+
+# ALW 10/1/20: Adding this per Justin and my experiments and discussion on 9/30/20 and 10/1/20
+export LD_LIBRARY_PATH="/sw/summit/gcc/6.4.0/lib64:$LD_LIBRARY_PATH"
 
 # EMEWS Queues for R
 EQR=$MED106/wozniak/sw/gcc-6.4.0/EQ-R

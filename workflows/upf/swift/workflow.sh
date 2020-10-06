@@ -110,7 +110,7 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e TURBINE_MPI_THREAD=1 \
+        -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
