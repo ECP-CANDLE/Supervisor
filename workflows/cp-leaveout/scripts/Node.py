@@ -3,6 +3,8 @@
 
 # The training node information as stored in the logs
 # See the footer of this file for example log text that is parsed here
+# This class must remain simple enough to pickle
+#      thus it cannot contain its own logger (Python 3.6 issue 30520)
 
 # import math
 
@@ -11,7 +13,7 @@ class Node:
     # TensorFlow is done when you see this
     training_done = "[==============================]"
 
-    def __init__(self, id=None):
+    def __init__(self, id=None, logger=None):
         # The ID is e.g.: "1.2.3"
         self.id = id
         # Use string length of id to deduce stage:
@@ -39,18 +41,22 @@ class Node:
         self.stopped_early = False
         # Did training complete for this node?
         self.complete = False
-        self.verbose = False
-        self.debug("START: " + str(self))
+        # Can disable logging here:
+        self.verbose = True
+        self.debug(logger, "START: " + str(self))
 
-    def set_id(self, id):
+    def set_id(self, id, logger=None):
         self.id = id
         self.stage = (len(self.id) - 1 ) // 2
-        self.debug("SET ID: " + id)
+        self.debug(logger, "SET ID: " + id)
 
     def parent(self):
         if self.stage == 1:
             return None
         return self.id[0:-2]
+
+    def __repr__(self):
+        return self.__str__()
 
     def __str__(self):
         special = ""
@@ -91,36 +97,39 @@ class Node:
             return "?"
         return spec % f
 
-    def parse_epochs(self, line):
+    def parse_epochs(self, line, logger=None):
         tokens = line.split()
         self.epochs_planned = int(tokens[-1].strip())
-        self.debug("epochs_planned: %i" % self.epochs_planned)
+        self.debug(logger, "epochs_planned: %i" % self.epochs_planned)
 
-    def parse_epoch_status(self, line):
+    def parse_epoch_status(self, line, logger=None):
         tokens = line.split()
         assert len(tokens) == 2, "bad line: " + line
         ints = tokens[1].split("/")
         assert len(tokens) == 2
         self.epochs_actual = int(ints[0])
-        self.debug("epochs_actual: " + str(self.epochs_actual))
+        self.trace(logger, "epochs_actual: " + str(self.epochs_actual))
 
-    def stop_early(self):
+    def stop_early(self, logger=None):
         self.stopped_early = True
-        self.debug("STOP EARLY")
+        self.debug(logger, "STOP EARLY")
 
     def parse_date_start(self, line):
         tokens = line.split()
         self.date_start = tokens[0] + " " + tokens[1]
 
-    def parse_date_stop(self, line):
+    def parse_date_stop(self, line, logger=None):
         tokens = line.split()
         self.date_stop = tokens[0] + " " + tokens[1]
+        if self.epochs_planned == None:
+            self.debug(logger, "STOP : epochs_planned=None")
+            return
         if self.epochs_actual == self.epochs_planned or \
            self.stopped_early:
             self.complete = True
-            self.debug("COMPLETE")
+            self.debug(logger, "COMPLETE")
 
-    def parse_training_done(self, line):
+    def parse_training_done(self, line, logger=None):
         # The current epoch should already be set
         #     by parse_epoch_status()
         # First, find the location of training_done (td)
@@ -164,10 +173,19 @@ class Node:
             raise ValueError("No val_loss_delta!")
         return node.val_loss_delta
 
-    def debug(self, message):
-        if not self.verbose:
+    def debug(self, logger, message):
+        # assert(logger != None) # Use this to find missing loggers
+        if logger == None or not self.verbose:
             return
-        print("NODE: " + message)
+        logger.debug("NODE: [%s] %s" % (self.id, message))
+
+    def trace(self, logger, message):
+        # assert(logger != None) # Use this to find missing loggers
+        if logger == None or not self.verbose:
+            return
+        import logging
+        logger.log(level=logging.DEBUG-5,
+                   msg=("NODE: [%s] %s" % (self.id, message)))
 
     def total_time(self, nodes):
         parent = self.parent()
