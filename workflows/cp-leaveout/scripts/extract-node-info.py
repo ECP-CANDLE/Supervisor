@@ -8,6 +8,7 @@
 # See Node.py for the data structure
 
 import argparse, logging, os, pickle, sys
+import pprint
 
 from utils import fail
 from Node import Node
@@ -21,7 +22,8 @@ args = parser.parse_args()
 log_list = args.directory + "/log-list.txt"
 node_pkl = args.directory + "/node-info.pkl"
 
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(message)s")
+logger = logging.getLogger("extract_node_info")
 
 def read_log_filenames(log_list):
     result = []
@@ -44,14 +46,14 @@ def read_log_filenames(log_list):
 def parse_logs(log_files):
     # Dict mapping Node id to Node for all complete Nodes
     nodes = {}
-    logging.warning("Opening %i log files..." % len(log_files))
+    logger.warning("Opening %i log files..." % len(log_files))
     try:
         total = len(log_files)
         index = 0
         for log_file in log_files:
             progress = "%4i/%4i (%2.f%%)" % \
                        (index, total, 100.0*index/total)
-            logging.info("Opening: %12s %s" % (progress, log_file))
+            logger.info("Opening: %12s %s" % (progress, log_file))
             with open(log_file) as fp:
                 parse_log(fp, nodes)
             index += 1
@@ -64,34 +66,41 @@ def parse_log(log_fp, nodes):
     node_current = None
     while True:
         line = log_fp.readline()
+        # print(line)
         if line == "": break
         if "PARAM UPDATE START" in line:
-            node_current = Node()
+            trace("New Node ...")
+            node_current = Node(logger=logger)
             node_current.parse_date_start(line)
-        if "MODEL RUNNER DEBUG node =" in line:
+        if "MODEL RUNNER DEBUG  node =" in line:
             tokens = line.split()
             node_id = tokens[-1].strip()
-            node_current.set_id(node_id)
-        elif "MODEL RUNNER DEBUG epochs =" in line:
-            node_current.parse_epochs(line)
+            node_current.set_id(node_id, logger)
+        elif "MODEL RUNNER DEBUG  epochs =" in line:
+            node_current.parse_epochs(line, logger)
         elif line.startswith("Epoch ") and "/" in line:
-            node_current.parse_epoch_status(line)
+            node_current.parse_epoch_status(line, logger)
         elif Node.training_done in line:
-             node_current.parse_training_done(line)
+             node_current.parse_training_done(line, logger)
         elif "early stopping" in line:
             if node_current != None:
                 # TensorFlow may report early stopping even if at max epochs:
                 node_current.stop_early()
         elif "DONE: run_id" in line:
-            node_current.parse_date_stop(line)
+            logger.debug("RUN DONE.")
+            node_current.parse_date_stop(line, logger)
         if node_current != None and node_current.complete:
             # Store a complete Node in global dict nodes
+            logger.debug("NODE DONE.")
             nodes[node_current.id] = node_current
             find_val_data(node_current)
             nodes_found += 1
             node_current = None
 
-    logging.info("Found %i nodes in log." % nodes_found)
+    logger.info("Found %i nodes in log." % nodes_found)
+
+def trace(message):
+    logger.log(level=logging.DEBUG-5, msg=message)
 
 def find_val_data(node):
     python_log = args.directory + "/run/%s/save/python.log" % node.id
@@ -100,16 +109,16 @@ def find_val_data(node):
     with open(python_log) as fp:
         node.parse_val_data(fp)
     if node.val_data == None:
-        logging.fatal("Could not find val data for node: " + node.id)
+        logger.fatal("Could not find val data for node: " + node.id)
 
 # List of log file names
 log_files = read_log_filenames(log_list)
 # Dict mapping Node id to Node for all complete Nodes
 nodes = parse_logs(log_files)
 
-logging.warning("Found %i nodes in total." % len(nodes))
+logger.warning("Found %i nodes in total." % len(nodes))
 
 with open(node_pkl, "wb") as fp:
     pickle.dump(nodes, fp)
 
-logging.warning("Wrote %s ." % node_pkl)
+logger.warning("Wrote pickle: %s ." % node_pkl)
