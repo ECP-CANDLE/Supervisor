@@ -40,6 +40,8 @@ This avoids needing to walk all logs all the time (which takes tens of seconds).
 $ scripts/extract-node-info.sh $D
 ----
 
+The data structure in the Pickle is a simple dictionary mapping node ID strings e.g. "1.2.3.4" to object of type Node.
+
 ==== Print Node info (print-node-info)
 
 Prints a big table of all Node statistics using the Node Pickle.
