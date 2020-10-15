@@ -21,14 +21,12 @@ class Node:
         # Number of training steps performed
         self.steps = 0
         self.loss = None
-        # Difference wrt parent (lower is better)
-        self.loss_delta = None
         self.val_loss = None
-        # Validation set size
-        self.val_data = None
         # Differences wrt parent (lower is better)
         self.loss_delta = None
         self.val_loss_delta = None
+        # Validation set size
+        self.val_data = None
         # Epochs prescribed by the workflow
         self.epochs_planned = None
         # Epochs actually run (consider early stopping)
