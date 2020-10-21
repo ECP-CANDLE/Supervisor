@@ -20,8 +20,10 @@ try:
 except IOError as e:
     fail(e, os.EX_IOERR, "Could not read: " + node_pkl)
 
-# print(data)
-for item in data.values():
-    print(item.str_table())
-
+# Raw data printing:
 # print(len(data))
+# print(data)
+
+# Print the node info!
+for node in data.values():
+    print(node.str_table())
