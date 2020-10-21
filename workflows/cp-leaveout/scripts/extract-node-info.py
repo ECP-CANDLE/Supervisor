@@ -44,7 +44,7 @@ def read_log_filenames(log_list):
     return result
 
 def parse_logs(log_files):
-    # Dict mapping Node id to Node for all complete Nodes
+    # Dict mapping Node id to Node for all complete Nodes:
     nodes = {}
     logger.warning("Opening %i log files..." % len(log_files))
     try:
