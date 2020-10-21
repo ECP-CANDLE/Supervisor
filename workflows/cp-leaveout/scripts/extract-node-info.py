@@ -22,7 +22,7 @@ args = parser.parse_args()
 log_list = args.directory + "/log-list.txt"
 node_pkl = args.directory + "/node-info.pkl"
 
-logging.basicConfig(level=logging.DEBUG, format="%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("extract_node_info")
 
 def read_log_filenames(log_list):
