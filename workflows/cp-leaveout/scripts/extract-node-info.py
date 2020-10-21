@@ -68,16 +68,26 @@ def parse_log(log_fp, nodes):
         line = log_fp.readline()
         # print(line)
         if line == "": break
-        if "PARAM UPDATE START" in line:
-            trace("New Node ...")
-            node_current = Node(logger=logger)
-            node_current.parse_date_start(line)
-        if "MODEL RUNNER DEBUG  node =" in line:
-            tokens = line.split()
-            node_id = tokens[-1].strip()
-            node_current.set_id(node_id, logger)
-        elif "MODEL RUNNER DEBUG  epochs =" in line:
-            node_current.parse_epochs(line, logger)
+        if "DONE: run_id" in line:
+            # This is also a MODEL RUNNER line,
+            # but could be DEBUG or INFO
+            # (should be INFO in future)
+            logger.debug("RUN DONE.")
+            node_current.parse_date_stop(line, logger)
+        elif "MODEL RUNNER" in line:
+            # print(line.strip())
+            if "DEBUG" in line:
+                if "PARAM UPDATE START" in line:
+                    trace("New Node ...")
+                    node_current = Node(logger=logger)
+                    node_current.parse_date_start(line)
+                elif " node =" in line:
+                    print(line)
+                    tokens = line.split()
+                    node_id = tokens[-1].strip()
+                    node_current.set_id(node_id, logger)
+                elif " epochs =" in line:
+                    node_current.parse_epochs(line, logger)
         elif line.startswith("Epoch ") and "/" in line:
             node_current.parse_epoch_status(line, logger)
         elif Node.training_done in line:
@@ -86,14 +96,12 @@ def parse_log(log_fp, nodes):
             if node_current != None:
                 # TensorFlow may report early stopping even if at max epochs:
                 node_current.stop_early()
-        elif "DONE: run_id" in line:
-            logger.debug("RUN DONE.")
-            node_current.parse_date_stop(line, logger)
         if node_current != None and node_current.complete:
             # Store a complete Node in global dict nodes
-            logger.debug("NODE DONE.")
+            # logger.debug("NODE DONE.")
             nodes[node_current.id] = node_current
-            find_val_data(node_current)
+            # find_val_data(node_current) # old format?
+            find_error_data(node_current)
             nodes_found += 1
             node_current = None
 
@@ -102,14 +110,23 @@ def parse_log(log_fp, nodes):
 def trace(message):
     logger.log(level=logging.DEBUG-5, msg=message)
 
-def find_val_data(node):
+# def find_val_data(node):
+#     python_log = args.directory + "/run/%s/save/python.log" % node.id
+#     if not os.path.exists(python_log):
+#         return
+#     with open(python_log) as fp:
+#         node.parse_val_data(fp)
+#     if node.val_data == None:
+#         logger.fatal("Could not find val data for node: " + node.id)
+
+def find_error_data(node):
     python_log = args.directory + "/run/%s/save/python.log" % node.id
     if not os.path.exists(python_log):
         return
     with open(python_log) as fp:
-        node.parse_val_data(fp)
-    if node.val_data == None:
-        logger.fatal("Could not find val data for node: " + node.id)
+        node.parse_error_data(fp)
+    if node.mse == None:
+        logger.fatal("Could not find error data for node: " + node.id)
 
 # List of log file names
 log_files = read_log_filenames(log_list)
