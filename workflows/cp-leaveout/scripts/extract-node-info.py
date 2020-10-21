@@ -28,7 +28,7 @@ logger = logging.getLogger("extract_node_info")
 def read_log_filenames(log_list):
     result = []
     count = 0
-    limit = 2000 # Reduce this for debugging
+    limit = 5000 # Reduce this for debugging
     try:
         with open(log_list) as fp:
             for line in fp.readlines():
