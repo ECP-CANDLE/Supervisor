@@ -20,8 +20,13 @@ class Node:
         self.stage = None
         # Number of training steps performed
         self.steps = 0
-        self.loss = None
+        # Various error metrics:
+        self.loss     = None
         self.val_loss = None
+        self.mse      = None
+        self.mae      = None
+        self.r2       = None
+        self.corr     = None
         # Differences wrt parent (lower is better)
         self.loss_delta = None
         self.val_loss_delta = None
@@ -78,12 +83,24 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-12s : %i : %2i / %2i : loss: %0.5f vl: %0.5f : %s - %s : %s" % \
+        return "%-12s : %i : %2i / %2i : %s - %s : %s : %s" % \
             (self.id, self.stage,
              self.epochs_actual, self.epochs_planned,
-             self.loss, self.val_loss,
              self.date_start, self.date_stop,
+             self.str_errors(),
              special)
+
+    def str_errors(self):
+        ''' Return errors as big string '''
+        fmt = "%0.6f"
+        s = ("loss: %s vl: %s mse: %s mae: %s r2: %s corr: %s") % \
+             (Node.maybe_str_float(self.loss,     fmt),
+              Node.maybe_str_float(self.val_loss, fmt),
+              Node.maybe_str_float(self.mse,      fmt),
+              Node.maybe_str_float(self.mae,      fmt),
+              Node.maybe_str_float(self.r2,       fmt),
+              Node.maybe_str_float(self.corr,     fmt))
+        return s
 
     def maybe_str_integer(i):
         if i is None:
@@ -98,7 +115,7 @@ class Node:
     def parse_epochs(self, line, logger=None):
         tokens = line.split()
         self.epochs_planned = int(tokens[-1].strip())
-        self.debug(logger, "epochs_planned: %i" % self.epochs_planned)
+        self.trace(logger, "epochs_planned: %i" % self.epochs_planned)
 
     def parse_epoch_status(self, line, logger=None):
         tokens = line.split()
@@ -161,6 +178,33 @@ class Node:
             value_string = tail[:comma]
             self.val_data = int(value_string)
 
+    def parse_error_data(self, fp):
+        """
+        fp is the file pointer to save/python.log
+        If lines are not found, node.mse, etc., will remain None
+        """
+        marker = "Comparing y_true "
+        # The marker is just after the date:
+        # We search this way for speed.
+        date_len = len("YYYY-MM-DD HH:MM:SS ") # trailing space
+        while True:
+            line = fp.readline()
+            if line == "": break
+            if line.startswith(marker, date_len):
+                line = fp.readline()
+                tokens = check_token(line, 2, "mse:")
+                self.mse = float(tokens[3])
+                line = fp.readline()
+                tokens = check_token(line, 2, "mae:")
+                self.mae = float(tokens[3])
+                line = fp.readline()
+                tokens = check_token(line, 2, "r2:")
+                self.r2 = float(tokens[3])
+                line = fp.readline()
+                tokens = check_token(line, 2, "corr:")
+                self.corr = float(tokens[3])
+            # Loop! We want the last such values in the file
+
     def get_loss_delta(node):
         if node.loss_delta == None:
             raise ValueError("No loss_delta!")
@@ -190,6 +234,17 @@ class Node:
         if parent == None:
             return self.time
         return self.time + nodes[parent].total_time(nodes)
+
+def check_token(line, index, token):
+    tokens = line.split()
+    if tokens[index] != token:
+          raise Exception(("could not find token: '%s'\n" +
+                           "in line: '%s'") % (token, line))
+    return tokens
+
+def check(condition, message):
+    if not condition:
+        raise Exception(message)
 
 '''
 EXAMPLES:
