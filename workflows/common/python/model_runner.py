@@ -18,18 +18,16 @@ logger = None
 
 print("MODEL RUNNER...")
 
-# Andrew: Adding the following line (switching the order of the following two lines) in order to append an arbitrary model's dependencies to the path *before* the benchmarks in order to accidentally use a benchmark dependency
-# append ${MODEL_PYTHON_DIR} to $PATH if variable is set
+# Set PYTHONPATH:
+# Let MODEL_PYTHON_DIR override default Benchmarks model locations
 python_dir = os.getenv("MODEL_PYTHON_DIR")
 if python_dir:
     sys.path.append(python_dir)
-# append ${BENCHMARKS_ROOT}/common to $PATH if variable is set
 benchmarks_root = os.getenv("BENCHMARKS_ROOT")
 if benchmarks_root:
     sys.path.append(benchmarks_root+"/common")
 
-# import candle_lrn_crv
-
+# Report PYTHONPATH for debugging
 print("sys.path:")
 for i in range(0, len(sys.path)-1):
     print("%2i: %s" % (i, sys.path[i]))
@@ -74,6 +72,7 @@ def import_pkg(framework, model_name):
     return pkg
 
 
+# TODO: Separate INFO and DEBUG messages
 def log(msg):
     global logger
     logger.debug(msg)
@@ -160,13 +159,15 @@ def run(hyper_parameter_map, obj_return):
         logger.info('specified config_file: "%s"' % config_file)
         params_arg = { 'default_model': config_file }
 
-    # params is a python dictionary
+    # params is a Python dictionary
     params = setup_params(pkg, hyper_parameter_map, params_arg)
 
     Ps = setup_perf(params)
 
     # Run the model!
+    log("PKG RUN START")
     history = pkg.run(params)
+    log("PKG RUN STOP")
 
     if framework == 'keras':
         runner_utils.keras_clear_session(framework)
@@ -181,6 +182,7 @@ def run(hyper_parameter_map, obj_return):
 
     finish = time.time()
     duration = finish - start
+    # TODO: This should be on INFO
     log(" DONE: run_id %s in %0.2f seconds." %
         (hyper_parameter_map["run_id"], duration))
     return (result, history_result)
