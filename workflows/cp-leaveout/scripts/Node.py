@@ -239,7 +239,7 @@ class Node:
         return self.time + nodes[parent].get_time_cumul(nodes)
 
     def get_epochs_cumul(self, nodes):
-        ''' Epochs cumulative including parents' time '''
+        ''' Epochs cumulative including parents' epochs '''
         if self.epochs_cumul != None:
             return self.epochs_cumul
         # Initialize:
