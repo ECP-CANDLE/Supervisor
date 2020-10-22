@@ -231,11 +231,12 @@ class Node:
         logger.log(level=logging.DEBUG-5,
                    msg=("NODE: [%s] %s" % (self.id, message)))
 
-    def total_time(self, nodes):
+    def get_time_cumul(self, nodes):
+        ''' Time cumulative including parents' time '''
         parent = self.parent()
         if parent == None:
             return self.time
-        return self.time + nodes[parent].total_time(nodes)
+        return self.time + nodes[parent].get_time_cumul(nodes)
 
     def get_epochs_cumul(self, nodes):
         ''' Epochs cumulative including parents' time '''
