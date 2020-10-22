@@ -55,9 +55,9 @@ with open(args.output, "w") as fp:
             missing += 1
             continue
         count += 1
-        epochs_1 = nodes_1[node_id].epochs_actual
+        epochs_1 = nodes_1[node_id].get_epochs_cumul(nodes_1)
         errors_1 = get_errors(nodes_1[node_id])
-        epochs_2 = nodes_2[node_id].epochs_actual
+        epochs_2 = nodes_2[node_id].get_epochs_cumul(nodes_2)
         errors_2 = get_errors(nodes_2[node_id])
         fp.write("%2i %s %3i %s %3i %s\n" % (count, node_id,
                                              epochs_1, errors_1,
