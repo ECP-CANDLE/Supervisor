@@ -36,6 +36,8 @@ class Node:
         self.epochs_planned = None
         # Epochs actually run (consider early stopping)
         self.epochs_actual  = 0
+        # Epochs cumulative: include parents' epochs (CP weight-sharing)
+        self.epochs_cumul  = None
         self.date_start = None
         self.date_stop  = None
         # Training time in seconds
@@ -234,6 +236,18 @@ class Node:
         if parent == None:
             return self.time
         return self.time + nodes[parent].total_time(nodes)
+
+    def get_epochs_cumul(self, nodes):
+        ''' Epochs cumulative including parents' time '''
+        if self.epochs_cumul != None:
+            return self.epochs_cumul
+        # Initialize:
+        self.epochs_cumul = self.epochs_actual
+        parent = self.parent()
+        if parent != None and parent in nodes:
+            # Add parents:
+            self.epochs_cumul += nodes[parent].get_epochs_cumul(nodes)
+        return self.epochs_cumul
 
 def check_token(line, index, token):
     tokens = line.split()
