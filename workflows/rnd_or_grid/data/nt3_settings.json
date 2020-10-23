@@ -1,0 +1,12 @@
+{
+    "parameters":
+          { 
+          	"epochs": [1, 2 ],
+            "batch_size": [10, 20],
+            "classes": [2, 3]
+          },
+    "samples":
+    	  {
+    	  	"num": [2]
+    	  }
+}
