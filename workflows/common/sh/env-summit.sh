@@ -1,5 +1,6 @@
 
-# ENV Summit
+# ENV Summit - DEPRECATED - (Wozniak, 2020-10-29)
+# Use summit-tf1 or summit-tf2
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 
 # SWIFT_IMPL=echo
@@ -25,8 +26,7 @@ MED106=/gpfs/alpine/world-shared/med106
 # SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-08
 # SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-04-11
 # SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-08-19
-# SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-09-02
-SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-10-22
+SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-09-02
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
@@ -49,15 +49,10 @@ R=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/R-3.6.1/lib64/R
 LD_LIBRARY_PATH+=:$R/lib
 
 PY=/gpfs/alpine/world-shared/med106/sw/condaenv-200408
-LD_LIBRARY_PATH+=:/lib64 # we need this path to be before the $PY/lib one, which is added below, or else for compiling using mpicc we get the error "/usr/bin/uuidgen: /gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib/libuuid.so.1: no version information available (required by /usr/bin/uuidgen)"
 LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
 
-# ALW 9/28/20: This path is already added, albeit to the end rather than the beginning, in the LD_LIBRARY_PATH+=:$PY/lib line above
-#export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$
-
-# ALW 10/1/20: Adding this per Justin and my experiments and discussion on 9/30/20 and 10/1/20
-export LD_LIBRARY_PATH="/sw/summit/gcc/6.4.0/lib64:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$LD_LIBRARY_PATH
 
 # EMEWS Queues for R
 EQR=$MED106/wozniak/sw/gcc-6.4.0/EQ-R
