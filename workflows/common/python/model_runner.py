@@ -55,10 +55,12 @@ def import_pkg(framework, model_name):
             print("Configuring tensorflow with {} inter threads and " +
                                               "{} intra threads"
                   .format(inter_threads, intra_threads))
-            cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
+
+            cfg = tf.compat.v1.ConfigProto(inter_op_parallelism_threads=inter_threads,
                                  intra_op_parallelism_threads=intra_threads)
-            sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
-            K.set_session(sess)
+
+            sess = tf.compat.v1.Session(graph=tf.get_default_graph(), config=cfg)
+            tf.compat.v1.keras.backend.set_session(sess)
     elif framework == 'pytorch':
         import torch
         if module_name == None or module_name == "":

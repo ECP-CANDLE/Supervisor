@@ -1,1 +1,20 @@
-{"id": "test0", "epochs": 3}
+{"id": "test0", "epochs": 30, "partition": 0}
+{"id": "test1", "epochs": 30, "partition": 1}
+{"id": "test2", "epochs": 30, "partition": 2}
+{"id": "test3", "epochs": 30, "partition": 3}
+{"id": "test4", "epochs": 30, "partition": 4}
+{"id": "test5", "epochs": 30, "partition": 5}
+{"id": "test6", "epochs": 30, "partition": 6}
+{"id": "test7", "epochs": 30, "partition": 7}
+{"id": "test8", "epochs": 30, "partition": 8}
+{"id": "test9", "epochs": 30, "partition": 9}
+{"id": "test10", "epochs": 30, "partition": 10}
+{"id": "test11", "epochs": 30, "partition": 11}
+{"id": "test12", "epochs": 30, "partition": 12}
+{"id": "test13", "epochs": 30, "partition": 13}
+{"id": "test14", "epochs": 30, "partition": 14}
+{"id": "test15", "epochs": 30, "partition": 15}
+{"id": "test16", "epochs": 30, "partition": 16}
+{"id": "test17", "epochs": 30, "partition": 17}
+{"id": "test18", "epochs": 30, "partition": 18}
+{"id": "test19", "epochs": 30, "partition": 19}

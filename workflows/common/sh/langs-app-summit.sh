@@ -9,8 +9,8 @@ unset PYTHONPATH
 unset LD_LIBRARY_PATH
 
 # ROOT=/ccs/proj/med106/gounley1/summit
-ROOT=/ccs/proj/med106/hsyoo/summit
-export PY=$ROOT/conda36
+ROOT=/gpfs/alpine/world-shared/med106/sw2
+export PY=$ROOT/opence010env
 export LD_LIBRARY_PATH=/sw/summit/cuda/10.1.168/lib64:/sw/summit/gcc/4.8.5/lib64:$PY/lib
 export PYTHONHOME=$ROOT/conda36
 export PATH=$PYTHONHOME/bin:$PATH
