@@ -49,10 +49,15 @@ R=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/R-3.6.1/lib64/R
 LD_LIBRARY_PATH+=:$R/lib
 
 PY=/gpfs/alpine/world-shared/med106/sw/condaenv-200408
+LD_LIBRARY_PATH+=:/lib64 # we need this path to be before the $PY/lib one, which is added right below, or else for compiling using mpicc we get the error "/usr/bin/uuidgen: /gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib/libuuid.so.1: no version information available (required by /usr/bin/uuidgen)"
 LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
 
-export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$LD_LIBRARY_PATH
+# ALW 11/12/20: Again, this path is already added, albeit to the end rather than the beginning, in the LD_LIBRARY_PATH+=:$PY/lib line above
+#export LD_LIBRARY_PATH=/gpfs/alpine/world-shared/med106/sw/condaenv-200408/lib:$LD_LIBRARY_PATH
+
+# ALW 11/12/20: Again, adding this per Justin and my experiments and discussion on 9/30/20 and 10/1/20
+export LD_LIBRARY_PATH="/sw/summit/gcc/6.4.0/lib64:$LD_LIBRARY_PATH"
 
 # EMEWS Queues for R
 EQR=$MED106/wozniak/sw/gcc-6.4.0/EQ-R
