@@ -130,8 +130,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
 # Use for Summit (LSF needs two %)
-if [[ ${SITE:-} == "summit" ]]
+if [[ ${site2:-} == "summit" ]]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
