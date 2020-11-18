@@ -1,0 +1,12 @@
+[Global_Params]
+model_name = 'mnist'
+conv=[6, 5, 1, 16, 5, 1]
+dense=[120,84]
+activation='relu'
+pool_mode='max'
+optimizer='sgd'
+epochs=100
+batch_size=128
+lr=0.001
+classes=10
+save='.'
