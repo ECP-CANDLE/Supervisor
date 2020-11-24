@@ -2,6 +2,7 @@
 
 # Note: It probably would make most sense to source site-specific_settings.sh here and then to use below the variables set in that file
 # Prerequisite: Assume the candle module is loaded as usual
+# Test comment line
 
 
 #### Set variables for CANDLE dependencies (mostly, Swift/T dependencies) ##########################################################
