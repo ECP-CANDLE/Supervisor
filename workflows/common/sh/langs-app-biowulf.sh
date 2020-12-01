@@ -1,9 +1,9 @@
 
-# LANGS APP Singularity on Biowulf
-# Language settings for singularity app functions (Python, R, etc.)
+# LANGS APP Biowulf
+# Language settings for app functions (Python, R, etc.)
 
 # Load the environment in which CANDLE was built
-module load $DEFAULT_PYTHON_MODULE
+module load "$CANDLE_DEFAULT_PYTHON_MODULE"
 
 #module load openmpi/3.1.2/cuda-9.0/gcc-7.3.0-pmi2 cuDNN/7.1/CUDA-9.0 CUDA/9.0
 #source /data/$USER/conda/etc/profile.d/conda.sh
