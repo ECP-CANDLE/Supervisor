@@ -130,8 +130,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# Use for Summit (LSF needs two %)
-if [[ ${SITE:-} == "summit" ]]
+site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
+# Use for Summit (LSF needs two %)... actually, it may not be LSF as Biowulf (which uses SLURM) seems to need this too now
+if [ ${site2:-} == "summit" ] || [ ${site2:-} == "biowulf" ]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else

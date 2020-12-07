@@ -1,6 +1,8 @@
 #!/bin/bash
 
+# Note: It probably would make most sense to source site-specific_settings.sh here and then to use below the variables set in that file
 # Prerequisite: Assume the candle module is loaded as usual
+# This is a second test comment line
 
 
 #### Set variables for CANDLE dependencies (mostly, Swift/T dependencies) ##########################################################
@@ -28,12 +30,10 @@ export MANPATH="/data/BIDS-HPC/public/software/builds/tcl/man:$MANPATH"
 export PATH="$PATH:/usr/local/apps/R/4.0/4.0.0/bin"
 export LIBRARY_PATH="$LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2019.1.144/linux/mkl/lib/intel64"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2019.1.144/linux/mkl/lib/intel64"
-#export R_LIBS_USER="$R_LIBS_USER:~/R/%v/library"
-# What we want: if $R_LIBS_USER is set then R_LIBS_USER="$R_LIBS_USER:~/R/%v/library", otherwise R_LIBS_USER="~/R/%v/library"
 if [ -z ${R_LIBS_USER+x} ]; then
-    R_LIBS_USER="~/R/%v/library"
+    R_LIBS_USER="$HOME/R/%v/library"
 else
-    R_LIBS_USER="$R_LIBS_USER:~/R/%v/library"
+    R_LIBS_USER="$R_LIBS_USER:$HOME/R/%v/library"
 fi
 export R_LIBS_SITE="$CANDLE_DEP_R_SITE"
 export R_LIBS="$CANDLE/R/libs"
@@ -63,19 +63,14 @@ export EQR="$CANDLE/Supervisor/workflows/common/ext/EQ-R"
 export EQPy="$CANDLE/Supervisor/workflows/common/ext/EQ-Py"
 
 # This is how Tim Miller told me to run interactive and batch MPI jobs on Biowulf GPU nodes recently (Aug/Sep 2020)
-#if [ "x$SLURM_JOB_PARTITION" == "xinteractive" ]; then
 if [ "x${SLURM_JOB_PARTITION:-batch}" == "xinteractive" ]; then
-    #export TURBINE_LAUNCH_OPTIONS=("--mpi=pmix" "--mem=0")
     export TURBINE_LAUNCH_OPTIONS+=" --mpi=pmix --mem=0"
 else
-    #export TURBINE_LAUNCH_OPTIONS=("--mpi=pmix")
     export TURBINE_LAUNCH_OPTIONS+=" --mpi=pmix"
 fi
 
-
-export TURBINE_MPI_THREAD=0
-
-
+# This prevents PMIx errors I believe
+export TURBINE_MPI_THREAD=0 # only currently used in Supervisor/workflows/upf/swift/workflow.sh
 ####################################################################################################################################
 
 
