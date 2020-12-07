@@ -29,8 +29,5 @@ for LOG in ${LOGS[@]}
 do
     echo -n "$LOG :: "
     # Pull out the last "Epoch:" line, print only the number:
-    # sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG
-    grep "Epoch:" $LOG
-    # experiments/X362/run/1.3/save/python.log
-done # | sort -r -n -k 2 | column -t
-
+    sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG
+done | nl # | sort -r -n -k 2 | column -t
