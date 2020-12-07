@@ -1,5 +1,5 @@
 
-# ENV Summit
+# ENV Summit TF2
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 # GCC 7.4.0, TensorFlow 2, opence010env, R 3.6.1
 
