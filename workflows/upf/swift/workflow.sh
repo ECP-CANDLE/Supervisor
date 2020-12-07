@@ -90,7 +90,11 @@ cp -v $UPF $TURBINE_OUTPUT
 
 site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
 
-if [ ${site2} == "summit" -a "x$CANDLE_RUN_WORKFLOW" != "x1" ] # ALW 2020-11-15: If we're running the candle wrapper scripts in which case if this file were being called then $CANDLE_RUN_WORKFLOW=1, don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings in the declaration below are handled by the wrapper scripts
+# ALW 2020-11-15: If we're running the candle wrapper scripts in which
+# case if this file were being called then $CANDLE_RUN_WORKFLOW=1,
+# don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings
+# in the declaration below are handled by the wrapper scripts
+if [[ ${site2} == "summit" -a "x$CANDLE_RUN_WORKFLOW" != "x1" ]]
 then
   export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
 fi
