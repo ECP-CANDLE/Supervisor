@@ -58,7 +58,7 @@ then
   export WAIT=1
 fi
 
-for f in $DATAFRAME_CSV 
+for f in $DATAFRAME_CSV
 do
   if [[ ! -f $f ]]
   then
