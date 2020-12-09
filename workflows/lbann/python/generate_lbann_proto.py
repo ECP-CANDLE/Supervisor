@@ -10,7 +10,7 @@ def import_model(framework, model_name):
      module_name = "{}_baseline".format(model_name)
      return importlib.import_module(module_name)
 
-def run(rank,hyper_parameter_map):
+def run(rank,hyper_parameter_map,exp_dir):
 
 
     framework = hyper_parameter_map['framework']
@@ -30,7 +30,7 @@ def run(rank,hyper_parameter_map):
     #write per trainer params to file
     runner_utils.write_params(params, hyper_parameter_map)
     sys.argv = [pkg]
-    pkg.run(params)
+    pkg.run(params,exp_dir)
 
 
 
@@ -64,7 +64,7 @@ def generate_proto(rank, hyper_parameter_map, args):
     
     # clear sys.argv so that argparse doesn't "cry"
     sys.argv = ['lbann_runner']
-    run(rank, hyper_parameter_map)
+    run(rank, hyper_parameter_map,exp_dir)
 
 def init_dirs(outdir):
     if not os.path.exists(outdir):

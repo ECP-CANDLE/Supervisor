@@ -78,7 +78,7 @@ def get_activation(name, x):
            return lbann.Softplus(x)
     
 
-def run(gParameters):
+def run(gParameters,exp_dir=None):
 
     #convs: out_c, conv_dim, conv_stride
     conv_outc= []
@@ -146,21 +146,31 @@ def run(gParameters):
                     metrics=[lbann.Metric(acc, name='accuracy', unit='%')],
                     callbacks=[lbann.CallbackPrintModelDescription(),
                                lbann.CallbackPrint(),
-                               lbann.CallbackTimer()])
+                               lbann.CallbackTimer(),
+                               lbann.CallbackLTFB(batch_interval=100,metric='accuracy')])
 
     # Setup data reader
     data_reader = data.mnist.make_data_reader()
 
     # Setup trainer
     job_name = "t"+ str(gParameters['run_id']-1)
-    trainer = lbann.Trainer(name=job_name, mini_batch_size=gParameters['batch_size'])
+    trainer = lbann.Trainer(name=job_name, mini_batch_size=gParameters['batch_size'],
+                            procs_per_trainer=0)
     status = lbann.contrib.launcher.run(
         trainer,
         model,
         data_reader,
         opt,
+        #work_dir=gParameters['save'],
+        work_dir=exp_dir,
+        nodes = 4,
+        #proto_file_name=job_name+"exp.prototext",
+        proto_file_name="experiment.prototext.trainer"+str(gParameters['run_id']-1),
         job_name=job_name,
         setup_only = True,
+        #batch_job = True,
+        lbann_args=['--generate_multi_proto --procs_per_trainer=4']
+        #lbann_args=['--generate_multi_proto']
      )
 
 def main():
