@@ -16,6 +16,7 @@ PATH=$SWIFT/stc/bin:$PATH
 
 # This is for an interactive run:
 export TURBINE_LAUNCHER=jsrun
+export TURBINE_LAUNCH_OPTIONS="-r 4"
 
 set -x
 swift-t -n $PROCS $SCRIPT
