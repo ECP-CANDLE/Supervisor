@@ -10,7 +10,7 @@ then
 fi
 SCRIPT=$1
 
-MED106=/gpfs/alpine/world-shared/med106/
+MED106=/gpfs/alpine/world-shared/med106
 SWIFT=$MED106/wozniak/sw/gcc-6.4.0/swift-t/2020-10-22
 PATH=$SWIFT/stc/bin:$PATH
 
