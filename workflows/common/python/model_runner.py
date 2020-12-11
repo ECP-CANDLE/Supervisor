@@ -206,6 +206,10 @@ def run_post(hyper_parameter_map, output_map):
         logger.debug("POST RUN STOP")
 
 def run_model(hyper_parameter_map):
+    # In-memory Python runs may not create sys.argv
+    if 'argv' not in dir(sys):
+        # This is needed for CANDLE Benchmarks finalize_parameters():
+        sys.argv = ['null']
     instance_directory = hyper_parameter_map['instance_directory']
     os.chdir(instance_directory)
     global logger
