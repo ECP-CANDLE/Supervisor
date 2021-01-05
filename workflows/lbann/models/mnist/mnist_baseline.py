@@ -24,15 +24,16 @@ def common_parser(parser):
     parser.add_argument("--config_file", dest='config_file', type=str,
                         default=os.path.join(file_path, 'mnist_default_model.txt'),
                         help="specify model configuration file")
+    parser.add_argument("--nodes", type=int, default=8)
 
     return parser
 
-def get_mnist_parser():
+def get_model_parser():
 
 	parser = argparse.ArgumentParser(prog='mnist_baseline', formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                      description='MNIST LBANN ')
 
-	return common_parser(parser)
+	return common_parser(parser).parse_args()
 
 def read_config_file(file):
     #print("Reading default config (param) file : ", file)
@@ -46,7 +47,7 @@ def read_config_file(file):
     fileParams['dense']=eval(config.get(section[0],'dense'))
     fileParams['activation']=eval(config.get(section[0],'activation'))
     fileParams['pool_mode']=eval(config.get(section[0],'pool_mode'))
-    fileParams['optimizer']=eval(config.get(section[0],'optimizer'))
+    #fileParams['optimizer']=eval(config.get(section[0],'optimizer'))
     fileParams['epochs']=eval(config.get(section[0],'epochs'))
     fileParams['batch_size']=eval(config.get(section[0],'batch_size'))
     fileParams['classes']=eval(config.get(section[0],'classes'))
@@ -55,10 +56,10 @@ def read_config_file(file):
 
     return fileParams
 
-def initialize_parameters():
+def initialize_parameters(args):
     # Get command-line parameters
-    parser = get_mnist_parser()
-    args = parser.parse_args()
+    #args = get_model_parser()
+    #args = parser.parse_args()
     # Get parameters from configuration file
     gParameters = read_config_file(args.config_file)
     return gParameters
@@ -78,7 +79,7 @@ def get_activation(name, x):
            return lbann.Softplus(x)
     
 
-def run(gParameters,exp_dir=None):
+def run(gParameters,run_args,exp_dir=None):
 
     #convs: out_c, conv_dim, conv_stride
     conv_outc= []
@@ -135,27 +136,28 @@ def run(gParameters,exp_dir=None):
     acc = lbann.CategoricalAccuracy(probs, labels)
     lr = gParameters['lr']
     opt = lbann.SGD(learn_rate=lr, momentum=0.9)
+    ##Uncomment to support optimizer exchange
+    '''
     if gParameters['optimizer'] == 'adam':
         opt = lbann.Adam(learn_rate=lr, beta1=0.9, beta2=0.99, eps=1e-8)
     elif gParameters['optimizer'] == 'adagrad':
         opt = lbann.AdaGrad(learn_rate=lr, eps=1e-8)
-
+    '''
     model = lbann.Model(gParameters['epochs'],
                     layers=lbann.traverse_layer_graph(input_),
                     objective_function=loss,
                     metrics=[lbann.Metric(acc, name='accuracy', unit='%')],
                     callbacks=[lbann.CallbackPrintModelDescription(),
                                lbann.CallbackPrint(),
-                               lbann.CallbackTimer(),
-                               lbann.CallbackLTFB(batch_interval=100,metric='accuracy')])
+                               lbann.CallbackTimer()])
+    #lbann.CallbackLTFB(batch_interval=100,metric='accuracy')])
 
     # Setup data reader
     data_reader = data.mnist.make_data_reader()
 
     # Setup trainer
     job_name = "t"+ str(gParameters['run_id']-1)
-    trainer = lbann.Trainer(name=job_name, mini_batch_size=gParameters['batch_size'],
-                            procs_per_trainer=0)
+    trainer = lbann.Trainer(name=job_name, mini_batch_size=gParameters['batch_size'])
     status = lbann.contrib.launcher.run(
         trainer,
         model,
@@ -163,7 +165,7 @@ def run(gParameters,exp_dir=None):
         opt,
         #work_dir=gParameters['save'],
         work_dir=exp_dir,
-        nodes = 4,
+        nodes=run_args.nodes,
         #proto_file_name=job_name+"exp.prototext",
         proto_file_name="experiment.prototext.trainer"+str(gParameters['run_id']-1),
         job_name=job_name,
@@ -175,7 +177,8 @@ def run(gParameters,exp_dir=None):
 
 def main():
 
-    gParameters = initialize_parameters()
+    args = get_model_parser()
+    gParameters = initialize_parameters(args)
     run(gParameters)
 
 if __name__ == '__main__':

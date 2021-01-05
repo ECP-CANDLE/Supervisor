@@ -19,7 +19,9 @@ def run(rank,hyper_parameter_map,exp_dir):
     runner_utils.format_params(hyper_parameter_map)
 
     # params is python dictionary
-    params = pkg.initialize_parameters()
+    run_args = pkg.get_model_parser()
+    sys.argv = [pkg]
+    params = pkg.initialize_parameters(run_args)
     #print("Rank ", rank, " default params  ", hyper_parameter_map)
     #print("Rank ", rank, " params from master ", hyper_parameter_map)
     for k,v in hyper_parameter_map.items():
@@ -30,7 +32,7 @@ def run(rank,hyper_parameter_map,exp_dir):
     #write per trainer params to file
     runner_utils.write_params(params, hyper_parameter_map)
     sys.argv = [pkg]
-    pkg.run(params,exp_dir)
+    pkg.run(params,run_args, exp_dir)
 
 
 
