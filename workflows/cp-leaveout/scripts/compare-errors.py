@@ -66,3 +66,4 @@ with open(args.output, "w") as fp:
 
 print("compared: %2i" % count)
 print("missing:  %2i" % missing)
+print("wrote:    %s"  % args.output)
