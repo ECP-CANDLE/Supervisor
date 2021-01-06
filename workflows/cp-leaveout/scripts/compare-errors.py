@@ -3,6 +3,7 @@
 
 # Input:  Provide two experiment DIRECTORIES and OUTPUT file
 # Output: NODE_ID EPOCHS1 ERROR1 EPOCHS2 ERROR2
+#         where an ERROR is MSE MAE R2 CORR
 
 # Could easily be updated to pull out only one error stat
 # (see commented code)
