@@ -195,4 +195,5 @@ fi
 # echo "EXIT CODE: 0" | tee -a $STDOUT
 
 # Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt
+# ALW 1/14/21: Removing this line again as I may not care about the job monitoring anymore and it clouds up the working directory
+#echo $TURBINE_OUTPUT > turbine-directory.txt
