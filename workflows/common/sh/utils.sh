@@ -206,13 +206,6 @@ get_expid()
     mv metadata.json $TURBINE_OUTPUT
   fi
 
-  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
-  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
-    if [ -f "$CANDLE_INPUT_FILE" ]; then
-      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
-    fi
-  fi
-
 }
 
 next()
@@ -360,29 +353,29 @@ queue_wait_site()
   site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
 
   if [[ $site2 == "cori" ]]
-  then
-    queue_wait_slurm $JOBID
-  elif [[ $site2 == "theta" ]]
-  then
-    queue_wait_cobalt $JOBID
-  elif [[ $site2 == "titan" ]]
-  then
-    queue_wait_pbs $JOBID
-  elif [[ $site2 == "summit" ]]
-  then
-    queue_wait_lsf $JOBID
-  elif [[ $site2 == "pascal" ]]
-  then
-    queue_wait_slurm $JOBID
-  elif [[ $site2 == "biowulf" ]]
-  then
-    queue_wait_slurm $JOBID
-  else
-    echo "queue_wait(): unknown site: $SITE"
-    return 1
-  fi
+    then
+      queue_wait_slurm $JOBID
+    elif [[ $site2 == "theta" ]]
+    then
+      queue_wait_cobalt $JOBID
+    elif [[ $site2 == "titan" ]]
+    then
+      queue_wait_pbs $JOBID
+    elif [[ $site2 == "summit" ]]
+    then
+      queue_wait_lsf $JOBID
+    elif [[ $site2 == "pascal" ]]
+    then
+      queue_wait_slurm $JOBID
+    elif [[ $site2 == "biowulf" ]]
+    then
+      queue_wait_slurm $JOBID
+    else
+      echo "queue_wait(): unknown site: $SITE"
+      return 1
+    fi
 
-  echo "Job completed: $JOBID"
+    echo "Job completed: $JOBID"
 }
 
 queue_wait_slurm()
@@ -575,6 +568,13 @@ log_script() {
   echo "" >> $LOG_NAME
   echo "## SCRIPT ###" >> $LOG_NAME
   cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+
+  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
+  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
+    if [ -f "$CANDLE_INPUT_FILE" ]; then
+      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+    fi
+  fi
 }
 
 check_directory_exists() {
