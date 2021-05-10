@@ -4,10 +4,10 @@ set -eu
 # UPF WORKFLOW SH
 
 # Autodetect this workflow directory
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+export EMEWS_PROJECT_ROOT=$( readlink --canonicalize $( dirname $0 )/.. )
+export WORKFLOWS_ROOT=$(     readlink --canonicalize $EMEWS_PROJECT_ROOT/..  )
+export BENCHMARKS_ROOT=$(    readlink --canonicalize $EMEWS_PROJECT_ROOT/../../../Benchmarks.tf2 )
 
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
@@ -90,7 +90,11 @@ cp -v $UPF $TURBINE_OUTPUT
 
 site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
 
-if [ ${site2} == "summit" -a "x$CANDLE_RUN_WORKFLOW" != "x1" ] # ALW 2020-11-15: If we're running the candle wrapper scripts in which case if this file were being called then $CANDLE_RUN_WORKFLOW=1, don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings in the declaration below are handled by the wrapper scripts
+# ALW 2020-11-15: If we're running the candle wrapper scripts in which
+# case if this file were being called then $CANDLE_RUN_WORKFLOW=1,
+# don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings
+# in the declaration below are handled by the wrapper scripts
+if [[ ${site2} == "summit" && ${CANDLE_RUN_WORKFLOW:-0} != 1 ]]
 then
   export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
 fi

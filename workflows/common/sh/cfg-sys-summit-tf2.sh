@@ -1,8 +1,6 @@
+#!/bin/bash
 
 # UPF CFG SYS 1
-
-# Use 1 for interactive workflows
-# export INTERACTIVE=1
 
 # The number of MPI processes
 # Note that 1 process is reserved for Swift/T
@@ -26,26 +24,36 @@ export PPN=${PPN:-1}
 
 # Theta: (cf. sched-theta)
 # export QUEUE=${QUEUE:-debug-cache-quad}
-# export QUEUE=${QUEUE:-debug-flat-quad}
+#export QUEUE=${QUEUE:-debug-flat-quad}
 # export PROJECT=${PROJECT:-ecp-testbed-01}
 # export PROJECT=Candle_ECP
-export PROJECT=CSC249ADOA01
+#export PROJECT=CSC249ADOA01
 
 # Summit:
 export QUEUE=${QUEUE:-batch}
-export PROJECT=med106
-# export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
+
+export PROJECT=${PROJECT:-med106}
 
 export WALLTIME=${WALLTIME:-0:30}
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov
 
-# Benchmark run timeout: benchmark run will timeouT
+# Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds. -1 is no timeout.
-BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
+BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600} # probably not needed but this variable is baked into rest of code, e.g., workflow.sh
 
 # Uncomment below to use custom python script to run
 # Use file name without .py (e.g, my_script.py)
 # BENCHMARK_DIR=/path/to/
 # MODEL_PYTHON_SCRIPT=my_script
+
+# Shell timeout: benchmark run will be killed
+# after the specified number of seconds.
+# If set to -1 or empty there is no timeout.
+# This timeout is implemented with the shell command 'timeout'
+export SH_TIMEOUT=${SH_TIMEOUT:-}
+
+# Ignore errors: If 1, unknown errors will be reported to model.log
+# but will not bring down the Swift workflow.  See model.sh .
+export IGNORE_ERRORS=0

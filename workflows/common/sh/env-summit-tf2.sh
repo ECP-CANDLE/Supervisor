@@ -1,5 +1,5 @@
 
-# ENV Summit
+# ENV Summit TF2
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 # GCC 7.4.0, TensorFlow 2, opence010env, R 3.6.1
 
@@ -11,6 +11,7 @@ set +eu # modules create errors outside our control
 module load spectrum-mpi/10.3.1.2-20200121
 module unload darshan-runtime
 # module load ibm-wml-ce/1.6.2-3
+module load cuda/10.2.89
 module list
 set -eu
 

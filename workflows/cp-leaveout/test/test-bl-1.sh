@@ -42,10 +42,10 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 # SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
 SCRATCH=/gpfs/alpine/med106/scratch/wozniak
 # SCRATCH=/usb2/wozniak
-CANDLE_DATA=$SCRATCH/CANDLE-Data/Milestone-13
+CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem
 PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
-DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
+DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labeled.hdf5
 BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
 # BENCHMARK_DATA=$HOME/proj/Benchmarks/Pilot1/Uno
 
@@ -58,7 +58,7 @@ then
   export WAIT=1
 fi
 
-for f in $DATAFRAME_CSV 
+for f in $DATAFRAME_CSV
 do
   if [[ ! -f $f ]]
   then

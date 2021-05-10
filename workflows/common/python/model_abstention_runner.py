@@ -45,22 +45,6 @@ def import_pkg(framework, model_name):
             module_name = "{}_abstention_keras2".format(model_name)
         print ("module_name:", module_name)
         pkg = importlib.import_module(module_name)
-
-        # For Summit:
-        from tensorflow.keras import backend as K
-        # For other systems:
-        # from keras import backend as K
-        if K.backend() == 'tensorflow' and 'NUM_INTER_THREADS' in os.environ:
-            import tensorflow as tf
-            inter_threads = int(os.environ['NUM_INTER_THREADS'])
-            intra_threads = int(os.environ['NUM_INTRA_THREADS'])
-            print("Configuring tensorflow with {} inter threads and " +
-                                              "{} intra threads"
-                  .format(inter_threads, intra_threads))
-            cfg = tf.ConfigProto(inter_op_parallelism_threads=inter_threads,
-                                 intra_op_parallelism_threads=intra_threads)
-            sess = tf.Session(graph=tf.get_default_graph(), config=cfg)
-            K.set_session(sess)
     elif framework == 'pytorch':
         import torch
         if module_name == None or module_name == "":

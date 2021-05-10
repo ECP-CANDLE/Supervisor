@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu
 
-# EPOCH COUNT SH
-# Report run progress in number of completed epochs
+# EPOCH STATUS SH
+# Report epoch progress status for all python.logs
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 CPLO=$( readlink --canonicalize $THIS/.. )
@@ -25,9 +25,17 @@ show EXPID JOBID
 
 LOGS=( $( find $DIR -name python.log  ) )
 echo "epoch-count.sh: found ${#LOGS[@]} logs ..."
+
+COMPLETED=0
 for LOG in ${LOGS[@]}
 do
-    echo -n "$LOG :: "
-    # Pull out the last "Epoch:" line, print only the number:
-    sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG
-done | nl # | sort -r -n -k 2 | column -t
+  if grep -q "EPOCHS COMPLETED" $LOG
+  then
+    (( COMPLETED = COMPLETED+1 ))
+  else
+    echo
+    echo $LOG
+    tail $LOG
+  fi
+done
+echo "COMPLETED: $COMPLETED"
