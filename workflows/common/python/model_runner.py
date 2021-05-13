@@ -138,6 +138,10 @@ def run(hyper_parameter_map, obj_return):
     runner_utils.format_params(hyper_parameter_map)
 
     params_arg = {}
+    if 'CANDLE_DEFAULT_MODEL_FILE' in os.environ:
+        config_file = os.getenv('CANDLE_DEFAULT_MODEL_FILE')
+        logger.info('CANDLE_DEFAULT_MODEL_FILE: "%s"' % config_file)
+        params_arg = { 'default_model': config_file }
     if 'config_file' in hyper_parameter_map:
         config_file = hyper_parameter_map['config_file']
         logger.info('specified config_file: "%s"' % config_file)
