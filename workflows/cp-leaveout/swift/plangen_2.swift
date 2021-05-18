@@ -44,7 +44,7 @@ result = python_persist(
 import sys, traceback
 import plangen
 try:
-    result = str(plangen.plan_prep('%s', '%s', %s))
+    result = str(plangen.plan_prep('%s', '%s', '%s'))
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
@@ -62,7 +62,7 @@ except Exception as e:
 import sys, traceback
 import plangen
 try:
-    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
+    result = str(plangen.start_subplan('%s', '%s', %s, '%s', '%s'))
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
