@@ -251,6 +251,7 @@ class Node:
         return self.epochs_cumul
 
 def check_token(line, index, token):
+    ''' Assert that token is in line at given index '''
     tokens = line.split()
     if tokens[index] != token:
           raise Exception(("could not find token: '%s'\n" +
@@ -258,6 +259,7 @@ def check_token(line, index, token):
     return tokens
 
 def check(condition, message):
+    ''' Check condition or raise Exception with given message '''
     if not condition:
         raise Exception(message)
 
