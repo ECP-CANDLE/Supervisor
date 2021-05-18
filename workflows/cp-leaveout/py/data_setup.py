@@ -44,9 +44,11 @@ def pre_run(params):
                       "copied to NVM in %0.1f seconds (%0.1f MB/s)." %
                       (duration, rate))
             else:
-                print("File copy skipped. Original dataframe already exists in NVM.")
+                print("File copy skipped. " +
+                      "Original dataframe already exists in NVM.")
         except Exception as e:
-            print("Error occurred in copying original dataframe\n" + str(e))
+            print("Error occurred in copying original dataframe\n" +
+                  str(e))
             traceback.print_exc()
             return ModelResult.ERROR
         params["dataframe_from"] = dest.resolve()
@@ -64,9 +66,16 @@ def pre_run(params):
     try:
         for filename in [ "uno_auc_model.txt" ]: # "cache",
             if not os.path.islink(filename):
-                os.symlink(f"{data}/{filename}", filename)
+                src = f"{data}/{filename}"
+                print("data_setup: src:  (%s)" % src)
+                print("data_setup: dest: (%s)" % filename)
+                os.symlink(src, filename)
     except Exception as e:
-        print("data_setup: error making symlink: %s\n" % filename + str(e))
+        print("data_setup: error making symlink:")
+        print("data_setup: pwd: " + os.getcwd())
+        print("data_setup: src:  (%s)" % src)
+        print("data_setup: dest: (%s)" % filename)
+        print(str(e))
         return ModelResult.ERROR
 
     try:
