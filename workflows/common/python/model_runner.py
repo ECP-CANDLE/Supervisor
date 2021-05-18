@@ -33,21 +33,23 @@ for i in range(0, len(sys.path)-1):
     print("%2i: %s" % (i, sys.path[i]))
 print("")
 
+
 def import_pkg(framework, model_name):
     # The model_name is the short form of the Benchmark: e.g., 'nt3'
-    # The module_name is the name of the Python module:  e.g., 'nt3_baseline_keras2'
+    # The module_name is the name of the Python module:
+    #     e.g., 'nt3_baseline_keras2'
     print("model_name: ", model_name)
     module_name = os.getenv("MODEL_PYTHON_SCRIPT")
     if framework == 'keras':
-        if module_name == None or module_name == "":
+        if module_name is None or module_name == "":
             module_name = "{}_baseline_keras2".format(model_name)
-        print ("module_name:", module_name)
+        print("module_name: " + module_name)
         pkg = importlib.import_module(module_name)
     elif framework == 'pytorch':
-        import torch
-        if module_name == None or module_name == "":
+        import torch  # noqa: F401
+        if module_name is None or module_name == "":
             module_name = "{}_baseline_pytorch".format(model_name)
-            print ("module_name:", module_name)
+            print("module_name: " + module_name)
         pkg = importlib.import_module(module_name)
     else:
         raise ValueError("Framework must either be `keras' or `pytorch' " +
@@ -61,9 +63,11 @@ def log(msg):
     global logger
     logger.debug(msg)
 
+
 def timestamp():
     from datetime import datetime
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 def setup_perf(params):
     return { 'top':    setup_perf_top(params),
@@ -77,7 +81,7 @@ def setup_perf_top(params):
         return None
     try:
         delay = int(params['perf_top'])
-    except:
+    except Exception:
         msg = 'setup_perf_top(): params[perf_top] not an int: got: "%s"' % \
               params['perf_top']
         print(msg)
@@ -85,10 +89,11 @@ def setup_perf_top(params):
     import subprocess
     with open('perf-top.log', 'a') as fp_out:
         fp_out.write('model_runner: start: %s\n\n' % timestamp())
-        P = subprocess.Popen(['top', '-b', '-d', params['perf_top']],
+        P = subprocess.Popen(['top', '-b', '-d', delay],
                              stdout=fp_out,
                              stderr=subprocess.STDOUT)
     return P
+
 
 def setup_perf_nvidia(params):
     if 'perf_nvidia' not in params:
@@ -97,7 +102,7 @@ def setup_perf_nvidia(params):
         return None
     try:
         delay = int(params['perf_nvidia'])
-    except:
+    except Exception:
         msg = 'setup_perf_nvidia(): params[perf_nvidia] not an int: ' + \
               'got: "%s"' % params['perf_nvidia']
         print(msg)
@@ -105,7 +110,7 @@ def setup_perf_nvidia(params):
     import subprocess
     with open('perf-nvidia.log', 'a') as fp_out:
         fp_out.write('model_runner: start: %s\n\n' % timestamp())
-        P = subprocess.Popen(['nvidia-smi', '--loop='+params['perf_top']],
+        P = subprocess.Popen(['nvidia-smi', '--loop=%i' % delay],
                              stdout=fp_out,
                              stderr=subprocess.STDOUT)
     return P
@@ -163,8 +168,11 @@ def run(hyper_parameter_map, obj_return):
     # Default result if there is no val_loss (as in infer.py)
     result = 0
     history_result = {}
-    if history != None:
-        result, history_result = get_results(history, obj_return)
+    if history is not None:
+        if history == "EPOCHS_COMPLETED_ALREADY":
+            result, history_result = "EPOCHS_COMPLETED_ALREADY", None
+        else:
+            result, history_result = get_results(history, obj_return)
 
     stop_perf(Ps)
 
@@ -219,6 +227,8 @@ def run_model(hyper_parameter_map):
     global logger
     logger = log_tools.get_logger(logger, "MODEL RUNNER")
     obj_return = get_obj_return()
+    directory = hyper_parameter_map['instance_directory']
+    os.chdir(directory)
     result = run_pre(hyper_parameter_map)
     if result == ModelResult.ERROR:
         print("run_pre() returned ERROR!")
@@ -231,9 +241,10 @@ def run_model(hyper_parameter_map):
         assert(result == ModelResult.SUCCESS) # proceed...
 
     result, history = run(hyper_parameter_map, obj_return)
-    runner_utils.write_output(result, instance_directory)
-    runner_utils.write_output(json.dumps(history, cls=runner_utils.FromNPEncoder),
-                              instance_directory, 'history.txt')
+    runner_utils.write_output(result, directory)
+    runner_utils.write_output(json.dumps(history,
+                                         cls=runner_utils.FromNPEncoder),
+                              directory, 'history.txt')
 
     run_post(hyper_parameter_map, {})
     log("RUN STOP")
@@ -266,15 +277,16 @@ def get_results(history, obj_return):
     Return the history entry that the user requested.
     history: The Keras history object
     """
-    values = history.history[obj_return]
-    # Default: the last value in the history
-    result = values[-1]
-
     known_params = [ "loss", "val_loss", "val_corr", "val_dice_coef" ]
     if obj_return not in known_params:
         raise ValueError("Unsupported objective function: " +
                          "use obj_param to specify one of " +
                          str(known_params))
+
+    if obj_return in history.history:
+        values = history.history[obj_return]
+    # Default: the last value in the history
+    result = values[-1]
 
     # Fix NaNs:
     if math.isnan(result):
@@ -294,6 +306,7 @@ if __name__ == '__main__':
     logger = log_tools.get_logger(logger, "MODEL_RUNNER")
     log("RUN START")
 
+    import sys
     ( _, # The Python program name (unused)
       param_string,
       instance_directory,
