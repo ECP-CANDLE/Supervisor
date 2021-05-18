@@ -163,6 +163,11 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 EPOCH_MODE_MODULE="compute_epochs_$EPOCH_MODE"
 
+if [[ ! -f swift/$EPOCH_MODE_MODULE.swift ]]
+then
+  abort "workflow.sh: No such EPOCH_MODE: swift/$EPOCH_MODE_MODULE.swift"
+fi
+
 WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
