@@ -9,6 +9,7 @@
   Flags:
   -N : Number of nodes per stage (see default in code)
   -S : Number of stages          (see default in code)
+  -P : Early stopping patience   (see default in code)
   -r : Use RunType.RESTART, default is RunType.RUN_ALL
        RUN_ALL means this is a fresh run with no prior results
 
@@ -69,6 +70,9 @@ else
 E_s = argv("E", "50");
 assert(strlen(E_s) > 0, "workflow.swift: you must provide an argument to -E");
 int max_epochs = string2int(E_s); // epochs=20 is just under 2h on Summit.
+P_s = argv("P", "10");
+assert(strlen(P_s) > 0, "workflow.swift: you must provide an argument to -P");
+int early_stopping = string2int(P_s);
 string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
@@ -161,10 +165,11 @@ run_stage(int N, int S, string this, int stage, void block,
 "gpus": "0",
 "epochs": %i,
 "es": "True",
+"early_stopping": %i,
 "use_exported_data": "topN.uno.h5",
 "benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv, epochs, benchmark_data);
+(plan_json, dataframe_csv, epochs, early_stopping, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);
