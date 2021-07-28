@@ -361,7 +361,7 @@ queue_wait_site()
     elif [[ $site2 == "titan" ]]
     then
       queue_wait_pbs $JOBID
-    elif [[ $site2 == "summit" ]]
+    elif [[ $site2 =~ summit* ]]
     then
       queue_wait_lsf $JOBID
     elif [[ $site2 == "pascal" ]]

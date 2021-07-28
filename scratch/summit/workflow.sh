@@ -20,5 +20,5 @@ PROCS=2
 which swift-t
 
 set -x
-swift-t -m lsf -n $PROCS \
+swift-t -p -m lsf -n $PROCS -e PYTHONHOME  \
        $SCRIPT

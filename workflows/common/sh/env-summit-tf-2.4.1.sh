@@ -28,6 +28,12 @@ LD_LIBRARY_PATH+=:$R/lib
 # EMEWS Queues for R
 EQR=$MED106/wozniak/sw/gcc-6.4.0/EQ-R
 
+# Python settings
+PY=$MED106/sw/open-ce-1.1.3-py37
+LD_LIBRARY_PATH+=:$PY/lib
+export PYTHONHOME=$PY
+PATH=$PY/bin:$PATH
+
 # For test output processing:
 LOCAL=0
 CRAY=1
