@@ -6,10 +6,15 @@
 string code_template =
 ----
 try:
-  import sys, traceback, json, os
+  import json
+  import os
+  import sys
+  import traceback
   import model_runner
-  import tensorflow 
-  from tensorflow import keras 
+
+  sys.argv = [ 'python' ]
+  import tensorflow
+  from tensorflow import keras
 
   obj_result = '-100'
   outdir = '%s'
