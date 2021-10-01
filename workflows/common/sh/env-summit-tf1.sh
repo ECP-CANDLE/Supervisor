@@ -1,4 +1,5 @@
 
+# DEPRECATED 2021-10-01: Use env-summit
 # ENV Summit TF1
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 # GCC 6.4.0, TensorFlow 1, condaenv-200408, R 3.6.1
