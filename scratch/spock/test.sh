@@ -18,7 +18,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 
 which swift-t
 
-export PROJECT=MED106 # CSC249ADCD01
+export PROJECT=MED106
 export QUEUE=ecp
 export WALLTIME=00:05:00
 export PROCS=2
