@@ -11,7 +11,7 @@ WORKFLOW=$1
 
 MED106=/gpfs/alpine/world-shared/med106
 ROOT=$MED106/sw/spock/gcc-10.3.0
-SWIFT=$ROOT/swift-t/2021-10-04
+SWIFT=$ROOT/swift-t/2021-10-04_B
 
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
