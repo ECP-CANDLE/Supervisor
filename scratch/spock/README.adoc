@@ -5,6 +5,6 @@ Run with
 $ ./test.sh hello.swift
 ----
 
-Wait for job to complete, then check turbine_output/output.txt
+Wait for job to complete, then check `turbine_output/output.txt`
 
-Logs are in turbine_output/
+Logs are in `turbine_output/`
