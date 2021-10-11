@@ -64,7 +64,8 @@ set +x
 source_site env   $SITE
 source_site sched $SITE
 
-PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py            # For plangen, data_setup
+# Note: insist on plangen from Supervisor!
+PYTHONPATH=$EMEWS_PROJECT_ROOT/py:$PYTHONPATH  # For plangen, data_setup
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools, model_runner
 APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
