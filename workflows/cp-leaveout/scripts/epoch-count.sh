@@ -30,4 +30,4 @@ do
     echo -n "$LOG :: "
     # Pull out the last "Epoch:" line, print only the number:
     sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG
-done | nl # | sort -r -n -k 2 | column -t
+done | nl | sort -r -n -k 4 | column -t

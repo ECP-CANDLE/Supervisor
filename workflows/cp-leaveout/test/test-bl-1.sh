@@ -46,8 +46,9 @@ CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem
 PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
 DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labeled.hdf5
-BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
+# BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
 # BENCHMARK_DATA=$HOME/proj/Benchmarks/Pilot1/Uno
+BENCHMARK_DATA=$CANDLE_DATA
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
@@ -66,7 +67,10 @@ do
   fi
 done
 
-export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+if [[ $SITE == "summit" ]]
+then
+  export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+fi
 
 # Submit job
 export WORKFLOW_SWIFT=baseline-error.swift

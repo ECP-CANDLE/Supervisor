@@ -97,10 +97,11 @@ site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs 
 # in the declaration below are handled by the wrapper scripts
 if [[ ${site2} == "summit" && ${CANDLE_RUN_WORKFLOW:-0} != 1 ]]
 then
-  export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
+  export TURBINE_LAUNCH_OPTIONS="-a1 -g1 -c7"
 fi
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+# TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+TURBINE_STDOUT=
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \

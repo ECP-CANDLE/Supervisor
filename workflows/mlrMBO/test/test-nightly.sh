@@ -50,7 +50,6 @@ fi
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
-
 # Check job output
 TURBINE_OUTPUT=$( readlink turbine-output )
 echo $TURBINE_OUTPUT

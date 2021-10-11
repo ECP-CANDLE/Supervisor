@@ -22,7 +22,8 @@ from datetime import datetime
 
 ISO_TIMESTAMP = "seconds"                       # timestamp to ISO string
 ISO_TIMESTAMP_ENCODE = "%Y-%m-%dT%H:%M:%S"      # ISO string to timestamp
-DEBUG_SQL = False
+DEBUG_SQL = True
+
 
 def isempty(path):
     """Determine whether the given directory is empty."""

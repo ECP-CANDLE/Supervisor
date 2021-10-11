@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-5}
+export PROCS=${PROCS:-2}
 
 # # Number of processes to use for resident tasks,
 # # i.e., the number of mlrMBO instances to run
@@ -15,15 +15,19 @@ export PROCS=${PROCS:-5}
 export PPN=${PPN:-1}
 
 # For Theta:
-export QUEUE=${QUEUE:-debug-flat-quad}
+# export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
-export WALLTIME=${WALLTIME:-02:00:00}
+# export QUEUE=debug
+
+export WALLTIME=${WALLTIME:-00:05:00}
+# export WALLTIME=00:05:00
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
-#export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
+# export TURBINE_LAUNCH_OPTIONS="-g3 -c21 -a2" # For PPN=2 # Does not work
 export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 #export PROJECT=Candle_ECP

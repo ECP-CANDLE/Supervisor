@@ -12,7 +12,7 @@ export PROCS=${PROCS:-2}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-2}
 
 #export QUEUE=${QUEUE:-batch}
 
@@ -37,6 +37,7 @@ export PPN=${PPN:-1}
 # export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
 
 # export WALLTIME=${WALLTIME:-0:30}
+echo WALLTIME: $WALLTIME
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov
