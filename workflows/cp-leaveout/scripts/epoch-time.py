@@ -2,15 +2,13 @@
 # EPOCH TIME PY
 # See epoch-time.sh
 
-import datetime, sys, time
+import datetime, sys
 
-from Node import Node
-from utils import fail
 
 # Main data structure:
 #      map from stage number to list of epoch times in seconds
 stages = {}
-for stage in range(1,6+1):
+for stage in range(1, 6+1):
     stages[stage] = []
 
 # Files processed:
@@ -25,8 +23,8 @@ while True:
 
     line = sys.stdin.readline()
 
-    if len(line) == 0: break    # EOF
-    if len(line) == 1: continue # Blank line
+    if len(line) == 0: break     # EOF
+    if len(line) == 1: continue  # Blank line
     tokens = line.split()
 
     if tokens[0] == "epoch-time:":
@@ -50,7 +48,7 @@ while True:
     if tokens[2] == "Epoch":
         ts = tokens[0] + " " + tokens[1]
         dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
-        if start_current == None:
+        if start_current is None:
             start_current = dt
             continue
         start = start_current.timestamp()
@@ -60,7 +58,7 @@ while True:
         start_current = dt
         stages[stage_current].append(duration)
 
-for stage in range(1,6+1):
+for stage in range(1, 6+1):
     n = len(stages[stage])
     if n == 0:
         avg = -1
