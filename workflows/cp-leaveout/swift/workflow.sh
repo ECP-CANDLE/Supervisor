@@ -40,7 +40,7 @@ then
   exit 1
 fi
 
-set -x
+# set -x
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
