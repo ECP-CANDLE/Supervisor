@@ -117,7 +117,7 @@ then
     # If output.txt does not exist, assume the moves already happened
     echo "WARNING: The outputs were already moved from $EXPID"
   else
-    next $TURBINE_OUTPUT/restarts/%i # cf. utils.sh:next()
+    next "$TURBINE_OUTPUT/restarts/%02i" # cf. utils.sh:next()
     PRIOR_RUN=$REPLY
     echo "Moving old outputs to $PRIOR_RUN"
     mkdir -pv $PRIOR_RUN
