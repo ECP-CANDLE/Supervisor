@@ -23,7 +23,7 @@ parser.add_argument("output",
 args = parser.parse_args()
 
 # logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-# logger = logging.getLogger("extract_node_info")
+# logger = logging.getLogger("compare_errors")
 
 node_pkl_1 = args.directory1 + "/node-info.pkl"
 node_pkl_2 = args.directory2 + "/node-info.pkl"
