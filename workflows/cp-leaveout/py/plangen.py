@@ -1142,7 +1142,7 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     # acquire feature_set names populated in the plan
     content, _ = get_subplan(plan_dict, subplan_id)
     if not content:
-        return None, None
+        return None, None, None, None
 
     # peek inside the training set to capture active feature-set names
     train_set = content['train'][0]
