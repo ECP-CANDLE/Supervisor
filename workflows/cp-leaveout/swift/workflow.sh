@@ -125,20 +125,7 @@ then
              $TURBINE_OUTPUT/out
              $TURBINE_OUTPUT/turbine*
              $TURBINE_OUTPUT/jobid.txt )
-    mv    ${PRIORS[@]}            $PRIOR_RUN
-    cp -v $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
-    echo $TURBINE_OUTPUT/run/*/save
-    for D in $TURBINE_OUTPUT/run/*/save
-    do
-      cd $D
-      echo D=$D
-      shopt -s nullglob
-      for f in *.json *.h5 *.log
-      do
-        : # cp -v --backup=numbered $f $f.bak
-      done
-      cd -
-    done
+    mv ${PRIORS[@]} $PRIOR_RUN
   fi
 else # Not a restart
   if [[ -f $TURBINE_OUTPUT/output.txt ]]
