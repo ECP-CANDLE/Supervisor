@@ -529,11 +529,8 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
     else:
         lclcsr = conn.cursor()
     try:
-        if DEBUG_SQL:
-            with open("plangen_db.log", "a") as fp:
-                fp.write("STMT: " + stmt + "\n")
-
         db_exception = False
+        log("STMT: " + stmt)
         lclcsr.execute(stmt)
 
     except db_Error as e:
@@ -759,20 +756,35 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
         already exists for the plan/subplan and is marked COMPLETE.
     """
 
+    print("plangen: start_subplan: subplan_id=%s" % subplan_id)
+    sys.stdout.flush()
     conn = db_connect(db_path)
     csr  = conn.cursor()
     skip = False
 
+    print("plangen: start_subplan: run_type:      '%s'" % str(run_type))
+    print("plangen: start_subplan: run_type type:  %s"  % str(type(run_type)))
+    print("plangen: start_subplan: base:          '%s'" % str(RunType.RESTART))
+    sys.stdout.flush()
+
     # skip previously completed work if RESTART
     if run_type == RunType.RESTART:
+        log("plangen: start_subplan: checking restart: %i" % plan_id)
+        sys.stdout.flush()
         stmt = _select_row_from_runhist.format(plan_id, subplan_id)
         execute_sql_stmt(conn, stmt, cursor=csr)
         row = csr.fetchone()
 
         if row:
+            log("plangen: start_subplan: found row.")
             runhist_rec = RunhistRow._make(row)
+            log("plangen: start_subplan: found '%s'" % runhist_rec.status)
             if runhist_rec.status == RunStat.COMPLETE.name:
                 skip = True
+            log("plangen: start_subplan: skip %r" % skip)
+    else:
+        print("plangen: start_subplan: not checking restart")
+        sys.stdout.flush()
 
     # construct/reinit a new runhist record
     if not skip:
@@ -793,8 +805,10 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     conn.close()
 
     if skip:
+        print("plangen: start_subplan: subplan_id=%s: SKIP" % subplan_id)
         return -1
     else:
+        print("plangen: start_subplan: subplan_id=%s: RUN" % subplan_id)
         return 0
 
 
