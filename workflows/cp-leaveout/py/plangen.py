@@ -108,7 +108,7 @@ def validate_args(args):
     if verbose:
         print("Writing plan information to %s" % os.path.abspath(args.out_dir))
 
-    # expand, validate and load input feature-set content lists 
+    # expand, validate and load input feature-set content lists
     fs_content = []
     args.fs_lines = []
     file_error = False
@@ -241,7 +241,7 @@ class IterativeSubsetGenerator(SubsetGenerator):
         omit_size = base_len - size
         increment = min(size, omit_size)
 
-        # omit consecutive blocks of feature-name entries 
+        # omit consecutive blocks of feature-name entries
         for i in range(count):
             org = i * increment
             if org >= base_len:
@@ -384,7 +384,7 @@ PlanstatRow = namedtuple('PlanstatRow',
 )
 
 _select_row_from_planstat = """
-    SELECT rowid, 
+    SELECT rowid,
         plan_name, create_date, feature_sets, partitions, nbr_subplans
         FROM planstat
         WHERE plan_name='{}'
@@ -481,15 +481,23 @@ _delete_from_runhistory = """
     DELETE FROM runhist where plan_id = {}
     """
 
+
+def log(msg):
+    if DEBUG_SQL:
+        with open("plangen_db.log", "a") as fp:
+            fp.write(msg + "\n")
+            fp.flush()
+
+
 #------------------------------------------------------------------------------
 # "Plan management" Database functions
 #
-#   db_connect          - establish database connection returning conn handle     
-#   execute_sql_stmt    - execute a SQL statement with optional error trap   
+#   db_connect          - establish database connection returning conn handle
+#   execute_sql_stmt    - execute a SQL statement with optional error trap
 #   plan_prep           - prepare for the execution of a multi-step "plan"
-#   start_subplan       - start a subplan, (ex. '1.4.8'), write RunhistRow  
-#   stop_subplan        - stop a subplan, update RunhistRow 
-#   get_subplan_runhist - return a RunhistRow for a given subplan 
+#   start_subplan       - start a subplan, (ex. '1.4.8'), write RunhistRow
+#   stop_subplan        - stop a subplan, update RunhistRow
+#   get_subplan_runhist - return a RunhistRow for a given subplan
 #   plan_remove         - remove all database records for the named plan
 #------------------------------------------------------------------------------
 
@@ -556,7 +564,7 @@ def db_connect(db_path):
     """Connect to the plan management database.
 
     Establish a connection to the sqlite3 database contained in the named file.
-    A plan management database is created and populated at db_path if the file 
+    A plan management database is created and populated at db_path if the file
     does not exist.
 
     Args
@@ -577,7 +585,7 @@ def db_connect(db_path):
         print('db_connect', error)
         raise
 
-    # create plan management tables on initial database allocation 
+    # create plan management tables on initial database allocation
     if conn and not prev_allocated:
         complete  = execute_sql_stmt(conn, _planstat_ddl)
         complete &= execute_sql_stmt(conn, _runhist_ddl)
@@ -675,7 +683,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
     partitions   = get_plan_fs_parts(plan_dict)
     nbr_subplans    = get_plan_nbr_subplans(plan_dict)
 
-    # determine if a plan of the given name has already been registered 
+    # determine if a plan of the given name has already been registered
     conn = db_connect(db_path)
     plan_key = _get_planstat_key(plan_path)
     stmt = _select_row_from_planstat.format(plan_key)
@@ -689,7 +697,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         plan_rec = PlanstatRow._make(row)           # column-name addressable
         rowid = plan_rec.rowid                      # the unique rowid will be the uniquifier returned
 
-    # compare run_type to initial expectations  
+    # compare run_type to initial expectations
     error = False
 
     if run_type == RunType.RUN_ALL and rowid > 0:
@@ -720,7 +728,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         status = execute_sql_stmt(conn, stmt, cursor=csr)
         rowid = csr.lastrowid
 
-    # cleanup resources and return uniquifier or error indicator    
+    # cleanup resources and return uniquifier or error indicator
     csr.close()
     conn.commit()
 
@@ -766,7 +774,7 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
             if runhist_rec.status == RunStat.COMPLETE.name:
                 skip = True
 
-    # construct/reinit a new runhist record 
+    # construct/reinit a new runhist record
     if not skip:
         currtime = datetime.now()
         start_time = currtime.isoformat(timespec=ISO_TIMESTAMP)
@@ -853,7 +861,7 @@ def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
                 comp_dict['val_r2'],
                 comp_dict['lr'],
                 other_info,
-               # key spec    
+               # key spec
                 plan_id,
                 subplan_id
             )
@@ -949,7 +957,7 @@ def _delete_runhistory(conn, plan_id):
 
 
 #------------------------------------------------------------------------------
-# Plan navigation, content retrieval 
+# Plan navigation, content retrieval
 #------------------------------------------------------------------------------
 
 def load_plan(filepath):
@@ -1126,7 +1134,7 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     train_set = content['train'][0]
     fs_names = [name for name in train_set.keys()]
 
-    # categorize the results    
+    # categorize the results
     result = {}
     result[0] = fs_names
     result['train'] = {}
@@ -1152,7 +1160,7 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     return  result, result[0], result['train'], result['val']
 
 #------------------------------------------------------------------------------
-# Plan construction 
+# Plan construction
 #------------------------------------------------------------------------------
 
 def build_dictionary_from_lists(seq_list, names):
@@ -1203,7 +1211,7 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
     all_parts = []
 
     #flat_partitions = []                           # preserve, used for file-based approach
-    #files = []                                     # preserve, used for file-based approach     
+    #files = []                                     # preserve, used for file-based approach
     #sequence = 0                                   # preserve, used for file-based approach
     xxx = False
 
@@ -1234,13 +1242,13 @@ def build_plan_tree(args, feature_set_content, parent_plan_id='', depth=0, data_
                 else:
                     train.append(section)
 
-            # generate next depth/level (successor) plans 
+            # generate next depth/level (successor) plans
             curr_plan_id = '{}.{}'.format(parent_plan_id, step + 1)
             args.plan_dict[curr_plan_id] = {'val': val, 'train': train}
             data_name = '{}.{}'.format(data_pfx, step + 1)
             plan_name = '{}.{}'.format(plan_pfx, step + 1)
 
-            # depth-first, shorthand representation of tree showing first feature names 
+            # depth-first, shorthand representation of tree showing first feature names
             if args.debug:
                 indent = ' ' * (depth * 4)
                 print(indent, curr_plan_id)
@@ -1345,7 +1353,7 @@ synthetic_drug_names = ['drug_' + '%04d' % (x) for x in range(1000)]
 """
 
 #----------------------------------------------------------------------------------
-# mainline 
+# mainline
 #----------------------------------------------------------------------------------
 
 def main():
@@ -1364,10 +1372,10 @@ def main():
         maxdepth = args.maxdepth
     )
 
-    # feature_set_content = [cell_names, drug_names] 
+    # feature_set_content = [cell_names, drug_names]
     # feature_set_content = [synthetic_cell_names, synthetic_drug_names]
 
-    # remove by-1 dimensions, they do not need to be represented in the plan explicitly 
+    # remove by-1 dimensions, they do not need to be represented in the plan explicitly
     while True:
         try:
             ndx = args.fs_parts.index(1)
@@ -1378,7 +1386,7 @@ def main():
         except ValueError:
             break
 
-    # Plan generation 
+    # Plan generation
     data_fname_pfx = os.path.join(args.out_dir, 'DATA.1')
     plan_fname_pfx = os.path.join(args.out_dir, 'PLAN.1')
 
