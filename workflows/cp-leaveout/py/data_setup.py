@@ -2,7 +2,7 @@
 # DATA SETUP PY
 
 import json
-import os
+import os, sys
 
 from pathlib import Path
 import traceback
@@ -26,7 +26,7 @@ def pre_run(params):
     sys.stdout.flush()
 
     # check NVMe disk is available
-    username = os.environ['USER']
+    # username = os.environ['USER']
     # nvme_enabled = Path('/mnt/bb/{}'.format(username)).exists()
     nvme_enabled = False
     if nvme_enabled:
@@ -79,28 +79,42 @@ def pre_run(params):
         return ModelResult.ERROR
 
     try:
-        print("data_setup: build_dataframe() ...")
-        start = time.time()
-        topN_to_uno.build_dataframe(args)
-        stop = time.time()
-        duration = stop - start
-        print("data_setup: build_dataframe() OK : " +
-              "%0.1f seconds." % duration)
+        print("data_setup: build_dataframe(output=%s) ..." %
+              args.output)
+        sys.stdout.flush()
+        if not os.path.exists(args.output):
+            sys.stdout.flush()
+            start = time.time()
+            topN_to_uno.build_dataframe(args)
+            stop = time.time()
+            duration = stop - start
+            print("data_setup: build_dataframe() OK : " +
+                  "%0.1f seconds." % duration)
+            sys.stdout.flush()
+        else:
+            print("data_setup: dataframe exists: %s" %
+                  os.path.realpath(args.output))
     except topN_to_uno.topN_NoDataException:
         print("data_setup: caught topN_NoDataException: SKIP")
+        sys.stdout.flush()
         return ModelResult.SKIP
     except ValueError:
         print("data_setup: caught ValueError for node: '%s'" %
-              params["node"]) # new 2019-12-02
+              params["node"])  # new 2019-12-02
+        sys.stdout.flush()
         traceback.print_exc(file=sys.stdout)
         return ModelResult.ERROR
     except Exception as e:
         print("data_setup: error in build_dataframe!\n" + str(e))
+        sys.stdout.flush()
         traceback.print_exc()
+        sys.stdout.flush()
         return ModelResult.ERROR
     print("data_setup.pre_run() done.")
+    sys.stdout.flush()
     return ModelResult.SUCCESS
 
 def post_run(params, output_dict):
-    print("post_run")
+    print("data_setup(): post_run")
+    sys.stdout.flush()
     return ModelResult.SUCCESS
