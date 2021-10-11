@@ -15,7 +15,7 @@ set -eu
 # From Wozniak
 MED106=/gpfs/alpine/world-shared/med106
 ROOT=$MED106/sw/gcc-8.3.1
-SWIFT=$ROOT/swift-t/2021-08-27
+SWIFT=$ROOT/swift-t/2021-10-06
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
@@ -25,9 +25,11 @@ R=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/R-3.6.1/lib64/R
 LD_LIBRARY_PATH+=:$R/lib
 
 # PY=/gpfs/alpine/world-shared/med106/sw/condaenv-200408
-PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.2.0-py38-0
+# PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.2.0-py38-0
+PY=/gpfs/alpine/world-shared/med106/sw/conda/2021-10-06/envs/CANDLE-2021-10-06
 LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
+PATH=$PY/bin:$PATH
 
 # /gpfs/alpine/world-shared/med106/sw/condaenv-200408
 export LD_LIBRARY_PATH=$PY/lib:$LD_LIBRARY_PATH
