@@ -29,14 +29,14 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-debug-flat-quad}
 # export PROJECT=${PROJECT:-ecp-testbed-01}
 # export PROJECT=Candle_ECP
-export PROJECT=CSC249ADOA01
+# export PROJECT=CSC249ADOA01
 
 # Summit:
-export QUEUE=${QUEUE:-batch}
-export PROJECT=med106
+# export QUEUE=${QUEUE:-batch}
+# export PROJECT=med106
 # export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
 
-export WALLTIME=${WALLTIME:-0:30}
+# export WALLTIME=${WALLTIME:-0:30}
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov

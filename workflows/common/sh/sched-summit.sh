@@ -1,6 +1,4 @@
 
-# SCHED Summit - DEPRECATED - (Wozniak, 2020-10-29)
-# Use summit-tf1 or summit-tf2
 # Scheduler settings for Swift/Summit
 
 MACHINE="-m lsf"
@@ -10,3 +8,5 @@ MACHINE="-m lsf"
 export PROJECT=${PROJECT:-MED106}
 
 # export TURBINE_OUTPUT_SOFTLINK=/dev/null
+
+export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
