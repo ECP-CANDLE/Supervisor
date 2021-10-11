@@ -40,7 +40,7 @@ if ext == ".h5" or ext == ".hdf5":
 elif ext == ".feather":
     print("read feather " + str(args.input))
     df = pd.read_feather(args.input).fillna(0)
-    print(df.shape)
+    print(df.dtypes)
     # total size: (529940, 6215)
 
 # store = pd.HDFStore(args.input, "r", complevel=9, complib="blosc:snappy")
