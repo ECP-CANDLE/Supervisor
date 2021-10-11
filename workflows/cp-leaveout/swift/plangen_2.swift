@@ -8,6 +8,8 @@
 // calls to python_db() on rank DB corresponding to
 // environment variable TURBINE_DB_WORKERS:
 
+// Use plangen from Supervisor!
+
 pragma worktypedef DB;
 
 @dispatch=DB
@@ -62,7 +64,7 @@ except Exception as e:
 import sys, traceback
 import plangen
 try:
-    result = str(plangen.start_subplan('%s', '%s', %s, '%s', '%s'))
+    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
 except Exception as e:
     info = sys.exc_info()
     s = traceback.format_tb(info[2])
