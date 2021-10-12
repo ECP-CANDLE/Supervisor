@@ -736,7 +736,7 @@ def plan_prep(db_path, plan_path, run_type=RunType.RUN_ALL):
         return rowid
 
 
-def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=None):
+def start _subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=None):
     """Schedule the execution of a subplan.
 
     This function writes a RunhistRow record to the runhist table indicating that
@@ -760,7 +760,7 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     print("plangen: start_subplan: subplan_id=%s" % subplan_id)
     sys.stdout.flush()
     conn = db_connect(db_path)
-    csr  = conn.cursor()
+    csr  = conn.cu rsor()
     skip = False
 
     print("plangen: start_subplan: run_type:      '%s'" % str(run_type))

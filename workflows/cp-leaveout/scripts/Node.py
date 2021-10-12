@@ -196,6 +196,7 @@ class Node:
                 line = fp.readline()
                 tokens = check_token(line, 2, "mse:")
                 self.mse = float(tokens[3])
+                print("mse: " + str(self.mse))
                 line = fp.readline()
                 tokens = check_token(line, 2, "mae:")
                 self.mae = float(tokens[3])
