@@ -6,7 +6,13 @@
 #      and  1 process is reserved for the DB client.
 # The default of 4 gives you 2 workers,
 #     i.e., 2 concurrent Keras runs.
-export PROCS=${PROCS:-2}
+# Bin 	Min Nodes 	Max Nodes 	Max Walltime (Hours) 	Aging Boost (Days)
+# 1 	2,765 	4,608 	24.0 	15
+# 2 	922 	2,764 	24.0 	10
+# 3 	92 	921 	12.0 	0
+# 4 	46 	91 	6.0 	0
+# 5 	1 	45 	2.0
+export PROCS=${PROCS:-6}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -16,7 +22,8 @@ export PPN=${PPN:-1}
 # export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
 
-export WALLTIME=${WALLTIME:-2:00:00}
+# Summit: Limited to 2h if small job
+export WALLTIME=${WALLTIME:-02:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}

@@ -66,7 +66,7 @@ app (void o) run_model (string model_sh, string params,
     file line = input(result_file);
     obj_result = trim(read(line));
   } else {
-    printf("File not found: %s", result_file, " - benchmark might have stopped without completing/returning history variable.");
+    printf("File not found: %s", result_file);
     // return with a large value
     obj_result = "1e7";
   }

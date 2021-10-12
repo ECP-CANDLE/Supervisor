@@ -53,6 +53,8 @@ DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
 # BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
 # BENCHMARK_DATA=$HOME/proj/Benchmarks/Pilot1/Uno
 BENCHMARK_DATA=$CANDLE_DATA
+# PROJ_SHARED=/gpfs/alpine/med106/proj-shared/wozniak
+# BENCHMARK_DATA=$PROJ_SHARED/proj/Benchmarks/Pilot1/Uno
 
 # What to return from the objective function (Keras model)
 # val_loss (default), loss, and val_corr are supported

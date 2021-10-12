@@ -87,7 +87,8 @@ OUTPUT=turbine-output/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 
 # Wait for job
-queue_wait
+# queue_wait
+exit 
 
 SCRIPT=$( basename $0 .sh )
 check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID

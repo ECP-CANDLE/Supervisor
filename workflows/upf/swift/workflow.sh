@@ -103,13 +103,17 @@ fi
 # TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 TURBINE_STDOUT=
 
+echo OMP_NUM_THREADS ${OMP_NUM_THREADS:-UNSET}
+export OMP_NUM_THREADS=1
+
+log_path LD_LIBRARY_PATH
+
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e MODEL_SH \
@@ -121,7 +125,6 @@ swift-t -n $PROCS \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
-        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e PYTHONUNBUFFERED=1 \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 

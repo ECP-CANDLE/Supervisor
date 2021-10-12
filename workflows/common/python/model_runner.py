@@ -3,20 +3,21 @@
 
 # See __main__ section for usage
 
-import sys
 import json
+import math
 import os
+import sys
 import time
 import numpy as np
 import importlib
 import runner_utils
 from runner_utils import ModelResult
-import log_tools
-import math
+from log_tools import *
+
 
 logger = None
 
-print("MODEL RUNNER...")
+print('MODEL RUNNER...')
 
 # Set PYTHONPATH:
 # Let MODEL_PYTHON_DIR override default Benchmarks model locations
@@ -25,13 +26,14 @@ if python_dir:
     sys.path.append(python_dir)
 benchmarks_root = os.getenv("BENCHMARKS_ROOT")
 if benchmarks_root:
-    sys.path.append(benchmarks_root+"/common")
+    sys.path.append(benchmarks_root+'/common')
+
 
 # Report PYTHONPATH for debugging
 print("sys.path:")
 for i in range(0, len(sys.path)-1):
-    print("%2i: %s" % (i, sys.path[i]))
-print("")
+    print('%2i: %s' % (i, sys.path[i]))
+print('')
 
 
 def import_pkg(framework, model_name):
@@ -52,8 +54,8 @@ def import_pkg(framework, model_name):
             print("module_name: " + module_name)
         pkg = importlib.import_module(module_name)
     else:
-        raise ValueError("Framework must either be `keras' or `pytorch' " +
-                         "got `{}'!".format(framework))
+        raise ValueError('Framework must either be "keras" or "pytorch" ' +
+                         'got: "{}"'.format(framework))
 
     return pkg
 
@@ -125,9 +127,9 @@ def stop_perf(Ps):
 def run(hyper_parameter_map, obj_return):
     start = time.time()
     global logger
-    logger = log_tools.get_logger(logger, 'MODEL RUNNER')
+    logger = get_logger(logger, 'MODEL RUNNER')
 
-    log("START:")
+    logger.info('run(): START:')
     sys.stdout.flush()
 
     directory = hyper_parameter_map['instance_directory']
@@ -178,19 +180,18 @@ def run(hyper_parameter_map, obj_return):
 
     finish = time.time()
     duration = finish - start
-    # TODO: This should be on INFO
-    log(" DONE: run_id %s in %0.2f seconds." %
-        (hyper_parameter_map["run_id"], duration))
+    logger.info('DONE: run_id %s in %0.2f seconds.' %
+                (hyper_parameter_map['run_id'], duration))
     return (result, history_result)
 
 
 def get_obj_return():
-    obj_return = os.getenv("OBJ_RETURN")
-    valid_obj_returns = [ "loss", "val_loss", "val_corr", "val_acc" ]
+    obj_return = os.getenv('OBJ_RETURN')
+    valid_obj_returns = [ 'loss', 'val_loss', 'val_corr', 'val_acc' ]
     if obj_return == None:
-        raise Exception("No OBJ_RETURN was in the environment!")
+        raise Exception('No OBJ_RETURN was in the environment!')
     if obj_return not in valid_obj_returns:
-        raise Exception("Invalid value for OBJ_RETURN: use: " +
+        raise Exception('Invalid value for OBJ_RETURN: use: ' +
                         str(valid_obj_returns))
     return obj_return
 
@@ -205,17 +206,17 @@ def run_pre(hyper_parameter_map):
     module = load_pre_post(hyper_parameter_map, 'pre_module')
     result = ModelResult.SUCCESS
     if module != None:
-        logger.debug("PRE RUN START")
+        logger.debug('PRE RUN START')
         result = module.pre_run(hyper_parameter_map)
-        logger.debug("PRE RUN STOP")
+        logger.debug('PRE RUN STOP')
     return result
 
 def run_post(hyper_parameter_map, output_map):
     module = load_pre_post(hyper_parameter_map, 'post_module')
     if module != None:
-        logger.debug("POST RUN START")
+        logger.debug('POST RUN START')
         module.post_run(hyper_parameter_map, output_map)
-        logger.debug("POST RUN STOP")
+        logger.debug('POST RUN STOP')
 
 def run_model(hyper_parameter_map):
     # In-memory Python runs may not create sys.argv
@@ -225,18 +226,18 @@ def run_model(hyper_parameter_map):
     instance_directory = hyper_parameter_map['instance_directory']
     os.chdir(instance_directory)
     global logger
-    logger = log_tools.get_logger(logger, "MODEL RUNNER")
+    logger = get_logger(logger, 'MODEL RUNNER')
     obj_return = get_obj_return()
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
     result = run_pre(hyper_parameter_map)
     if result == ModelResult.ERROR:
-        print("run_pre() returned ERROR!")
+        print('run_pre() returned ERROR!')
         exit(1)
     elif result == ModelResult.SKIP:
-        log("run_pre() returned SKIP ...")
+        logger.info('run_pre() returned SKIP ...')
         sys.stdout.flush()
-        return ("SKIP", "HISTORY_EMPTY")
+        return ('SKIP', 'HISTORY_EMPTY')
     else:
         assert(result == ModelResult.SUCCESS) # proceed...
 
@@ -245,30 +246,29 @@ def run_model(hyper_parameter_map):
     runner_utils.write_output(json.dumps(history,
                                          cls=runner_utils.FromNPEncoder),
                               directory, 'history.txt')
-
     run_post(hyper_parameter_map, {})
-    log("RUN STOP")
+    logger.info('RUN STOP')
     return (result, history)
 
 def setup_params(pkg, hyper_parameter_map, params_arg):
     params = pkg.initialize_parameters(**params_arg)
-    log("PARAM UPDATE START")
+    logger.debug('PARAM UPDATE START')
     for k,v in hyper_parameter_map.items():
-        if k == "dense" or k == "dense_feature_layers":
+        if k == 'dense' or k == 'dense_feature_layers':
             if(type(v) != list):
-                v = v.split(" ")
+                v = v.split(' ')
             v = [int(i) for i in v]
-        if k == "cell_features":
+        if k == 'cell_features':
             cp_str = v
             v = list()
             v.append(cp_str)
-        log(str(k) + " = " + str(v))
+        logger.debug(str(k) + ' = ' + str(v))
         params[k] = v
-    log("PARAM UPDATE STOP")
+    logger.debug('PARAM UPDATE STOP')
 
-    log("WRITE_PARAMS START")
+    logger.debug('WRITE_PARAMS START')
     runner_utils.write_params(params, hyper_parameter_map)
-    log("WRITE_PARAMS STOP")
+    logger.debug('WRITE_PARAMS STOP')
     return params
 
 
@@ -277,34 +277,47 @@ def get_results(history, obj_return):
     Return the history entry that the user requested.
     history: The Keras history object
     """
-    known_params = [ "loss", "val_loss", "val_corr", "val_dice_coef" ]
+
+    logger.debug('get_results(): "%s"' % obj_return)
+
+    known_params = [ 'loss', 'val_loss', 'val_corr', 'val_dice_coef' ]
+
     if obj_return not in known_params:
-        raise ValueError("Unsupported objective function: " +
-                         "use obj_param to specify one of " +
+        raise ValueError('Unsupported objective function return ' +
+                         'key: "' + obj_return + '" - ' +
+                         'use obj_param to specify one of ' +
                          str(known_params))
 
     if obj_return in history.history:
+        # Good value
         values = history.history[obj_return]
-    # Default: the last value in the history
-    result = values[-1]
+        # Default: the last value in the history
+        result = values[-1]
+    else:
+        logger.warning('get_results(): objective function return key ' +
+                       'not found: ' +
+                       'key: "' + obj_return + '" - ' +
+                       'history: ' + str(history.history.keys()))
+        logger.warning('get_results(): returning NaN')
+        result = math.nan
 
     # Fix NaNs:
     if math.isnan(result):
-        if obj_return == "val_corr" or obj_return == "val_dice_coef":
+        if obj_return == 'val_corr' or obj_return == 'val_dice_coef':
             # Return the negative result
             result = -result
         else:
             # Just return a large number
             result = 999999999
 
-    print("result: " + obj_return + ": " + str(result))
+    print('result: ' + obj_return + ': ' + str(result))
     history_result = history.history.copy()
     return result, history_result
 
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
-    logger = log_tools.get_logger(logger, "MODEL_RUNNER")
-    log("RUN START")
+    logger = get_logger(logger, 'MODEL_RUNNER')
+    logger.info('main: RUN START')
 
     import sys
     ( _, # The Python program name (unused)
@@ -318,10 +331,10 @@ if __name__ == '__main__':
                                             instance_directory,
                                             framework,
                                             out_dir_key='save')
-    hyper_parameter_map['model_name']    = os.getenv("MODEL_NAME")
+    hyper_parameter_map['model_name']    = os.getenv('MODEL_NAME')
     if hyper_parameter_map['model_name'] == None:
-        raise Exception("No MODEL_NAME was in the environment!")
-    hyper_parameter_map['experiment_id'] = os.getenv("EXPID")
+        raise Exception('No MODEL_NAME was in the environment!')
+    hyper_parameter_map['experiment_id'] = os.getenv('EXPID')
     hyper_parameter_map['run_id']  = runid
     hyper_parameter_map['timeout'] = float(benchmark_timeout)
 
