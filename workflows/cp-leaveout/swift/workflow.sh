@@ -100,6 +100,7 @@ fi
 CMD_LINE_ARGS=( --benchmark_timeout=$BENCHMARK_TIMEOUT
                 --site=$SITE
                 --db_file=$DB_FILE
+                --user=$USER
                 $GPU_ARG
                 $WORKFLOW_ARGS
               )
@@ -229,6 +230,7 @@ swift-t -O 0 -n $PROCS \
 
 #
 
+# -e USER # Needed on Summit to find NVME
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
 # -e PYTHONUNBUFFERED=1 # May be needed if error output is being lost
 # -e PYTHONVERBOSE=1    # Debugs module load confusion

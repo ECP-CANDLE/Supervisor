@@ -76,6 +76,7 @@ int early_stopping = string2int(P_s);
 string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
+string user           = argv("user", "NONE");  // for Summit NVME
 string benchmark_data = argv("benchmark_data");
 int    epoch_mode       = string2int(argv("epoch_mode", "1"));
 int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
@@ -160,6 +161,7 @@ run_stage(int N, int S, string this, int stage, void block,
 "plan":           "%s",
 "config_file":    "uno_auc_model.txt",
 "cache":          "cache/top6_auc",
+"user":           "%s",
 "dataframe_from": "%s",
 "save_weights":   "save/model.h5",
 "gpus": "0",
@@ -169,7 +171,7 @@ run_stage(int N, int S, string this, int stage, void block,
 "use_exported_data": "topN.uno.h5",
 "benchmark_data": "%s"
 ---- %
-(plan_json, dataframe_csv, epochs, early_stopping, benchmark_data);
+(plan_json, user, dataframe_csv, epochs, early_stopping, benchmark_data);
   if (stage > 1)
   {
     n = strlen(this);
