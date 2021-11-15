@@ -40,7 +40,6 @@ then
   exit 1
 fi
 
-# set -x
 if ! {
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
@@ -197,7 +196,7 @@ fi
 export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
-# set -x
+set -x
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p \

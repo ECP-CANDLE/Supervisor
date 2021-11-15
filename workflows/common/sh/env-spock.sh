@@ -6,10 +6,11 @@ SWIFT_IMPL=py
 
 # CANDLE software installation root:
 MED106=/gpfs/alpine/world-shared/med106
-ROOT=$MED106/sw/spock/gcc-10.3.0
+# ROOT=$MED106/sw/spock/gcc-10.3.0
+ROOT=$MED106/sw/spock/gcc-11.2.0
 
 # Add Swift/T to PATH
-SWIFT=$ROOT/swift-t/2021-10-05
+SWIFT=$ROOT/swift-t/2021-11-14
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 

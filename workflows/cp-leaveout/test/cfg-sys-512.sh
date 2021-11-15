@@ -18,16 +18,12 @@ export PROCS=${PROCS:-6}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-# For Theta:
-# export QUEUE=${QUEUE:-debug-flat-quad}
-# export QUEUE=R.candle
-
-# Summit: Limited to 2h if small job
-export WALLTIME=${WALLTIME:-02:00:00}
+export WALLTIME=${WALLTIME:-12:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
+
 if (( PPN == 1 ))
 then
   export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
@@ -35,7 +31,11 @@ else
   # For PPN=4 debugging:
   export TURBINE_LAUNCH_OPTIONS="-g1 -c7 -a1"
 fi
-export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
+
+if [[ $SITE == "summit" ]]
+then
+  export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
+fi
 
 #export PROJECT=Candle_ECP
 
