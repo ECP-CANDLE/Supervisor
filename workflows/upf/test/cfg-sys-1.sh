@@ -37,7 +37,7 @@ export PPN=${PPN:-2}
 # export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
 
 # export WALLTIME=${WALLTIME:-0:30}
-echo WALLTIME: $WALLTIME
+# echo WALLTIME: $WALLTIME
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov

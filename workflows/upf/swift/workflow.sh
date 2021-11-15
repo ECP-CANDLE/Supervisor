@@ -85,7 +85,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 which mpicc
 which swift-t
 
-module list
+# module list
 
 cp -v $UPF $TURBINE_OUTPUT
 
