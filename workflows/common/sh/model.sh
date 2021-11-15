@@ -5,6 +5,12 @@ set -eu
 
 # Shell wrapper around Keras model
 
+# Note: Under Swift/T, the initial output from here will go
+# to the main Swift/T stdout and be mixed with output from
+# other models.
+# Thus, we redirect to a separate model.log file for each model run
+# and normally we do not produce output until after the redirection.
+
 usage()
 {
   echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
@@ -30,13 +36,6 @@ RUNID=$3
 # Set instance_directory to that and cd into it.
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
 
-SH_TIMEOUT=${SH_TIMEOUT:-}
-TIMEOUT_CMD=""
-if [[ -n "$SH_TIMEOUT" ]] && [[ $SH_TIMEOUT != "-1" ]]
-then
-  TIMEOUT_CMD="timeout $SH_TIMEOUT"
-fi
-
 # All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
@@ -44,9 +43,20 @@ exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
 
-echo "MODEL.SH START:"
-echo "MODEL_NAME: $MODEL_NAME"
-echo "RUNID: $RUNID"
+TIMEOUT_CMD=""
+if [[ ${SH_TIMEOUT:-} != "" ]] && [[ $SH_TIMEOUT != "-1" ]]
+then
+  TIMEOUT_CMD="timeout $SH_TIMEOUT"
+fi
+
+log()
+{
+  echo $( date "+%Y-%m-%d %H:%M:%S" ) "MODEL.SH:" $*
+}
+
+log "START"
+log "MODEL_NAME: $MODEL_NAME"
+log "RUNID: $RUNID"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -57,23 +67,22 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 source_site langs-app $SITE
 
 echo
-echo PARAMS:
+log "PARAMS:"
 echo $PARAMS | print_json
 
 echo
-echo "MODEL.SH: USING PYTHON:"
-which python
+log "USING PYTHON:" $( which python )
 echo
 
-arg_array=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
-            "$PARAMS"
-            "$INSTANCE_DIRECTORY"
-            "$FRAMEWORK"
-            "$RUNID"
-            "$BENCHMARK_TIMEOUT")
-MODEL_CMD="python3 -u ${arg_array[@]}"
-# echo MODEL_CMD: $MODEL_CMD
-if $TIMEOUT_CMD python3 -u "${arg_array[@]}"
+PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
+         "$PARAMS"
+         "$INSTANCE_DIRECTORY"
+         "$FRAMEWORK"
+         "$RUNID"
+         "$BENCHMARK_TIMEOUT" )
+MODEL_CMD="python3 -u ${PY_CMD[@]}"
+log "MODEL_CMD: ${MODEL_CMD[@]}"
+if $TIMEOUT_CMD ${MODEL_CMD[@]}
 then
   : # Assume success so we can keep a failed exit code
 else
@@ -81,26 +90,25 @@ else
   # (i.e the line in the 'if' condition)
   CODE=$?
   echo # spacer
-  if [ $CODE == 124 ]
+  if (( $CODE == 124 ))
   then
-    echo "MODEL.SH: Timeout error in $MODEL_CMD"
+    log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
     # This will trigger a NaN (the result file does not exist)
     exit 0
   else
-    echo "MODEL.SH: Error (CODE=$CODE) in $MODEL_CMD"
-    echo "MODEL.SH: TIMESTAMP:" $( date "+%Y-%m-%d %H:%M:%S" )
+    log "MODEL ERROR! (CODE=$CODE)"
     if (( ${IGNORE_ERRORS:-0} ))
     then
-      echo "MODEL.SH: IGNORING ERROR."
+      log "IGNORING ERROR."
       # This will trigger a NaN (the result file does not exist)
       exit 0
     fi
-    echo "MODEL.SH: ABORTING WORKFLOW (exit 1)"
+    log "ABORTING WORKFLOW (exit 1)"
     exit 1 # Unknown error in Python: abort the workflow
   fi
 fi
 
-echo "MODEL.SH END: SUCCESS"
+log "END: SUCCESS"
 exit 0 # Success
 
 # Local Variables:

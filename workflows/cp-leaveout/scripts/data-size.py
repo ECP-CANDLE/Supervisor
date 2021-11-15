@@ -40,7 +40,27 @@ if ext == ".h5" or ext == ".hdf5":
 elif ext == ".feather":
     print("read feather " + str(args.input))
     df = pd.read_feather(args.input).fillna(0)
+    print(df.shape)
     print(df.dtypes)
+    print(str(df["CELL"]))
+    C = {}
+    for s in df["CELL"]:
+        C[s] = ""
+    D = {}
+    for s in df["DRUG"]:
+        D[s] = ""
+    print("df.columns: " + str(df.columns))
+    print("df.index: " + str(df.index))
+    print("len(df): " + str(len(df)))
+    print("len(C):  " + str(len(C)))
+    print("len(D):  " + str(len(D)))
+    print("len(AUC):  " + str(len(df["AUC"])))
+
+    # print(str(df["CELL"][0:9]))
+    # print(str(type(df["CELL"][0])))
+
+print("data-size: OK.")
+
     # total size: (529940, 6215)
 
 # store = pd.HDFStore(args.input, "r", complevel=9, complib="blosc:snappy")

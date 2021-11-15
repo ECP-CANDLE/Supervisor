@@ -314,6 +314,7 @@ def get_results(history, obj_return):
     history_result = history.history.copy()
     return result, history_result
 
+
 # Usage: see how sys.argv is unpacked below:
 if __name__ == '__main__':
     logger = get_logger(logger, 'MODEL_RUNNER')
