@@ -24,19 +24,6 @@ export WALLTIME=${WALLTIME:-12:00:00}
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
 
-if (( PPN == 1 ))
-then
-  export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
-else
-  # For PPN=4 debugging:
-  export TURBINE_LAUNCH_OPTIONS="-g1 -c7 -a1"
-fi
-
-if [[ $SITE == "summit" ]]
-then
-  export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
-fi
-
 #export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeout
