@@ -1,1 +1,3 @@
-{"id": "test0", "epochs": 1}
+{"id": "test1", "epochs": 1}
+{"id": "test2", "epochs": 2}
+{"id": "test3", "epochs": 3}
