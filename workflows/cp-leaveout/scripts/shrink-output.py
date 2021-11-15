@@ -7,7 +7,7 @@
 # Removes redundant batch size information
 # Fixes newline before "Current time" report
 
-import re, sys
+import os, re, sys
 from collections import deque
 
 
@@ -49,6 +49,9 @@ def shrink(fp_in, fp_out):
         fp_out.write(Q.popleft())
 
 
+files_total  = 0
+files_shrunk = 0
+
 while True:
 
     line = sys.stdin.readline()
@@ -56,12 +59,24 @@ while True:
     if len(line) == 0: break     # EOF
     if len(line) == 1: continue  # Blank line
 
+    files_total += 1
+
     file_in  = line.strip()
-    print("reading: " + file_in)
     file_out = re.sub("/out-", "/summary-", file_in)
 
+    # Do not process files that have not changed since the last run
+    # of this script:
+    if os.path.exists(file_out) and \
+       os.path.getmtime(file_in) < os.path.getmtime(file_out):
+        print("skipping:  " + file_in)
+        continue
+
+    print("shrinking: " + file_in)
     with open(file_in, "r") as fp_in:
         with open(file_out, "w") as fp_out:
             shrink(fp_in, fp_out)
+            files_shrunk += 1
 
+print("shrink-output.py: shrank %i / %i files." %
+                      (files_shrunk, files_total))
 print("shrink-output.py: OK")
