@@ -118,7 +118,7 @@ def pre_run(params):
     except Exception as e:
         print("data_setup: error in build_dataframe!\n" + str(e))
         sys.stdout.flush()
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
         sys.stdout.flush()
         return ModelResult.ERROR
     print("data_setup.pre_run() done.")
