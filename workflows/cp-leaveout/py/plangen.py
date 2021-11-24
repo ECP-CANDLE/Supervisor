@@ -764,28 +764,28 @@ def start_subplan(db_path, plan_path, plan_id=None, subplan_id=None, run_type=No
     skip = False
 
     print("plangen: start_subplan: run_type:      '%s'" % str(run_type))
-    print("plangen: start_subplan: run_type type:  %s"  % str(type(run_type)))
+    # print("plangen: start_subplan: run_type type:  %s"  % str(type(run_type)))
     print("plangen: start_subplan: base:          '%s'" % str(RunType.RESTART))
     sys.stdout.flush()
 
     # skip previously completed work if RESTART
-    if run_type == RunType.RESTART:
-        log("plangen: start_subplan: checking restart: %i" % plan_id)
+    if 'RESTART' in str(run_type):
+        print("plangen: start_subplan: checking restart: %i" % plan_id)
         sys.stdout.flush()
         stmt = _select_row_from_runhist.format(plan_id, subplan_id)
         execute_sql_stmt(conn, stmt, cursor=csr)
         row = csr.fetchone()
 
         if row:
-            log("plangen: start_subplan: found row.")
+            print("plangen: start_subplan: found row.")
             runhist_rec = RunhistRow._make(row)
-            log("plangen: start_subplan: found '%s'" % runhist_rec.status)
+            print("plangen: start_subplan: found '%s'" % runhist_rec.status)
             if runhist_rec.status == RunStat.COMPLETE.name:
                 skip = True
-            log("plangen: start_subplan: skip %r" % skip)
+            print("plangen: start_subplan: skip %r" % skip)
     else:
         print("plangen: start_subplan: not checking restart")
-        sys.stdout.flush()
+    sys.stdout.flush()
 
     # construct/reinit a new runhist record
     if not skip:
