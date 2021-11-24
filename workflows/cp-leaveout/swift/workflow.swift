@@ -85,6 +85,7 @@ string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
 
+printf("plangen: runtype:" + runtype);
 printf("benchmark_data: " + benchmark_data);
 
 // // For compatibility with obj():
