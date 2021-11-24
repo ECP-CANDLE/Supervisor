@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 # SHRINK OUTPUT SH
 # Accepts a whole workflow output directory
@@ -23,9 +24,8 @@ then
   exit 1
 fi
 
-OUTS=()
-
+# This is used inside the Makefile below:
 mkdir -pv /tmp/$USER
 
-cd $D/out
+cd $DIR/out
 nice -n 19 make -j 8 -f $THIS/shrink-output.mk
