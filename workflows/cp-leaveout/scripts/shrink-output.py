@@ -1,7 +1,8 @@
 
 # SHRINK OUTPUT PY
 # Receives list of filenames on stdin
-# Converts filenames from out-*.txt to summary-*.txt
+# Converts filenames from tr-*.txt to summary-*.txt
+# The tr file should have used tr to change carriage return to newline
 # Removes non-printing characters (backspace)
 # Reduces the number of training lines in output
 # Removes redundant batch size information
@@ -15,7 +16,7 @@ from collections import deque
 shrink_factor = 100
 # Number of additional consecutive lines at beginning and end of
 # training that are retained
-hold_space = 5
+hold_space = 3
 
 
 def shrink(fp_in, fp_out):
@@ -23,6 +24,7 @@ def shrink(fp_in, fp_out):
     Q = deque()
     index = 0
     starts = 0  # Initial hold_space ETAs are immediately printed
+    line_previous = ""
     for line in fp_in:
         if len(line) == 1: continue  # Blank line
         line = line.replace("\b", "")
@@ -34,49 +36,40 @@ def shrink(fp_in, fp_out):
                 starts += 1
                 continue
             Q.append(line)
+            index += 1
             if len(Q) > hold_space:
-                index += 1
                 line = Q.popleft()
-                if index % shrink_factor == 0:
-                    fp_out.write(line)
+            if index % shrink_factor == 0:
+                fp_out.write(line)
         else:
             starts = 0
             while len(Q) > 0:
                 fp_out.write(Q.popleft())
+            if line == line_previous:
+                continue
             fp_out.write(line)
+            line_previous = line
     # Done: flush Q:
     while len(Q) > 0:
         fp_out.write(Q.popleft())
 
 
-files_total  = 0
-files_shrunk = 0
+file_in  = sys.argv[1]
+file_out = sys.argv[2]
 
-while True:
+# Do not process files that have not changed since the last run
+# of this script:
+if os.path.exists(file_out) and \
+   os.path.getmtime(file_in) < os.path.getmtime(file_out):
+    print("skipping:  " + file_in)
+    exit()
 
-    line = sys.stdin.readline()
+print("shrinking: " + file_in)
+with open(file_in, "r") as fp_in:
+    with open(file_out, "w") as fp_out:
+        shrink(fp_in, fp_out)
+#         files_shrunk += 1
 
-    if len(line) == 0: break     # EOF
-    if len(line) == 1: continue  # Blank line
-
-    files_total += 1
-
-    file_in  = line.strip()
-    file_out = re.sub("/out-", "/summary-", file_in)
-
-    # Do not process files that have not changed since the last run
-    # of this script:
-    if os.path.exists(file_out) and \
-       os.path.getmtime(file_in) < os.path.getmtime(file_out):
-        print("skipping:  " + file_in)
-        continue
-
-    print("shrinking: " + file_in)
-    with open(file_in, "r") as fp_in:
-        with open(file_out, "w") as fp_out:
-            shrink(fp_in, fp_out)
-            files_shrunk += 1
-
-print("shrink-output.py: shrank %i / %i files." %
-                      (files_shrunk, files_total))
-print("shrink-output.py: OK")
+# print("shrink-output.py: shrank %i / %i files." %
+#                       (files_shrunk, files_total))
+# print("shrink-output.py: OK")
