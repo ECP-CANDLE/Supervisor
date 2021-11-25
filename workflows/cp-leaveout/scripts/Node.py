@@ -8,6 +8,7 @@
 
 # import math
 
+
 class Node:
 
     # TensorFlow is done when you see this
@@ -138,7 +139,7 @@ class Node:
     def parse_date_stop(self, line, logger=None):
         tokens = line.split()
         self.date_stop = tokens[0] + " " + tokens[1]
-        if self.epochs_planned == None:
+        if self.epochs_planned is None:
             self.debug(logger, "STOP : epochs_planned=None")
             return
         if self.epochs_actual == self.epochs_planned or \
@@ -157,7 +158,7 @@ class Node:
             td = td + 1
         stepii = tokens[td-1].split("/")
         self.steps += int(stepii[0])
-        time_s = tokens[td+2] # e.g., "321s"
+        time_s = tokens[td+2]  # e.g., "321s"
         self.time += int(time_s[0:-1])
         # Always collect losses: early stopping could happen:
         self.loss     = float(tokens[td+6])
@@ -188,7 +189,7 @@ class Node:
         marker = "Comparing y_true "
         # The marker is just after the date:
         # We search this way for speed.
-        date_len = len("YYYY-MM-DD HH:MM:SS ") # trailing space
+        date_len = len("YYYY-MM-DD HH:MM:SS ")  # trailing space
         while True:
             line = fp.readline()
             if line == "": break
@@ -209,24 +210,24 @@ class Node:
             # Loop! We want the last such values in the file
 
     def get_loss_delta(node):
-        if node.loss_delta == None:
+        if node.loss_delta is None:
             raise ValueError("No loss_delta!")
         return node.loss_delta
 
     def get_val_loss_delta(node):
-        if node.val_loss_delta == None:
+        if node.val_loss_delta is None:
             raise ValueError("No val_loss_delta!")
         return node.val_loss_delta
 
     def debug(self, logger, message):
         # assert(logger != None) # Use this to find missing loggers
-        if logger == None or not self.verbose:
+        if logger is None or not self.verbose:
             return
         logger.debug("NODE: [%s] %s" % (self.id, message))
 
     def trace(self, logger, message):
         # assert(logger != None) # Use this to find missing loggers
-        if logger == None or not self.verbose:
+        if logger is None or not self.verbose:
             return
         import logging
         logger.log(level=logging.DEBUG-5,
@@ -235,34 +236,37 @@ class Node:
     def get_time_cumul(self, nodes):
         ''' Time cumulative including parents' time '''
         parent = self.parent()
-        if parent == None:
+        if parent is None:
             return self.time
         return self.time + nodes[parent].get_time_cumul(nodes)
 
     def get_epochs_cumul(self, nodes):
         ''' Epochs cumulative including parents' epochs '''
-        if self.epochs_cumul != None:
+        if self.epochs_cumul is not None:
             return self.epochs_cumul
         # Initialize:
         self.epochs_cumul = self.epochs_actual
         parent = self.parent()
-        if parent != None and parent in nodes:
+        if parent is not None and parent in nodes:
             # Add parents:
             self.epochs_cumul += nodes[parent].get_epochs_cumul(nodes)
         return self.epochs_cumul
+
 
 def check_token(line, index, token):
     ''' Assert that token is in line at given index '''
     tokens = line.split()
     if tokens[index] != token:
-          raise Exception(("could not find token: '%s'\n" +
-                           "in line: '%s'") % (token, line))
+        raise Exception(("could not find token: '%s'\n" +
+                         "in line: '%s'") % (token, line))
     return tokens
+
 
 def check(condition, message):
     ''' Check condition or raise Exception with given message '''
     if not condition:
         raise Exception(message)
+
 
 '''
 EXAMPLES:
