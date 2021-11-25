@@ -7,8 +7,7 @@
 # Use print-node-info to print the node info
 # See Node.py for the data structure
 
-import argparse, logging, os, pickle, sys
-import pprint
+import argparse, logging, os, pickle
 
 from utils import fail
 from Node import Node
@@ -25,10 +24,11 @@ node_pkl = args.directory + "/node-info.pkl"
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("extract_node_info")
 
+
 def read_log_filenames(log_list):
     result = []
     count = 0
-    limit = 5000 # Reduce this for debugging
+    limit = 5000  # Reduce this for debugging
     try:
         with open(log_list) as fp:
             for line in fp.readlines():
@@ -42,6 +42,7 @@ def read_log_filenames(log_list):
     except IOError as e:
         fail(e, os.EX_IOERR, "Could not read: " + log_list)
     return result
+
 
 def parse_logs(log_files):
     # Dict mapping Node id to Node for all complete Nodes:
@@ -60,6 +61,7 @@ def parse_logs(log_files):
     except IOError as e:
         fail(e, os.EX_IOERR, "Could not read: " + log_file)
     return nodes
+
 
 def parse_log(log_fp, nodes):
     nodes_found = 0
@@ -107,8 +109,10 @@ def parse_log(log_fp, nodes):
 
     logger.info("Found %i nodes in log." % nodes_found)
 
+
 def trace(message):
     logger.log(level=logging.DEBUG-5, msg=message)
+
 
 # def find_val_data(node):
 #     python_log = args.directory + "/run/%s/save/python.log" % node.id
@@ -119,14 +123,16 @@ def trace(message):
 #     if node.val_data == None:
 #         logger.fatal("Could not find val data for node: " + node.id)
 
+
 def find_error_data(node):
     python_log = args.directory + "/run/%s/save/python.log" % node.id
     if not os.path.exists(python_log):
         return
     with open(python_log) as fp:
         node.parse_error_data(fp)
-    if node.mse == None:
+    if node.mse is None:
         logger.fatal("Could not find error data for node: " + node.id)
+
 
 # List of log file names
 log_files = read_log_filenames(log_list)
