@@ -92,7 +92,7 @@ def parse_log(log_fp, nodes):
                     node_current.parse_epochs(line, logger)
         elif line.startswith("Epoch ") and "/" in line:
             node_current.parse_epoch_status(line, logger)
-        elif Node.training_done in line:
+        elif Node.training_done in line and "ETA:" not in line:
             node_current.parse_training_done(line, logger)
         elif "early stopping" in line:
             if node_current is not None:
