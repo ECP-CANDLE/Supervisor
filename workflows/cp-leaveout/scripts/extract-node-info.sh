@@ -27,13 +27,17 @@ LOG_LIST=$DIR/log-list.txt
 
 RESTARTS=( $DIR/restarts/* )
 
+for RESTART in ${RESTARTS[@]}
+do
+  $THIS/shrink-output.sh $RESTART
+done
 shopt -s nullglob # Ignore empty globs
 {
   for RESTART in ${RESTARTS[@]}
   do
-    echo $RESTART/out/out-*.txt
+    echo $RESTART/out/summary-*.txt
   done
-  echo $DIR/out/out-*.txt
+  echo $DIR/out/summary-*.txt
 } | fmt -w 1 > $LOG_LIST
 
 export PYTHONPATH+=:$SUPERVISOR/workflows/common/python
