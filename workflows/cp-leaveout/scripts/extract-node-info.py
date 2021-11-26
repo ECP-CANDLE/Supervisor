@@ -93,12 +93,12 @@ def parse_log(log_fp, nodes):
         elif line.startswith("Epoch ") and "/" in line:
             node_current.parse_epoch_status(line, logger)
         elif Node.training_done in line:
-             node_current.parse_training_done(line, logger)
+            node_current.parse_training_done(line, logger)
         elif "early stopping" in line:
-            if node_current != None:
+            if node_current is not None:
                 # TensorFlow may report early stopping even if at max epochs:
                 node_current.stop_early()
-        if node_current != None and node_current.complete:
+        if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
             # logger.debug("NODE DONE.")
             nodes[node_current.id] = node_current
