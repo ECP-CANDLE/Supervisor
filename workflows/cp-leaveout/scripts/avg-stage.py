@@ -54,7 +54,7 @@ with open(args.directory + "/times.data", "w") as fp:
         timer = statistics.mean(times[stage])
         fp.write("%i %0.2f  # count=%i\n" % (stage, timer, count))
 
-with open(args.directory + "/vlosses.data", "w") as fp:
+with open(args.directory + "/vloss.data", "w") as fp:
     for stage in times.keys():
         count = len(times[stage])
         vloss = statistics.mean(vlosses[stage])
