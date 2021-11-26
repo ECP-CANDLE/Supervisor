@@ -74,7 +74,10 @@ def parse_log(log_fp, nodes):
             # This is also a MODEL RUNNER line,
             # but could be DEBUG or INFO
             # (should be INFO in future)
-            logger.debug("RUN DONE.")
+            if node_current is None:
+                # Restarted node with no epochs remaining:
+                continue
+            logger.info("RUN DONE.")
             node_current.parse_date_stop(line, logger)
         elif "MODEL RUNNER" in line:
             # print(line.strip())
@@ -84,14 +87,30 @@ def parse_log(log_fp, nodes):
                     node_current = Node(logger=logger)
                     node_current.parse_date_start(line)
                 elif " node =" in line:
-                    print(line)
+                    logger.info("start: " + line)
                     tokens = line.split()
                     node_id = tokens[-1].strip()
-                    node_current.set_id(node_id, logger)
+                    if node_id not in nodes:
+                        if node_id == "1.2.3.4":
+                            print("NEW NODE")
+                        node_current.set_id(node_id, logger)
+                        nodes[node_id] = node_current
+                    else:
+                        if node_id == "1.2.3.4":
+                            print("REFIND")
+                        node_current = nodes[node_id]
+                        node_current.new_segment()
                 elif " epochs =" in line:
+                    if node_current is None:
+                        # Restarted node with no epochs remaining:
+                        continue
+                    logger.info(line)
+                    logger.info("found epochs =")
                     node_current.parse_epochs(line, logger)
         elif line.startswith("Epoch ") and "/" in line:
             node_current.parse_epoch_status(line, logger)
+        elif line.startswith("Current "):
+            node_current.parse_current_time(line, logger)
         elif Node.training_done in line and "ETA:" not in line:
             node_current.parse_training_done(line, logger)
         elif "early stopping" in line:
@@ -101,7 +120,6 @@ def parse_log(log_fp, nodes):
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
             # logger.debug("NODE DONE.")
-            nodes[node_current.id] = node_current
             # find_val_data(node_current) # old format?
             find_error_data(node_current)
             nodes_found += 1

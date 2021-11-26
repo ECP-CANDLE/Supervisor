@@ -43,6 +43,10 @@ class Node:
         self.date_stop  = None
         # Training time in seconds
         self.time = 0
+        # Training run restarts- each log file makes a new segment
+        self.segment = 0
+        # Time for given segment from "Current time"
+        self.segments = {}
         # Did EarlyStopping stop this node?
         self.stopped_early = False
         # Did training complete for this node?
@@ -55,6 +59,9 @@ class Node:
         self.id = id
         self.stage = (len(self.id) - 1 ) // 2
         self.debug(logger, "SET ID: " + id)
+
+    def new_segment(self):
+        self.segment += 1
 
     def parent(self):
         if self.stage == 1:
@@ -86,7 +93,7 @@ class Node:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-12s : %i : %2i / %2i : %s - %s : %s : %s" % \
+        return "%-13s : %i : %2i / %2i : %s - %s : %s : %s" % \
             (self.id, self.stage,
              self.epochs_actual, self.epochs_planned,
              self.date_start, self.date_stop,
@@ -132,6 +139,14 @@ class Node:
         assert len(tokens) == 2
         self.epochs_actual = int(ints[0])
         self.trace(logger, "epochs_actual: " + str(self.epochs_actual))
+
+    def parse_current_time(self, line, logger=None):
+        tokens = line.split()
+        assert len(tokens) == 3, "bad line: " + line
+        # Chop off leading dots: ....123.123
+        t = tokens[2][4:]
+        self.segments[self.segment] = float(t)
+        # print("%-13s %i %r" % (self.id, self.segment, self.segments))
 
     def stop_early(self, logger=None):
         self.stopped_early = True
@@ -248,6 +263,12 @@ class Node:
         if parent is None:
             return self.time
         return self.time + nodes[parent].get_time_cumul(nodes)
+
+    def get_segments(self):
+        total = 0
+        for s, t in self.segments.items():
+            total += t
+        return total
 
     def get_epochs_cumul(self, nodes):
         ''' Epochs cumulative including parents' epochs '''
