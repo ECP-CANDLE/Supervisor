@@ -36,14 +36,21 @@ vlosses = { 1:[], 2:[], 3:[], 4:[], 5:[] }
 
 for node_id in data.keys():
     node = data[node_id]
+    if not node.complete:
+        continue
     # stages[node.stage].append(node.time)
     # epochs[node.stage].append(node.epochs_actual)
-    times[node.stage].append(node.time/node.epochs_actual)
+    times[node.stage].append(node.get_segments()/node.epochs_actual)
     vlosses[node.stage].append(node.val_loss)
+    if node.stage == 3:
+        print("%s %0.2f %i" % (node.id,
+                                     node.get_segments(),
+                                     node.epochs_actual))
 
 with open(args.directory + "/times.data", "w") as fp:
     for stage in times.keys():
         count = len(times[stage])
+        # print("stage: %i (%i) %r" % (stage, count, times[stage]))
         timer = statistics.mean(times[stage])
         fp.write("%i %0.2f  # count=%i\n" % (stage, timer, count))
 
