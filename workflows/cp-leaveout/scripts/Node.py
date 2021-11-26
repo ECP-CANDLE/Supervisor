@@ -115,6 +115,11 @@ class Node:
             return "?"
         return spec % f
 
+    def bad_line(self, line):
+        print("")
+        print("BAD LINE: " + line)
+        print("")
+
     def parse_epochs(self, line, logger=None):
         tokens = line.split()
         self.epochs_planned = int(tokens[-1].strip())
@@ -152,17 +157,21 @@ class Node:
         #     by parse_epoch_status()
         # First, find the location of training_done (td)
         #      (to accommodate prefixes)
-        tokens = line.split()
-        td = 0
-        while tokens[td] != Node.training_done:
-            td = td + 1
-        stepii = tokens[td-1].split("/")
-        self.steps += int(stepii[0])
-        time_s = tokens[td+2]  # e.g., "321s"
-        self.time += int(time_s[0:-1])
-        # Always collect losses: early stopping could happen:
-        self.loss     = float(tokens[td+6])
-        self.val_loss = float(tokens[td+15])
+        try:
+            tokens = line.split()
+            td = 0
+            while tokens[td] != Node.training_done:
+                td = td + 1
+            stepii = tokens[td-1].split("/")
+            self.steps += int(stepii[0])
+            time_s = tokens[td+2]  # e.g., "321s"
+            self.time += int(time_s[0:-1])
+            # Always collect losses: early stopping could happen:
+            self.loss     = float(tokens[td+5])
+            self.val_loss = float(tokens[td+14])
+        except Exception as e:
+            self.bad_line(line)
+            raise(e)
 
     def parse_val_data(self, fp):
         """
