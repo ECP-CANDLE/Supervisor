@@ -25,6 +25,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("extract_node_info")
 
 
+
 def read_log_filenames(log_list):
     result = []
     count = 0
@@ -66,6 +67,10 @@ def parse_logs(log_files):
 def parse_log(log_fp, nodes):
     nodes_found = 0
     node_current = None
+    # Temporary way to capture build DF time, which happens before
+    # node_current is defined.  Fixing log format to address this. 2021-11-28
+    build_df = None
+
     while True:
         line = log_fp.readline()
         # print(line)
@@ -91,28 +96,31 @@ def parse_log(log_fp, nodes):
                     tokens = line.split()
                     node_id = tokens[-1].strip()
                     if node_id not in nodes:
-                        if node_id == "1.2.3.4":
-                            print("NEW NODE")
                         node_current.set_id(node_id, logger)
                         nodes[node_id] = node_current
+                        if build_df is not None:
+                            node_current.build_df = build_df
+                            build_df = None
                     else:
-                        if node_id == "1.2.3.4":
-                            print("REFIND")
                         node_current = nodes[node_id]
                         node_current.new_segment()
                 elif " epochs =" in line:
                     if node_current is None:
                         # Restarted node with no epochs remaining:
                         continue
-                    logger.info(line)
-                    logger.info("found epochs =")
                     node_current.parse_epochs(line, logger)
+        elif line.startswith("data_setup: build_dataframe() OK"):
+            build_df = parse_build_df(line, logger)
+        elif line.startswith("Loaded from initial_weights"):
+            node_current.parse_load_initial(line, logger)
         elif line.startswith("Epoch ") and "/" in line:
             node_current.parse_epoch_status(line, logger)
         elif line.startswith("Current "):
             node_current.parse_current_time(line, logger)
         elif Node.training_done in line and "ETA:" not in line:
             node_current.parse_training_done(line, logger)
+        elif line.startswith("model wrote:"):
+            node_current.parse_model_write(line, logger)
         elif "early stopping" in line:
             if node_current is not None:
                 # TensorFlow may report early stopping even if at max epochs:
@@ -126,6 +134,15 @@ def parse_log(log_fp, nodes):
             node_current = None
 
     logger.info("Found %i nodes in log." % nodes_found)
+
+
+def parse_build_df(line, logger=None):
+    tokens = line.split()
+    assert len(tokens) == 6
+    global build_df
+    build_df = float(tokens[4])
+    logger.info("build_df: %0.2f" % build_df)
+    return build_df
 
 
 def trace(message):

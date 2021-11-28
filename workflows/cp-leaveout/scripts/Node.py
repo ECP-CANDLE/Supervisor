@@ -41,12 +41,18 @@ class Node:
         self.epochs_cumul  = None
         self.date_start = None
         self.date_stop  = None
+        # Time to build dataframe
+        self.build_df = None
+        # Time to load initial weights
+        self.load_initial = None
         # Training time in seconds
         self.time = 0
         # Training run restarts- each log file makes a new segment
         self.segment = 0
         # Time for given segment from "Current time"
         self.segments = {}
+        # Bandwidths for checkpoint write by segment
+        self.ckpt_writes = {}
         # Did EarlyStopping stop this node?
         self.stopped_early = False
         # Did training complete for this node?
@@ -132,6 +138,11 @@ class Node:
         self.epochs_planned = int(tokens[-1].strip())
         self.trace(logger, "epochs_planned: %i" % self.epochs_planned)
 
+    def parse_load_initial(self, line, logger=None):
+        tokens = line.split()
+        self.load_initial = float(tokens[4])
+        print("load_initial: " + str(self.load_initial))
+
     def parse_epoch_status(self, line, logger=None):
         tokens = line.split()
         assert len(tokens) == 2, "bad line: " + line
@@ -147,6 +158,12 @@ class Node:
         t = tokens[2][4:]
         self.segments[self.segment] = float(t)
         # print("%-13s %i %r" % (self.id, self.segment, self.segments))
+
+    def parse_model_write(self, line, logger=None):
+        tokens = line.split()
+        t = float(tokens[7][1:])
+        self.ckpt_writes[self.segment] = t
+        self.trace(logger, "model_write: %0.3f" % t)
 
     def stop_early(self, logger=None):
         self.stopped_early = True
