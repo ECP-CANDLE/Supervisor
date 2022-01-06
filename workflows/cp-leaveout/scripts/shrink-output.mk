@@ -7,8 +7,5 @@ SUMMARIES = $(subst out-,summary-,$(OUTS))
 
 all: $(SUMMARIES)
 
-/tmp/${USER}/tr-%.txt: out-%.txt
-	@ tr "\r" "\n" < $(<) > $(@)
-
-summary-%.txt: /tmp/${USER}/tr-%.txt
-	@ python $(THIS)/shrink-output.py $(<) $(@)
+summary-%.txt: out-%.txt
+	@ ${THIS}/shrink-output-single.sh $(<) $(@)

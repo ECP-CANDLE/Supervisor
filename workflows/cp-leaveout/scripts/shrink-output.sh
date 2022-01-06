@@ -5,6 +5,7 @@ set -eu
 # Accepts a whole workflow output directory
 # Clean up and shrink TensorFlow output
 # See shrink-output.py for details
+# Parallelizable via make
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 CPLO=$( readlink --canonicalize $THIS/.. )
@@ -25,7 +26,7 @@ then
 fi
 
 # This is used inside the Makefile below:
-mkdir -pv /tmp/$USER
+mkdir -pv /tmp/$USER/shrink
 
 cd $DIR/out
-nice -n 19 make -j 8 -f $THIS/shrink-output.mk
+nice -n 19 make -j 1 -f $THIS/shrink-output.mk
