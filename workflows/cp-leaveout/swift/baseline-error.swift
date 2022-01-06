@@ -25,6 +25,7 @@ file file_nodes = input(argv("nodes"));
 // Mapping from node ID to epochs, one per line
 // file file_epochs = input(argv("epochs"));
 int benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
+int epochs_all = string2int(argv("E", "50"));
 // == Command-line Arguments End ==
 
 // == Environment Settings Begin ==
@@ -77,7 +78,7 @@ foreach node, i in nodes_lines
   // Fill in missing hyperparameters:
   string training_data = "%s/run/%s/topN.uno.h5" % (reference, node);
   // int epochs = string2int(map_epochs[node]);
-  int epochs = 250;
+  int epochs = epochs_all;
   string params = params_template % (dataframe_csv, epochs, node, training_data);
   // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
   results[i] = obj(params, node);
