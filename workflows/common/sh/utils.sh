@@ -358,9 +358,6 @@ queue_wait_site()
   elif [[ $site2 == "theta" ]]
   then
     queue_wait_cobalt $JOBID
-  elif [[ $site2 == "titan" ]]
-  then
-    queue_wait_pbs $JOBID
   elif [[ $site2 =~ summit* ]]
   then
     queue_wait_lsf $JOBID
