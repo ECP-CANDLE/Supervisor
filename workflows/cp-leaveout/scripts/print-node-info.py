@@ -25,5 +25,11 @@ except IOError as e:
 # print(data)
 
 # Print the node info!
+count   = 0
+earlies = 0
 for node in data.values():
     print(node.str_table())
+    count += 1
+    if node.stopped_early: earlies += 1
+
+print("print-node-info: %i/%i runs stopped early." % (count, earlies))
