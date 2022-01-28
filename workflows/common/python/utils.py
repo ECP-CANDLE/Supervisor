@@ -25,9 +25,7 @@ def fail3(e, code, message):
 
 
 def avg(values):
-    total = 0.0
-    for v in values:
-        total += v
+    total = sum(values)
     return total / len(values)
 
 
