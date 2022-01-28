@@ -25,13 +25,15 @@ fi
 # (this could contain thousands of entries, too long for command line):
 LOG_LIST=$DIR/log-list.txt
 
+shopt -s nullglob  # Ignore empty globs
 RESTARTS=( $DIR/restarts/* )
 
 for RESTART in ${RESTARTS[@]}
 do
   $THIS/shrink-output.sh $RESTART
 done
-shopt -s nullglob # Ignore empty globs
+$THIS/shrink-output.sh $DIR
+
 {
   for RESTART in ${RESTARTS[@]}
   do
