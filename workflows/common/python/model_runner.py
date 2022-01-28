@@ -239,7 +239,7 @@ def run_model(hyper_parameter_map):
         sys.stdout.flush()
         return ('SKIP', 'HISTORY_EMPTY')
     else:
-        assert(result == ModelResult.SUCCESS) # proceed...
+        assert(result == ModelResult.SUCCESS)  # proceed...
 
     result, history = run(hyper_parameter_map, obj_return)
     runner_utils.write_output(result, directory)
