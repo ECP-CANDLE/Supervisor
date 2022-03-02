@@ -23,11 +23,27 @@ EXPID=$( basename $DIR )
 JOBID=$( cat $DIR/jobid.txt )
 show EXPID JOBID
 
-LOGS=( $( find $DIR -name python.log  ) )
-echo "epoch-count.sh: found ${#LOGS[@]} logs ..."
+# Must use TMPFILE to avoid subshell for shell variables
+mkdir -pv /tmp/$USER
+TMPFILE=/tmp/$USER/epoch-count-XXX.tmp
+
+EARLIES=0
+LOGS=( $( find $DIR -name python.log | head -10 ) )
+TOTAL=${#LOGS[@]}
+echo "epoch-count.sh: found $TOTAL logs ..."
 for LOG in ${LOGS[@]}
 do
     echo -n "$LOG :: "
     # Pull out the last "Epoch:" line, print only the number:
-    sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG
-done | nl | sort -r -n -k 4 | column -t
+    EPOCH=$( sed -n '/Epoch:/h;${g;s/.*Epoch: \([0-9]*\).*/\1/;p}' $LOG )
+    if grep -q "stopping: early" $LOG
+    then
+      EARLY="EARLY"
+      (( EARLIES += 1 ))
+    else
+      EARLY=""
+    fi
+    echo $EPOCH $EARLY
+done > $TMPFILE
+cat $TMPFILE | nl | sort -r -n -k 4 | column -t
+echo "earlies: $EARLIES / $TOTAL"
