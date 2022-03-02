@@ -87,7 +87,7 @@ def parse_log(log_fp, nodes):
             # print(line.strip())
             if "DEBUG" in line:
                 if "PARAM UPDATE START" in line:
-                    trace("New Node ...")
+                    logger.debug("New Node ...")
                     node_current = Node(logger=logger)
                     node_current.parse_date_start(line)
                 elif " node =" in line:
@@ -101,8 +101,10 @@ def parse_log(log_fp, nodes):
                             node_current.build_df = build_df
                             build_df = None
                     else:
+                        logger.debug("lookup: " + node_id)
                         node_current = nodes[node_id]
                         node_current.new_segment()
+                        node_current.complete = False
                 elif " epochs =" in line:
                     if node_current is None:
                         # Restarted node with no epochs remaining:
@@ -126,7 +128,7 @@ def parse_log(log_fp, nodes):
                 node_current.stop_early()
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
-            # logger.debug("NODE DONE.")
+            logger.info("node done.")
             # find_val_data(node_current) # old format?
             find_error_data(node_current)
             nodes_found += 1
