@@ -28,7 +28,7 @@ mkdir -pv /tmp/$USER
 TMPFILE=/tmp/$USER/epoch-count-XXX.tmp
 
 EARLIES=0
-LOGS=( $( find $DIR -name python.log | head -10 ) )
+LOGS=( $( find $DIR -name python.log ) )
 TOTAL=${#LOGS[@]}
 echo "epoch-count.sh: found $TOTAL logs ..."
 for LOG in ${LOGS[@]}
