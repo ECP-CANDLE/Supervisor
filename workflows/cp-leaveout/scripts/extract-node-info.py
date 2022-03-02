@@ -25,7 +25,6 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("extract_node_info")
 
 
-
 def read_log_filenames(log_list):
     result = []
     count = 0
