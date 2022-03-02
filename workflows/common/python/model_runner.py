@@ -182,6 +182,8 @@ def run(hyper_parameter_map, obj_return):
     finish = time.time()
     duration = finish - start
 
+    epochs = hyper_parameter_map['epochs']
+
     # Default result if there is no val_loss (as in infer.py)
     result = 0
     history_result = {}
@@ -192,7 +194,8 @@ def run(hyper_parameter_map, obj_return):
             if history == "EPOCHS_COMPLETED_ALREADY":
                 result, history_result = "EPOCHS_COMPLETED_ALREADY", None
             else:
-                result, history_result = get_results(history, obj_return)
+                result, history_result = get_results(history, obj_return,
+                                                     epochs)
     else:
         result, history_result = "RUN_EXCEPTION", None
 
@@ -245,6 +248,9 @@ def run_model(hyper_parameter_map):
     logger.info("run_model: node: " + hyper_parameter_map['node'])
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
+    if os.path.exists('stop.marker'):
+        logger.info('stop.marker exists!')
+        return ('SKIP', 'STOP_MARKER')
     result = run_pre(hyper_parameter_map)
     if result == ModelResult.ERROR:
         print('run_pre() returned ERROR!')
@@ -287,9 +293,10 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
     return params
 
 
-def get_results(history, obj_return):
+def get_results(history, obj_return, epochs_expected):
     """
     Return the history entry that the user requested.
+    Also checks for early stopping and if so marks the directory.
     history: The Keras history object
     """
 
@@ -306,6 +313,12 @@ def get_results(history, obj_return):
     if obj_return in history.history:
         # Good value
         values = history.history[obj_return]
+        if len(values) < epochs_expected:
+            msg = 'early stopping: %i/%i' % \
+                (len(values), epochs_expected)
+            logger.info('get_results(): ' + msg)
+            with open('stop.marker', 'w') as fp:
+                fp.write(msg + '\n')
         # Default: the last value in the history
         result = values[-1]
     else:
