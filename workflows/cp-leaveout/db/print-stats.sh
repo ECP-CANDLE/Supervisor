@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 # PRINT STATS SH
 
@@ -9,6 +10,12 @@ then
 fi
 
 DB=$1
+
+if ! which sqlite3 > /dev/null
+then
+  echo "print-stats.sh: Add sqlite3 to PATH!"
+  exit 1
+fi
 
 COMPLETE=$(
 sqlite3 $DB <<EOF

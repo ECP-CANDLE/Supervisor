@@ -361,6 +361,9 @@ queue_wait_site()
   elif [[ $site2 =~ summit* ]]
   then
     queue_wait_lsf $JOBID
+  elif [[ $site2 == "spock" ]]
+  then
+    queue_wait_slurm $JOBID
   elif [[ $site2 == "pascal" ]]
   then
     queue_wait_slurm $JOBID

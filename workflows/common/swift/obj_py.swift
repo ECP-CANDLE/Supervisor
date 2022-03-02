@@ -37,7 +37,8 @@ try:
 except Exception as e:
   info = sys.exc_info()
   s = traceback.format_tb(info[2])
-  sys.stdout.write('EXCEPTION in obj() code: \\n' + repr(e) + ' ... \\n' + ''.join(s))
+  sys.stdout.write('\\n\\nEXCEPTION in obj() code: \\n' +
+                   repr(e) + ' ... \\n' + ''.join(s))
   sys.stdout.write('\\n')
   sys.stdout.flush()
   obj_result = 'EXCEPTION'

@@ -7,7 +7,6 @@ set -eu
 INPUT=$1
 OUTPUT=$2
 
-D=/tmp/${USER}/shrink
 T=${INPUT/out/tr}
 
 tr "\r" "\n" < $INPUT > $T

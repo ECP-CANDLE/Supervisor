@@ -1,7 +1,7 @@
 
 # DATA SETUP PY
 
-import os, sys, time
+import datetime, os, sys, time
 
 from pathlib import Path
 import traceback
@@ -106,12 +106,18 @@ def pre_run(params):
             print("data_setup: dataframe exists: %s" %
                   os.path.realpath(args.output))
     except topN_to_uno.topN_NoDataException:
-        print("data_setup: caught topN_NoDataException: SKIP")
+        print("data_setup: caught topN_NoDataException: SKIP " +
+              "for node: '%s'" % params["node"])
         sys.stdout.flush()
+        directory = params["instance_directory"]
+        with open(directory + "/NO-DATA.txt", "a") as fp:
+            ts = datetime.datetime.now()
+            iso = ts.isoformat(sep=' ', timespec='seconds')
+            fp.write(iso + "\n")
         return ModelResult.SKIP
     except ValueError:
         print("data_setup: caught ValueError for node: '%s'" %
-              params["node"])  # new 2019-12-02
+              params["node"])
         sys.stdout.flush()
         traceback.print_exc(file=sys.stdout)
         return ModelResult.ERROR

@@ -29,7 +29,7 @@ WORKFLOW_ARGS=$*
 export MODEL_NAME=uno # nt3
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-1.sh
+export CFG_SYS=$THIS/cfg-sys-512.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # Data files

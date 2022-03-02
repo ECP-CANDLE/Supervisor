@@ -196,7 +196,10 @@ fi
 export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
-set -x
+export TURBINE_LAUNCH_OPTIONS="-n $PROCS -c 4 --gpus-per-task=1 --gpu-bind=closest"
+
+which java
+
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p \
@@ -228,6 +231,7 @@ swift-t -O 0 -n $PROCS \
   # tee $STDOUT
 
 #
+#         -e HIP_VISIBLE_DEVICES="0,1" \
 
 # -e USER # Needed on Summit to find NVME
 # -j /usr/bin/java # Give this to Swift/T if needed for Java

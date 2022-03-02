@@ -14,7 +14,6 @@ import runner_utils
 from runner_utils import ModelResult
 from log_tools import *
 
-
 logger = None
 
 print('MODEL RUNNER...')
@@ -159,29 +158,44 @@ def run(hyper_parameter_map, obj_return):
 
     Ps = setup_perf(params)
 
+    history   = None
+    exception = False
+
+    from tensorflow.errors import InvalidArgumentError
+
     # Run the model!
     log("PKG RUN START")
-    history = pkg.run(params)
+
+    try:
+        history = pkg.run(params)
+    except Exception as e:
+        logger.warn("RUN EXCEPTION: " + str(e))
+        print("RUN EXCEPTION: " + str(e))
+        # logger.warn("Caught InvalidArgumentError")
+        exception = True
     log("PKG RUN STOP")
 
     if framework == 'keras':
         runner_utils.keras_clear_session(framework)
 
+    stop_perf(Ps)
+    finish = time.time()
+    duration = finish - start
+
     # Default result if there is no val_loss (as in infer.py)
     result = 0
     history_result = {}
-    if history is not None:
-        if history == "EPOCHS_COMPLETED_ALREADY":
-            result, history_result = "EPOCHS_COMPLETED_ALREADY", None
-        else:
-            result, history_result = get_results(history, obj_return)
+    if not exception:
+        logger.info('DONE: run_id %s in %0.2f seconds.' %
+                    (hyper_parameter_map['run_id'], duration))
+        if history is not None:
+            if history == "EPOCHS_COMPLETED_ALREADY":
+                result, history_result = "EPOCHS_COMPLETED_ALREADY", None
+            else:
+                result, history_result = get_results(history, obj_return)
+    else:
+        result, history_result = "RUN_EXCEPTION", None
 
-    stop_perf(Ps)
-
-    finish = time.time()
-    duration = finish - start
-    logger.info('DONE: run_id %s in %0.2f seconds.' %
-                (hyper_parameter_map['run_id'], duration))
     return (result, history_result)
 
 
@@ -228,6 +242,7 @@ def run_model(hyper_parameter_map):
     global logger
     logger = get_logger(logger, 'MODEL RUNNER')
     obj_return = get_obj_return()
+    logger.info("run_model: node: " + hyper_parameter_map['node'])
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
     result = run_pre(hyper_parameter_map)

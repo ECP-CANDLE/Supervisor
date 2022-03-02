@@ -132,11 +132,19 @@ run_stage(int N, int S, string this, int stage, void block,
     if (result1 == "0")
     {
       // Run the model
-      obj_result = obj(json, node)
-        // Update the DB to complete the model run
-        => result2 = plangen_stop(node, plan_id);
+      obj_result = obj(json, node);
       printf("run_single(): completed: node: '%s' result: '%s'",
              node, obj_result);
+      // Update the DB to complete the model run
+      string result2;
+      if (obj_result != "RUN_EXCEPTION")
+      {
+        result2 = plangen_stop(node, plan_id);
+      }
+      else
+      {
+        result2 = "RETRY";
+      }
       assert(obj_result != "EXCEPTION" && obj_result != "",
              "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");

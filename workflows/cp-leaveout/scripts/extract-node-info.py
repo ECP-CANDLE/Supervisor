@@ -128,7 +128,7 @@ def parse_log(log_fp, nodes):
                 node_current.stop_early()
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
-            logger.info("node done.")
+            logger.debug("node done.")
             # find_val_data(node_current) # old format?
             find_error_data(node_current)
             nodes_found += 1
