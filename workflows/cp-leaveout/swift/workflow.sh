@@ -196,10 +196,7 @@ fi
 export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
-export TURBINE_LAUNCH_OPTIONS="-n $PROCS -c 4 --gpus-per-task=1 --gpu-bind=closest"
-
-which java
-
+# set -x
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p \
@@ -244,6 +241,17 @@ then
   echo "workflow.sh: swift-t exited with error!"
   exit 1
 fi
+
+# # Check job output
+# TURBINE_OUTPUT=$( readlink turbine-output )
+# OUTPUT=turbine-output/output.txt
+# WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
+
+# # Wait for job
+# queue_wait
+
+# SCRIPT=$( basename $0 .sh )
+# check_output "EXIT CODE: 0" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "WORKFLOW OK."
 echo "EXIT CODE: 0" | tee -a $STDOUT
