@@ -26,6 +26,7 @@ file file_nodes = input(argv("nodes"));
 // file file_epochs = input(argv("epochs"));
 int benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 int epochs_all = string2int(argv("E", "50"));
+int patience = string2int(argv("P", "50"));
 // == Command-line Arguments End ==
 
 // == Environment Settings Begin ==
@@ -66,6 +67,7 @@ string params_template =
 "gpus":           "0",
 "epochs":         %i,
 "es":             "True",
+"patience":       %i,
 "node":              "%s",
 "use_exported_data": "%s"
 }
@@ -79,7 +81,8 @@ foreach node, i in nodes_lines
   string training_data = "%s/run/%s/topN.uno.h5" % (reference, node);
   // int epochs = string2int(map_epochs[node]);
   int epochs = epochs_all;
-  string params = params_template % (dataframe_csv, epochs, node, training_data);
+  string params = params_template % (dataframe_csv, epochs, patience,
+                                     node, training_data);
   // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
   results[i] = obj(params, node);
   assert(results[i] != "EXCEPTION", "exception in obj()!");
