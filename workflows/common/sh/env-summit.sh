@@ -14,15 +14,15 @@ set -eu
 
 # From Wozniak
 MED106=/gpfs/alpine/world-shared/med106
-ROOT=$MED106/sw/gcc-8.3.1
-SWIFT=$ROOT/swift-t/2021-10-06
+ROOT=$MED106/sw/gcc-9.1.0
+SWIFT=$ROOT/swift-t/2022-04-06
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
-R=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/R-3.6.1/lib64/R
-LD_LIBRARY_PATH+=:$R/lib
+# R=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/R-3.6.1/lib64/R
+# LD_LIBRARY_PATH+=:$R/lib
 
 # PY=/gpfs/alpine/world-shared/med106/sw/condaenv-200408
 # PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.2.0-py38-0
