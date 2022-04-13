@@ -16,7 +16,7 @@ import assert;
 import python;
 /* Helper for reporting environment variables common/swift/candle_utils.swift
 * import candle_utils;
-* 
+*
 * report_env();
 */
 
