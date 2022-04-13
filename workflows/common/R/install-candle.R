@@ -30,14 +30,15 @@ options(repos = r)
 # ****NOTE**** that I tried installing both plotly and jsonlite the normal way (in the PKGS below instead of a specific version above) and I got the same error
 
 PKGS <- list(
+    "RInside",
     "plotly",
     "jsonlite",
-    "smoof",
     "rgenoud",
     "DiceKriging",
+    # not available for R 3.6.1 : needed for mlrMBO HPO
     "randomForest",
     "parallelMap",
-    "RInside",
+    # requires smoof requires misc3d requires --with-tcltk :
     "mlrMBO"
 )
 
