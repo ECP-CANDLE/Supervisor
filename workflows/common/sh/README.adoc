@@ -48,7 +48,7 @@ The https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows#objective-fun
 
 * GCC: 7.5.0
 * ROOT: `$MED106/sw/summit/gcc-7.5.0`
-* Swift/T: 2022-04-12
+* Swift/T: `2022-04-12`
 * Python: `/sw/summit/open-ce/anaconda-base/envs/open-ce-1.5.2-py39-0`
 * R: `$ROOT/R/4.1.3`
 
