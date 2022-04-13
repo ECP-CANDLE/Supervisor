@@ -4,13 +4,14 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-46}
+export PROCS=${PROCS:-6}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-6}
 
-export WALLTIME=${WALLTIME:-06:00:00}
+# export WALLTIME=${WALLTIME:-06:00:00}
+export WALLTIME=00:10:00
 
 #export PROJECT=Candle_ECP
 
@@ -33,3 +34,14 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 # Ignore errors: If 1, unknown errors will be reported to model.log
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=0
+
+# Resident task worker count and rank list
+# If this is already set, we respect the user settings
+# If this is unset, we set it to 1
+#    and run the algorithm on the 2nd highest rank
+# This value is only read in HPO workflows
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} == "" ]]
+then
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
