@@ -5,8 +5,10 @@ set -eu
 
 # Installs all R packages needed for Supervisor workflows
 
-# pass CONFIRM=0 via command line for by passing options, default is CONFIRM=1
+# pass CONFIRM=0 via command line for by passing options,
+#      default is CONFIRM=1
 : ${CONFIRM:=1}
+
 while getopts ":y" OPTION
 do
   case $OPTION in
