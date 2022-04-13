@@ -245,7 +245,7 @@ def run_model(hyper_parameter_map):
     global logger
     logger = get_logger(logger, 'MODEL RUNNER')
     obj_return = get_obj_return()
-    logger.info("run_model: node: " + hyper_parameter_map['node'])
+    # logger.info("run_model: node: " + hyper_parameter_map['node'])
     directory = hyper_parameter_map['instance_directory']
     os.chdir(directory)
     if os.path.exists('stop.marker'):
