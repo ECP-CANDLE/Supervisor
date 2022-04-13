@@ -36,4 +36,4 @@ then
 fi
 
 THIS=$( dirname $0 )
-nice R -f $THIS/install-candle.R
+nice R -f $THIS/install-candle.R |& tee install-candle.log
