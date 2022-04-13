@@ -5,23 +5,22 @@
 
 This is the location for common shell scripting tools for the CANDLE Supervisor Workflows.
 
-New developments with https://github.com/ECP-CANDLE/Supervisor/issues/20[Issue #20] are marke with *(#20)*.
 
 == Entry points
 
-Each CANDLE workflow is invoked with a shell script, typically called +site_workflow.sh+, where the +site+ is +theta+, +titan+, etc.  In this document we will call this the workflow_sh script.
+Each CANDLE workflow is invoked with a shell script, typically called +test_*.sh site ...+, where the +site+ is +theta+, +summit+, etc.  In this document we will call this the workflow_sh script.
 
 === Purpose
 
 The purpose of these scripts is:
 
-. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.  *(#20)* This is now set by +link:utils.sh:get_expid()+.
-
-. Set key environment variables for Python, R, etc.  These include +PYTHONPATH+, +LD_LIBRARY_PATH+, etc.  *(#20)* These are now set for each site in +langs-site.sh+.
+. Determining the run directory, which is the +TURBINE_OUTPUT+ directory used by Swift/T.
 
 . Set key environment variables and Swift/T options for the system scheduler.  These include +PROCS+, +WALLTIME+, +QUEUE+, +PROJECT+, etc.  *(#20)* These are now set for each site in +sched-site.sh+.
 
-. Loading modules.  *(#20)* These are now set for each site in +modules-site.sh+.
+. Loading modules.  *(#20)* These are now set for each site in +env-site.sh+.
+
+. Set key environment variables for Python, R, etc.  These include +PYTHONPATH+, +LD_LIBRARY_PATH+, etc.  These are now set for each site in +env-site.sh+.
 
 . Determining which Swift functions to load.  Swift/T may or may not be configured to use its efficient in-memory Python interpreter for the Benchmarks (because of challenges compiling against the site-provided Python plus deep learning stack).  A shell variable called +SWIFT_IMPL+ denotes the Swift function implementation for the benchmarks.  The value is one of:
 +
@@ -39,17 +38,19 @@ The https://github.com/ECP-CANDLE/Supervisor/tree/master/workflows#objective-fun
 
 . Record what happened.  This involves writing additional logs into the TURBINE_OUTPUT directory, particularly to capture settings and provenance that Swift/T cannot.
 
-=== Future ideas
+== Site list
 
-Deduplication (https://github.com/ECP-CANDLE/Supervisor/issues/20[#20]).  The current scripts flex the previously developed EMEWS templates, which make it easy to rapidly develop many workflows; additionally, they are highly linear, readable scripts.  However, they duplicate a great deal of code, making Supervisor development more difficult.
+=== Summit
 
-. Source reusable settings.
-.. Write key environment variables once for each system.  E.g., https://github.com/ECP-CANDLE/Supervisor/blob/master/workflows/common/sh/langs-cori.sh[langs-cori.sh]
-.. Same for scheduler settings, module settings.
-. Create a new, site-generic workflow_sh for each workflow.  This script will take the +site+ as an argument and source the appropriate settings files.
-. Put application parameters in a separate file.  This can be Bash-formatted for compatibility now, but may become something else.
-. Install EQ/Py, EQ/R from Git and put in a common location, maintained by Wozniak.
-. Test scripts.  Each workflow directory will have a +test/+ subdirectory.  This will contain enough bootstrapping code so that it can run and do something small without user configuration.  This will build on the daily testing scripts that Brettin has started.
+`MED106=/gpfs/alpine/world-shared/med106`
+
+==== `env-summit.sh`
+
+* GCC: 7.5.0
+* ROOT: `$MED106/sw/summit/gcc-7.5.0`
+* Swift/T: 2022-04-12
+* Python: `/sw/summit/open-ce/anaconda-base/envs/open-ce-1.5.2-py39-0`
+* R: `$ROOT/R/4.1.3`
 
 == Other shell tools
 
