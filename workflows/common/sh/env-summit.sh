@@ -2,7 +2,7 @@
 # ENV Summit
 
 # SWIFT_IMPL=echo
-SWIFT_IMPL=py
+SWIFT_IMPL=app
 
 # Let modules initialize LD_LIBRARY_PATH before changing it:
 set +eu # modules create errors outside our control
@@ -24,7 +24,8 @@ R=$ROOT/R/4.1.3/lib64/R
 LD_LIBRARY_PATH+=:$R/lib
 
 # PY=/gpfs/alpine/world-shared/med106/sw/conda/2021-10-06/envs/CANDLE-2021-10-06
-PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.5.2-py39-0
+#PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.5.2-py39-0
+PY=/gpfs/alpine/world-shared/med106/sw/open-ce-1.1.3-py37/
 LD_LIBRARY_PATH+=:$PY/lib
 export PYTHONHOME=$PY
 PATH=$PY/bin:$PATH

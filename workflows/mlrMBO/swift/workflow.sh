@@ -174,7 +174,7 @@ swift-t -O 0 -n $PROCS \
         -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e APP_PYTHONPATH
+        -e APP_PYTHONPATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
