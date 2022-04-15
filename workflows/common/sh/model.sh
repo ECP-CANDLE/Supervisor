@@ -74,14 +74,19 @@ echo
 log "USING PYTHON:" $( which python )
 echo
 
+# The Python command line arguments:
 PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
          "$PARAMS"
          "$INSTANCE_DIRECTORY"
          "$FRAMEWORK"
          "$RUNID"
          "$BENCHMARK_TIMEOUT" )
+
+# The desired model command:
 MODEL_CMD="python3 -u ${PY_CMD[@]}"
 log "MODEL_CMD: ${MODEL_CMD[@]}"
+
+# Run Python!
 if $TIMEOUT_CMD ${MODEL_CMD[@]}
 then
   : # Assume success so we can keep a failed exit code
