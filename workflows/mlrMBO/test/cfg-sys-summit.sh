@@ -11,7 +11,7 @@ export PROCS=${PROCS:-6}
 export PPN=${PPN:-6}
 
 # export WALLTIME=${WALLTIME:-06:00:00}
-export WALLTIME=00:10:00
+export WALLTIME=00:40:00
 
 #export PROJECT=Candle_ECP
 
