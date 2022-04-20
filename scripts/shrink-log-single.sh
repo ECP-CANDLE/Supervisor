@@ -17,7 +17,6 @@ then
   exit 1
 fi
 
-
 if [ "${THIS:-}" == "" ]
 then
   THIS=$( readlink --canonicalize $( dirname $0 ) )
