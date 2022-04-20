@@ -28,4 +28,4 @@ fi
 mkdir -pv /tmp/$USER/shrink
 
 cd $DIR
-nice -n 19 make -j 8 -f $THIS/shrink-log.mk
+nice -n 19 make -j 1 -f $THIS/shrink-log.mk
