@@ -7,9 +7,8 @@ set -eu
 # See shrink-log.py for details
 # Parallelizable via make
 
-THIS=$( readlink --canonicalize $( dirname $0 ) )
-CPLO=$( readlink --canonicalize $THIS/.. )
-SUPERVISOR=$( readlink --canonicalize $CPLO/../.. )
+THIS=$(       realpath $( dirname $0 ) )
+SUPERVISOR=$( realpath $THIS/.. )
 export THIS
 
 source $SUPERVISOR/workflows/common/sh/utils.sh
