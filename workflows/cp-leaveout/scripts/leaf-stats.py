@@ -2,6 +2,8 @@
 
 import argparse, os, sys
 
+import pandas as pd
+
 import utils
 
 parser = argparse.ArgumentParser(description='Print leaf stats')
@@ -26,12 +28,10 @@ with open(args.list, 'r') as fp:
 
 from collections import OrderedDict
 
-headers = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS",
+columns = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS",
             "EARLY", "HO_MSE", "HO_MAE", "HO_R2" ]
-columns = OrderedDict()
-for header in headers:
-    columns[header] = []
 
+df = pd.DataFrame(columns=columns)
 
 class MatcherPoints(utils.Matcher):
 
@@ -135,17 +135,20 @@ for node in nodes:
     cell = nodes[node]
     log = f"{args.directory}/run/{node}/save/python.log"
     grepper.grep(log)
-    columns["CELL"]    .append(cell)
-    columns["NODE"]    .append(node)
-    columns["POINTS"]  .append(matcherPoints.points)
-    columns["EPOCHS"]  .append(matcherStats.epochs)
-    columns["MAE"]     .append(matcherStats.mae)
-    columns["R2"]      .append(matcherStats.r2)
-    columns["VAL_LOSS"].append(matcherStats.val_loss)
-    columns["EARLY"]   .append(matcherEarly.early)
-    columns["HO_MSE"]  .append(matcherHO_MSE.ho_mse)
-    columns["HO_MAE"]  .append(matcherHO_MAE.ho_mae)
-    columns["HO_R2"]   .append(matcherHO_R2 .ho_r2)
+    newrow = pd.DataFrame({
+        "CELL"     : [cell],
+        "NODE"     : [node],
+        "POINTS"   : [matcherPoints.points],
+        "EPOCHS"   : [matcherStats.epochs],
+        "MAE"      : [matcherStats.mae],
+        "R2"       : [matcherStats.r2],
+        "VAL_LOSS" : [matcherStats.val_loss],
+        "EARLY"    : [matcherEarly.early],
+        "HO_MSE"   : [matcherHO_MSE.ho_mse],
+        "HO_MAE"   : [matcherHO_MAE.ho_mae],
+        "HO_R2"    : [matcherHO_R2 .ho_r2]
+    })
+    df = pd.concat([df, newrow], ignore_index=True)
     grepper.reset()
 
-utils.columnPrint(columns, "llrrrrrrrrr")
+print(df.to_string())
