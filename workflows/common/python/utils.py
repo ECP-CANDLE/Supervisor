@@ -85,6 +85,10 @@ def columnPrint(D, aligns):
     """ D: a dict mapping a header string to a list of string data """
     """ aligns: a string "llrlr" for left or right alignment by column """
     headers = D.keys()
+    assert len(aligns) == len(headers), \
+        "Length of aligns (%i) does not match headers (%i)!" % \
+        (len(aligns), len(headers))
+
     # Format specs for headers
     fmth = ""
     # Format specs for data
