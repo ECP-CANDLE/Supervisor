@@ -26,7 +26,8 @@ with open(args.list, 'r') as fp:
 
 from collections import OrderedDict
 
-headers = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS", "EARLY" ]
+headers = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS",
+            "EARLY", "HO_MSE", "HO_MAE", "HO_R2" ]
 columns = OrderedDict()
 for header in headers:
     columns[header] = []
@@ -81,10 +82,54 @@ class MatcherEarly(utils.Matcher):
         self.early = "0"
 
 
+class MatcherHoldoutMSE(utils.Matcher):
+
+    def __init__(self):
+        super(MatcherHoldoutMSE, self).__init__(".*   mse:.*")
+        self.reset()
+
+    def run(self, line):
+        tokens = line.split()
+        self.ho_mse = tokens[3]
+
+    def reset(self):
+        self.ho_mse = "0"
+
+class MatcherHoldoutMAE(utils.Matcher):
+
+    def __init__(self):
+        super(MatcherHoldoutMAE, self).__init__(".*   mae:.*")
+        self.reset()
+
+    def run(self, line):
+        tokens = line.split()
+        self.ho_mae = tokens[3]
+
+    def reset(self):
+        self.ho_mae = "0"
+
+class MatcherHoldoutR2(utils.Matcher):
+
+    def __init__(self):
+        super(MatcherHoldoutR2, self).__init__(".*   r2:.*")
+        self.reset()
+
+    def run(self, line):
+        tokens = line.split()
+        self.ho_r2 = tokens[3]
+
+    def reset(self):
+        self.ho_r2 = "0"
+
+
 matcherPoints = MatcherPoints()
 matcherStats  = MatcherStats()
 matcherEarly  = MatcherEarly()
-grepper = utils.Grepper([matcherPoints, matcherStats, matcherEarly])
+matcherHO_MSE = MatcherHoldoutMSE()
+matcherHO_MAE = MatcherHoldoutMAE()
+matcherHO_R2  = MatcherHoldoutR2()
+grepper = utils.Grepper([matcherPoints, matcherStats, matcherEarly,
+                         matcherHO_MSE, matcherHO_MAE, matcherHO_R2])
 
 for node in nodes:
     cell = nodes[node]
@@ -98,6 +143,9 @@ for node in nodes:
     columns["R2"]      .append(matcherStats.r2)
     columns["VAL_LOSS"].append(matcherStats.val_loss)
     columns["EARLY"]   .append(matcherEarly.early)
+    columns["HO_MSE"]  .append(matcherHO_MSE.ho_mse)
+    columns["HO_MAE"]  .append(matcherHO_MAE.ho_mae)
+    columns["HO_R2"]   .append(matcherHO_R2 .ho_r2)
     grepper.reset()
 
-utils.columnPrint(columns, "llrrrrrr")
+utils.columnPrint(columns, "llrrrrrrrrr")
