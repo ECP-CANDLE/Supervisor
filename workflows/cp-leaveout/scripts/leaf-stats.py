@@ -151,4 +151,5 @@ for node in nodes:
     df = pd.concat([df, newrow], ignore_index=True)
     grepper.reset()
 
-print(df.to_string())
+from tabulate import tabulate
+print(tabulate(df, headers='keys', tablefmt='plain'))
