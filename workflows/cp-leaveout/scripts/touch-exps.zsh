@@ -20,6 +20,7 @@ A=( 750
 
   for X in $A
   do
+    print       experiments/X$X
     ds          experiments/X$X
     last-access experiments/X$X
     touch-all   experiments/X$X

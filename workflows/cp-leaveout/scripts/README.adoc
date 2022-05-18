@@ -127,6 +127,14 @@ Average GPU utilization
 
 List the Nodes from the JSON file.
 
+==== List Node Singles
+
+List the Nodes from the JSON file with a single cell line.
+
+==== Leaf Stats
+
+Report key stats from the python.log for the given nodes.
+
 ==== tar experiment
 
 Make backup tars for experiment data
