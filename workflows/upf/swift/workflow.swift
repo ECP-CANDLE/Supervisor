@@ -46,4 +46,4 @@ foreach params,i in upf_lines
 // Join all result values into one big semicolon-delimited string
 string result = join(results, ";");
 // and print it
-printf(result);
+printf("WORKFLOW RESULT: " + result);
