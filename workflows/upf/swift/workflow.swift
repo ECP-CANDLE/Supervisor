@@ -39,8 +39,6 @@ foreach params,i in upf_lines
 {
   printf("params: %s", params);
   id = json_get(params, "id");
-  // NOTE: obj() is in the obj_*.swift supplied by workflow.sh
-  // id = "id_%02i"%i;
   results[i] = obj(params, id);
   assert(results[i] != "EXCEPTION", "exception in obj()!");
 }
