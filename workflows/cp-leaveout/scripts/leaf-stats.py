@@ -1,6 +1,7 @@
+
 # LEAF STATS PY
 
-import argparse, os, sys
+import argparse
 
 import pandas as pd
 
@@ -26,12 +27,11 @@ with open(args.list, 'r') as fp:
         cell = tokens[1]
         nodes[node] = cell
 
-from collections import OrderedDict
-
 columns = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS",
             "EARLY", "HO_MSE", "HO_MAE", "HO_R2" ]
 
 df = pd.DataFrame(columns=columns)
+
 
 class MatcherPoints(utils.Matcher):
 
@@ -95,6 +95,7 @@ class MatcherHoldoutMSE(utils.Matcher):
     def reset(self):
         self.ho_mse = "0"
 
+
 class MatcherHoldoutMAE(utils.Matcher):
 
     def __init__(self):
@@ -107,6 +108,7 @@ class MatcherHoldoutMAE(utils.Matcher):
 
     def reset(self):
         self.ho_mae = "0"
+
 
 class MatcherHoldoutR2(utils.Matcher):
 
