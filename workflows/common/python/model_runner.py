@@ -8,7 +8,6 @@ import math
 import os
 import sys
 import time
-import numpy as np
 import importlib
 import runner_utils
 from runner_utils import ModelResult
@@ -161,8 +160,6 @@ def run(hyper_parameter_map, obj_return):
     history   = None
     exception = False
 
-    from tensorflow.errors import InvalidArgumentError
-
     # Run the model!
     log("PKG RUN START")
 
@@ -209,12 +206,13 @@ def run(hyper_parameter_map, obj_return):
 def get_obj_return():
     obj_return = os.getenv('OBJ_RETURN')
     valid_obj_returns = [ 'loss', 'val_loss', 'val_corr', 'val_acc' ]
-    if obj_return == None:
+    if obj_return is None:
         raise Exception('No OBJ_RETURN was in the environment!')
     if obj_return not in valid_obj_returns:
         raise Exception('Invalid value for OBJ_RETURN: use: ' +
                         str(valid_obj_returns))
     return obj_return
+
 
 def load_pre_post(hyper_parameter_map, key):
     module = None
@@ -223,21 +221,24 @@ def load_pre_post(hyper_parameter_map, key):
         module = importlib.import_module(module_name)
     return module
 
+
 def run_pre(hyper_parameter_map):
     module = load_pre_post(hyper_parameter_map, 'pre_module')
     result = ModelResult.SUCCESS
-    if module != None:
+    if module is not None:
         logger.debug('PRE RUN START')
         result = module.pre_run(hyper_parameter_map)
         logger.debug('PRE RUN STOP')
     return result
 
+
 def run_post(hyper_parameter_map, output_map):
     module = load_pre_post(hyper_parameter_map, 'post_module')
-    if module != None:
+    if module is not None:
         logger.debug('POST RUN START')
         module.post_run(hyper_parameter_map, output_map)
         logger.debug('POST RUN STOP')
+
 
 def run_model(hyper_parameter_map):
     # In-memory Python runs may not create sys.argv
@@ -274,6 +275,7 @@ def run_model(hyper_parameter_map):
     run_post(hyper_parameter_map, {})
     logger.info('RUN STOP')
     return (result, history)
+
 
 def setup_params(pkg, hyper_parameter_map, params_arg):
     params = pkg.initialize_parameters(**params_arg)
@@ -353,7 +355,7 @@ if __name__ == '__main__':
     logger.info('main: RUN START')
 
     import sys
-    ( _, # The Python program name (unused)
+    ( _,  # The Python program name (unused)
       param_string,
       instance_directory,
       framework,
@@ -365,7 +367,7 @@ if __name__ == '__main__':
                                             framework,
                                             out_dir_key='save')
     hyper_parameter_map['model_name']    = os.getenv('MODEL_NAME')
-    if hyper_parameter_map['model_name'] == None:
+    if hyper_parameter_map['model_name'] is None:
         raise Exception('No MODEL_NAME was in the environment!')
     hyper_parameter_map['experiment_id'] = os.getenv('EXPID')
     hyper_parameter_map['run_id']  = runid
