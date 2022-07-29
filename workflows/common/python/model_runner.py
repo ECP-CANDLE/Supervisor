@@ -181,7 +181,7 @@ def run(hyper_parameter_map, obj_return):
     stop_perf(Ps)
     finish = time.time()
     duration = finish - start
-    
+
     # check for epochs if not present set to 1, used for checking early stopping in function get_results
     if 'epochs' in hyper_parameter_map:
         epochs = hyper_parameter_map['epochs']
