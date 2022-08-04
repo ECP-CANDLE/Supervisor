@@ -82,7 +82,7 @@ cp $CFG_SYS $TURBINE_OUTPUT
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-which mpicc
+# which mpicc
 which swift-t
 
 # module list
