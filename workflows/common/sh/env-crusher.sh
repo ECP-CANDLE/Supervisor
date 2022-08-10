@@ -14,7 +14,7 @@ PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
 # Set up Python:
-PY=/gpfs/alpine/med106/world-shared/gounley1/crusher2/conda520
+PY=/gpfs/alpine/med106/world-shared/gounley1/crusher2/conda520tf
 export PYTHONHOME=$PY
 
 # For test output processing:
