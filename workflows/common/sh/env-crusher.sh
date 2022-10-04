@@ -6,10 +6,15 @@ SWIFT_IMPL=py
 
 # CANDLE software installation root:
 MED106=/gpfs/alpine/world-shared/med106
-ROOT=$MED106/gounley1/crusher2
 
-# Add Swift/T to PATH
+# Gounley installation:
+ROOT=$MED106/gounley1/crusher2
 SWIFT=$ROOT/swift-t-install
+
+# Wozniak installation:
+# ROOT=$MED106/sw/crusher/gcc-11.2.0
+# SWIFT=$ROOT/swift-t/2022-08-10
+
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
