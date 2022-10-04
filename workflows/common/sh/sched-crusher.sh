@@ -1,5 +1,5 @@
 
-# SCHED Spock
+# SCHED Crusher
 
 # Tell Swift/T to use SLURM:
 MACHINE="-m slurm"
