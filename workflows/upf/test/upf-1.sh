@@ -21,4 +21,5 @@ export EMEWS_PROJECT_ROOT
 export OBJ_RETURN="val_loss"
 CFG_SYS=$THIS/cfg-sys-1.sh
 
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt
+# $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-kpp-n960-mod.txt

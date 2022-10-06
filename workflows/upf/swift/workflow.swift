@@ -14,7 +14,7 @@ import sys;
 import candle_utils;
 report_env();
 
-string FRAMEWORK = "keras";
+string FRAMEWORK = "pytorch";
 
 // Scan command line
 file   upf        = input(argv("f"));
