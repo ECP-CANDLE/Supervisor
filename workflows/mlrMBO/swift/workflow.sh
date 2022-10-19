@@ -161,8 +161,6 @@ else
   STDOUT=""
 fi
 
-echo WF LLP $LD_LIBRARY_PATH
-
 # ALW 2021-01-21: Please don't comment out the "-o $TURBINE_OUTPUT/workflow.tic" option below; otherwise, we get permissions issues on Biowulf. Thanks!
 set -x
 swift-t -O 0 -n $PROCS \
