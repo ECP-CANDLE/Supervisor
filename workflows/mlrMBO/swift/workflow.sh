@@ -169,7 +169,7 @@ swift-t -O 0 -n $PROCS \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e APP_PYTHONPATH \
