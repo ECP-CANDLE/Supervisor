@@ -3,7 +3,7 @@
 # Environment settings for Lambda (Swift, Python, R, Tcl, etc.)
 
 # Everything is installed in here:
-SFW=/home/woz/Public/sfw
+SFW=/homes/woz/Public/sfw
 
 SWIFT=$SFW/swift-t/2022-10-19
 PY=$SFW/Anaconda
