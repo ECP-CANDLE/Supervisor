@@ -160,6 +160,12 @@ else
   STDOUT=""
 fi
 
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
+  exit 1
+fi
+
 # ALW 2021-01-21: Please don't comment out the "-o $TURBINE_OUTPUT/workflow.tic" option below; otherwise, we get permissions issues on Biowulf. Thanks!
 set -x
 swift-t -O 0 -n $PROCS \
@@ -186,10 +192,10 @@ swift-t -O 0 -n $PROCS \
         -e SH_TIMEOUT \
         -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
+        -e CANDLE_DATA_DIR \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
   tee $STDOUT
-
 
 if (( ${PIPESTATUS[0]} ))
 then
