@@ -57,9 +57,9 @@ fi
 echo "Running "$MODEL_NAME "workflow"
 
 # Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$BENCHMARK_DIR   # :$BENCHMARKS_ROOT/common # This is now candle_lib
 # Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
-export APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
 
 source_site env   $SITE
 source_site sched $SITE
