@@ -13,7 +13,7 @@ R=$SFW/R-4.1.0
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$PY/bin:$PATH
 
-export LD_LIBRARY_PATH=$R/lib/R/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=$R/lib/R/lib:${LD_LIBRARY_PATH:-}
 
 # How to run CANDLE models:
 SWIFT_IMPL="app"
