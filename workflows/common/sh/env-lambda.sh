@@ -5,7 +5,7 @@
 # Everything is installed in here:
 SFW=/homes/woz/Public/sfw
 
-SWIFT=$SFW/swift-t/2022-10-19
+SWIFT=$SFW/swift-t/2022-11-02
 PY=$SFW/Anaconda
 EQR=$SFW/EQ-R
 R=$SFW/R-4.1.0
