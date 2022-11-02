@@ -83,11 +83,11 @@ PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
          "$BENCHMARK_TIMEOUT" )
 
 # The desired model command:
-MODEL_CMD="python3 -u ${PY_CMD[@]}"
+MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
 log "MODEL_CMD: ${MODEL_CMD[@]}"
 
 # Run Python!
-if $TIMEOUT_CMD ${MODEL_CMD[@]}
+if $TIMEOUT_CMD "${MODEL_CMD[@]}"
 then
   : # Assume success so we can keep a failed exit code
 else
