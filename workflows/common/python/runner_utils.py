@@ -1,5 +1,5 @@
 import numpy as np
-import json, os
+import json, os, sys
 from enum import Enum
 
 try:
@@ -95,8 +95,9 @@ class ModelResult(Enum):
 def main():
     # Need argparse
     if sys.argv[1] == "write_params":
+        hyper_parameter_map = json.loads(sys.argv[3])
         # Assume we are in the correct directory
-        write_params(sys.argv[2], {})
+        write_params(sys.argv[2], hyper_parameter_map)
 
 
 if __name__ == "__main__":

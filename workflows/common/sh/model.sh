@@ -63,6 +63,7 @@ log()
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
+# log "CANDLE_MODEL_TYPE: $CANDLE_MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -83,18 +84,24 @@ echo
 # Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
 if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
 then
+
   # No model_runner, need to write parameters.txt explicitly:
-  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params "$PARAMS"
+  #  get hyper_parameter_map to pass as 2nd argument
+  
+  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
   MODEL_CMD=( singularity exec --nv $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
               $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
   # train.sh must write $INSTANCE_DIRECTORY/result.txt !
   # or
   # Suggest:
+
+  # Uncomment later
   # grep "CANDLE_RESULT: " $INSTANCE_DIRECTORY/model.log
   # grep "CANDLE_ERROR:"
-  RESULT=$( sed -n '/val_loss:/{s/val_loss: \(.*\)/\1/;p}' | tail -1 )
-  log "found result: $RESULT"
-  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+  # RESULT=$( sed -n '/val_loss:/{s/val_loss: \(.*\)/\1/;p}' | tail -1 )
+  # log "found result: $RESULT"
+  # echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+  echo $MODEL_CMD
 else # "BENCHMARKS"
 
   # The Python command line arguments:
