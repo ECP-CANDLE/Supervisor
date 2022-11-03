@@ -131,7 +131,7 @@ def run(hyper_parameter_map, obj_return):
     logger.info('run(): START:')
     sys.stdout.flush()
 
-    directory = hyper_parameter_map['instance_directory']
+    directory = hyper_parameter_map['instance_directory']  # should be output_dir
     os.chdir(directory)
 
     with open(directory + '/rank.txt', 'w') as fp:

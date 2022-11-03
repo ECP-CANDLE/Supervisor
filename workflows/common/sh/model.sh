@@ -34,7 +34,13 @@ RUNID=$3
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
-INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+# TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/output/$EXPID/run/$RUNID
+else # "BENCHMARKS"
+  INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+fi
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY
@@ -74,16 +80,35 @@ echo
 log "USING PYTHON:" $( which python )
 echo
 
-# The Python command line arguments:
-PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
-         "$PARAMS"
-         "$INSTANCE_DIRECTORY"
-         "$FRAMEWORK"
-         "$RUNID"
-         "$BENCHMARK_TIMEOUT" )
+# Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
+if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+then
+  # No model_runner, need to write parameters.txt explicitly:
+  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params "$PARAMS"
+  MODEL_CMD=( singularity exec --nv $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+              $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
+  # train.sh must write $INSTANCE_DIRECTORY/result.txt !
+  # or
+  # Suggest:
+  # grep "CANDLE_RESULT: " $INSTANCE_DIRECTORY/model.log
+  # grep "CANDLE_ERROR:"
+  RESULT=$( sed -n '/val_loss:/{s/val_loss: \(.*\)/\1/;p}' | tail -1 )
+  log "found result: $RESULT"
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+else # "BENCHMARKS"
 
-# The desired model command:
-MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
+  # The Python command line arguments:
+  PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
+           "$PARAMS"
+           "$INSTANCE_DIRECTORY"
+           "$FRAMEWORK"
+           "$RUNID"
+           "$BENCHMARK_TIMEOUT" )
+
+  MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
+  # model_runner/runner_utils writes result.txt
+fi
+
 log "MODEL_CMD: ${MODEL_CMD[@]}"
 
 # Run Python!

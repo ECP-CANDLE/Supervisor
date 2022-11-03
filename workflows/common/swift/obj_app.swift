@@ -12,8 +12,15 @@
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
 
-  string outdir = "%s/run/%s" % (turbine_output, run_id);
-  // printf("running model shell script in: %s", outdir);
+  string outdir;
+  if (getenv("CANDLE_MODEL_TYPE") == "SINGULARITY") {
+    outdir = "%s/run/%s" % (turbine_output, run_id);
+  } else {
+    outdir = "%s/output/%s/run/%s" % (getenv("CANDLE_DATA_DIR"), getenv("EXPID"), run_id);
+  }
+
+  printf("running model shell script in: %s", outdir);
+
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
   string result_file = outdir/"result.txt";
@@ -35,7 +42,6 @@
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
 
-  string outdir = "%s/run/%s" % (turbine_output, run_id);
   // printf("running model shell script in: %s", outdir);
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()

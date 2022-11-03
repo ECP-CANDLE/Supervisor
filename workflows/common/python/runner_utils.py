@@ -3,9 +3,9 @@ import json, os
 from enum import Enum
 
 try:
-  basestring
+    basestring
 except NameError:
-  basestring = str
+    basestring = str
 
 DATA_TYPES = {type(np.float16): 'f16', type(np.float32): 'f32', type(np.float64): 'f64'}
 
@@ -90,3 +90,14 @@ class ModelResult(Enum):
     SUCCESS = 1
     SKIP = 2
     ERROR = 3
+
+
+def main():
+    # Need argparse
+    if sys.argv[1] == "write_params":
+        # Assume we are in the correct directory
+        write_params(sys.argv[2], {})
+
+
+if __name__ == "__main__":
+  main()
