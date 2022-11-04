@@ -100,7 +100,7 @@ def read_config_file_dict(file: str) -> dict:
 
     for section in config.sections():
         for k, v in config.items(section):
-            result[k] = v
+            result[k] = eval(v)
     return result
 
 
