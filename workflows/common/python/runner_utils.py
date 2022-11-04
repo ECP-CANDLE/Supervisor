@@ -1,3 +1,4 @@
+import configparser
 import numpy as np
 import json, os, sys
 from enum import Enum
@@ -92,12 +93,38 @@ class ModelResult(Enum):
     ERROR = 3
 
 
+def read_config_file_dict(file: str) -> dict:
+    result = {}
+    config = configparser.ConfigParser()
+    config.read(file)
+
+    for section in config.sections():
+        for k, v in config.items(section):
+            result[k] = v
+    return result
+
+
+def merge_params(defaults, params):
+    result = defaults.copy()
+    for k, v in params.items():
+        print("merge_params(): set " + str(k) + ' = ' + str(v))
+        result[k] = v
+    return result
+
+
 def main():
     # Need argparse
+    print("runner_utils.main(): " + str(sys.argv))
     if sys.argv[1] == "write_params":
-        hyper_parameter_map = json.loads(sys.argv[3])
-        # Assume we are in the correct directory
-        write_params(sys.argv[2], hyper_parameter_map)
+        # Merge params from the user-provided params file and
+        # the workflow-generated parameters
+        # Assume we are in the correct directory for this file:
+        defaults = read_config_file_dict(sys.argv[3])
+        # Parse the workflow-provided JSON string:
+        J = json.loads(sys.argv[2])
+        params = merge_params(defaults, J)
+        print("params: " + str(params))
+        write_params(params, {})
 
 
 if __name__ == "__main__":
