@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: ./run 
+# Usage: ./run
 #
 
 if [ "$#" -ne 1 ]; then
@@ -76,4 +76,3 @@ set -x
 export TURBINE_LOG=1
 echo swift-t  -l -n $PROCS $MACHINE -p $ENVS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json
 swift-t  -l -n $PROCS $MACHINE -p $ENVS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json
-

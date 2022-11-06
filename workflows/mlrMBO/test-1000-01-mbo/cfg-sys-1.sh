@@ -36,5 +36,3 @@ export SH_TIMEOUT=${SH_TIMEOUT:-2000}
 # Ignore errors: If 1, unknown errors will be reported to model.log
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=1
-
-

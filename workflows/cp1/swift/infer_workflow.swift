@@ -40,7 +40,7 @@ string n_pred = argv("n_pred");
 */
 app (void o) run_model (string model_sh, string instance_dir, string data_file, string model_file, string run_id)
 {
-  //              1            2         3          4      5 
+  //              1            2         3          4      5
   "bash" model_sh instance_dir data_file model_file n_pred run_id;
 }
 
@@ -75,4 +75,3 @@ main() {
 
   write_lines(inputs, "log.txt");
 }
-

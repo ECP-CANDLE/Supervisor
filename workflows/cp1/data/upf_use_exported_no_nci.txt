@@ -18,4 +18,3 @@
 {"study1": "CTRP", "epochs": 1, "batch_size": 6144, "use_exported" : 1 }
 {"study1": "gCSI", "epochs": 1, "batch_size": 6144, "use_exported" : 1 }
 {"study1": "GDSC", "epochs": 1, "batch_size": 6144, "use_exported" : 1 }
-

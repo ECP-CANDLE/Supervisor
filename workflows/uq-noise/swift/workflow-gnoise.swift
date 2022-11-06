@@ -62,4 +62,3 @@ foreach level, i in std_dev_array
              run_id, std_dev, result);
     }
 }
-

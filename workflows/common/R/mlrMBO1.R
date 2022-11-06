@@ -70,7 +70,7 @@
                             restart.file) {
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                           fix.factors.prediction = TRUE,
                           mtry = 6,
                           se.method = "bootstrap", se.boot = 50, se.ntree = 100)
@@ -83,7 +83,7 @@
 
     chkpntResults<-NULL
     # TODO: Make this an argument
-    restartFile<-restart.file 
+    restartFile<-restart.file
     if (file.exists(restart.file)) {
       print(paste("Loading restart1:", restart.file))
 

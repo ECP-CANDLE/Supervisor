@@ -1,34 +1,42 @@
-
 # LEAF STATS PY
 
 import argparse
 
 import pandas as pd
-
 import utils
 
-parser = argparse.ArgumentParser(description='Print leaf stats')
-parser.add_argument('directory',
-                    help='The experiment directory (EXPID)')
-parser.add_argument('list',
-                    help='The list of nodes to process')
+parser = argparse.ArgumentParser(description="Print leaf stats")
+parser.add_argument("directory", help="The experiment directory (EXPID)")
+parser.add_argument("list", help="The list of nodes to process")
 
 args = parser.parse_args()
 
 # Map from node "1.1.1.1.2.3" to cell line "CCLE.KMS11"
 nodes = {}
 
-with open(args.list, 'r') as fp:
+with open(args.list, "r") as fp:
     while True:
         line = fp.readline()
-        if len(line) == 0: break
+        if len(line) == 0:
+            break
         tokens = line.split()
         node = tokens[0]
         cell = tokens[1]
         nodes[node] = cell
 
-columns = [ "CELL", "NODE", "POINTS", "EPOCHS", "MAE", "R2", "VAL_LOSS",
-            "EARLY", "HO_MSE", "HO_MAE", "HO_R2" ]
+columns = [
+    "CELL",
+    "NODE",
+    "POINTS",
+    "EPOCHS",
+    "MAE",
+    "R2",
+    "VAL_LOSS",
+    "EARLY",
+    "HO_MSE",
+    "HO_MAE",
+    "HO_R2",
+]
 
 df = pd.DataFrame(columns=columns)
 
@@ -57,9 +65,9 @@ class MatcherStats(utils.Matcher):
     def run(self, line):
         tokens = line.split()
         # Remove trailing bracket or comma:
-        self.epochs   = tokens[ 3][0:-1]
-        self.mae      = tokens[ 7][0:-1]
-        self.r2       = tokens[ 9][0:-1]
+        self.epochs = tokens[3][0:-1]
+        self.mae = tokens[7][0:-1]
+        self.r2 = tokens[9][0:-1]
         self.val_loss = tokens[11][0:-1]
 
     def reset(self):
@@ -125,33 +133,40 @@ class MatcherHoldoutR2(utils.Matcher):
 
 
 matcherPoints = MatcherPoints()
-matcherStats  = MatcherStats()
-matcherEarly  = MatcherEarly()
+matcherStats = MatcherStats()
+matcherEarly = MatcherEarly()
 matcherHO_MSE = MatcherHoldoutMSE()
 matcherHO_MAE = MatcherHoldoutMAE()
-matcherHO_R2  = MatcherHoldoutR2()
-grepper = utils.Grepper([matcherPoints, matcherStats, matcherEarly,
-                         matcherHO_MSE, matcherHO_MAE, matcherHO_R2])
+matcherHO_R2 = MatcherHoldoutR2()
+grepper = utils.Grepper([
+    matcherPoints,
+    matcherStats,
+    matcherEarly,
+    matcherHO_MSE,
+    matcherHO_MAE,
+    matcherHO_R2,
+])
 
 for node in nodes:
     cell = nodes[node]
     log = f"{args.directory}/run/{node}/save/python.log"
     grepper.grep(log)
     newrow = pd.DataFrame({
-        "CELL"     : [cell],
-        "NODE"     : [node],
-        "POINTS"   : [matcherPoints.points],
-        "EPOCHS"   : [matcherStats.epochs],
-        "MAE"      : [matcherStats.mae],
-        "R2"       : [matcherStats.r2],
-        "VAL_LOSS" : [matcherStats.val_loss],
-        "EARLY"    : [matcherEarly.early],
-        "HO_MSE"   : [matcherHO_MSE.ho_mse],
-        "HO_MAE"   : [matcherHO_MAE.ho_mae],
-        "HO_R2"    : [matcherHO_R2 .ho_r2]
+        "CELL": [cell],
+        "NODE": [node],
+        "POINTS": [matcherPoints.points],
+        "EPOCHS": [matcherStats.epochs],
+        "MAE": [matcherStats.mae],
+        "R2": [matcherStats.r2],
+        "VAL_LOSS": [matcherStats.val_loss],
+        "EARLY": [matcherEarly.early],
+        "HO_MSE": [matcherHO_MSE.ho_mse],
+        "HO_MAE": [matcherHO_MAE.ho_mae],
+        "HO_R2": [matcherHO_R2.ho_r2],
     })
     df = pd.concat([df, newrow], ignore_index=True)
     grepper.reset()
 
 from tabulate import tabulate
-print(tabulate(df, headers='keys', tablefmt='plain'))
+
+print(tabulate(df, headers="keys", tablefmt="plain"))

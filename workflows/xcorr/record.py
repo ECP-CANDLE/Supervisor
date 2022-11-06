@@ -1,17 +1,15 @@
-
 # RECORD PY
 # Represent a record in the DB
+
 
 class Record:
 
     def __init__(self):
         self.features = []
-        self.studies  = []
+        self.studies = []
 
     def scan(self, row):
-        self.rowid, self.ts, self.cutoff_corr, self.cutoff_xcorr = \
-                row[0:4]
-
+        self.rowid, self.ts, self.cutoff_corr, self.cutoff_xcorr = row[0:4]
 
     def print(self):
         print("record:       " + str(self.rowid))

@@ -3,13 +3,13 @@
 
 The Mini Challenge Problem has 4 distinct stages: 1) preprocessing feature selection; 2) HPO optimization using mlrMBO; 3) additional
 training of the best models identified in 2; and 4) performing inference
-on the trained models from 3. 
+on the trained models from 3.
 
 ==== Feature Selection
 
 Rather than using all of the ~17,000 genes for prediction of drug response for Uno, we used the COXEN approach (see the _xcorr_ README) to select genes for building the prediction model in a scenario of model adaptation between studies/datasets. The COXEN approach performs statistical analysis to identify predictive and generalizable genes for prediction. We have five public cancer cell line drug response datasets, i.e., NCI-60, CTRP, GDSC, CCLE, and gCSI. These five studies may have common cancer cell lines and drugs included in their experiments, but each of them may also include unique cell lines, drugs, or combinations of the two. Thus, the COXEN approach targeting genes that are both predictive and generalizable can be helpful in the model adaptation between studies. The approach produces _cross correleated feature set_ files
 that are used as input to the model. A preprocessed data file will have a file name like `CTRP_CCLE_2000_1000_features.txt`
-where the two studies are `CTRP` and `CCLE`, and the cross correlation 
+where the two studies are `CTRP` and `CCLE`, and the cross correlation
 coefficients are 2000 and 1000
 
 ==== HPO using mlrMBO
@@ -43,7 +43,7 @@ develop branch. The Uno benchmarks is in `Benchmarks/Pilot1/Uno`.
 === Data
 
 *Download the raw Uno feature data to the `Benchmarks/Data/Pilot1` directory.*
-Note the data is quite large so, depending on the file system and machine, a better 
+Note the data is quite large so, depending on the file system and machine, a better
 choice may be to download and symlink to `Benchmarks/Data/Pilot1`.
 
 ----
@@ -61,8 +61,8 @@ $ tar xfz candle-cp1-data.tgz
 ----
 
 *Generate the input data frames from the raw data and the feature files.*
-Uno runs much faster with these as input rather than the raw data. 
-A train and test data frame needs to be created for each cross correlated feature file. 
+Uno runs much faster with these as input rather than the raw data.
+A train and test data frame needs to be created for each cross correlated feature file.
 
 For example, to generate the data associated with the `CTRP_CCLE_2000_1000.txt` feature file:
 
@@ -72,25 +72,25 @@ $ python python uno_baseline_keras2.py --train_sources CTRP --cell_feature_subse
 $ python uno_baseline_keras2.py --train_sources CCLE --cell_feature_subset_path CTRP_CCLE_2000_1000_features.txt --no_feature_source True --no_response_source True --preprocess_rnaseq combat --export_data CTRP_CCLE_2000_1000_test.h5
 ----
 
-Note that in the train data creation the train_source is CTRP and in the test data 
-creation the train source is CCLE. The creation of the training and test data can be 
-time consuming for the larger datasets. 
+Note that in the train data creation the train_source is CTRP and in the test data
+creation the train source is CCLE. The creation of the training and test data can be
+time consuming for the larger datasets.
 
 
 == Running the Workflows
 
 === HPO Workflow
 
-. Edit `Supervisor/workflows/cp1/data/studies1.txt` and `Supervisor/workflows/cp1/data/studies2.txt`. 
-These two study files specify the cross correlation between studies where each study in `studies1.txt` 
-is cross correlated with each study in `studies2.txt` except where they are the same. Add or remove 
+. Edit `Supervisor/workflows/cp1/data/studies1.txt` and `Supervisor/workflows/cp1/data/studies2.txt`.
+These two study files specify the cross correlation between studies where each study in `studies1.txt`
+is cross correlated with each study in `studies2.txt` except where they are the same. Add or remove
 (or comment out) study names in these files to omit that cross-correlation from the HPO instances.
 For example, if study1 contains CTRP and study2 contains CCLE and GDSC, then the workflow
 will run two HPOs: one for the CTRP_CCLE and one for the CTRP_GDSC cross-correlations.
 
 . Create a set of _cfg_ and _test_ scripts for an experiment run by
 copying an existing set, i.e., `cfg-prm-1.sh`, `cfg-sys-1.sh`, and `test-1.sh`
-from the `test` directory. Be sure to update the lines in your `test-N.sh` that 
+from the `test` directory. Be sure to update the lines in your `test-N.sh` that
 export the `cfg-prm-N.sh`, and `cfg-sys-N.sh` scripts to point to your _cfg_ scripts.
 Namely,
 +
@@ -103,18 +103,18 @@ export CFG_PRM=$THIS/cfg-prm-N.sh
 See the comments in `cfg-prm-1.sh`, and `cfg-sys-1.sh` for additional
 information on the various configuration parameters and how to edit them.
 
-. Launch the run using your `test-N.sh` script, passing SITE, and optional 
-experiment id as arguments (e.g., `./test-10.sh <site> [expid]`) where 
+. Launch the run using your `test-N.sh` script, passing SITE, and optional
+experiment id as arguments (e.g., `./test-10.sh <site> [expid]`) where
 site can be one of local, cori, theta, summit etc.
 
 All the output from running the workflow will appear in a directory named with the
 experiment id, either your specified one or the auto-generated one (e.g. X001). Each Uno
-model run launched by the mlrMBO instances runs in own directory: 
-`exp_id/run/W_X_Y_Z` where _W_ is the id of the mlrMBO instance that launched the run, _X_ is the restart number 
+model run launched by the mlrMBO instances runs in own directory:
+`exp_id/run/W_X_Y_Z` where _W_ is the id of the mlrMBO instance that launched the run, _X_ is the restart number
 (almost always 1 here), _Y_ is the iteration of the mlrMBO instance, and _Z_ is the id of the hyper parameter set
 produced by mlrMBO instance _W_ and with which Uno was launched.
 
-A summary of each Uno run, organized by mlrMBO instance and iteration, will be 
+A summary of each Uno run, organized by mlrMBO instance and iteration, will be
 output in `exp_id/hpo_log/X_Y_hpo_runs.txt` where _X_ is the mlrMBO instance
 id, and _Y_ is the mlrMBO instance's iteration. Each row of this hpo log output
 contains info for a single Uno run and has the following format:
@@ -127,15 +127,15 @@ where the `|` character is the delimiter.
 
 * Configuration and launch scripts in `test/` (e.g. `cfg-prm-1.sh`, `test-1.sh`, etc.)
 * `swift/workflow.swift` - swift file that executes the workflow
-* `swift/workflow.sh` - launch script for the swift file. This script is 
+* `swift/workflow.sh` - launch script for the swift file. This script is
 configured and launched from the scripts in `test/`.
 
 
 === Further Training Workflow (AKA the UPF workflow)
 
-. Select N number of models from those produced by each HPO instance and 
+. Select N number of models from those produced by each HPO instance and
 create the input parameter file (i.e., the "upf" file). The hpo_log results
-from the HPO workflow can be used for this. The "Combine HPO logs files 
+from the HPO workflow can be used for this. The "Combine HPO logs files
 adding hpo_id and iteration" code in `scripts/plots.R` is an example of how those
 logs can be concatenated together while adding the hpo_id and iteration as
 column values. The python jupyter notebook `script/cp1_scripts.ipynb` contains
@@ -150,8 +150,8 @@ in the upf file contains the hyperparameters for an Uno run in JSON format.
 
 . Create a set of _cfg_ and _test_ scripts for an experiment run by
 copying an existing set, i.e., `cfg-prm-1.sh`, `cfg-sys-1.sh`, and `test-1.sh`
-from the `test_upf/` directory. Note this is *NOT* the `test/` directory. Be sure 
-to update the lines in your `test-N.sh` that 
+from the `test_upf/` directory. Note this is *NOT* the `test/` directory. Be sure
+to update the lines in your `test-N.sh` that
 export the `cfg-prm-N.sh`, and `cfg-sys-N.sh` scripts to point to your scripts.
 Namely,
 +
@@ -164,16 +164,16 @@ export CFG_PRM=$THIS/cfg-prm-N.sh
 See the comments in `cfg-prm-1.sh`, and `cfg-sys-1.sh` for additional
 information on the various configuration parameters and how to edit them.
 
-. Launch the run using your `test-N.sh` script, passing SITE, 
-and optional experiment id as arguments (e.g., `./test-10.sh <site> [expid]`) where 
+. Launch the run using your `test-N.sh` script, passing SITE,
+and optional experiment id as arguments (e.g., `./test-10.sh <site> [expid]`) where
 site can be one of local, cori, theta, summit etc.
 
 All the output from running the workflow will appear in a directory named with the
 experiment id, either your specified one or the auto-generated one (e.g., X001). Each Uno
-model run launched by the workflow runs in own directory: 
-`exp_id/run/X` where _X_ is the id of the run and corresponds to the index 
-of the line of input data that was used for that run, that is, `run/0` contains 
-the output for the run that ran with the 1st line from the upf input 
+model run launched by the workflow runs in own directory:
+`exp_id/run/X` where _X_ is the id of the run and corresponds to the index
+of the line of input data that was used for that run, that is, `run/0` contains
+the output for the run that ran with the 1st line from the upf input
 file, `run/1` for the second line and so on.
 
 In addition, `inputs.txt` and `results.txt` files are also created.
@@ -183,13 +183,13 @@ The first contains the parameters used for each run and the second final val los
 
 * Configuration and launch scripts in `test_upf/` (e.g., `cfg-prm-1.sh`, `test-1.sh`, etc.)
 * `swift/upf_workflow.swift` - swift file that executes the workflow
-* `swift/upf_workflow.sh` - launch script for the swift file. This script is 
+* `swift/upf_workflow.sh` - launch script for the swift file. This script is
 configured and launched from the scripts in `test_upf/`.
 
 
 === Inference
 
-. Create the inference parameter file. Each line of the inference parameter 
+. Create the inference parameter file. Each line of the inference parameter
 file contains the HPO parameters for a single inference run in csv format with
 the following columns
 
@@ -199,16 +199,16 @@ the following columns
 For example,
 `CTRP_GDSC_2000_1000_test.h5,/gpfs/alpine/med106/scratch/ncollier/experiments/full_training_2/run/0/,CTRP_GDSC_2000_1000`
 +
-The test data is part of the data generated as part of the data requirments (see above), 
-and found in the so-called CACHE_DIR directory as defined in the `cfg-prm-N.sh` files. The 
+The test data is part of the data generated as part of the data requirments (see above),
+and found in the so-called CACHE_DIR directory as defined in the `cfg-prm-N.sh` files. The
 "directory of the trained model" is a directory that contains a model trained in the further
- training workflow. The run label can be an informative label for the run.  The python jupyter 
+ training workflow. The run label can be an informative label for the run.  The python jupyter
  notebook `script/cp1_scripts.ipynb` has some sample code for creating this parameter file.
 
 . Create a set of _cfg_ and _test_ scripts for an experiment run by
 copying an existing set, i.e., `cfg-prm-1.sh`, `cfg-sys-1.sh`, and `test-1.sh`
-from the `test_infer/` directory. Note this is *NOT* the `test/` directory. 
-Be sure to update the lines in your `test-N.sh` that 
+from the `test_infer/` directory. Note this is *NOT* the `test/` directory.
+Be sure to update the lines in your `test-N.sh` that
 export the `cfg-prm-N.sh`, and `cfg-sys-N.sh` scripts to point to your _cfg_ scripts.
 Namely,
 +
@@ -226,28 +226,28 @@ information on the various configuration parameters and how to edit them.
 to create multiple copies of the input data to avoid IO contention. If
 this is unnecessary, then the `infer.sh` should not need to be changed.
 
-. Launch the run using your `test-N.sh` script, passing SITE, and optional experiment id 
-as arguments (e.g., `./test-10.sh <site> [expid]`) where 
+. Launch the run using your `test-N.sh` script, passing SITE, and optional experiment id
+as arguments (e.g., `./test-10.sh <site> [expid]`) where
 site can be one of local, cori, theta, summit etc.
 
 All the output from running the workflow will appear in a directory named with the
 experiment id, either your specified one or the auto-generated one. Each Uno
-model inference run launched by the workflow runs in its own directory: 
-`exp_id/run/X` where _X_ is the id of the run and corresponds to the index of the 
-line of input data that was used for that run. So, `run/0` contains 
-the output for the run that ran with the 1st line from the input 
-file, `run/1` for the second line and so on. Each inference run will 
+model inference run launched by the workflow runs in its own directory:
+`exp_id/run/X` where _X_ is the id of the run and corresponds to the index of the
+line of input data that was used for that run. So, `run/0` contains
+the output for the run that ran with the 1st line from the input
+file, `run/1` for the second line and so on. Each inference run will
 produce an `uno_pred.all.tsv` and an `uno_pred.tsv` file. The first contains
-the predictions for each feature and the second is an aggregate view 
+the predictions for each feature and the second is an aggregate view
 of the first. Additionally a `log.txt` file is created in the experiment directory
-that contains the name of the data input file, the model, the output directory, 
+that contains the name of the data input file, the model, the output directory,
 and number of predictions performed for each inference run.
 
 ==== Associated Files
 
 * Configuration and launch scripts in `test_infer/` (e.g. `cfg-prm-1.sh`, `test-1.sh`, etc.)
 * `swift/infer_workflow.swift` - swift file that executes the workflow
-* `swift/infer_workflow.sh` - launch script for the swift file. This script is 
+* `swift/infer_workflow.sh` - launch script for the swift file. This script is
 configured and launched from the scripts in `test_infer/`.
 * `sh/infer.sh` - script used to launch the Uno benchmark's `uno_infer.py` to perform the actual inference.
 

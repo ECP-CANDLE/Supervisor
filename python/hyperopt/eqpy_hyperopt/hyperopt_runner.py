@@ -1,18 +1,20 @@
 from __future__ import print_function
-import numpy as np
-import eqpy
 
-from hyperopt import base, hp
+import eqpy
 import hyperopt
+import numpy as np
+from hyperopt import base, hp
 
 # monkey patch hyperopt not to use bson. We don't
 # use any of the pymongo / bson parts of hyperopt and
 # they cause issues when running on Cori's compute node
 base.have_bson = False
 
+
 class Runner:
 
-    def __init__(self, algo, domain, max_evals, param_batch_size, trials, rstate):
+    def __init__(self, algo, domain, max_evals, param_batch_size, trials,
+                 rstate):
         self.algo = algo
         self.domain = domain
         self.max_evals = max_evals
@@ -27,13 +29,13 @@ class Runner:
             if n_to_enqueue + done > self.max_evals:
                 n_to_enqueue = self.max_evals - done
 
-            #print("to enqueue {}".format(n_to_enqueue))
+            # print("to enqueue {}".format(n_to_enqueue))
             new_ids = self.trials.new_trial_ids(n_to_enqueue)
-            #print("new_ids size: {}".format(len(new_ids)))
+            # print("new_ids size: {}".format(len(new_ids)))
             self.trials.refresh()
 
             new_trials = self.algo(new_ids, self.domain, self.trials,
-                            self.rstate.randint(2 ** 31 - 1))
+                                   self.rstate.randint(2**31 - 1))
             if len(new_trials):
                 self.trials.insert_trial_docs(new_trials)
                 self.trials.refresh()
@@ -45,15 +47,19 @@ class Runner:
         self.trials.refresh()
 
     def evaluate(self):
-        new_trials = [t for t in self.trials._dynamic_trials if t['state'] == base.JOB_STATE_NEW]
-        params = [t['misc']['vals'] for t in new_trials]
+        new_trials = [
+            t for t in self.trials._dynamic_trials
+            if t["state"] == base.JOB_STATE_NEW
+        ]
+        params = [t["misc"]["vals"] for t in new_trials]
         rvals = self.domain.fn(params)
         for i in range(len(new_trials)):
             t = new_trials[i]
-            t['result'] = rvals[i]
-            t['state'] = base.JOB_STATE_DONE
+            t["result"] = rvals[i]
+            t["state"] = base.JOB_STATE_DONE
 
         self.trials.refresh()
+
 
 def eqpy_func(params):
     retvals = []
@@ -64,10 +70,11 @@ def eqpy_func(params):
     # get result and format for hyperopt
     result = eqpy.IN_get()
     split_result = result.split(",")
-    return [{'loss': float(x), 'status' : base.STATUS_OK} for x in split_result]
+    return [{"loss": float(x), "status": base.STATUS_OK} for x in split_result]
+
 
 def run():
-    """run function for eqpy based run"""
+    """run function for eqpy based run."""
     eqpy.OUT_put("")
 
     # params should be formatted as a dictionary
@@ -76,13 +83,21 @@ def run():
 
     trials = base.Trials()
     rstate = None
-    if 'seed' in hp_dict:
-        rstate = np.random.RandomState(hp_dict['seed'])
+    if "seed" in hp_dict:
+        rstate = np.random.RandomState(hp_dict["seed"])
 
-    fmin(eqpy_func, hp_dict['space'], hp_dict['algo'], hp_dict['max_evals'],
-        hp_dict['param_batch_size'], trials, rstate)
+    fmin(
+        eqpy_func,
+        hp_dict["space"],
+        hp_dict["algo"],
+        hp_dict["max_evals"],
+        hp_dict["param_batch_size"],
+        trials,
+        rstate,
+    )
     eqpy.OUT_put("FINAL")
     eqpy.OUT_put(str(trials.argmin))
+
 
 def fmin(fn, space, algo, max_evals, param_batch_size, trials, rstate=None):
     """Minimize a function over a hyperparameter space.
@@ -128,7 +143,8 @@ def fmin(fn, space, algo, max_evals, param_batch_size, trials, rstate=None):
         a trials object, then that trials object will be affected by
         side-effect of this call.
 
-    rstate : numpy.RandomState, default numpy.random"""
+    rstate : numpy.RandomState, default numpy.random
+    """
 
     if rstate is None:
         rstate = np.random.RandomState()
@@ -136,6 +152,5 @@ def fmin(fn, space, algo, max_evals, param_batch_size, trials, rstate=None):
     # need a domain to pass to the algorithm to provide the space
     domain = base.Domain(fn, space, pass_expr_memo_ctrl=None)
 
-    runner = Runner(algo, domain, max_evals, param_batch_size,
-        trials, rstate)
+    runner = Runner(algo, domain, max_evals, param_batch_size, trials, rstate)
     runner.run()

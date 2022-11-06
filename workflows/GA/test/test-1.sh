@@ -60,4 +60,3 @@ SCRIPT=$( basename $0 .sh )
 #check_output "learning_rate" $OUTPUT $WORKFLOW $SCRIPT $JOBID
 
 echo "$SCRIPT: SUCCESS"
-

@@ -4,10 +4,11 @@
 # Extract the nodes from the JSON file with a single cell line
 #         report the node and cell line
 
-import argparse, json
+import argparse
+import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument('plan', type=str, help='Plan data file')
+parser.add_argument("plan", type=str, help="Plan data file")
 args = parser.parse_args()
 
 try:

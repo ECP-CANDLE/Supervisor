@@ -13,12 +13,16 @@
   string turbine_output = getenv("TURBINE_OUTPUT");
 
   string outdir;
-  string myenv = getenv("CANDLE_MODEL_TYPE");
-  if (myenv == "SINGULARITY") {
-    outdir = "%s/run/%s" % (turbine_output, run_id);
-  } else {
-    outdir = "%s/output/%s/run/%s" % (getenv("CANDLE_DATA_DIR"), getenv("EXPID"), run_id);
-  }
+
+  outdir = "%s/run/%s" % (turbine_output, run_id);
+
+  // Comment: this is not needed as turbine_output has already been adjusted
+  // string myenv = getenv("CANDLE_MODEL_TYPE");
+  // if (myenv == "SINGULARITY") {
+  //   outdir = "%s/run/%s" % (turbine_output, run_id);
+  // } else {
+  //   // outdir = "%s/output/%s/run/%s" % (getenv("CANDLE_DATA_DIR"), getenv("EXPID"), run_id);
+  // }
 
   printf("running model shell script in: %s", outdir);
 

@@ -93,7 +93,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -settings=$EMEWS_PROJECT_ROOT/data/settings.json               
+                -settings=$EMEWS_PROJECT_ROOT/data/settings.json
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE

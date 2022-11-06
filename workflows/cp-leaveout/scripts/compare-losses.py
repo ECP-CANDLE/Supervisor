@@ -1,16 +1,14 @@
-
 # COMPARE LOSSES PY
 
 # Input:  Provide two experiment directories
 # Output: Stream of NODE_ID LOSS1 LOSS2
 
-import argparse, pickle
+import argparse
+import pickle
 
-parser = argparse.ArgumentParser(description='Parse all log files')
-parser.add_argument('directory1',
-                    help='The 1st experiment directory (EXPID)')
-parser.add_argument('directory2',
-                    help='The 2nd experiment directory (EXPID)')
+parser = argparse.ArgumentParser(description="Parse all log files")
+parser.add_argument("directory1", help="The 1st experiment directory (EXPID)")
+parser.add_argument("directory2", help="The 2nd experiment directory (EXPID)")
 
 args = parser.parse_args()
 

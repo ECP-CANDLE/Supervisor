@@ -1,14 +1,13 @@
-
 # LIST RECORDS PY
 # List all the records in the DB and their metadata
 
 from record import Record
-from xcorr_db import xcorr_db, q
+from xcorr_db import q, xcorr_db
 
 DB = xcorr_db("xcorr.db")
 
 feature_id2name, feature_name2id = DB.read_feature_names()
-study_id2name,   study_name2id   = DB.read_study_names()
+study_id2name, study_name2id = DB.read_study_names()
 
 # Main list of records
 records = []
@@ -18,7 +17,8 @@ record_ids = []
 DB.execute("select rowid from records;")
 while True:
     row = DB.cursor.fetchone()
-    if row == None: break
+    if row == None:
+        break
     record_ids.append(row[0])
 
 # Read the record data
@@ -33,7 +33,8 @@ for record_id in record_ids:
     DB.execute("select * from features where record_id == %i;" % record_id)
     while True:
         row = DB.cursor.fetchone()
-        if row == None: break
+        if row == None:
+            break
         feature = feature_id2name[row[1]]
         record.features.append(feature)
 
@@ -41,7 +42,8 @@ for record_id in record_ids:
     DB.execute("select * from studies where record_id == %i;" % record_id)
     while True:
         row = DB.cursor.fetchone()
-        if row == None: break
+        if row == None:
+            break
         study = study_id2name[row[1]]
         record.studies.append(study)
 

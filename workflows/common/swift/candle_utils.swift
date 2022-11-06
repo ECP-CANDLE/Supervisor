@@ -9,7 +9,7 @@ puts ""
 puts "report_env() ..."
 puts ""
 global env
-# puts [ array names env ]     
+# puts [ array names env ]
 puts "TURBINE_HOME: $env(TURBINE_HOME)"
 puts ""
 set tokens [ split $env(PATH) ":" ]
