@@ -36,13 +36,14 @@ usage()
   echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
 }
 
-if (( ${#} != 7 ))
+if (( ${#} != 7 )) && (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
-if ! {
+if (( ${#} == 7 ))
+then
   get_site    $1 # Sets SITE
   get_expid   $2 # Sets EXPID
   get_cfg_sys $3
@@ -50,13 +51,20 @@ if ! {
   MODEL_NAME=$5
   CANDLE_MODEL_TYPE=$6
   CANDLE_IMAGE=$7
- }
-then
+
+ elif (( ${#} == 5 ))
+ then
+  get_site    $1 # Sets SITE
+  get_expid   $2 # Sets EXPID
+  get_cfg_sys $3
+  get_cfg_prm $4
+  MODEL_NAME=$5
+else
   usage
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow with" $CANDLE_MODEL_TYPE "and image" $CANDLE_IMAGE
+# echo "Running "$MODEL_NAME "workflow with" $CANDLE_MODEL_TYPE "and image" $CANDLE_IMAGE
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR   # :$BENCHMARKS_ROOT/common # This is now candle_lib
@@ -189,8 +197,6 @@ swift-t -O 0 -n $PROCS \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
         -e MODEL_NAME \
-        -e CANDLE_MODEL_TYPE \
-        -e CANDLE_IMAGE \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e SH_TIMEOUT \

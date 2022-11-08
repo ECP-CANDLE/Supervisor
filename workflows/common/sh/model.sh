@@ -87,7 +87,7 @@ then
 
   # No model_runner, need to write parameters.txt explicitly:
   #  get hyper_parameter_map to pass as 2nd argument
-  
+
   python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
   MODEL_CMD=( singularity exec --nv $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
               $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
@@ -101,7 +101,19 @@ then
   # RESULT=$( sed -n '/val_loss:/{s/val_loss: \(.*\)/\1/;p}' | tail -1 )
   # log "found result: $RESULT"
   # echo $RESULT > $INSTANCE_DIRECTORY/result.txt
-  echo $MODEL_CMD
+
+
+  # TODO: Add wait for the above and standardize getting results from container.
+  echo $MODEL_CMD &
+  PID=$!
+  # FIX: This doesn't work.
+  wait $PID
+
+
+  # get results of the format Loss: xxx last occurence of in the model.log file
+  RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+
 else # "BENCHMARKS"
 
   # The Python command line arguments:
