@@ -2,6 +2,8 @@
 # ENV MCS
 # Environment settings for ANL/MCS compute nodes
 
+# MCS CLUSTER IS GONE -- DELETE THIS ONCE JENKINS/GCE WORKS -- 2022-11-09
+
 export PY=/homes/jain/anaconda3/bin/python/
 export R=/home/wozniak/Public/sfw/x86_64/R-3.4.1/lib/R/
 # Modify to specify the location of SWIFT_T installation
