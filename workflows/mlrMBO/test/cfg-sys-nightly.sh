@@ -37,3 +37,10 @@ export SH_TIMEOUT=${SH_TIMEOUT:-}
 # Ignore errors: If 1, unknown errors will be reported to model.log
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=0
+
+# Resident task worker rank for mlrMBO algorithm
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} == "" ]]
+then
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi

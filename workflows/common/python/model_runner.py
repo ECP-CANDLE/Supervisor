@@ -22,10 +22,11 @@ print('MODEL RUNNER...')
 python_dir = os.getenv("MODEL_PYTHON_DIR")
 if python_dir:
     sys.path.append(python_dir)
-benchmarks_root = os.getenv("BENCHMARKS_ROOT")
-if benchmarks_root:
-    sys.path.append(benchmarks_root+'/common')
 
+# This is for candle_lib, which is not in Benchmarks any more
+# benchmarks_root = os.getenv("BENCHMARKS_ROOT")
+# if benchmarks_root:
+#     sys.path.append(benchmarks_root+'/common')
 
 # Report PYTHONPATH for debugging
 print("sys.path:")
