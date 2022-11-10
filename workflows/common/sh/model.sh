@@ -34,13 +34,15 @@ RUNID=$3
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
-# TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
-if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
-then
-  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/output/$EXPID/run/$RUNID
-else # "BENCHMARKS"
-  INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
-fi
+# # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
+# if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+# then
+#   INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/output/$EXPID/run/$RUNID
+# else # "BENCHMARKS"
+#   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+# fi
+
+INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -p $INSTANCE_DIRECTORY

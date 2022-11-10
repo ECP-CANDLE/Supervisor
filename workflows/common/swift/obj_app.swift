@@ -56,7 +56,7 @@
   {
     obj_result = get_results(result_file);
   }
-  // printf("result(%s): %s", run_id, obj_result);
+  printf("result(%s): %s", run_id, obj_result);
 }
 
 /**
