@@ -48,8 +48,8 @@ then
 fi
 
 export CANDLE_MODEL_TYPE="SINGULARITY"
-export CANDLE_IMAGE="/software/improve/images/GraphDRP:0.0.1-20221028"
-export INIT_PARAMS_FILE="/tmp/test_graphdrp_apartin/graphdrp_default_model.txt"
+export CANDLE_IMAGE="/software/improve/images/GraphDRP\:0.0.1-20221109.sif"
+export INIT_PARAMS_FILE="/homes/jain/IMPROVE/GraphDRP/graphdrp_default_model.txt"
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
