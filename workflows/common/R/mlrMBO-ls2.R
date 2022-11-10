@@ -68,16 +68,16 @@ main_function <- function(max.budget = 110,
                           max.iterations = 10,
                           design.size=10,
                           propose.points=10,
-                          restart.file="DISABLED", 
+                          restart.file="DISABLED",
                           learner1.name = "randomForest") {
 
   if (learner1.name == "km"){
     print("Using Kriging.")
-    surr.rf = makeLearner("regr.km", predict.type = "se") #covtype = "matern3_2", control = list(trace = FALSE)) 
+    surr.rf = makeLearner("regr.km", predict.type = "se") #covtype = "matern3_2", control = list(trace = FALSE))
 
-  #TODO: Avoid error: 
+  #TODO: Avoid error:
   # [mbo] 3: latent_dim=2; batch_size=35; learning_rate=0.0762; epochs=8 : y = 0.203 : 29.6 secs : infill_cb
-  # Error in chol.default(R) : 
+  # Error in chol.default(R) :
   #   the leading minor of order 29 is not positive definite
   # The issue is mentioned here: https://github.com/mlr-org/mlrMBO/issues/80
   # y = MyTrainingData$MyTarget
@@ -86,7 +86,7 @@ main_function <- function(max.budget = 110,
 
     ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                             impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1)
-    
+
     # y = MyTrainingData$MyTarget
     # Nuggets = 1e-8*var(y)
     # setHyperPars(learner = surr.rf, nugget=Nuggets)
@@ -98,15 +98,15 @@ main_function <- function(max.budget = 110,
   }
   else if (learner1.name == "randomForest"){
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                       fix.factors.prediction = TRUE,
-                      se.method = "bootstrap", 
+                      se.method = "bootstrap",
                       se.boot = 2, se.ntree = 10,
                       ntree=1000, mtry=8)
-    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points, 
+    ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                       impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1 )
     ctrl = setMBOControlTermination(ctrl, max.evals = propose.points)
-    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0), 
+    ctrl = setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI(se.threshold = 0.0),
                             opt.restarts = 1, opt.focussearch.points = 1000)
   }
   else{
@@ -117,7 +117,7 @@ main_function <- function(max.budget = 110,
 
   chkpntResults<-NULL
   # TODO: Make this an argument
-  restartFile<-restart.file 
+  restartFile<-restart.file
   if (file.exists(restart.file)) {
     print(paste("Loading restart:", restart.file))
 
@@ -167,28 +167,28 @@ main_function <- function(max.budget = 110,
 
   #iterative phase starts
   while (itr < max_itr){
-    
+
     min.index<-which(itr_res$y==min(itr_res$y))
-    
+
     par.set.t = par.set0
     pars = par.set.t$pars
     lens = getParamLengths(par.set.t)
     k = sum(lens)
     pids = getParamIds(par.set.t, repeated = TRUE, with.nr = TRUE)
-    
+
     snames = c("y", pids)
     reqDF = subset(itr_res, select = snames, drop =TRUE)
     bestDF <- reqDF[min.index,]
     print("reqDF")
     print(nrow(reqDF))
     print(summary(reqDF))
-    
+
     train.model <- randomForest(y ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
     index <- sort(abs(var.imp[,1]),
                   decreasing = TRUE,
                   index.return = TRUE)$ix
-    
+
     inputs <- rownames(var.imp)[index]
     scores <- abs(var.imp[index,1])
     norm.scores <- 100 * scores / sum(scores)
@@ -198,7 +198,7 @@ main_function <- function(max.budget = 110,
     rnames <- inputs[remove.index]
     print('removing:')
     print(rnames)
-    
+
     par.set1<-par.set0
     pnames<-names(par.set$pars)
     for (index in c(1:k)){
@@ -228,7 +228,7 @@ main_function <- function(max.budget = 110,
     temp<-rbind(design,reqDF[,-1])
     design <- head(temp, n = propose.points)
     yvals <- predict(train.model,design)
-    
+
     USE_MODEL <- FALSE
     if(USE_MODEL){
       design <- cbind(y=yvals, design)
@@ -240,12 +240,12 @@ main_function <- function(max.budget = 110,
     res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
     itr_res<-as.data.frame(res$opt.path)
     itr_res<-tail(itr_res, n = propose.points)
-   
+
     par.set0<-par.set1
     itr <- itr + 1
     all_res <- rbind(all_res, itr_res)
   }
-  
+
   return(all_res)
 
 }

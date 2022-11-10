@@ -20,23 +20,23 @@ fun = function(x) {
   if(x$model=="ae"){
     res<-res*1000
   }
-  
+
   if(x$activation == "relu"){
     res<-res*1000
   }
-  
+
   if(x$optimizer == "sgd"){
     res<-res*1000
   }
 
   if(x$optimizer == "sgd"){
     res<-res*1000
-  }  
-  
+  }
+
   if(as.numeric(x$reduce_lr)){
     res<-res*1000
   }
-  
+
   return(res)
 }
 
@@ -49,7 +49,7 @@ par.set = makeParamSet(
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
   # large batch_size only makes sense when warmup_lr is on
-  # makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024), 
+  # makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024),
   makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
   # use consecutive 978-neuron layers to facilitate residual connections
   makeDiscreteParam("dense", values=c("1500 500",
@@ -79,13 +79,13 @@ obj.fun = makeSingleObjectiveFunction(
 max.budget <- 1500
 propose.points<-5
 
-ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points, 
+ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                       trafo.y.fun = makeMBOTrafoFunction('log', log),
                       impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
 ctrl = setMBOControlTermination(ctrl, max.evals = max.budget)
-ctrl = setMBOControlInfill(ctrl, 
+ctrl = setMBOControlInfill(ctrl,
                            crit = makeMBOInfillCritCB(),
-                           opt.restarts = 1, 
+                           opt.restarts = 1,
                            opt.focussearch.points = 1000)
 
 
@@ -94,4 +94,3 @@ design = head(design, n = propose.points)
 
 configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
 res = mbo(obj.fun, design = design, learner = NULL, control = ctrl, show.info = TRUE)
-

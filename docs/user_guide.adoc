@@ -203,7 +203,7 @@ $ export WALLTIME=00:10:00
 
 $ ./test/upf-1.sh theta
 
-// or 
+// or
 
 $ QUEUE=debug-cache-quad PROJECT=myproject PROCS=3 WALLTIME=00:10:00 ./test/upf-1.sh theta
 ----
@@ -252,7 +252,7 @@ result: 2.10822688904
 <1> `output.txt` contains stdout and stderr of this experiment. This is helpful to debug errors.
 <2> `run` directory contains the output files. You will see two directories that are corresponding the IDs configured in upf-1.txt
 <3> a copy of configuration files are available so that you can trace what were passed to this experiment.
-<4> stdout of test0. After 10 epoches, validation loss was 2.1082. 
+<4> stdout of test0. After 10 epoches, validation loss was 2.1082.
 
 
 == Running mlrMBO based Hyperparameters Optimization (HPO) on Theta
@@ -315,4 +315,3 @@ You can specify the HPO search strategy. As you can see in `test/cfg-prm-1.sh`, 
 * `MAX_ITERATIONS` is a number of iterations.
 * `PROPOSE_POINTS` is a number of parameter sets that CANDLE will evaluate in each iteration. So, if `MAX_ITERATION=3` and `PROPOSE_POINTS=5`, CANDLE will be ended up evaluating 25 params (10 + 3 x 5).
 * `MAX_BUDGET` should be greater than total evaluations. In this example, 45.
-

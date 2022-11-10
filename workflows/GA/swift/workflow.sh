@@ -170,4 +170,3 @@ fi
 
 # Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
 echo $TURBINE_OUTPUT > turbine-directory.txt
-      

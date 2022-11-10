@@ -1,21 +1,23 @@
-
 # DB HPO INIT PY
 # Initialize the SQLite DB for HPO
 # See db-hpo-init.sql for the table schema
 
-import os, sys
+import os
+import sys
+
 import yaml
+from xcorr_db import q, xcorr_db
 
-from xcorr_db import xcorr_db, q
+DB = xcorr_db("xcorr.db", log=False)
 
-DB = xcorr_db('xcorr.db', log=False)
 
 def create_tables(db_hpo_init_sql):
-    """ Set up the tables defined in the SQL file """
+    """Set up the tables defined in the SQL file."""
     with open(db_hpo_init_sql) as fp:
         sqlcode = fp.read()
     DB.executescript(sqlcode)
     DB.commit()
+
 
 # def create_indices():
 #    """ Create indices after data insertion for speed """
@@ -31,6 +33,7 @@ try:
     success = True
 except Exception as e:
     import traceback
+
     print(traceback.format_exc())
 
 if not success:

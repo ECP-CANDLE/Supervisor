@@ -1,20 +1,21 @@
-
 # AVG STAGE PY
 
-import argparse, os, pickle, statistics
+import argparse
+import os
+import pickle
+import statistics
 
 from utils import fail
 
 STAGE_ANY = 0
 
 parser = argparse.ArgumentParser(description="Finds loss increases.")
-parser.add_argument("directory",
-                    help="The experiment directory (EXPID)")
-parser.add_argument("--filename", "-f",
+parser.add_argument("directory", help="The experiment directory (EXPID)")
+parser.add_argument("--filename",
+                    "-f",
                     default="node-info",
                     help="Change the node pkl file name")
 args = parser.parse_args()
-
 
 node_pkl = args.directory + "/" + args.filename + ".pkl"
 
@@ -31,8 +32,8 @@ print("total nodes: %i" % len(data))
 total = 0
 # stages = { 1:[], 2:[], 3:[], 4:[], 5:[] }
 # epochs = { 1:[], 2:[], 3:[], 4:[], 5:[] }
-times  =  { 1:[], 2:[], 3:[], 4:[], 5:[] }
-vlosses = { 1:[], 2:[], 3:[], 4:[], 5:[] }
+times = {1: [], 2: [], 3: [], 4: [], 5: []}
+vlosses = {1: [], 2: [], 3: [], 4: [], 5: []}
 
 for node_id in data.keys():
     node = data[node_id]
@@ -40,12 +41,11 @@ for node_id in data.keys():
         continue
     # stages[node.stage].append(node.time)
     # epochs[node.stage].append(node.epochs_actual)
-    times[node.stage].append(node.get_segments()/node.epochs_actual)
+    times[node.stage].append(node.get_segments() / node.epochs_actual)
     vlosses[node.stage].append(node.val_loss)
     if node.stage == 3:
-        print("%s %0.2f %i" % (node.id,
-                                     node.get_segments(),
-                                     node.epochs_actual))
+        print("%s %0.2f %i" %
+              (node.id, node.get_segments(), node.epochs_actual))
 
 with open(args.directory + "/times.data", "w") as fp:
     for stage in times.keys():

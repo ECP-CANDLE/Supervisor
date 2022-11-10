@@ -34,6 +34,14 @@ RUNID=$3
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
+# # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
+# if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+# then
+#   INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/output/$EXPID/run/$RUNID
+# else # "BENCHMARKS"
+#   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+# fi
+
 INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
 
 # All stdout/stderr after this point goes into model.log !
@@ -57,6 +65,7 @@ log()
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
+# log "CANDLE_MODEL_TYPE: $CANDLE_MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -74,16 +83,31 @@ echo
 log "USING PYTHON:" $( which python )
 echo
 
-# The Python command line arguments:
-PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
-         "$PARAMS"
-         "$INSTANCE_DIRECTORY"
-         "$FRAMEWORK"
-         "$RUNID"
-         "$BENCHMARK_TIMEOUT" )
+# Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
+if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+then
 
-# The desired model command:
-MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
+  # No model_runner, need to write parameters.txt explicitly:
+  #  get hyper_parameter_map to pass as 2nd argument
+
+  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
+  # TODO: May need to bind a directory
+  MODEL_CMD=( singularity exec --nv  $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+              $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
+else # "BENCHMARKS"
+
+  # The Python command line arguments:
+  PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
+           "$PARAMS"
+           "$INSTANCE_DIRECTORY"
+           "$FRAMEWORK"
+           "$RUNID"
+           "$BENCHMARK_TIMEOUT" )
+
+  MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
+  # model_runner/runner_utils writes result.txt
+fi
+
 log "MODEL_CMD: ${MODEL_CMD[@]}"
 
 # Run Python!
@@ -114,6 +138,16 @@ else
 fi
 
 log "END: SUCCESS"
+
+  echo $MODEL_CMD &
+  # grep for Singularity process and wai
+  PID=$(ps ux | awk '/[S]ingularity/{print $2}')
+  wait $PID
+
+  # get results of the format Loss: xxx last occurence of in the model.log file
+  RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+
 exit 0 # Success
 
 # Local Variables:

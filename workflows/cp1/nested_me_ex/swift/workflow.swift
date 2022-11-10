@@ -54,7 +54,7 @@ int CACHE_RANK_IDX = 1;
     EQPy_run(me2_location) =>
     EQPy_put(me2_location, me2_rank) =>
     EQPy_put(me2_location, params) =>
-    run_me2(me2_location, iter, param_id, me2_rank) => 
+    run_me2(me2_location, iter, param_id, me2_rank) =>
     // get fake results from ME2 run
     result = get_result();
 }
@@ -91,7 +91,7 @@ int CACHE_RANK_IDX = 1;
       foreach p, j in param_array
       {
           // TODO update run_model with code to actually
-          // run the model with the parameters 
+          // run the model with the parameters
           // produced from the active learning.
           results[j] = run_model(p, i, j);
       }
@@ -105,7 +105,7 @@ int CACHE_RANK_IDX = 1;
 (void o) init_tasks_cache() {
   rank = r_ranks[CACHE_RANK_IDX];
   location loc = locationFromRank(string2int(rank));
-  EQPy_init_package(loc, "task_cache") => 
+  EQPy_init_package(loc, "task_cache") =>
   EQPy_run(loc) =>
   EQPy_put(loc, join(r_ranks, ",")) =>
   o = propagate();
@@ -122,7 +122,7 @@ int CACHE_RANK_IDX = 1;
   foreach i in [2 : size(r_ranks) - 1] {
     init_me2_rank(r_ranks[i]);
     waiter[i] = r_ranks[i];
-  } 
+  }
 }
 
 (void o) start() {
@@ -171,7 +171,7 @@ int CACHE_RANK_IDX = 1;
       string param_array[] = split(params, ";");
       string results[];
       // printf("%i", size(param_array));
-      // Lauch an me2 run for each set of parameters produced by 
+      // Lauch an me2 run for each set of parameters produced by
       // me1
       foreach p, j in param_array
       {

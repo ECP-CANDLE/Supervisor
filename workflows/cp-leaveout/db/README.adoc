@@ -35,4 +35,3 @@ Reset (delete) DB nodes, forcing them to be re-run
 ----
 $ db/reset-node.sh experiments/X085/restarts-1/cplo.db 1.2.3.2
 ----
-

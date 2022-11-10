@@ -17,7 +17,7 @@ export PPN=${PPN:-1}
 # For Theta:
 # export QUEUE=${QUEUE:-debug-flat-quad}
 # export QUEUE=R.candle
-export QUEUE=default 
+export QUEUE=default
 
 export WALLTIME=${WALLTIME:-01:59}
 

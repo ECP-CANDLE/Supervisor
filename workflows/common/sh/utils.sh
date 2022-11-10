@@ -126,6 +126,7 @@ get_site()
   export SITE=$1
 }
 
+
 check_experiment() {
   if [[ -d $TURBINE_OUTPUT ]]; then
     while true; do
@@ -158,9 +159,17 @@ get_expid()
     return 1
   fi
 
-  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
-
   export EXPID=$1
+  export CANDLE_MODEL_TYPE=$2
+
+  export EXPERIMENTS=""
+
+  if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+  then
+    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/output/experiments}
+  else # "BENCHMARKS"
+    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  fi
 
   local i=0 EXPS E TO
 

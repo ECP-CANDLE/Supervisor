@@ -10,8 +10,8 @@ export PROCS=${PROCS:-12}
 # MPI processes per node.  This should not exceed PROCS.
 export PPN=${PPN:-1}
 
-# Benchmark run timeout: benchmark run will timeouT                                                                                             
-# after the specified number of seconds. -1 is no timeout.  
+# Benchmark run timeout: benchmark run will timeouT
+# after the specified number of seconds. -1 is no timeout.
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:--1}
 
 # Uncomment below to use custom python script to run
@@ -35,9 +35,9 @@ export WALLTIME=${WALLTIME:-00:10:00}
 # queue
 export QUEUE=${QUEUE:-batch}
 
-# += is necessary here as the job dependency args are 
+# += is necessary here as the job dependency args are
 # set via TURBINE_DIRECTIVE
-TURBINE_DIRECTIVE="\n#BSUB -q $QUEUE\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n" 
+TURBINE_DIRECTIVE="\n#BSUB -q $QUEUE\n#BSUB -alloc_flags \"NVME maximizegpfs\"\n"
 export TURBINE_DIRECTIVE+=${TURBINE_DIRECTIVE_ARGS:-}
 
 TURBINE_LAUNCH_OPTIONS="-a1 -c42 -g1"
@@ -58,4 +58,3 @@ echo "   IGNORE_ERRORS: $IGNORE_ERRORS"
 
 # export MAIL_ENABLED=1
 # export MAIL_ADDRESS=wozniak@mcs.anl.gov
-

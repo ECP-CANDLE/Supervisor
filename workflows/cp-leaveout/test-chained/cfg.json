@@ -1,30 +1,30 @@
 {
-    "site" : "summit",
-    "plan" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs/plangen_cell1593-p4_drug1779-p1.json",
-    "submit_script" : "./test-1.sh",
-    "upf_directory" : "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs",
-    "job_chain_arg" : "#BSUB -w done(<parent_job_id>)",
-    "stages" : "-1",
-    "first_stage" : 1,
-    "first_stage_parent_directory" : "",
-  
-    "stage_cfg_script" : "./cfg-stage-sys.sh",
+  "site": "summit",
+  "plan": "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs/plangen_cell1593-p4_drug1779-p1.json",
+  "submit_script": "./test-1.sh",
+  "upf_directory": "/gpfs/alpine/med106/scratch/ncollier/job-chain/inputs",
+  "job_chain_arg": "#BSUB -w done(<parent_job_id>)",
+  "stages": "-1",
+  "first_stage": 1,
+  "first_stage_parent_directory": "",
 
-    "stage_cfgs" : [
-        { 
-            "stage" : 1,
-            "WALLTIME" : "02:00:00",
-            "PROCS" : 6
-        }, 
+  "stage_cfg_script": "./cfg-stage-sys.sh",
 
-        { 
-            "stage" : 2,
-            "WALLTIME" : "01:00:00"
-        },
+  "stage_cfgs": [
+    {
+      "stage": 1,
+      "WALLTIME": "02:00:00",
+      "PROCS": 6
+    },
 
-        {
-            "stage" : 3,
-            "WALLTIME" : "01:00:00"
-        }
-    ]
+    {
+      "stage": 2,
+      "WALLTIME": "01:00:00"
+    },
+
+    {
+      "stage": 3,
+      "WALLTIME": "01:00:00"
+    }
+  ]
 }

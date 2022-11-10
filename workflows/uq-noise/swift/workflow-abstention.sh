@@ -152,7 +152,7 @@ cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow-noise.swift $TURBIN
 
 if [[ ${SITE} == "summit" ]]
 then
-  export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7" 
+  export TURBINE_LAUNCH_OPTIONS="-r6 -a1 -g1 -c7"
 fi
 TURBINE_RESIDENT_WORK_WORKERS=1
 
@@ -193,4 +193,3 @@ then
 fi
 
 # echo "EXIT CODE: 0" | tee -a $STDOUT
-

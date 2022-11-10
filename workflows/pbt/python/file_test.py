@@ -1,22 +1,25 @@
-import time, random, sys
-from mpi4py import MPI
-from pbt_utils import PBTMetaDataStore, PBTClient, Timer
+import random
+import sys
+import time
 
 import keras
 from keras import backend as K
+from mpi4py import MPI
+from pbt_utils import PBTClient, PBTMetaDataStore, Timer
 
 GET = 0
 PUT = 1
 
+
 def r2(y_true, y_pred):
-    SS_res =  K.sum(K.square(y_true - y_pred))
+    SS_res = K.sum(K.square(y_true - y_pred))
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
-    return (1 - SS_res/(SS_tot + K.epsilon()))
+    return 1 - SS_res / (SS_tot + K.epsilon())
 
 
 def run(comm, worker_comm, model_file):
     client = PBTClient(comm, 0)
-    model = keras.models.load_model(model_file, custom_objects={'r2' : r2})
+    model = keras.models.load_model(model_file, custom_objects={"r2": r2})
     timer = Timer("./timings_{}.csv".format(client.rank))
 
     timer.start()
@@ -48,6 +51,7 @@ def run(comm, worker_comm, model_file):
     timer.close()
     client.done()
 
+
 def main(model_file):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -60,5 +64,6 @@ def main(model_file):
     else:
         run(comm, worker_comm, model_file)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv[1])

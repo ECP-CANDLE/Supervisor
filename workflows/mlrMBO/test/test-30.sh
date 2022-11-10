@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-echo "Usage test-1.sh BECHMARK_NAME SITE RUN_DIR(optional, -a=automatic)"	
+echo "Usage test-1.sh BECHMARK_NAME SITE RUN_DIR(optional, -a=automatic)"
 
 RUN_DIR=""
 
@@ -14,7 +14,7 @@ then
 	echo "Automatically assigning run directory in ../experiments folder"
 	RUN_DIR="-a"
 else
-	echo "Usage test SITE RUN_DIR(optional)"	
+	echo "Usage test SITE RUN_DIR(optional)"
 	exit 1
 fi
 

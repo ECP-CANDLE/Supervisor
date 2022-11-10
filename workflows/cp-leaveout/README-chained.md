@@ -1,41 +1,40 @@
-# Challenge Problem: Leave Out - Job Chained Workflow #
+# Challenge Problem: Leave Out - Job Chained Workflow
 
 This workflow runs the CP Leave Out workflow using job chaining. Each stage
 of the workflow will be submitted as a separate job where subsequent stages are
 only run when the previous job on which they depend has successfully completed.
-For example, if the workflow configuration consists of an initial 4 Uno model runs, and a 
-subsequent 16 model runs where each of those model runs require the trained weights 
-of one of the initial 4 as input, then the first 4 will be submitted as a job, and 
-the second 16 as a job that will only begin running when the first has successfully 
+For example, if the workflow configuration consists of an initial 4 Uno model runs, and a
+subsequent 16 model runs where each of those model runs require the trained weights
+of one of the initial 4 as input, then the first 4 will be submitted as a job, and
+the second 16 as a job that will only begin running when the first has successfully
 completed.
 
 ## Requirements
 
-* Check out Benchmarks branch loocv into a compute-node writeable directory,
-    e.g., /gpfs/alpine/med106/scratch/$USER
-  * Edit uno_baseline_keras2.py to replace uno_default_model.txt  with uno_auc_model.txt
-  * Set `BENCHMARKS_ROOT` in your submission script (see below),
-e.g., test-1.sh, to this compute node writable Benchmarks directory.
-* The following data files are required:
-  * A plan json file (e.g., `plangen_cell1593-p4_drug1779-p1.json`)
-  * A dataframe file (e.g., `top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather`), a feather or parquet
-  file will be faster.
+- Check out Benchmarks branch loocv into a compute-node writeable directory,
+  e.g., /gpfs/alpine/med106/scratch/$USER
+  - Edit uno_baseline_keras2.py to replace uno_default_model.txt with uno_auc_model.txt
+  - Set `BENCHMARKS_ROOT` in your submission script (see below),
+    e.g., test-1.sh, to this compute node writable Benchmarks directory.
+- The following data files are required:
+  - A plan json file (e.g., `plangen_cell1593-p4_drug1779-p1.json`)
+  - A dataframe file (e.g., `top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather`), a feather or parquet
+    file will be faster.
 
+## Running the Workflow
 
-## Running the Workflow ##
-
-Sample files for configuring and running the workflow are in the `test-chained` directory. 
+Sample files for configuring and running the workflow are in the `test-chained` directory.
 The workflow itself is launched using the python script `py/run_chained.py`. Essentially,
 `run_chained.py` does the following:
 
 1. Reads a configuration file specifying what data files to use, how many stages to run,
-and how to configure each of those stages (e.g. PROCS, WALLTIME, etc.),
+   and how to configure each of those stages (e.g. PROCS, WALLTIME, etc.),
 2. Generates a UPF file for each stage where each UPF file contains the node ids to run for that stage,
-3. Runs each stage as a separate UPF-style workflow job, managing the job and parent model weight location dependencies appropriately. 
+3. Runs each stage as a separate UPF-style workflow job, managing the job and parent model weight location dependencies appropriately.
 
 Each individual stage job submission launched by `run_chained.py` follows the pattern of the other Supervisor workflows where
-a *test* submission script is executed which in turn sources *sys* and *prm* configurations, and then
-calls another script (e.g., `swift/cpl-upf-workflow.sh`) that performs further configuration and executes the swift script 
+a _test_ submission script is executed which in turn sources _sys_ and _prm_ configurations, and then
+calls another script (e.g., `swift/cpl-upf-workflow.sh`) that performs further configuration and executes the swift script
 (e.g., `swift/cpl-upf-workflow.swift`).
 
 `run_chained.py` performs this individual job submission for each stage by:
@@ -53,17 +52,17 @@ usage: run_chained.py [-h] --config CONFIG [--stages STAGES] [--dry_run]
                       [--first_stage_parent_directory FIRST_STAGE_PARENT_DIRECTORY]
 ```
 
-* --config - the path of the workflow configuration file
-* --stages - the number of stages to run. This will override the value specified in the configuration file
-* --dry_run - executes the workflow, displaying the configuration for each stage, but does **not** submit any jobs
-* --first_stage - the stage at which to start the workflow. The stage count starts with *1* and a `first_stage` of *1* corresponds to the initial parentless stage. This will override the value specified in the configuration file
-* --first_stage_parent_directory - the file system location of the first stage's parent stage, when `first_stage` is greater than 1. This will override the value specified in the configuration file
+- --config - the path of the workflow configuration file
+- --stages - the number of stages to run. This will override the value specified in the configuration file
+- --dry_run - executes the workflow, displaying the configuration for each stage, but does **not** submit any jobs
+- --first*stage - the stage at which to start the workflow. The stage count starts with \_1* and a `first_stage` of _1_ corresponds to the initial parentless stage. This will override the value specified in the configuration file
+- --first_stage_parent_directory - the file system location of the first stage's parent stage, when `first_stage` is greater than 1. This will override the value specified in the configuration file
 
 Of these only `--config` is required.
 
 The `first_stage` argument can be used to continue a previously run job chaining workflow. For
 example, if the previous workflow ran stages 1 and 2. Then a `first_stage` argument of 3 and
-a `first_stage_parent_directory` argument that points to the experiment directory of the previously run stage 2 will continue the previous workflow starting at stage 3. 
+a `first_stage_parent_directory` argument that points to the experiment directory of the previously run stage 2 will continue the previous workflow starting at stage 3.
 
 `run_chained.py` should be run from within the test-chained directory.
 
@@ -71,24 +70,23 @@ a `first_stage_parent_directory` argument that points to the experiment director
 
 The configuration file has the following json format (see `test-chained/cfg.json` for an example):
 
-* site: the name of the hpc site (e.g. "summit")
-* plan: the path to the challenge problem leave one out plan file
-* submit_script: the script used for the individual stage job submission (e.g. test-chained/test-1.sh)
-* upf_directory: the directory where the upf files are written out to
-* stages: the number of stages to run. -1 = run all the stages
-* first_stage: the stage at which to start the workflow. A value of 1 means the initial parentless stage.
-* first_stage_parent_directory: the file system location of the first stage's parent stage, when `first_stage` is greater than 1. 
-* stage_cfg_script: the staget configuration script (e.g. `test-chained/cfg-stage-sys.sh`) sourced by the 
-submit script to set the configuration (WALLTIME etc.) for each individual stage run. 
-Environment variables specified in the "stage_cfgs" (see below) will override those in this file.
-* stage_cfgs: a list of optional stage configurations, where each configuration is a json map. By default, if no
-stage configuration is defined for a particular stage or PROCS and PPN are not defined in that 
-stage configuration, then PROCS will be set to the number of plan nodes to run (i.e., the length of the UPF file) + 1 and PPN will be set to 1. In this way, the default is to run all the Uno model runs 
-concurrently. For the other environment variables in a stage configuration, the defaults in the
-stage_cfg_script will be used. All the key value pairs in a stage configuration except for *stage* are preserved as environment variables when the submit_script is called and will override those (e.g., WALLTIME, etc.) in the stage_cfg_script. A stage configuration map can have the following entries. 
-  * stage: the stage number
-  * X: where X is an environment variable from the stage_cfg_script, e.g. WALLTIME, PROCS, PPN, etc.
-  
+- site: the name of the hpc site (e.g. "summit")
+- plan: the path to the challenge problem leave one out plan file
+- submit_script: the script used for the individual stage job submission (e.g. test-chained/test-1.sh)
+- upf_directory: the directory where the upf files are written out to
+- stages: the number of stages to run. -1 = run all the stages
+- first_stage: the stage at which to start the workflow. A value of 1 means the initial parentless stage.
+- first_stage_parent_directory: the file system location of the first stage's parent stage, when `first_stage` is greater than 1.
+- stage_cfg_script: the staget configuration script (e.g. `test-chained/cfg-stage-sys.sh`) sourced by the
+  submit script to set the configuration (WALLTIME etc.) for each individual stage run.
+  Environment variables specified in the "stage_cfgs" (see below) will override those in this file.
+- stage*cfgs: a list of optional stage configurations, where each configuration is a json map. By default, if no
+  stage configuration is defined for a particular stage or PROCS and PPN are not defined in that
+  stage configuration, then PROCS will be set to the number of plan nodes to run (i.e., the length of the UPF file) + 1 and PPN will be set to 1. In this way, the default is to run all the Uno model runs
+  concurrently. For the other environment variables in a stage configuration, the defaults in the
+  stage_cfg_script will be used. All the key value pairs in a stage configuration except for \_stage* are preserved as environment variables when the submit_script is called and will override those (e.g., WALLTIME, etc.) in the stage_cfg_script. A stage configuration map can have the following entries.
+  - stage: the stage number
+  - X: where X is an environment variable from the stage_cfg_script, e.g. WALLTIME, PROCS, PPN, etc.
 
 ### An Example Run
 
@@ -114,9 +112,9 @@ Resovled Stage Configuration:
    PPN: 1
    WALLTIME: 01:00:00
    TURBINE_DIRECTIVE: \n#BSUB -alloc_flags "NVME maximizegpfs"\n## JOB 0
-   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1 
+   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1
    BENCHMARK_TIMEOUT: -1
-   SH_TIMEOUT: 
+   SH_TIMEOUT:
    IGNORE_ERRORS: 0
 CPL-UPF-WORKFLOW.SH: Running model: uno for EXPID: X134
 sourcing /autofs/nccs-svm1_proj/med106/ncollier/repos/Supervisor/workflows/common/sh/env-summit.sh
@@ -157,9 +155,9 @@ Resovled Stage Configuration:
    PPN: 1
    WALLTIME: 00:45:00
    TURBINE_DIRECTIVE: \n#BSUB -alloc_flags "NVME maximizegpfs"\n#BSUB -w done(704496)
-   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1 
+   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1
    BENCHMARK_TIMEOUT: -1
-   SH_TIMEOUT: 
+   SH_TIMEOUT:
    IGNORE_ERRORS: 0
 CPL-UPF-WORKFLOW.SH: Running model: uno for EXPID: X135
 sourcing /autofs/nccs-svm1_proj/med106/ncollier/repos/Supervisor/workflows/common/sh/env-summit.sh
@@ -215,9 +213,9 @@ Resovled Stage Configuration:
    PPN: 1
    WALLTIME: 01:00:00
    TURBINE_DIRECTIVE: \n#BSUB -alloc_flags "NVME maximizegpfs"\n## JOB 0
-   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1 
+   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1
    BENCHMARK_TIMEOUT: -1
-   SH_TIMEOUT: 
+   SH_TIMEOUT:
    IGNORE_ERRORS: 0
 
 
@@ -228,8 +226,8 @@ Resovled Stage Configuration:
    PPN: 1
    WALLTIME: 00:45:00
    TURBINE_DIRECTIVE: \n#BSUB -alloc_flags "NVME maximizegpfs"\n#BSUB -w done(<parent_job_id>)
-   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1 
+   TURBINE_LAUNCH_OPTIONS: -a1 -c42 -g1
    BENCHMARK_TIMEOUT: -1
-   SH_TIMEOUT: 
+   SH_TIMEOUT:
    IGNORE_ERRORS: 0
 ```
