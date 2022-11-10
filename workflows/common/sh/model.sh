@@ -91,6 +91,7 @@ then
   #  get hyper_parameter_map to pass as 2nd argument
 
   python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
+  # TODO: May need to bind a directory
   MODEL_CMD=( singularity exec --nv  $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
               $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
 else # "BENCHMARKS"
@@ -146,8 +147,6 @@ log "END: SUCCESS"
   # get results of the format Loss: xxx last occurence of in the model.log file
   RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
-
-
 
 exit 0 # Success
 
