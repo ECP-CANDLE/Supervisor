@@ -46,7 +46,6 @@ CANDLE_MODEL_TYPE="BENCHMARKS"
 
 if (( ${#} == 7 ))
 then
-  echo "HERE", $5
   CANDLE_MODEL_TYPE=$6
   CANDLE_IMAGE=$7
  elif (( ${#} == 5 ))
