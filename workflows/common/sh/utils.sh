@@ -158,7 +158,7 @@ get_expid()
     echo "get_expid(): could not find EXPID argument!"
     return 1
   fi
-  
+
   export EXPID=$1
   export CANDLE_MODEL_TYPE=$2
 
