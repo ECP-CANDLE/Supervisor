@@ -7,6 +7,9 @@ SWIFT=$SFW/swift-t/mpich/2022-11-09-Jenkins
 
 PATH=$SWIFT/stc/bin:$PATH
 
+echo $SWIFT
+echo $PATH
+
 EQR=not-installed
 
 # For test output processing:
@@ -17,5 +20,6 @@ LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}
 SWIFT_IMPL="app"
 
 # Cf. utils.sh
+log_path PATH
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
