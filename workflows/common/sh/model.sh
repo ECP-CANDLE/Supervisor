@@ -92,7 +92,7 @@ then
 
   python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
   # TODO: May need to bind a directory
-  MODEL_CMD=( singularity exec --nv  $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+  MODEL_CMD=( singularity exec --bind $CANDLE_DATA_DIR --nv  $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
               $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
 else # "BENCHMARKS"
 
