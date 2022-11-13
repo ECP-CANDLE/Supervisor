@@ -29,10 +29,10 @@ then
 fi
 
 if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3
-  UPF=$4
+  get_site    $1  # Sets SITE
+  get_expid   $2  # Sets EXPID, TURBINE_OUTPUT
+  get_cfg_sys $3  # Sets CFG_SYS
+  UPF=$4          # The JSON hyperparameter file
  }
 then
   usage
