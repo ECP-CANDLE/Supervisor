@@ -13,6 +13,9 @@ EQR=not-installed
 export LOCAL=1
 export CRAY=0
 
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}
+SWIFT_IMPL="app"
+
 # Cf. utils.sh
 log_path LD_LIBRARY_PATH
 log_path PYTHONPATH
