@@ -2,7 +2,7 @@
 # ENV GCE
 # Environment settings for ANL/GCE compute nodes
 
-SFW=/nfs/gce/projects/Swift-T/sfw/x86_64
+SFW=/nfs/gce/projects/Swift-T/sfw/x86_64/U20
 SWIFT=$SFW/swift-t/mpich/2022-11-09-Jenkins
 
 PATH=$SWIFT/stc/bin:$PATH
