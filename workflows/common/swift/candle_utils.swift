@@ -17,10 +17,13 @@ foreach token $tokens {
   puts "PATH: $token"
 }
 puts ""
-set tokens [ split $env(LD_LIBRARY_PATH) ":" ]
-foreach token $tokens {
-  puts "LLP: $token"
+if [ info exists env(LD_LIBRARY_PATH) ] {
+  set tokens [ split $env(LD_LIBRARY_PATH) ":" ]
+  foreach token $tokens {
+    puts "LLP: $token"
+  }
 }
+puts ""
 if [ info exists env(PYTHONHOME) ] {
   puts ""
   puts "PYTHONHOME: $env(PYTHONHOME)"
