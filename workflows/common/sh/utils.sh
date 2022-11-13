@@ -65,7 +65,9 @@ log_path()
 # Provide the name of the variable (no dollar sign)
 {
   echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl
+  eval echo \$$1 | tr : '\n' | nl --number-width=2
+  echo --
+  echo
 }
 
 which_check()
