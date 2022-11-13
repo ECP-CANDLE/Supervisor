@@ -7,6 +7,8 @@ SWIFT=$SFW/swift-t/mpich/2022-11-09-Jenkins
 
 PATH=$SWIFT/stc/bin:$PATH
 
+EQR=not-installed
+
 # For test output processing:
 export LOCAL=1
 export CRAY=0
