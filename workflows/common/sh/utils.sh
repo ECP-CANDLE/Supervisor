@@ -143,11 +143,13 @@ check_experiment() {
 
 get_expid()
 # Get Experiment IDentifier
-# EXPID is the name of the new directory under experiments/
-# If the user provides -a, this function will autogenerate
-#   a new EXPID under the experiments directory,
-# If EXP_SUFFIX is set in the environment, the resulting
-#   EXPID will have that suffix.
+# EXPID: The name of the new directory under experiments/
+#        If the user provides -a, this function will autogenerate
+#          a new EXPID under the experiments directory,
+#        If EXP_SUFFIX is set in the environment, the resulting
+#          EXPID will have that suffix.
+# CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
+#        Defaults to "BENCHMARKS"
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
@@ -155,12 +157,12 @@ get_expid()
 {
   if (( ${#} < 1 ))
   then
-    echo "get_expid(): could not find EXPID argument!"
+    echo "get_expid(): provide EXPID [CANDLE_MODEL_TYPE?]"
     return 1
   fi
 
   export EXPID=$1
-  export CANDLE_MODEL_TYPE=$2
+  export CANDLE_MODEL_TYPE=${2:-Benchmarks}
 
   export EXPERIMENTS=""
 
