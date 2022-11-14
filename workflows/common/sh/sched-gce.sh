@@ -1,4 +1,4 @@
 
 # SCHED GCE
 
-# Nothing- local unscheduled mpiexec execution.
+# Nothing: Unscheduled mpiexec execution

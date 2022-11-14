@@ -17,4 +17,3 @@ export WALLTIME=${WALLTIME:-3:00:00}
 # Benchmark run timeout: benchmark run will timeouT
 # after the specified number of seconds. -1 is no timeout.
 BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
-

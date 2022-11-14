@@ -62,4 +62,3 @@ file tmp = write(repr(results));
 //trace("Temporary filename is: " + filename(tmp));
 
 computeStats(filename(tmp));
-

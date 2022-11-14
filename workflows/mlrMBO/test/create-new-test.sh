@@ -18,6 +18,3 @@ sed -i -e "s/PROPOSE_POINTS:-5/PROPOSE_POINTS:-$1/g" cfg-prm-$1.sh
 sed -i -e "s/MAX_CONCURRENT_EVALUATIONS:-1/MAX_CONCURRENT_EVALUATIONS:-$1/g" cfg-prm-$1.sh
 sed -i -e "s/DESIGN_SIZE:-10/DESIGN_SIZE:-$1/g" cfg-prm-$1.sh
 sed -i -e "s/MAX_BUDGET:-180/MAX_BUDGET:-$Budget/g" cfg-prm-$1.sh
-
-
-

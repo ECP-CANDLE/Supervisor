@@ -69,11 +69,11 @@ main_function <- function(max.budget = 110,
                           propose.points=10,
                           restart.file) {
   print("Using Kriging.")
-  surr.rf = makeLearner("regr.km", predict.type = "se") #covtype = "matern3_2", control = list(trace = FALSE)) 
+  surr.rf = makeLearner("regr.km", predict.type = "se") #covtype = "matern3_2", control = list(trace = FALSE))
 
-  #TODO: Avoid error: 
+  #TODO: Avoid error:
   # [mbo] 3: latent_dim=2; batch_size=35; learning_rate=0.0762; epochs=8 : y = 0.203 : 29.6 secs : infill_cb
-  # Error in chol.default(R) : 
+  # Error in chol.default(R) :
   #   the leading minor of order 29 is not positive definite
   # The issue is mentioned here: https://github.com/mlr-org/mlrMBO/issues/80
   # y = MyTrainingData$MyTarget
@@ -82,7 +82,7 @@ main_function <- function(max.budget = 110,
 
   ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                           impute.y.fun = function(x, y, opt.path, ...) .Machine$integer.max * 0.1)
-  
+
   # y = MyTrainingData$MyTarget
   # Nuggets = 1e-8*var(y)
   # setHyperPars(learner = surr.rf, nugget=Nuggets)
@@ -93,7 +93,7 @@ main_function <- function(max.budget = 110,
 
   chkpntResults<-NULL
   # TODO: Make this an argument
-  restartFile<-restart.file 
+  restartFile<-restart.file
   if (file.exists(restart.file)) {
     print(paste("Loading restart:", restart.file))
 

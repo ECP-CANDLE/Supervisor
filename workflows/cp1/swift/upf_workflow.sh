@@ -70,7 +70,7 @@ export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 
-if [ -z ${GPU_STRING+x} ]; 
+if [ -z ${GPU_STRING+x} ];
 then
   GPU_ARG=""
 else

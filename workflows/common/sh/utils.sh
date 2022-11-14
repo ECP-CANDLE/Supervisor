@@ -65,7 +65,9 @@ log_path()
 # Provide the name of the variable (no dollar sign)
 {
   echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl
+  eval echo \$$1 | tr : '\n' | nl --number-width=2 --number-separator ": "
+  echo --
+  echo
 }
 
 which_check()
@@ -126,6 +128,7 @@ get_site()
   export SITE=$1
 }
 
+
 check_experiment() {
   if [[ -d $TURBINE_OUTPUT ]]; then
     while true; do
@@ -142,11 +145,13 @@ check_experiment() {
 
 get_expid()
 # Get Experiment IDentifier
-# EXPID is the name of the new directory under experiments/
-# If the user provides -a, this function will autogenerate
-#   a new EXPID under the experiments directory,
-# If EXP_SUFFIX is set in the environment, the resulting
-#   EXPID will have that suffix.
+# EXPID: The name of the new directory under experiments/
+#        If the user provides -a, this function will autogenerate
+#          a new EXPID under the experiments directory,
+#        If EXP_SUFFIX is set in the environment, the resulting
+#          EXPID will have that suffix.
+# CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
+#        Defaults to "BENCHMARKS"
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
@@ -154,13 +159,21 @@ get_expid()
 {
   if (( ${#} < 1 ))
   then
-    echo "get_expid(): could not find EXPID argument!"
+    echo "get_expid(): provide EXPID [CANDLE_MODEL_TYPE?]"
     return 1
   fi
 
-  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
-
   export EXPID=$1
+  export CANDLE_MODEL_TYPE=${2:-Benchmarks}
+
+  export EXPERIMENTS=""
+
+  if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+  then
+    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/output/experiments}
+  else # "BENCHMARKS"
+    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  fi
 
   local i=0 EXPS E TO
 

@@ -1,5 +1,5 @@
-import threading
 import sys
+import threading
 
 try:
     from queue import Queue
@@ -10,11 +10,12 @@ except ImportError:
 input_q = Queue()
 output_q = Queue()
 
+
 def OUT_put(string_params):
     output_q.put(string_params)
+
 
 def IN_get():
     global input_q
     result = input_q.get()
     return result
-

@@ -25,7 +25,7 @@ fi
 EXTRACT_HOLDOUT_ERRORS_AWK=$THIS/extract-holdout-errors.awk
 
 # Missing python.logs (usually due to no data):
-MISSING=0 
+MISSING=0
 NODES=( $( ls $DIR/run ) )
 # set -x
 echo "NODES: ${#NODES[@]}"

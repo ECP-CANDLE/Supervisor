@@ -36,25 +36,38 @@ usage()
   echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 7 )) && (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
-if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
- }
+CANDLE_MODEL_TYPE="BENCHMARKS"
+
+if (( ${#} == 7 ))
 then
+  CANDLE_MODEL_TYPE=$6
+  CANDLE_IMAGE=$7
+ elif (( ${#} == 5 ))
+ then
+   echo "Not a singularity run"
+else
   usage
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+TURBINE_OUTPUT=""
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/
+  echo "Running "$MODEL_NAME "workflow with" $CANDLE_MODEL_TYPE "and image" $CANDLE_IMAGE
+fi
+
+get_site    $1 # Sets SITE
+get_expid   $2 $CANDLE_MODEL_TYPE # Sets EXPID
+get_cfg_sys $3
+get_cfg_prm $4
+MODEL_NAME=$5
 
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR   # :$BENCHMARKS_ROOT/common # This is now candle_lib

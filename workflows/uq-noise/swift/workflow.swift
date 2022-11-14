@@ -58,4 +58,3 @@ foreach levelx, i in x_noise_levels
     }
   }
 }
-

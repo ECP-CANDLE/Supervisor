@@ -14,14 +14,14 @@ COXEN approach takes the following steps.
 between the gene’s expression and the drug response value. Select _n_~1~ genes
 whose absolute correlation coefficients with drug response are the highest.
 
-. For each of the _n_~1~ genes, do the following: 
+. For each of the _n_~1~ genes, do the following:
 .. Calculate its Pearson correlation coefficients with the other _n_~1~-1 genes
 based on their expression values in dataset 1, which forms a _n_~1~-1-dimensional
-vector of Pearson correlation coefficients denoted by _c_~1~. 
-.. Calculate its Pearson correlation coefficients with the 
+vector of Pearson correlation coefficients denoted by _c_~1~.
+.. Calculate its Pearson correlation coefficients with the
 
 . Among the _n_~1~ genes, select _n_~2~ genes whose COXEN scores are the
-highest. 
+highest.
 
 With respect to using the results in to train a model,
 drug response prediction model would be trained using these _n_~2~ genes using
@@ -47,11 +47,11 @@ the prediction model. The COXEN algorithm requires two input parameters _n_~1~ a
 _n_~2~, which are the number of candidate predictive genes and the number of
 selected genes in final output. These two parameters can be pre-determined
 before data analysis or tuned through hyperparameter search for identifying
-their optimal values to build the prediction model.  
+their optimal values to build the prediction model.
 
 == Code
 
-The COXEN implementation consists of two files: `xcorr.py` and `uno_xcorr.py`. 
+The COXEN implementation consists of two files: `xcorr.py` and `uno_xcorr.py`.
 
 * `xcorr.py` - implements COXEN correlation using numpy arrays to represent
 the datasets. This code encapsulates steps 1 and 2 in a generic way. See the
@@ -59,8 +59,8 @@ documentation comments in each python function for more details.
 
 * `uno_xcorr.py` - runs the COXEN correlation code in `xcorr.py` on Pilot 1
 gene and drug reponse data to produce cross correlated features files that
-can be used with the Uno benchmark model. The module needs to be initialized 
-with gene and drug repsonse data via call to `uno_xcorr.init_uno_xcorr` before 
+can be used with the Uno benchmark model. The module needs to be initialized
+with gene and drug repsonse data via call to `uno_xcorr.init_uno_xcorr` before
 running the cross correlation. For example,
 
 +
@@ -79,17 +79,17 @@ a training run. For example,
 +
 ----
 
-uno_xcorr.coxen_feature_selection('CCLE', 'GDSC', 2000, 1000, 
+uno_xcorr.coxen_feature_selection('CCLE', 'GDSC', 2000, 1000,
     'CCLE_GDSC_2000_1000_features.txt')
 ----
 
 +
 where 'CCLE' and 'GDSC' are the names of cancer studies in the initialization
 data each with gene / drug treatment and response values. The call produces
-a cross correlation file of the cell features of these two studies using 
+a cross correlation file of the cell features of these two studies using
 a correlation cutoff of 2000
 (limiting __c_~1~_ in step 2.a above to those values >= 2000), and a cross
-correlation cutoff of 1000 (limiting the results of step 2.c above to those 
+correlation cutoff of 1000 (limiting the results of step 2.c above to those
 >= 1000).
 
 

@@ -19,5 +19,3 @@ EOF
 
 # UPDATE runhist SET status="RESET" WHERE (subplan_id LIKE "${NODE}%") ;
 # EOF
-
-

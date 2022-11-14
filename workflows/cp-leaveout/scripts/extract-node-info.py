@@ -1,4 +1,3 @@
-
 # EXTRACT NODE INFO PY
 
 # Input:  Provide an experiment directory
@@ -7,14 +6,16 @@
 # Use print-node-info to print the node info
 # See Node.py for the data structure
 
-import argparse, logging, os, pickle
+import argparse
+import logging
+import os
+import pickle
 
-from utils import fail
 from Node import Node
+from utils import fail
 
-parser = argparse.ArgumentParser(description='Parse all log files')
-parser.add_argument('directory',
-                    help='The experiment directory (EXPID)')
+parser = argparse.ArgumentParser(description="Parse all log files")
+parser.add_argument("directory", help="The experiment directory (EXPID)")
 
 args = parser.parse_args()
 
@@ -52,8 +53,8 @@ def parse_logs(log_files):
         total = len(log_files)
         index = 0
         for log_file in log_files:
-            progress = "%4i/%4i (%2.f%%)" % \
-                       (index, total, 100.0*index/total)
+            progress = "%4i/%4i (%2.f%%)" % (index, total,
+                                             100.0 * index / total)
             logger.info("Opening: %12s %s" % (progress, log_file))
             with open(log_file) as fp:
                 parse_log(fp, nodes)
@@ -73,7 +74,8 @@ def parse_log(log_fp, nodes):
     while True:
         line = log_fp.readline()
         # print(line)
-        if line == "": break
+        if line == "":
+            break
         if "DONE: run_id" in line:
             # This is also a MODEL RUNNER line,
             # but could be DEBUG or INFO
@@ -147,7 +149,7 @@ def parse_build_df(line, logger=None):
 
 
 def trace(message):
-    logger.log(level=logging.DEBUG-5, msg=message)
+    logger.log(level=logging.DEBUG - 5, msg=message)
 
 
 # def find_val_data(node):

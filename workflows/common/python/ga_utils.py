@@ -1,6 +1,10 @@
 from __future__ import print_function
 
-import random, json, sys, math
+import json
+import math
+import random
+import sys
+
 
 def is_number(s):
     try:
@@ -8,6 +12,7 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
 
 class ConstantParameter(object):
 
@@ -27,6 +32,7 @@ class ConstantParameter(object):
                 return float(s)
             return int(s)
         return s
+
 
 class NumericParameter(object):
 
@@ -56,6 +62,7 @@ class IntParameter(NumericParameter):
     def parse(self, s):
         return int(s)
 
+
 class FloatParameter(NumericParameter):
 
     def __init__(self, name, lower, upper, sigma):
@@ -71,9 +78,11 @@ class FloatParameter(NumericParameter):
     def parse(self, s):
         return float(s)
 
-#import logging
-#logging.basicConfig()
-#log = logging.getLogger("a")
+
+# import logging
+# logging.basicConfig()
+# log = logging.getLogger("a")
+
 
 def str_to_bool(s):
     if s.lower() == "true":
@@ -81,30 +90,35 @@ def str_to_bool(s):
     else:
         return False
 
+
 class ListParameter(object):
 
     def __init__(self, name, categories, element_type):
         self.name = name
         self.categories = categories
 
-        if element_type == 'float':
+        if element_type == "float":
             self.parse_func = float
-        elif element_type == 'int':
+        elif element_type == "int":
             self.parse_func = int
-        elif element_type == 'string':
+        elif element_type == "string":
             self.parse_func = str
-        elif element_type == 'logical':
+        elif element_type == "logical":
             self.parse_func = str_to_bool
         else:
-            raise ValueError("Invalid type: {} - must be one of 'float', 'int', 'string', or 'logical'")
+            raise ValueError(
+                "Invalid type: {} - must be one of 'float', 'int', 'string', or 'logical'"
+            )
 
     def parse(self, s):
         return self.parse_func(s)
 
+
 class CategoricalParameter(ListParameter):
 
     def __init__(self, name, categories, element_type):
-        super(CategoricalParameter, self).__init__(name, categories, element_type)
+        super(CategoricalParameter, self).__init__(name, categories,
+                                                   element_type)
 
     def randomDraw(self):
         i = random.randint(0, len(self.categories) - 1)
@@ -118,6 +132,7 @@ class CategoricalParameter(ListParameter):
                 a = self.randomDraw()
             x = a
         return x
+
 
 class OrderedParameter(ListParameter):
 
@@ -145,6 +160,7 @@ class OrderedParameter(ListParameter):
             x = self.categories[n]
         return x
 
+
 class LogicalParameter:
 
     def __init__(self, name):
@@ -164,48 +180,51 @@ class LogicalParameter:
         else:
             return False
 
+
 def create_parameters(param_file, ignore_sigma=False):
     with open(param_file) as json_file:
         data = json.load(json_file)
 
     params = []
     for item in data:
-        name = item['name']
-        t = item['type']
+        name = item["name"]
+        t = item["type"]
         if ignore_sigma:
-            sigma = float('nan')
-        if t == 'int' or t == 'float':
-            lower = item['lower']
-            upper = item['upper']
+            sigma = float("nan")
+        if t == "int" or t == "float":
+            lower = item["lower"]
+            upper = item["upper"]
             if not ignore_sigma:
-                sigma = item['sigma']
+                sigma = item["sigma"]
 
-            if t == 'int':
-                params.append(IntParameter(name, int(lower), int(upper),
-                                       int(sigma)))
+            if t == "int":
+                params.append(
+                    IntParameter(name, int(lower), int(upper), int(sigma)))
             else:
-                params.append(FloatParameter(name, float(lower), float(upper),
-                                       float(sigma)))
+                params.append(
+                    FloatParameter(name, float(lower), float(upper),
+                                   float(sigma)))
 
-        elif t == 'categorical':
-            vs = item['values']
-            element_type = item['element_type']
+        elif t == "categorical":
+            vs = item["values"]
+            element_type = item["element_type"]
             params.append(CategoricalParameter(name, vs, element_type))
 
-        elif t == 'logical':
+        elif t == "logical":
             params.append(LogicalParameter(name))
 
         elif t == "ordered":
-            vs = item['values']
+            vs = item["values"]
             if not ignore_sigma:
-                sigma = item['sigma']
-            element_type = item['element_type']
+                sigma = item["sigma"]
+            element_type = item["element_type"]
             params.append(OrderedParameter(name, vs, sigma, element_type))
-        elif t == 'constant':
-            vs = item['value']
+        elif t == "constant":
+            vs = item["value"]
             params.append(ConstantParameter(name, vs))
 
     return params
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     create_parameters(sys.argv[1])

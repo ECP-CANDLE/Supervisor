@@ -74,4 +74,3 @@ then
     export TURBINE_RESIDENT_WORK_WORKERS=1
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
-

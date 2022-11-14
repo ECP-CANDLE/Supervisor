@@ -110,7 +110,7 @@ main() {
     //make_dir(instance) => {
     string param_code = update_param_template % (params, instance);
     //printf(param_code);
-    
+
     updated_param = python_persist(param_code, "params_json");
     inputs[i] = "%i|%f|%s" % (i, clock(), updated_param);
     string result = obj(updated_param, int2string(i)) =>
@@ -121,4 +121,3 @@ main() {
   write_lines(inputs, "inputs.txt");
   write_lines(results, "results.txt");
 }
-

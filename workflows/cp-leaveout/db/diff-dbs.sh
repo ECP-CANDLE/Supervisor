@@ -23,4 +23,3 @@ sqlite3 $DB2 < $THIS/print-db.sql > $TXT2
 diff $TXT1 $TXT2
 
 rm $TXT1 $TXT2
-

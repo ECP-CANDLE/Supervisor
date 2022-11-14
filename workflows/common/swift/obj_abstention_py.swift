@@ -8,8 +8,8 @@ string code_template =
 try:
   import sys, traceback, json, os
   import model_abstention_runner
-  import tensorflow 
-  from tensorflow import keras 
+  import tensorflow
+  from tensorflow import keras
 
   obj_result = '-100'
   outdir = '%s'

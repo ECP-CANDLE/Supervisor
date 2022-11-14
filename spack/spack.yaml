@@ -5,18 +5,18 @@
 spack:
   # add package specs to the `specs` list
   specs:
-  - py-keras ^py-theano+gpu
-  - py-scikit-learn
-  - py-pandas
-  - py-requests
-  - py-mdanalysis ^py-matplotlib@:2.2.3+image
-  - r-mlrmbo ^r-plotly@4.5.6
-  - r-rgenoud
-  - r-dicekriging
-  - r-randomforest
-  - r-jsonlite
-  - stc@develop ^turbine@develop+python+r
-  - eqr
+    - py-keras ^py-theano+gpu
+    - py-scikit-learn
+    - py-pandas
+    - py-requests
+    - py-mdanalysis ^py-matplotlib@:2.2.3+image
+    - r-mlrmbo ^r-plotly@4.5.6
+    - r-rgenoud
+    - r-dicekriging
+    - r-randomforest
+    - r-jsonlite
+    - stc@develop ^turbine@develop+python+r
+    - eqr
   config: {}
   mirrors: {}
   modules:
@@ -25,12 +25,17 @@ spack:
   packages:
     all:
       providers:
-        mpi: [mvapich2@2.3 arch=linux-rhel7-x86_64, spectrum-mpi@rolling-release arch=linux-rhel7-ppc64le]
+        mpi:
+          [
+            mvapich2@2.3 arch=linux-rhel7-x86_64,
+            spectrum-mpi@rolling-release arch=linux-rhel7-ppc64le,
+          ]
       buildable: true
       version: []
       paths: {}
       modules: {}
-      compiler: [gcc@7.3.0 arch=linux-rhel7-x86_64, gcc@7.3.1 arch=linux-rhel7-ppc64le]
+      compiler:
+        [gcc@7.3.0 arch=linux-rhel7-x86_64, gcc@7.3.1 arch=linux-rhel7-ppc64le]
     python:
       buildable: true
       version: [3.7.2]

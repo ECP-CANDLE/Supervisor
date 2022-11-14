@@ -69,25 +69,25 @@
                             restart.file) {
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", 
-                          predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest",
+                          predict.type = "se",
                           fix.factors.prediction = TRUE)
                           #mtry = 6,
                           #se.method = "bootstrap", se.boot = 50, se.ntree = 100)
-    ctrl = makeMBOControl(n.objectives = 1, 
+    ctrl = makeMBOControl(n.objectives = 1,
                           propose.points = propose.points,
                           impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
-    ctrl = setMBOControlInfill(ctrl, 
+    ctrl = setMBOControlInfill(ctrl,
                                crit = makeMBOInfillCritCB(),
-                               opt.restarts = 1, 
+                               opt.restarts = 1,
                                opt.focussearch.points = 1000)
-    ctrl = setMBOControlTermination(ctrl, 
-                                    max.evals = max.budget, 
+    ctrl = setMBOControlTermination(ctrl,
+                                    max.evals = max.budget,
                                     iters = max.iterations)
 
     chkpntResults<-NULL
     # TODO: Make this an argument
-    restartFile<-restart.file 
+    restartFile<-restart.file
     if (file.exists(restart.file)) {
       print(paste("Loading restart:", restart.file))
 
@@ -119,7 +119,7 @@
 
     if (is.null(chkpntResults)){
       par.set = getParamSet(obj.fun)
-      
+
       ## represent each discrete value once
       # get the maximum number of variables
       max_val_discrete = 0

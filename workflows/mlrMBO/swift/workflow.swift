@@ -35,6 +35,10 @@ string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
 
 string model_name     = getenv("MODEL_NAME");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string candle_image     = getenv("CANDLE_IMAGE");
+string init_params_file     = getenv("INIT_PARAMS_FILE");
+
 
 printf("CANDLE mlrMBO Workflow");
 printf("TURBINE_OUTPUT: " + turbine_output);

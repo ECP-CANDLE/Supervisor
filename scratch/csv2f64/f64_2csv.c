@@ -37,7 +37,7 @@ main(int argc, char* argv[])
   int total_rows, total_cols;
   sscanf(argv[3], "%i", &total_rows);
   sscanf(argv[4], "%i", &total_cols);
-  
+
   bool result = convert(input, output, total_rows, total_cols);
   if (!result)
   {
@@ -93,7 +93,7 @@ convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
   int cols = 1; // current column counter
   int rows = 1; // current row counter
   size_t actual_r = 0; // actual number of items read at last fread
-  int offset = 0; // starting offset in chars 
+  int offset = 0; // starting offset in chars
   bool b;
   int i = 0;
   while (true)
@@ -119,7 +119,7 @@ convert_fps(FILE* fp_i, FILE* fp_o, int total_rows, int total_cols)
     fprintf(fp_o, "\n");
     rows++;
   }
-  
+
   free(chars);
   free(floats);
   return true;
@@ -185,4 +185,3 @@ format_double(int total_cols, double value,
 
   return true;
 }
-
