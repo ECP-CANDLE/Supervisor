@@ -3,15 +3,19 @@
 # Environment settings for ANL/GCE compute nodes
 
 SFW=/nfs/gce/projects/Swift-T/sfw/x86_64/U20
-SWIFT=$SFW/swift-t/mpich/2022-11-09-Jenkins
+# Python only:
+# SWIFT=$SFW/swift-t/mpich/2022-11-14-Jenkins
+# Python+R:
+SWIFT=$SFW/swift-t/mpich/2022-11-14-Jenkins
 
 PATH=$SWIFT/stc/bin:$PATH
 
 echo $SWIFT
 
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}
+# Needed for Swift/T+R
+export LD_LIBRARY_PATH=$SFW/R-4.1.0/lib/R/lib
 
-EQR=not-installed
+EQR=$SFW/EQ-R
 SWIFT_IMPL="app"
 
 # For test output processing:
