@@ -140,6 +140,9 @@ fi
 log "END: SUCCESS"
 
   echo $MODEL_CMD &
+
+if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+then
   # grep for Singularity process and wai
   PID=$(ps ux | awk '/[S]ingularity/{print $2}')
   wait $PID
@@ -147,7 +150,15 @@ log "END: SUCCESS"
   # get results of the format Loss: xxx last occurence of in the model.log file
   RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+else
+  PID = $!
+  wait $PID
 
+  # FIXME: just grepping "loss:" and value after it and putting into result txt file
+  # get results of the format Loss: xxx last occurence of in the model.log file
+  RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+fi
 exit 0 # Success
 
 # Local Variables:
