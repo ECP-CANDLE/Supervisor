@@ -44,6 +44,9 @@ PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 export PYTHONPATH
 
+# Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
+export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
+
 source_site env   $SITE
 source_site sched   $SITE
 
