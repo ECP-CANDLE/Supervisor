@@ -1,8 +1,10 @@
 
 # Known Benchmarks
 # Generate the list of Benchmarks that Supervisor knows about
-# To add a Benchmark, ...
-# To call an unknown model, set MODEL_NAME and ...
+# To add a Known Benchmark, add its paths to BENCHMARKS_DIRS_BASE below
+# To call an unknown model,
+#         set environment variable MODEL_NAME to the short name
+#         set PYTHONPATH and/or APP_PYTHONPATH as needed
 
 BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
