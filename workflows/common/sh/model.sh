@@ -5,6 +5,9 @@ set -eu
 
 # Shell wrapper around Keras model
 
+# Note that APP_PYTHONPATH is used by models here and
+# not just PYTHONPATH
+
 # Note: Under Swift/T, the initial output from here will go
 # to the main Swift/T stdout and be mixed with output from
 # other models.
@@ -27,8 +30,8 @@ then
   exit 1
 fi
 
-FRAMEWORK=$1 # Usually "keras"
-# JSON string of parameters
+FRAMEWORK=$1 # Usually "keras" or "pytorch"
+# JSON string of parameters:
 PARAMS="$2"
 RUNID=$3
 
@@ -128,8 +131,6 @@ else
   CODE=$?
   if (( CODE ))
   then
-    # $? is the exit status of the most recently executed command
-    # (i.e the line in the 'if' condition)
     echo # spacer
     if (( $CODE == 124 ))
     then
@@ -149,8 +150,7 @@ else
     fi
   fi
 
-  # FIXME: just grepping "loss:" and value after it and putting into result txt file
-  # get results of the format Loss: xxx last occurence of in the model.log file
+  # Get results from model.log: last occurrence of "loss: xxx"
   RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 fi
