@@ -111,35 +111,7 @@ fi
 log "MODEL_CMD: ${MODEL_CMD[@]}"
 
 # Run Python!
-if $TIMEOUT_CMD "${MODEL_CMD[@]}"
-then
-  : # Assume success so we can keep a failed exit code
-else
-  # $? is the exit status of the most recently executed command
-  # (i.e the line in the 'if' condition)
-  CODE=$?
-  echo # spacer
-  if (( $CODE == 124 ))
-  then
-    log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
-    # This will trigger a NaN (the result file does not exist)
-    exit 0
-  else
-    log "MODEL ERROR! (CODE=$CODE)"
-    if (( ${IGNORE_ERRORS:-0} ))
-    then
-      log "IGNORING ERROR."
-      # This will trigger a NaN (the result file does not exist)
-      exit 0
-    fi
-    log "ABORTING WORKFLOW (exit 1)"
-    exit 1 # Unknown error in Python: abort the workflow
-  fi
-fi
-
-log "END: SUCCESS"
-
-  echo $MODEL_CMD &
+$TIMEOUT_CMD "${MODEL_CMD[@]}" &
 
 if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
 then
@@ -151,14 +123,40 @@ then
   RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
-  PID = $!
+  PID=$!
   wait $PID
+  CODE=$?
+  if (( CODE ))
+  then
+    # $? is the exit status of the most recently executed command
+    # (i.e the line in the 'if' condition)
+    echo # spacer
+    if (( $CODE == 124 ))
+    then
+      log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
+      # This will trigger a NaN (the result file does not exist)
+      exit 0
+    else
+      log "MODEL ERROR! (CODE=$CODE)"
+      if (( ${IGNORE_ERRORS:-0} ))
+      then
+        log "IGNORING ERROR."
+        # This will trigger a NaN (the result file does not exist)
+        exit 0
+      fi
+      log "ABORTING WORKFLOW (exit 1)"
+      exit 1 # Unknown error in Python: abort the workflow
+    fi
+  fi
 
   # FIXME: just grepping "loss:" and value after it and putting into result txt file
   # get results of the format Loss: xxx last occurence of in the model.log file
   RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 fi
+
+log "END: SUCCESS"
+
 exit 0 # Success
 
 # Local Variables:
