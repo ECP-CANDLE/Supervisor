@@ -10,9 +10,13 @@ import location;
 import string;
 import unix;
 import EQPy;
-import R;
 import assert;
 import python;
+
+import candle_utils;
+report_env();
+
+python("import sys ; import csv ; import _csv ; print('HELLO') ; sys.stdout.flush()");
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
@@ -88,7 +92,7 @@ string FRAMEWORK = "keras";
   // (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file)
   algo_params = "%d,%d,%d,'%s',%f, '%s', '%s'" %
     (iters, pop, seed, strategy, mut_prob, ga_params_file, init_params_file);
-    EQPy_init_package(ME,"deap_ga") =>
+    EQPy_init_package(ME, "deap_ga") =>
     EQPy_get(ME) =>
     EQPy_put(ME, algo_params) =>
       loop(ME, ME_rank) => {

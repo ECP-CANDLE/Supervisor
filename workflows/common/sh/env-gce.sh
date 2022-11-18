@@ -15,6 +15,8 @@ echo $SWIFT
 # Needed for Swift/T+R
 export LD_LIBRARY_PATH=$SFW/R-4.1.0/lib/R/lib
 
+export PYTHONPATH=${PYTHONPATH:-}
+
 EQR=$SFW/EQ-R
 SWIFT_IMPL="app"
 

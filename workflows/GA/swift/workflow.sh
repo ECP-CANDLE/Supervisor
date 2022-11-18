@@ -56,11 +56,14 @@ fi
 echo "Running "$MODEL_NAME "workflow"
 
 source_site env   $SITE
-source_site sched   $SITE
+source_site sched $SITE
+
+EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
 
 # Set PYTHONPATH for BENCHMARK related stuff
-EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY
+source $WORKFLOWS_ROOT/known-benchmarks.sh
+PYTHONPATH+=:$EQPY
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
 export TURBINE_JOBNAME="JOB:${EXPID}"
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
@@ -134,6 +137,9 @@ fi
 
 # echo's anything following this to standard out
 
+echo APP_PYPATH $APP_PYTHONPATH
+
+
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPY -r $EQPY \
@@ -145,6 +151,7 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
+        -e APP_PYTHONPATH \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
