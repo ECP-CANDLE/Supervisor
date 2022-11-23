@@ -1,8 +1,8 @@
 
 # SHRINK LOG PY
-# argv: 2 filenames : tr-*.log and summary-*.log
+# argv: 2 filenames : tr file and summary-*.txt
 # Called by shrink-log-single.sh
-# The tr-*.log file should have used tr to change CR to NL
+# The tr file should have used tr to change CR to NL
 # Removes non-printing characters (backspace)
 # Reduces the number of training lines in output
 # Removes redundant batch size information
@@ -13,7 +13,7 @@ from collections import deque
 
 
 # Only 1/shrink_factor training lines are copied
-shrink_factor = 200
+shrink_factor = 100
 # Number of additional consecutive lines at beginning and end of
 # training that are retained
 hold_space = 3
@@ -29,6 +29,7 @@ def shrink(fp_in, fp_out):
         if len(line) == 1: continue  # Blank line
         line = line.replace("\b", "")
         if "batch:" in line or "Current" in line:
+            # Found a training line
             line = re.sub("- batch: .* 32.0000 -", "", line)
             line = line.replace("Current", "\nCurrent")
             if starts < hold_space:
@@ -43,10 +44,14 @@ def shrink(fp_in, fp_out):
                 fp_out.write(line)
         else:
             starts = 0
+            # Found a non-training line
+            # Flush the Q:
             while len(Q) > 0:
                 fp_out.write(Q.popleft())
             if line == line_previous:
+                # Discard redundant lines
                 continue
+            # Good line: write it
             fp_out.write(line)
             line_previous = line
     # Done: flush Q:

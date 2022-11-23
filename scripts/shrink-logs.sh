@@ -25,7 +25,8 @@ then
 fi
 
 # This is used inside the Makefile below:
-mkdir -pv /tmp/$USER/shrink
+export TMP_SHRINK=/tmp/$USER/shrink
+mkdir -pv $TMP_SHRINK
 
 cd $DIR
-nice -n 19 make -j 1 -f $THIS/shrink-log.mk
+nice -n 19 make -j 4 -f $THIS/shrink-log.mk
