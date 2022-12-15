@@ -1,5 +1,7 @@
 
-# Scheduler settings for Swift/Summit
+# SCHED Summit
+
+# Scheduler settings for Swift/T/LSF/Summit
 
 MACHINE="-m lsf"
 
