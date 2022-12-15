@@ -85,29 +85,14 @@ cp $CFG_SYS $TURBINE_OUTPUT
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-which mpicc
 which swift-t
 
 # module list
 
 cp -v $UPF $TURBINE_OUTPUT
 
-site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
-
-# ALW 2020-11-15: If we're running the candle wrapper scripts in which
-# case if this file were being called then $CANDLE_RUN_WORKFLOW=1,
-# don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings
-# in the declaration below are handled by the wrapper scripts
-if [[ ${site2} == "summit" && ${CANDLE_RUN_WORKFLOW:-0} != 1 ]]
-then
-  export TURBINE_LAUNCH_OPTIONS="-a1 -g1 -c7"
-fi
-
 # TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 TURBINE_STDOUT=
-
-echo OMP_NUM_THREADS ${OMP_NUM_THREADS:-UNSET}
-export OMP_NUM_THREADS=1
 
 log_path LD_LIBRARY_PATH
 
