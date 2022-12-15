@@ -2,15 +2,18 @@
 # ENV SUMMIT LOGIN
 # Environment settings for Summit login node (Swift, Python, R, Tcl, etc.)
 
+SWIFT_IMPL=echo
 # SWIFT_IMPL=app
-SWIFT_IMPL=py
+# SWIFT_IMPL=py
 
 # Load basic LD_LIBRARY_PATH before changing it:
-module load gcc/7.4.0
-module load ibm-wml
+# module load gcc/7.4.0
+module load gcc/6.4.0
+# module load ibm-wml
 module unload darshan-runtime
 module unload spectrum-mpi
-module load gcc/7.4.0
+# module load gcc/7.4.0
+module load gcc/6.4.0
 
 module list
 
@@ -18,10 +21,12 @@ log_path PATH
 
 # From Wozniak
 MED106=/gpfs/alpine/world-shared/med106
-SWIFT=$MED106/sw/login/gcc-7.4.0/swift-t/2019-10-22    # Python (ibm-wml), no R
-
+# SWIFT=$MED106/sw/login/gcc-7.4.0/swift-t/2019-10-22    # Python (ibm-wml), no R
+SWIFT=$MED106/wozniak/sw/login/gcc-6.4.0/swift-t/2020-10-22 # (opence010env)
+# MPICH=$MED106/sw/login/gcc-7.4.0/mpich-3.2.1/bin
+MPICH=$MED106/sw/login/gcc-6.4.0/mpich-3.2.1
 PATH=$SWIFT/stc/bin:$PATH
-PATH=$MED106/sw/login/gcc-7.4.0/mpich-3.2.1/bin:$PATH
+PATH=$MPICH/bin:$PATH
 
 # log_path PATH
 
@@ -45,7 +50,7 @@ LOCAL=0
 CRAY=1
 
 # Resident task workers and ranks
-if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} == "" ]]
 then
     # Resident task workers and ranks
     export TURBINE_RESIDENT_WORK_WORKERS=1

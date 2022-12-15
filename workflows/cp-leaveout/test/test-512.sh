@@ -8,7 +8,7 @@ usage()
   echo "Usage: test SITE EXPID WORKFLOW_ARGS"
 }
 
-if (( ${#} == 0 ))
+if (( ${#} < 2 ))
 then
   usage
   exit 1
@@ -32,17 +32,34 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-512.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+# # Data files
+# # PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
+# SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
+# CANDLE_DATA=$SCRATCH/Milestone13
+# PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
+# DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
+# BENCHMARK_DATA=$SCRATCH/Milestone13/Benchmarks/Pilot1/Uno
+
 # Data files
 # PLAN_JSON=$EMEWS_PROJECT_ROOT/plangen_cell8-p2_drug8-p2.json
-SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
-CANDLE_DATA=$SCRATCH/Milestone13
+# SCRATCH=/gpfs/alpine/med106/scratch/hsyoo
+SCRATCH=/gpfs/alpine/med106/scratch/wozniak
+# SCRATCH=/usb2/wozniak
+# CANDLE_DATA=$SCRATCH/CANDLE-Data/Milestone-13
+CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem
 PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
-DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
-BENCHMARK_DATA=$SCRATCH/Milestone13/Benchmarks/Pilot1/Uno
+# DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
+DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
+# BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
+# BENCHMARK_DATA=$HOME/proj/Benchmarks/Pilot1/Uno
+BENCHMARK_DATA=$CANDLE_DATA
+# PROJ_SHARED=/gpfs/alpine/med106/proj-shared/wozniak
+# BENCHMARK_DATA=$PROJ_SHARED/proj/Benchmarks/Pilot1/Uno
 
 # What to return from the objective function (Keras model)
-# val_loss (default) and val_corr are supported
-export OBJ_RETURN="val_loss"
+# val_loss (default), loss, and val_corr are supported
+# export OBJ_RETURN="val_loss"
+export OBJ_RETURN="loss"
 
 if [[ $SITE == "theta" ]]
 then
@@ -58,6 +75,13 @@ do
   fi
 done
 
+if [[ ! -e $BENCHMARK_DATA/cache ]]
+then
+  echo "$0: The cache does not exist: $BENCHMARK_DATA/cache"
+  echo "$0: Use mkdir to create this directory"
+  exit 1
+fi
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
                                       $MODEL_NAME $WORKFLOW_ARGS       \
@@ -71,7 +95,8 @@ OUTPUT=turbine-output/output.txt
 WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
 
 # Wait for job
-queue_wait
+# queue_wait
+exit
 
 SCRIPT=$( basename $0 .sh )
 check_output "RESULTS:"     $OUTPUT $WORKFLOW $SCRIPT $JOBID

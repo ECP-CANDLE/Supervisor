@@ -3,10 +3,11 @@
 # LIST NODES PY
 # Extract just the nodes from the JSON file for human inspection
 
-import argparse, json
+import argparse
+import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument('plan', type=str, help='Plan data file')
+parser.add_argument("plan", type=str, help="Plan data file")
 args = parser.parse_args()
 
 try:
@@ -17,4 +18,4 @@ except Exception as e:
     exit(1)
 
 for k in J.keys():
-   print(k)
+    print(k)

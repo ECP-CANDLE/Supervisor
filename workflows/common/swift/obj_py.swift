@@ -6,10 +6,15 @@
 string code_template =
 ----
 try:
-  import sys, traceback, json, os
+  import json
+  import os
+  import sys
+  import traceback
   import model_runner
-  import tensorflow 
-  from tensorflow import keras 
+
+  sys.argv = [ 'python' ]
+  import tensorflow
+  from tensorflow import keras
 
   obj_result = '-100'
   outdir = '%s'
@@ -17,7 +22,8 @@ try:
   if not os.path.exists(outdir):
       os.makedirs(outdir)
 
-  hyper_parameter_map = json.loads("""%s""")
+  J = """%s"""
+  hyper_parameter_map = json.loads(J)
   hyper_parameter_map['framework'] = 'keras'
   hyper_parameter_map['save'] = '{}/output'.format(outdir)
   hyper_parameter_map['instance_directory'] = outdir
@@ -31,7 +37,8 @@ try:
 except Exception as e:
   info = sys.exc_info()
   s = traceback.format_tb(info[2])
-  sys.stdout.write('EXCEPTION: \\n' + repr(e) + ' ... \\n' + ''.join(s))
+  sys.stdout.write('\\n\\nEXCEPTION in obj() code: \\n' +
+                   repr(e) + ' ... \\n' + ''.join(s))
   sys.stdout.write('\\n')
   sys.stdout.flush()
   obj_result = 'EXCEPTION'

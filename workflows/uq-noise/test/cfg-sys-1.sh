@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-2}
+export PROCS=${PROCS:-30}
 # export PROCS=${PROCS:-128}
 
 # MPI processes per node
@@ -12,7 +12,7 @@ export PROCS=${PROCS:-2}
 export PPN=${PPN:-1}
 
 # For Theta:
-export QUEUE=${QUEUE:-debug-cache-quad}
+#export QUEUE=${QUEUE:-batch-hm}
 # export QUEUE=R.candle
 
 export WALLTIME=${WALLTIME:-02:00:00}

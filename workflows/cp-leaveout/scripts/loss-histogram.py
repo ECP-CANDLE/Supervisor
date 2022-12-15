@@ -1,4 +1,3 @@
-
 # LOSS HISTOGRAM
 # usage: python3 scripts/loss-histogram.py < $D/losses.txt
 

@@ -16,22 +16,26 @@
     "name": "dense",
     "type": "categorical",
     "element_type": "string",
-    "values": ["1000",
-               "1000 1000",
-               "1000 1000 1000",
-               "1000 1000 1000 1000",
-               "1000 1000 1000 1000 1000"]
+    "values": [
+      "1000",
+      "1000 1000",
+      "1000 1000 1000",
+      "1000 1000 1000 1000",
+      "1000 1000 1000 1000 1000"
+    ]
   },
 
   {
     "name": "dense_feature_layers",
     "type": "categorical",
     "element_type": "string",
-    "values": ["1000",
-               "1000 1000",
-               "1000 1000 1000",
-               "1000 1000 1000 1000",
-               "1000 1000 1000 1000 1000"]
+    "values": [
+      "1000",
+      "1000 1000",
+      "1000 1000 1000",
+      "1000 1000 1000 1000",
+      "1000 1000 1000 1000 1000"
+    ]
   },
 
   {
@@ -90,16 +94,16 @@
   {
     "name": "clipnorm",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
   {
     "name": "clipvalue",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
@@ -107,7 +111,7 @@
     "name": "decay",
     "type": "float",
     "lower": 0,
-    "upper": 1e01,
+    "upper": 1e1,
     "sigma": 0.5
   },
 
@@ -122,8 +126,8 @@
   {
     "name": "rho",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
@@ -131,7 +135,7 @@
     "name": "momentum",
     "type": "float",
     "lower": 0,
-    "upper": 1e01,
+    "upper": 1e1,
     "sigma": 0.5
   },
 
@@ -143,16 +147,16 @@
   {
     "name": "beta_1",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
   {
     "name": "beta_2",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   }
 ]

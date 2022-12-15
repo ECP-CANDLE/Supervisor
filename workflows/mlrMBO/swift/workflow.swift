@@ -16,7 +16,7 @@ import assert;
 import python;
 /* Helper for reporting environment variables common/swift/candle_utils.swift
 * import candle_utils;
-* 
+*
 * report_env();
 */
 
@@ -35,6 +35,10 @@ string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
 
 string model_name     = getenv("MODEL_NAME");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string candle_image     = getenv("CANDLE_IMAGE");
+string init_params_file     = getenv("INIT_PARAMS_FILE");
+
 
 printf("CANDLE mlrMBO Workflow");
 printf("TURBINE_OUTPUT: " + turbine_output);
@@ -89,7 +93,7 @@ string FRAMEWORK = "keras";
         foreach param, j in param_array
         {
             results[j] = obj(param,
-                             "%00i_%000i_%0000i" % (restart_number,i,j));
+                             "%02i_%03i_%04i" % (restart_number,i,j));
         }
         string result = join(results, ";");
         // printf(result);

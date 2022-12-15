@@ -41,7 +41,7 @@ export DRUG_REPSONSE_DATA=$BENCHMARKS_ROOT/Data/Pilot1/rescaled_combined_single_
 # Location of mlrMBO input file. uno_quick_test is
 # appropriate for testing
 PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/uno_quick_test.R
-# Actual useful mlrMBO input file for uno: uno_hpo.R 
+# Actual useful mlrMBO input file for uno: uno_hpo.R
 # PARAM_SET_FILE=$EMEWS_PROJECT_ROOT/data/uno_hpo.R
 
 if [[ "${PARAM_SET_FILE:-}" == "" ]]; then

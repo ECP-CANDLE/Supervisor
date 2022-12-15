@@ -5,6 +5,7 @@ set -eu
 
 # Input:  Provide an experiment directory
 # Output: Node information printed to screen (pipe this into less)
+# See Node.str_table() for the output format
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 

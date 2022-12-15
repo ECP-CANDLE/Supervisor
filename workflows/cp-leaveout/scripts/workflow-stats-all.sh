@@ -17,5 +17,5 @@ set -x
 for i in {0..4}
 do
   $THIS/workflow-stats.sh --percentile --token ${TOKENS[$i]} \
-                          experiments/RSIF/${DIRS[$i]}
+                          experiments/${DIRS[$i]}
 done

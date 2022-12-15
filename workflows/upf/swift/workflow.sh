@@ -4,10 +4,10 @@ set -eu
 # UPF WORKFLOW SH
 
 # Autodetect this workflow directory
-export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
-export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+export EMEWS_PROJECT_ROOT=$( readlink --canonicalize $( dirname $0 )/.. )
+export WORKFLOWS_ROOT=$(     readlink --canonicalize $EMEWS_PROJECT_ROOT/..  )
+export BENCHMARKS_ROOT=$(    readlink --canonicalize $EMEWS_PROJECT_ROOT/../../../Benchmarks )
 
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
 BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
@@ -29,10 +29,10 @@ then
 fi
 
 if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3
-  UPF=$4
+  get_site    $1  # Sets SITE
+  get_expid   $2  # Sets EXPID, TURBINE_OUTPUT
+  get_cfg_sys $3  # Sets CFG_SYS
+  UPF=$4          # The JSON hyperparameter file
  }
 then
   usage
@@ -42,6 +42,10 @@ fi
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
+export PYTHONPATH
+
+# Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
+export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
 
 source_site env   $SITE
 source_site sched   $SITE
@@ -84,11 +88,28 @@ mkdir -pv $TURBINE_OUTPUT/run
 which mpicc
 which swift-t
 
-module list
+# module list
 
 cp -v $UPF $TURBINE_OUTPUT
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
+# ALW 2020-11-15: If we're running the candle wrapper scripts in which
+# case if this file were being called then $CANDLE_RUN_WORKFLOW=1,
+# don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings
+# in the declaration below are handled by the wrapper scripts
+if [[ ${site2} == "summit" && ${CANDLE_RUN_WORKFLOW:-0} != 1 ]]
+then
+  export TURBINE_LAUNCH_OPTIONS="-a1 -g1 -c7"
+fi
+
+# TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+TURBINE_STDOUT=
+
+echo OMP_NUM_THREADS ${OMP_NUM_THREADS:-UNSET}
+export OMP_NUM_THREADS=1
+
+log_path LD_LIBRARY_PATH
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
@@ -96,7 +117,6 @@ swift-t -n $PROCS \
         -p -I $EQR -r $EQR \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e MODEL_SH \
@@ -105,10 +125,9 @@ swift-t -n $PROCS \
         -e MODEL_NAME \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e TURBINE_MPI_THREAD=1 \
+        -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
-        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e PYTHONUNBUFFERED=1 \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 

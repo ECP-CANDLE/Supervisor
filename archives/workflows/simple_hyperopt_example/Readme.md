@@ -1,14 +1,14 @@
-# Simple Example of EMEWS Integration with hyperopt #
+# Simple Example of EMEWS Integration with hyperopt
 
 This directory contains a simple example of integrating hyperopt with
 EMEWS.
 
 Requirements:
 
-* Python 2.7 or 3
-* hyperopt : (http://hyperopt.github.io/hyperopt/). Install with
-`pip install hyperopt`
-* Swift/T with python extension
+- Python 2.7 or 3
+- hyperopt : (http://hyperopt.github.io/hyperopt/). Install with
+  `pip install hyperopt`
+- Swift/T with python extension
 
 Run the example with `swift/simple_workflow.sh`. That should properly set the
 PYTHONPATH, but it does assume that swift-t is in your PATH already.
@@ -42,7 +42,8 @@ returned back to hyperopt via the eqpy_hyperopt package.
 The swift workflow in `swift/swift_run_eqpy.swift` performs the following steps:
 
 1. Initialize the eqpy_hyperopt python with the hyperopt algorithm parameters.
-These are formated as a string representation of a python dictionary.
+   These are formated as a string representation of a python dictionary.
+
 ```
 {'space' : %s,
 'algo' : %s,
@@ -50,22 +51,25 @@ These are formated as a string representation of a python dictionary.
 'param_batch_size' : %d,
 'seed' : %d}
 ```
+
 These are explained in the Readme for eqpy_hyperopt in this repository.
 
 2. Request a list of parameter sets from hyperopt. The list is a ";" separated
-string of python dictionaries. For example,
+   string of python dictionaries. For example,
+
 ```
 {'x': [-1.5477895914281512]};{'x': [1.23432434]};{'x': [0.32343]}
 ```
+
 If there were more parameters in addition to 'x', those would appear in the
 dictionary as well.
 
 3. Split the list of parameters into an array and execute the model on
-each element in that array in parallel. As explained above, executing the model consists
-of pasting in the parameters in the python 'model' code and executing that
-with a swift python call.
+   each element in that array in parallel. As explained above, executing the model consists
+   of pasting in the parameters in the python 'model' code and executing that
+   with a swift python call.
 
 4. Repeat 2 and 3 until the maximum number of evaluations has been reached
-(`max_evals`).
+   (`max_evals`).
 
 5. Print and write out the best parameter set found by hyperopt.

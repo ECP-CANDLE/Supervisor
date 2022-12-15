@@ -20,23 +20,39 @@ MPI_ENABLED = 0
 
 # Cori
 # Module tensorflow/intel-head
-PYTHON_HOME = /usr/common/software/tensorflow/intel-tensorflow/head
-PYTHON_VERSION_MAJOR = 2
-PYTHON_VERSION_MINOR = 7
-PYTHON_VERSION_SUFFIX =
-CC = gcc # module load gcc
+# PYTHON_HOME = /usr/common/software/tensorflow/intel-tensorflow/head
+# PYTHON_VERSION_MAJOR = 2
+# PYTHON_VERSION_MINOR = 7
+# PYTHON_VERSION_SUFFIX =
+# CC = gcc # module load gcc
 
-# Dunedin
+CC = gcc
+
+# Dunedin 3.8 Spack
+PYTHON_HOME = /usr
+PYTHON_VERSION_MAJOR = 3
+PYTHON_VERSION_MINOR = 8
+PYTHON_VERSION_SUFFIX =
+
+# Dunedin 3.7.3 TF
+# PYTHON_HOME = ${HOME}/Public/sfw/Python-3.7.3-tf
+# PYTHON_VERSION_MAJOR = 3
+# PYTHON_VERSION_MINOR = 7
+# PYTHON_VERSION_SUFFIX = m
+
+# Dunedin 2.7
 # PYTHON_HOME = /usr
 # PYTHON_VERSION_MAJOR = 2
 # PYTHON_VERSION_MINOR = 7
 # PYTHON_VERSION_SUFFIX =
 
+
 # End Python settings
 
 PYTHON_VERSION = $(PYTHON_VERSION_MAJOR).$(PYTHON_VERSION_MINOR)$(PYTHON_VERSION_SUFFIX)
 INCLUDES = -I $(PYTHON_HOME)/include/python$(PYTHON_VERSION)
-LIBS     = -L $(PYTHON_HOME)/lib -lpython$(PYTHON_VERSION)
+# LIBS     = -L $(PYTHON_HOME)/lib
+LIBS     += -lpython$(PYTHON_VERSION) -ldl
 RPATHS   = -Wl,-rpath -Wl,$(PYTHON_HOME)/lib
 
 DEFINES = -DPYTHON_VERSION_MAJOR=$(PYTHON_VERSION_MAJOR) \

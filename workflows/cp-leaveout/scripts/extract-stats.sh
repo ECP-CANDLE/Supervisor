@@ -38,7 +38,7 @@ FORMAT="%-6s %-10s %-8s %-8s %-8s %-8s"
                sed "/Current time/ {s/Current time \.\.\.\.\(.*\)/\1/ ; h}; \$!d; x" \
                    $DIR/run/$RUN/model.log
              ) )
-    if [ ${#STATS[@]} -gt 0 ]
+    if (( ${#STATS[@]} > 0 ))
     then
         printf "  $FORMAT\n" $STAGE $RUN ${STATS[@]}
     fi

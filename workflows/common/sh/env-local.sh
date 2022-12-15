@@ -4,7 +4,7 @@
 # Assumes WORKFLOWS_ROOT, BENCHMARK_DIR, BENCHMARKS_ROOT are set
 # Modify to specify the location of SWIFT_T installation
 export SWIFT_T=${SWIFT_T:-$HOME/install/swift-t/}
-export LD_LIBRARY_PATH+=$SWIFT_T/turbine/lib:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib
+export LD_LIBRARY_PATH+=:$SWIFT_T/turbine/lib:$SWIFT_T/lb/lib:$SWIFT_T/cutils/lib:$SWIFT_T/stc/lib:
 
 # Python
 export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}

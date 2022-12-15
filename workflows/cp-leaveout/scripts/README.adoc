@@ -33,20 +33,22 @@ COMPLETE / TOTAL = 1364 / 1364 : 0 remaining.
 
 ==== Generate a Node Pickle (extract-node-info)
 
-This is a Python Pickle containing the Node data.  See Node.py .
+This makes the Python Pickle containing the Node data.  See Node.py .
 This avoids needing to walk all logs all the time (which takes tens of seconds).
 
 ----
 $ scripts/extract-node-info.sh $D
 ----
 
+The data structure in the Pickle is a simple dictionary mapping node ID strings e.g. "1.2.3.4" to object of type Node.
+
 ==== Print Node info (print-node-info)
 
-Prints a big table of all Node statistics:
+Prints a big table of all Node statistics using the Node Pickle.
 
 Format:
 
-NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
+NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX LOSS VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
 
 ----
 $ scripts/print-node-info.sh $D
@@ -85,8 +87,11 @@ Compile workflow statistics
 
 === Analysis for model.log files
 
-These are not really supported for Summit runs because we are using in-memory Python,
-but they could be easily fixed.  Also, they run against the model.logs and not the Pickle, so they are slow.
+These are not really supported for Summit runs
+because we are using in-memory Python,
+but they could be easily fixed.
+Also, they run against the model.logs and not the Pickle,
+so they are slow.
 
 ==== extract-stats.sh
 
@@ -121,6 +126,14 @@ Average GPU utilization
 ==== List Nodes (list-nodes)
 
 List the Nodes from the JSON file.
+
+==== List Node Singles
+
+List the Nodes from the JSON file with a single cell line.
+
+==== Leaf Stats
+
+Report key stats from the python.log for the given nodes.
 
 ==== tar experiment
 

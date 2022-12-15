@@ -1,42 +1,47 @@
-
 # MAIN PY
 # The main code for the search algorithm
 
 from __future__ import print_function
 
-import logging, os, sys, time
-
-from utils import *
+import logging
+import os
+import sys
+import time
 
 from Problem import Problem
 from Task import Task
+from utils import *
 
 logger = logging.getLogger(__name__)
+
 
 def main():
     setup_log()
     parallelism, points_init, points_max = parse_args()
     problem, optimizer = setup()
-    success = search(problem, optimizer,
-                     parallelism, points_init, points_max)
+    success = search(problem, optimizer, parallelism, points_init, points_max)
     print("Workflow success!" if success else "Workflow failed!")
 
+
 def setup_log():
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(levelname)s: %(message)s',
-                        datefmt='%Y/%m/%d %H:%M:%S')
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
 
 def parse_args():
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("parallelism")
     parser.add_argument("points_init")
     parser.add_argument("points_max")
     args = parser.parse_args()
     print_namespace("optimizer settings:", args)
-    return (int(args.parallelism),
-            int(args.points_init),
-            int(args.points_max))
+    return (int(args.parallelism), int(args.points_init), int(args.points_max))
+
 
 def setup():
 
@@ -49,12 +54,19 @@ def setup():
     seed = 42
 
     # Start the optimizer
-    parDict = { 'kappa' : 1.96 }
+    parDict = {"kappa": 1.96}
     space = [problem.space[key] for key in problem.params]
-    optimizer = Optimizer(space, base_estimator='RF', acq_optimizer='sampling',
-                    acq_func='LCB', acq_func_kwargs={}, random_state=seed)
+    optimizer = Optimizer(
+        space,
+        base_estimator="RF",
+        acq_optimizer="sampling",
+        acq_func="LCB",
+        acq_func_kwargs={},
+        random_state=seed,
+    )
     logger.debug("setup() STOP")
     return (problem, optimizer)
+
 
 def search(problem, optimizer, parallelism, points_init, points_max):
     print("search start:")
@@ -113,5 +125,6 @@ def search(problem, optimizer, parallelism, points_init, points_max):
             points = []
     return success
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

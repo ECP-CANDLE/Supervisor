@@ -86,4 +86,4 @@ set -x
 swift-t -n $PROCS $MACHINE -p  -r$EQPy -I $EQPy \
   -e MPICH_MAX_THREAD_SAFETY=$MPICH_MAX_THREAD_SAFETY \
   -e PYTHONPATH=$PYTHONPATH \
-  $EMEWS_PROJECT_ROOT/swift/workflow.swift 
+  $EMEWS_PROJECT_ROOT/swift/workflow.swift

@@ -13,7 +13,7 @@ source $SUPERVISOR/workflows/common/sh/utils.sh
 SIGNATURE -H "Provide an experiment DIR (e.g., .../experiments/X042)!" \
           DIR - ${*}
 
-if ! [ -d $DIR ]
+if ! [[ -d $DIR ]]
 then
   echo "Does not exist: $DIR"
   exit 1

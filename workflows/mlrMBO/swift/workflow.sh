@@ -13,9 +13,9 @@ then
   echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
   exit 1
 fi
-BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
+BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4
+BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Attn1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/examples/ADRP:$BENCHMARKS_ROOT/examples/xform-smiles
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
@@ -36,28 +36,43 @@ usage()
   echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 7 )) && (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
-if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
- }
+CANDLE_MODEL_TYPE="BENCHMARKS"
+
+if (( ${#} == 7 ))
 then
+  CANDLE_MODEL_TYPE=$6
+  CANDLE_IMAGE=$7
+ elif (( ${#} == 5 ))
+ then
+   echo "Not a singularity run"
+else
   usage
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+TURBINE_OUTPUT=""
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/
+  echo "Running "$MODEL_NAME "workflow with" $CANDLE_MODEL_TYPE "and image" $CANDLE_IMAGE
+fi
+
+get_site    $1 # Sets SITE
+get_expid   $2 $CANDLE_MODEL_TYPE # Sets EXPID
+get_cfg_sys $3
+get_cfg_prm $4
+MODEL_NAME=$5
 
 # Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+PYTHONPATH+=:$BENCHMARK_DIR   # :$BENCHMARKS_ROOT/common # This is now candle_lib
+# Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
+export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
 
 source_site env   $SITE
 source_site sched $SITE
@@ -129,11 +144,14 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# use for summit (slurm needs two %)
-if [ "${SITE:-}" == "summit" ]; then
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-else
+site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
+# Use for Summit (LSF needs two %)... actually, it may not be LSF as Biowulf (which uses SLURM) seems to need this too now
+if [ ${site2:-} == "summit" ] || [ ${site2:-} == "biowulf" ]
+then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 fi
 
 mkdir -pv $TURBINE_OUTPUT/out
@@ -155,14 +173,24 @@ else
   STDOUT=""
 fi
 
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
+  exit 1
+fi
+
+# ALW 2021-01-21: Please don't comment out the "-o $TURBINE_OUTPUT/workflow.tic" option below; otherwise, we get permissions issues on Biowulf. Thanks!
+set -x
 swift-t -O 0 -n $PROCS \
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
         -I $OBJ_DIR \
         -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+        -e APP_PYTHONPATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
@@ -177,10 +205,10 @@ swift-t -O 0 -n $PROCS \
         -e SH_TIMEOUT \
         -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
+        -e CANDLE_DATA_DIR \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
   tee $STDOUT
-
 
 if (( ${PIPESTATUS[0]} ))
 then
@@ -191,4 +219,5 @@ fi
 # echo "EXIT CODE: 0" | tee -a $STDOUT
 
 # Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt
+# ALW 1/14/21: Removing this line again as I may not care about the job monitoring anymore and it clouds up the working directory
+#echo $TURBINE_OUTPUT > turbine-directory.txt

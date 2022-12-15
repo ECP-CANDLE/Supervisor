@@ -24,7 +24,7 @@ public:
 		}
 		this->d_condition.notify_one();
 	}
-	
+
 	T pop() {
 		std::unique_lock<std::mutex> lock(this->d_mutex);
 		// [ capture-list ] ( params ) { body }

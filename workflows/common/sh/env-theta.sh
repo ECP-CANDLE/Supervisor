@@ -1,5 +1,6 @@
 
-# ENV THETA
+# ENV Theta
+
 # Environment settings for Theta (Swift, Python, R, Tcl, etc.)
 
 # TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1

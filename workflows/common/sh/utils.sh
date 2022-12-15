@@ -62,9 +62,12 @@ show()
 
 log_path()
 # Pretty print a colon-separated variable
+# Provide the name of the variable (no dollar sign)
 {
   echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl
+  eval echo \$$1 | tr : '\n' | nl --number-width=2 --number-separator ": "
+  echo --
+  echo
 }
 
 which_check()
@@ -89,7 +92,13 @@ python_envs()
   RESULT=()
   if [[ ${PYTHONPATH:-} != "" ]]
   then
-    RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    # We do not currently need this except on MCS and Spock:
+    # Swift/T should grab PYTHONPATH automatically
+    if [[ ${SITE} == "mcs" ]] || [[ ${SITE} == "spock" ]]
+    then
+      # MCS discards PYTHONPATH in subshells
+      RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    fi
   fi
   if [[ ${PYTHONHOME:-} != "" ]]
   then
@@ -100,9 +109,12 @@ python_envs()
     RESULT+=( -e PYTHONUSERBASE=$PYTHONUSERBASE )
   fi
 
-  # Cannot use echo due to "-e" in RESULT
-  R=${RESULT[@]} # Suppress word splitting
-  printf -- "%s\n" $R
+  if (( ${#RESULT[@]} )) # RESULT may be empty
+  then
+    # Cannot use echo due to "-e" in RESULT
+    R=${RESULT[@]} # Suppress word splitting
+    printf -- "%s\n" $R
+  fi
 }
 
 get_site()
@@ -115,6 +127,7 @@ get_site()
   fi
   export SITE=$1
 }
+
 
 check_experiment() {
   if [[ -d $TURBINE_OUTPUT ]]; then
@@ -132,11 +145,13 @@ check_experiment() {
 
 get_expid()
 # Get Experiment IDentifier
-# EXPID is the name of the new directory under experiments/
-# If the user provides -a, this function will autogenerate
-#   a new EXPID under the experiments directory,
-# If EXP_SUFFIX is set in the environment, the resulting
-#   EXPID will have that suffix.
+# EXPID: The name of the new directory under experiments/
+#        If the user provides -a, this function will autogenerate
+#          a new EXPID under the experiments directory,
+#        If EXP_SUFFIX is set in the environment, the resulting
+#          EXPID will have that suffix.
+# CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
+#        Defaults to "BENCHMARKS"
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
@@ -144,13 +159,21 @@ get_expid()
 {
   if (( ${#} < 1 ))
   then
-    echo "get_expid(): could not find EXPID argument!"
+    echo "get_expid(): provide EXPID [CANDLE_MODEL_TYPE?]"
     return 1
   fi
 
-  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
-
   export EXPID=$1
+  export CANDLE_MODEL_TYPE=${2:-Benchmarks}
+
+  export EXPERIMENTS=""
+
+  if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+  then
+    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/output/experiments}
+  else # "BENCHMARKS"
+    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  fi
 
   local i=0 EXPS E TO
 
@@ -158,7 +181,12 @@ get_expid()
   then
     shift
     # Search for free experiment number
-    mkdir -pv $EXPERIMENTS
+    if ! mkdir -pv $EXPERIMENTS
+    then
+      echo "get_expid(): could not make experiments directory:" \
+           $EXPERIMENTS
+      return 1
+    fi
     EXPS=( $( ls $EXPERIMENTS ) )
     if (( ${#EXPS[@]} != 0 ))
     then
@@ -202,7 +230,7 @@ next()
   do
     FILE=$( printf $PATTERN $i )
     [[ ! -e $FILE ]] && break
-    let i++ || true # Don't fail under set -e
+    let ++i
   done
   REPLY=$FILE
 }
@@ -335,22 +363,24 @@ queue_wait_site()
   SITE=$1
   JOBID=$2
 
-  if [[ $SITE == "cori" ]]
+  site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
+  if [[ $site2 == "cori" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $SITE == "theta" ]]
+  elif [[ $site2 == "theta" ]]
   then
     queue_wait_cobalt $JOBID
-  elif [[ $SITE == "titan" ]]
-  then
-    queue_wait_pbs $JOBID
-  elif [[ $SITE == "summit" ]]
+  elif [[ $site2 =~ summit* ]]
   then
     queue_wait_lsf $JOBID
-  elif [[ $SITE == "pascal" ]]
+  elif [[ $site2 == "spock" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $SITE == "biowulf" ]]
+  elif [[ $site2 == "pascal" ]]
+  then
+    queue_wait_slurm $JOBID
+  elif [[ $site2 == "biowulf" ]]
   then
     queue_wait_slurm $JOBID
   else
@@ -551,6 +581,13 @@ log_script() {
   echo "" >> $LOG_NAME
   echo "## SCRIPT ###" >> $LOG_NAME
   cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+
+  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
+  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
+    if [ -f "$CANDLE_INPUT_FILE" ]; then
+      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+    fi
+  fi
 }
 
 check_directory_exists() {
@@ -598,11 +635,12 @@ signature()
   local L # The list of variable names
   L=()
   local SELF=$1 HELP="" VERBOSE=0
+  local NL="\n"
   shift
   while getopts "H:v" OPT
   do
     case $OPT in
-      H) HELP=$OPTARG ;;
+      H) HELP+="$NL$OPTARG" ;;
       v) VERBOSE=1    ;;
       *) return 1 ;; # Bash prints an error
     esac
@@ -624,7 +662,7 @@ signature()
     echo "$SELF: Required arguments: ${L[@]}"
     if (( ${#HELP} ))
     then
-      echo "$SELF: Usage: $HELP"
+      printf "$SELF: Usage: $HELP\n" # Need printf for NLs in HELP
     fi
     exit 1
   fi

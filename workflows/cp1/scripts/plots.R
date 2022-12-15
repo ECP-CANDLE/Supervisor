@@ -52,10 +52,10 @@ ggplot (se, aes(x=start, y=hpo_id)) +
   geom_segment(
     xend=se$end, yend=se$hpo_id,
     size = 3
-  ) + 
+  ) +
   xlab('time (minutes)') +
   ylab('hpo id') +
-  scale_x_continuous(limits = c(0, max(se$end))) 
+  scale_x_continuous(limits = c(0, max(se$end)))
 
 
 ft <- fread("~/Documents/results/cp1/train_upf_timings.csv")
@@ -63,7 +63,7 @@ ft$time_per_epoch <- ft$total_train_time / ft$epochs
 fwrite(ft, file="~/Documents/results/cp1/train_upf_timings.csv", row.names = F)
 
 agg_ft <- ft[, .(min(total_train_time), max(total_train_time), mean(total_train_time), sd(total_train_time),
-        min(epochs), max(epochs), mean(epochs), sd(epochs), 
+        min(epochs), max(epochs), mean(epochs), sd(epochs),
         min(time_per_epoch), max(time_per_epoch), mean(time_per_epoch), sd(time_per_epoch)), by=model_name]
 setnames(agg_ft, c("model_name", "min_train_time", "max_train_time", "mean_train_time", "std_train_time", "min_epochs",
                    "max_epochs", "mean_epochs", "std_epochs", "min_time_per_epoch", "max_time_per_epoch", "mean_time_per_epoch", "std_time_per_epoch"))
@@ -72,7 +72,7 @@ fwrite(agg_ft, file="~/Documents/results/cp1/agg_timings_by_model.csv", row.name
 
 idt <- fread("~/Documents/results/cp1/inference_results.csv")
 agg_idt <- idt[, .(min(r2), max(r2), mean(r2), sd(r2),
-                 min(mae), max(mae), mean(mae), sd(mae), 
+                 min(mae), max(mae), mean(mae), sd(mae),
                  min(mse), max(mse), mean(mse), sd(mse)), by=model_class]
 setnames(agg_idt, c("model_class", "min_r2", "max_r2", "mean_r2", "std_r2", "min_mae",
                    "max_mae", "mean_mae", "std_mae", "min_mse", "max_mse", "mean_mse", "std_mse"))
@@ -92,7 +92,7 @@ dts = list()
 i = 1
 
 for (f in fs) {
-  hpo_dt <- fread(f, col.names = c("run_id", 'xcorr_record_id', 'params', 'instance_dir', 'timestamp', 'val_loss'), 
+  hpo_dt <- fread(f, col.names = c("run_id", 'xcorr_record_id', 'params', 'instance_dir', 'timestamp', 'val_loss'),
                   sep="|")
   fname = basename(f)
   vals <- strsplit(fname, "_", fixed=T)
@@ -105,7 +105,7 @@ for (f in fs) {
 results_dir <- '~/Documents/results/cp1/nci_hpo_log/'
 fs <- Sys.glob(paste0(results_dir, '/*_hpo_runs.txt'))
 for (f in fs) {
-  hpo_dt <- fread(f, col.names = c("run_id", 'xcorr_record_id', 'params', 'instance_dir', 'timestamp', 'val_loss'), 
+  hpo_dt <- fread(f, col.names = c("run_id", 'xcorr_record_id', 'params', 'instance_dir', 'timestamp', 'val_loss'),
                   sep="|")
   fname = basename(f)
   vals <- strsplit(fname, "_", fixed=T)
@@ -130,5 +130,3 @@ ggplot(data=hpos[val_loss < 1e+03], mapping=aes(x=iteration, y=val_loss)) +
   ylab("Val Loss (log scale)") +
   scale_y_continuous(trans='log10') +
   facet_wrap(~ hpo_id, ncol=5)
-  
-

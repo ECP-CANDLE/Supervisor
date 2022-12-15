@@ -1,6 +1,7 @@
-import threading
+import importlib
 import sys
-import importlib, traceback
+import threading
+import traceback
 
 EQPY_ABORT = "EQPY_ABORT"
 
@@ -17,6 +18,7 @@ p = None
 aborted = False
 wait_info = None
 
+
 class WaitInfo:
 
     def __init__(self):
@@ -26,6 +28,7 @@ class WaitInfo:
         if self.wait < 60:
             self.wait += 1
         return self.wait
+
 
 class ThreadRunner(threading.Thread):
 
@@ -41,12 +44,14 @@ class ThreadRunner(threading.Thread):
             # tuple of type, value and traceback
             self.exc = traceback.format_exc()
 
+
 def init(pkg):
     global p, wait_info
     wait_info = WaitInfo()
     imported_pkg = importlib.import_module(pkg)
     p = ThreadRunner(imported_pkg)
     p.start()
+
 
 def output_q_get():
     global output_q, aborted
@@ -71,10 +76,12 @@ def output_q_get():
 
     return result
 
+
 def OUT_put(string_params):
     output_q.put(string_params)
 
+
 def IN_get():
-    #global input_q
+    # global input_q
     result = input_q.get()
     return result

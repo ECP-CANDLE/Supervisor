@@ -2,56 +2,57 @@
 
 mlrMBO is an iterative optimizer written in R. It evaluates the best values of hyperparameters for CANDLE "Benchmarks" available here: `git@github.com:ECP-CANDLE/Benchmarks.git` - given set of parameters.
 
-## Running ##
+## Running
 
-1. cd into the *~/Supervisor/workflows/mlrMBO/test* directory
-2. Specify the MODEL_NAME in *test-1.sh* file, hyperparameters in *cfg-prm-1.txt*
-3. Specify the #procs, queue etc. in *cfg-sys-1.sh* file
-4. Launch the test by invoking *./upf-1.sh <machine_name>*
-    where machine_name can be cori, theta, titan etc.
+1. cd into the _~/Supervisor/workflows/mlrMBO/test_ directory
+2. Specify the MODEL*NAME in \_test-1.sh* file, hyperparameters in _cfg-prm-1.txt_
+3. Specify the #procs, queue etc. in _cfg-sys-1.sh_ file
+4. Launch the test by invoking _./upf-1.sh <machine_name>_
+   where machine_name can be cori, theta, titan etc.
 5. The benchmark will be run for the number of processors specified
 6. Final objective function value will be available in the experiments directory and also printed
 
-
-## User requirements ##
+## User requirements
 
 What you need to install to run the workflow:
 
-* This workflow - `git@github.com:ECP-CANDLE/Supervisor.git` .
+- This workflow - `git@github.com:ECP-CANDLE/Supervisor.git` .
   Clone and `cd` to `workflows/nt3_mlrMBO`
   (the directory containing this README).
-* NT3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
+- NT3 benchmark - `git@github.com:ECP-CANDLE/Benchmarks.git` .
   Clone and switch to the `frameworks` branch.
-* benchmark data -
- See the individual benchmarks README for obtaining the initial data
+- benchmark data -
+  See the individual benchmarks README for obtaining the initial data
 
-## Calling sequence ##
+## Calling sequence
 
 Function calls :-
-* test-1.sh -> swift/workflow.sh -> swift/workflow.swift ->
-common/swift/obj_app.swift -> common/sh/model.sh ->
-common/python/model_runner.py -> 'calls the benchmark'
+
+- test-1.sh -> swift/workflow.sh -> swift/workflow.swift ->
+  common/swift/obj_app.swift -> common/sh/model.sh ->
+  common/python/model_runner.py -> 'calls the benchmark'
 
 Scheduling scripts :-
-* upf-1.sh -> cfg-sys-1.sh -> common/sh/<machine_name> - module, scheduling, langs .sh files
 
-## Making Changes ##
+- upf-1.sh -> cfg-sys-1.sh -> common/sh/<machine_name> - module, scheduling, langs .sh files
 
-### Structure ###
+## Making Changes
 
-The point of the script structure is that it is easy to make copy and modify the `test-\*.sh` script, and the `cfg-\*.sh` scripts.  These can be checked back into the repo for use by others.  The `test-\*.sh` script and the `cfg-\*.sh` scripts should simply contain environment variables that control how `workflow.sh` and `workflow.swift` operate.
+### Structure
+
+The point of the script structure is that it is easy to make copy and modify the `test-\*.sh` script, and the `cfg-\*.sh` scripts. These can be checked back into the repo for use by others. The `test-\*.sh` script and the `cfg-\*.sh` scripts should simply contain environment variables that control how `workflow.sh` and `workflow.swift` operate.
 
 `test-1` and `cfg-{sys,prm}-1` should be unmodified for simple testing.
 
-### Calling a different objective function ###
+### Calling a different objective function
 
 To call a different objective function:
 
 1. Copy `common/swift/obj_app.swift` to a new directory and/or file name.
 2. Edit the `app` function body to run your code and return the result.
 3. Edit a `test-\*.sh` script to set environment variables:
-    * `OBJ_DIR`: Set this to the new directory (If changed. Otherwise, `OBJ_DIR` defaults to the absolute path to common/swift .)
-    * `OBJ_MODULE`: Set this to the Swift file name without suffix (If changed. Otherwise, `OBJ_MODULE` defaults to `obj_app` .)
+   - `OBJ_DIR`: Set this to the new directory (If changed. Otherwise, `OBJ_DIR` defaults to the absolute path to common/swift .)
+   - `OBJ_MODULE`: Set this to the Swift file name without suffix (If changed. Otherwise, `OBJ_MODULE` defaults to `obj_app` .)
 4. Run it!
 
 Simple test for changing objective function:
@@ -66,16 +67,16 @@ Swift: Assertion failed!: test-obj-fail.swift was successfully invoked!
 ...
 ```
 
-This indicates that the code in `test_obj_fail.swift` was executed instead of  `obj_app.swift` .
+This indicates that the code in `test_obj_fail.swift` was executed instead of `obj_app.swift` .
 
-### Where to check for output ###
+### Where to check for output
 
 This includes error output.
 
-When you run the test script, you will get a message about `TURBINE_OUTPUT` .  This will be the main output directory for your run.
+When you run the test script, you will get a message about `TURBINE_OUTPUT` . This will be the main output directory for your run.
 
-* On a local system, stdout/stderr for the workflow will go to your terminal.
-* On a scheduled system, stdout/stderr for the workflow will go to `TURBINE_OUTPUT/output.txt`
+- On a local system, stdout/stderr for the workflow will go to your terminal.
+- On a scheduled system, stdout/stderr for the workflow will go to `TURBINE_OUTPUT/output.txt`
 
 The individual objective function (model) runs stdout/stderr go into directories of the form:
 

@@ -6,20 +6,18 @@
 
 
 param.set <- makeParamSet(
-  
+
   makeDiscreteParam("cell_features", values=c("expression")),
 
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
 
   makeDiscreteParam("residual", values=c(1, 0)),
-                  
-                  
+
+
   makeDiscreteParam("reduce_lr", values=c(1, 0)),
-                    
+
   makeDiscreteParam("warmup_lr", values=c(1, 0)),
-                                     
+
   makeIntegerParam("epochs", lower=1, upper=3)
 )
-
-

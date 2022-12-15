@@ -38,6 +38,9 @@ export IGNORE_ERRORS=0
 # it may be ncessary to include its location in the PYTHONPATH
 # export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
 # for running locally, edit as necessary
 # export PYTHONHOME=$HOME/anaconda3
 # export PYTHON=python3.6

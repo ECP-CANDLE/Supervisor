@@ -5,9 +5,8 @@
 
 #include "controller.h"
 
-int
-main()
+int main()
 {
-
+  printf("OK\n");
   return 0;
 }

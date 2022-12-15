@@ -6,23 +6,23 @@
 #      and  1 process is reserved for the DB client.
 # The default of 4 gives you 2 workers,
 #     i.e., 2 concurrent Keras runs.
-export PROCS=${PROCS:-4}
+# Bin 	Min Nodes 	Max Nodes 	Max Walltime (Hours) 	Aging Boost (Days)
+# 1 	2,765 	4,608 	24.0 	15
+# 2 	922 	2,764 	24.0 	10
+# 3 	92 	921 	12.0 	0
+# 4 	46 	91 	6.0 	0
+# 5 	1 	45 	2.0
+export PROCS=${PROCS:-6}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
-
-# For Theta:
-export QUEUE=${QUEUE:-debug-flat-quad}
-# export QUEUE=R.candle
 
 export WALLTIME=${WALLTIME:-12:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
 #export TURBINE_LAUNCH_OPTIONS="-a6 -g6 -c42"
-#export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
-export TURBINE_DIRECTIVE="#BSUB -alloc_flags \"NVME maximizegpfs\""
 
 #export PROJECT=Candle_ECP
 

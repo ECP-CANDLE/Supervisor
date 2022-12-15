@@ -62,7 +62,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
 # settings.json file has all the parameter combinations to be tested
 
 #echo swift-t -l  -n $PROCS $EMEWS_PROJECT_ROOT/random-sweep.swift $*
-#swift-t  -l -n $PROCS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json 
+#swift-t  -l -n $PROCS $EMEWS_PROJECT_ROOT/random-sweep.swift $* --settings=$PWD/../data/settings.json
 
 
 
@@ -86,5 +86,3 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         $EMEWS_PROJECT_ROOT/swift/random-sweep.swift ${CMD_LINE_ARGS[@]}
-
-

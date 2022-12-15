@@ -16,7 +16,7 @@
   {
     "name": "use_landmark_genes",
     "type": "constant",
-    "value": 1
+    "value": 0
   },
 
   {
@@ -31,12 +31,14 @@
     "name": "dense",
     "type": "categorical",
     "element_type": "string",
-    "values": ["1500 500",
-                "978 978",
-                "978 978 978",
-                "978 978 978 978",
-                "978 978 978 978 978",
-                "978 978 978 978 978 978"]
+    "values": [
+      "1500 500",
+      "978 978",
+      "978 978 978",
+      "978 978 978 978",
+      "978 978 978 978 978",
+      "978 978 978 978 978 978"
+    ]
   },
 
   {
@@ -77,7 +79,7 @@
   },
 
   {
-    "name": "drop",
+    "name": "dropout",
     "type": "float",
     "lower": 0.0,
     "upper": 0.9,
@@ -87,24 +89,24 @@
   {
     "name": "epochs",
     "type": "int",
-    "lower": 100,
-    "upper": 500,
+    "lower": 20,
+    "upper": 20,
     "sigma": 20
   },
 
   {
     "name": "clipnorm",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
   {
     "name": "clipvalue",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
@@ -112,10 +114,9 @@
     "name": "decay",
     "type": "float",
     "lower": 0,
-    "upper": 1e01,
+    "upper": 1e1,
     "sigma": 0.5
   },
-
 
   {
     "name": "epsilon",
@@ -128,8 +129,8 @@
   {
     "name": "rho",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
@@ -137,7 +138,7 @@
     "name": "momentum",
     "type": "float",
     "lower": 0,
-    "upper": 1e01,
+    "upper": 1e1,
     "sigma": 0.5
   },
 
@@ -149,16 +150,16 @@
   {
     "name": "beta_1",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   },
 
   {
     "name": "beta_2",
     "type": "float",
-    "lower": 1e-04,
-    "upper": 1e01,
+    "lower": 1e-4,
+    "upper": 1e1,
     "sigma": 0.499995
   }
 ]

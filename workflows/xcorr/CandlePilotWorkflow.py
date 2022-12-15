@@ -1,7 +1,7 @@
 import sys
+
 import numpy as np
 from scipy.stats import ttest_ind
-
 
 
 # Could be used for NT3 (f(row) -> binary)
@@ -16,12 +16,14 @@ from scipy.stats import ttest_ind
 def ttest_FS(data, label, cutoff):
     unique_label = list(set(label))
     if len(unique_label) != 2:
-        print('T-test feature selection needs two sample classes')
+        print("T-test feature selection needs two sample classes")
         return None
     id0 = np.where(label == unique_label[0])[0]
     id1 = np.where(label == unique_label[1])[0]
     if len(id0) < 3 or len(id1) < 3:
-        print('T-test feature selection requires every sample class has at least 3 samples')
+        print(
+            "T-test feature selection requires every sample class has at least 3 samples"
+        )
         return None
     t, p = ttest_ind(a=data[id0, :], b=data[id1, :], axis=0, equal_var=False)
     if cutoff < 1:
@@ -41,14 +43,15 @@ def ttest_FS(data, label, cutoff):
 #       integer indicating the number of features to be selected based on absolute correlation coefficient.
 # Returns a list of indices of the selected features.
 def correlation_FS(data, target, cutoff):
-    cor = np.corrcoef(np.vstack((np.transpose(data), np.reshape(target, (1, len(target))))))
+    cor = np.corrcoef(
+        np.vstack((np.transpose(data), np.reshape(target, (1, len(target))))))
     cor = abs(cor[:-1, -1])
     if cutoff < 1:
         fid = np.where(cor >= cutoff)[0]
     else:
-        fid = sorted(range(len(cor)), key=lambda x: cor[x], reverse=True)[:int(cutoff)]
+        fid = sorted(range(len(cor)), key=lambda x: cor[x],
+                     reverse=True)[:int(cutoff)]
     return sorted(fid)
-
 
 
 # Use the COXEN approach to select the features that are generalizable between data1 and data2.
@@ -65,32 +68,34 @@ def COXEN_FS(data1, data2, cutoff):
     num = data1.shape[1]
     cor = []
     for i in range(num):
-        cor.append(np.corrcoef(np.vstack((list(cor1[:i, i]) + list(cor1[(i + 1):, i]),
-                   list(cor2[:i, i]) + list(cor2[(i + 1):, i]))))[0, 1])
+        cor.append(
+            np.corrcoef(
+                np.vstack((
+                    list(cor1[:i, i]) + list(cor1[(i + 1):, i]),
+                    list(cor2[:i, i]) + list(cor2[(i + 1):, i]),
+                )))[0, 1])
     cor = np.array(cor)
     if cutoff < 1:
         fid = np.where(cor >= cutoff)[0]
     else:
-        fid = sorted(range(num), key=lambda x: cor[x], reverse=True)[:int(cutoff)]
+        fid = sorted(range(num), key=lambda x: cor[x],
+                     reverse=True)[:int(cutoff)]
     return sorted(fid)
 
 
-
-
-
-numF = 10 # Number of features
-numS = 50 # Number of samples to be multiplied by 2
+numF = 10  # Number of features
+numS = 50  # Number of samples to be multiplied by 2
 data1 = np.random.randn(numF, numS)
 for i in range(numF):
-    data1[i, :] = data1[i, :] + i/5
+    data1[i, :] = data1[i, :] + i / 5
 data2 = np.random.randn(numF, numS)
 data1 = np.hstack((data1, data2))
 data1 = np.transpose(data1)
 label = np.array([0 for i in range(numS)] + [1 for i in range(numS)])
-data3 = np.random.randn(numF, int(numS/2))
+data3 = np.random.randn(numF, int(numS / 2))
 for i in range(numF):
-    data3[i, :] = data3[i, :] + i/5
-data4 = np.random.randn(numF, int(numS/2))
+    data3[i, :] = data3[i, :] + i / 5
+data4 = np.random.randn(numF, int(numS / 2))
 data3 = np.hstack((data3, data4))
 data3 = np.transpose(data3)
 

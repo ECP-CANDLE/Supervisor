@@ -1,12 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 # INSTALL CANDLE R
 
 # Installs all R packages needed for Supervisor workflows
 
-# pass CONFIRM=0 via command line for by passing options, default is CONFIRM=1
+# pass CONFIRM=0 via command line for by passing options,
+#      default is CONFIRM=1
 : ${CONFIRM:=1}
+
 while getopts ":y" OPTION
 do
   case $OPTION in
@@ -34,4 +36,4 @@ then
 fi
 
 THIS=$( dirname $0 )
-nice R -f $THIS/install-candle.R
+nice R -f $THIS/install-candle.R |& tee install-candle.log

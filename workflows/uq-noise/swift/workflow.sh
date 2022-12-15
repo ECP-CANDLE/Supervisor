@@ -108,6 +108,7 @@ mkdir -pv $TURBINE_OUTPUT/hpo_log
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_IMPL="py"
 OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
@@ -154,6 +155,10 @@ then
   export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 fi
 
+
+export TURBINE_DIRECTIVE="#BSUB -q batch-hm"
+TURBINE_RESIDENT_WORK_WORKERS=1
+
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
@@ -191,4 +196,3 @@ then
 fi
 
 # echo "EXIT CODE: 0" | tee -a $STDOUT
-
