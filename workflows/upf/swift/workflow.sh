@@ -29,10 +29,10 @@ then
 fi
 
 if ! {
-  get_site    $1  # Sets SITE
-  get_expid   $2  # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3  # Sets CFG_SYS
-  UPF=$4          # The JSON hyperparameter file
+  get_site    $1               # Sets SITE
+  get_expid   $2 "SINGULARITY" # Sets EXPID, TURBINE_OUTPUT
+  get_cfg_sys $3               # Sets CFG_SYS
+  UPF=$4                       # The JSON hyperparameter file
  }
 then
   usage
@@ -57,7 +57,7 @@ then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
 fi
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+export TURBINE_JOBNAME="UPF_${EXPID}"
 
 OBJ_PARAM_ARG=""
 if [[ ${OBJ_PARAM:-} != "" ]]
@@ -96,6 +96,11 @@ TURBINE_STDOUT=
 
 log_path LD_LIBRARY_PATH
 
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  abort "upf/workflow.sh: Set CANDLE_DATA_DIR!"
+fi
+
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
@@ -107,13 +112,15 @@ swift-t -n $PROCS \
         -e MODEL_SH \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
-        -e MODEL_NAME \
+        -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e PYTHONUNBUFFERED=1 \
+        -e CANDLE_MODEL_TYPE \
+        -e CANDLE_IMAGE \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
 #        -e PYTHONVERBOSE=1

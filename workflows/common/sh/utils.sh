@@ -164,13 +164,13 @@ get_expid()
   fi
 
   export EXPID=$1
-  export CANDLE_MODEL_TYPE=${2:-Benchmarks}
+  export CANDLE_MODEL_TYPE=${2:-BENCHMARKS}
 
   export EXPERIMENTS=""
 
-  if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+  if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
   then
-    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/output/experiments}
+    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/$MODEL_NAME/Output}
   else # "BENCHMARKS"
     EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
   fi
@@ -192,14 +192,14 @@ get_expid()
     then
       for E in ${EXPS[@]}
       do
-        EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+        EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
         if [[ $E == $EXPID ]]
         then
           i=$(( i + 1 ))
         fi
       done
     fi
-    EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+    EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
@@ -213,12 +213,6 @@ get_expid()
     exit 1
   fi
   TURBINE_OUTPUT=$TO
-
-  # Andrew: Needed for functionality with George's restart.py script for UPF jobs
-  if [ -f metadata.json ]; then
-    mv metadata.json $TURBINE_OUTPUT
-  fi
-
 }
 
 next()

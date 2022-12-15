@@ -38,18 +38,19 @@ RUNID=$3
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 # # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
-# if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
-# then
-#   INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/output/$EXPID/run/$RUNID
-# else # "BENCHMARKS"
-#   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
-# fi
-
-INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+set -x
+echo CMT $CANDLE_MODEL_TYPE
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID
+else # "BENCHMARKS"
+  INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+fi
 
 # All stdout/stderr after this point goes into model.log !
-mkdir -p $INSTANCE_DIRECTORY
+mkdir -pv $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
+set +x
 exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
@@ -86,17 +87,22 @@ echo
 log "USING PYTHON:" $( which python )
 echo
 
+set -x
 # Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
-if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
 
   # No model_runner, need to write parameters.txt explicitly:
   #  get hyper_parameter_map to pass as 2nd argument
 
-  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params $PARAMS $INIT_PARAMS_FILE
-  # TODO: May need to bind a directory
-  MODEL_CMD=( singularity exec --bind $CANDLE_DATA_DIR --nv  $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
-              $CANDLE_DATA_DIR $INSTANCE_DIRECTORY/parameters.txt )
+
+  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params \
+          "$PARAMS" $INSTANCE_DIRECTORY/parameters.txt
+  MODEL_CMD=( singularity exec --nv
+              --bind $CANDLE_DATA_DIR:/candle_data_dir
+              $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+              $CANDLE_DATA_DIR
+              $INSTANCE_DIRECTORY/parameters.txt )
 else # "BENCHMARKS"
 
   # The Python command line arguments:
@@ -116,9 +122,9 @@ log "MODEL_CMD: ${MODEL_CMD[@]}"
 # Run Python!
 $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 
-if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
-  # grep for Singularity process and wai
+  # grep for Singularity process and wait
   PID=$(ps ux | awk '/[S]ingularity/{print $2}')
   wait $PID
 
