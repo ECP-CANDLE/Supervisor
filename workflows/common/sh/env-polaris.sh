@@ -1,5 +1,6 @@
 
 # ENV Polaris
+module load singularity
 
 # SWIFT_IMPL=echo
 SWIFT_IMPL=app
