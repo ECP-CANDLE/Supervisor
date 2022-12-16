@@ -8,65 +8,60 @@
     run_id : A string run ID that will be the output directory name
 */
 (string obj_result) obj(string params,
-                        string run_id) {
+                        string expid,
+                        string runid)
+{
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
+  string model_name     = getenv("MODEL_NAME");
 
   string outdir;
 
-  outdir = "%s/run/%s" % (turbine_output, run_id);
-
-  // Comment: this is not needed as turbine_output has already been adjusted
-  // string myenv = getenv("CANDLE_MODEL_TYPE");
-  // if (myenv == "SINGULARITY") {
-  //   outdir = "%s/run/%s" % (turbine_output, run_id);
-  // } else {
-  //   // outdir = "%s/output/%s/run/%s" % (getenv("CANDLE_DATA_DIR"), getenv("EXPID"), run_id);
-  // }
+  outdir = "%s/%s/Output/%s/%s" % (turbine_output, model_name, expid, runid);
 
   printf("running model shell script in: %s", outdir);
 
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
   string result_file = outdir/"result.txt";
-  wait (run_model(model_sh, params, run_id))
+  wait (run_model(model_sh, params, expid, runid))
   {
     obj_result = get_results(result_file);
   }
-  printf("result(%s): %s", run_id, obj_result);
+  printf("result(%s): %s", runid, obj_result);
 }
 
-/**
-    The main objective function used by the CANDLE/Supervisor
-    model exploration (optimization) loop.
-    params : The JSON string of params to be passed to the Benchmark
-    run_id : A string run ID that will be the output directory name
-*/
-(string obj_result) obj_prio(string params,
-                        string run_id, int prio) {
-  string model_sh       = getenv("MODEL_SH");
-  string turbine_output = getenv("TURBINE_OUTPUT");
+// /**
+//     The main objective function used by the CANDLE/Supervisor
+//     model exploration (optimization) loop.
+//     params : The JSON string of params to be passed to the Benchmark
+//     run_id : A string run ID that will be the output directory name
+// */
+// (string obj_result) obj_prio(string params,
+//                         string run_id, int prio) {
+//   string model_sh       = getenv("MODEL_SH");
+//   string turbine_output = getenv("TURBINE_OUTPUT");
 
-  // printf("running model shell script in: %s", outdir);
-  // We do not use a file type here because this file may not be created,
-  // which is handled by get_results()
-  string outdir = "%s/run/%s" % (turbine_output, run_id);
-  string result_file = outdir/"result.txt";
-  wait (@prio=prio run_model(model_sh, params, run_id))
-  {
-    obj_result = get_results(result_file);
-  }
-  printf("result(%s): %s", run_id, obj_result);
-}
+//   // printf("running model shell script in: %s", outdir);
+//   // We do not use a file type here because this file may not be created,
+//   // which is handled by get_results()
+//   string outdir = "%s/run/%s" % (turbine_output, run_id);
+//   string result_file = outdir/"result.txt";
+//   wait (@prio=prio run_model(model_sh, params, expidrun_id))
+//   {
+//     obj_result = get_results(result_file);
+//   }
+//   printf("result(%s): %s", run_id, obj_result);
+// }
 
 /**
    Swift/T app function that runs the Benchmark
 */
 app (void o) run_model (string model_sh, string params,
-                        string runid)
+                        string expid, string runid)
 {
-  //                  1       2      3
-  "bash" model_sh FRAMEWORK params runid;
+  //                  1       2      3     4
+  "bash" model_sh FRAMEWORK params expid runid;
 }
 
 /**

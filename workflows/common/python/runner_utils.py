@@ -94,6 +94,23 @@ def write_params(params, hyper_parameter_map):
             f_out.write("{}={}\n".format(*kv))
 
 
+def expand_params(params, hyper_parameter_map):
+    parent_dir = (hyper_parameter_map["instance_directory"]
+                  if "instance_directory" in hyper_parameter_map else ".")
+    result = ""
+    for k, v in params.items():
+        if type(v) in DATA_TYPES:
+            v = DATA_TYPES[type(v)]
+        if isinstance(v, basestring):
+            v = "'{}'".format(v)
+        if k == "solr_root" or k == "timeout" or k == "id":
+            # this must written at the end
+            pass  # Not a command-line parameter
+        else:
+            result += "--{} {} ".format(k, v)
+    return result
+
+
 def keras_clear_session(framework):
     if framework == "keras":
         # works around this error:
@@ -133,18 +150,35 @@ def merge_params(defaults, params):
 
 def main():
     # Need argparse
-    print("runner_utils.main(): " + str(sys.argv))
     if sys.argv[1] == "write_params":
         # Merge params from the user-provided params file and
         # the workflow-generated parameters
-        # Assume we are in the correct directory for this file:
-        defaults = read_config_file_dict(sys.argv[3])
         # Parse the workflow-provided JSON string:
         J = json.loads(sys.argv[2])
+        # Assume we are in the correct directory for this file:
+        defaults = read_config_file_dict(sys.argv[3])
         params = merge_params(defaults, J)
         print("params: " + str(params))
         write_params(params, {})
-
+    elif sys.argv[1] == "expand_params":
+        # Merge params from the user-provided params file and
+        # the workflow-generated parameters and create
+        # a set of command line flags to pass to CANDLE parser_utils
+        if not (len(sys.argv) == 3 or len(sys.argv) == 4):
+            print("runner_utils: bad subcommand args: " + str(sys.argv))
+            exit(1)
+        # Parse the workflow-provided JSON string:
+        params = json.loads(sys.argv[2])
+        if   len(sys.argv) == 3:
+            pass  # No defaults, OK
+        elif len(sys.argv) == 4:
+            defaults = read_config_file_dict(sys.argv[3])
+            params = merge_params(defaults, params)
+        params = expand_params(params, {})
+        print(params)
+    else:
+        print("runner_utils: unknown subcommand: " + str(sys.argv))
+        exit(1)
 
 if __name__ == "__main__":
     main()

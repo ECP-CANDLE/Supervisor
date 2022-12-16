@@ -16,16 +16,17 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
+  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID"
   echo "The environment should have:"
   echo "  EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
   echo "  SITE OBJ_RETURN BENCHMARK_TIMEOUT"
   echo "  and MODEL_NAME EXPID for model_runner.py"
-  echo "If SH_TIMEOUT is provided, we run under the shell command timeout"
+  echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 3 ))
+if (( ${#} != 4 ))
 then
+  echo "Wrong number of arguments: received ${#} , required: 4"
   usage
   exit 1
 fi
@@ -33,7 +34,8 @@ fi
 FRAMEWORK=$1 # Usually "keras" or "pytorch"
 # JSON string of parameters:
 PARAMS="$2"
-RUNID=$3
+EXPID=$3
+RUNID=$4
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
@@ -42,7 +44,9 @@ set -x
 echo CMT $CANDLE_MODEL_TYPE
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
+  # TODO: Rename "instance" to "run"
   INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID
+  INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
 fi
@@ -50,6 +54,7 @@ fi
 # All stdout/stderr after this point goes into model.log !
 mkdir -pv $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
+echo "redirecting to: LOG_FILE=$INSTANCE_DIRECTORY/model.log"
 set +x
 exec >> $LOG_FILE
 exec 2>&1
@@ -95,14 +100,13 @@ then
   # No model_runner, need to write parameters.txt explicitly:
   #  get hyper_parameter_map to pass as 2nd argument
 
-
-  python3 $WORKFLOWS_ROOT/common/python/runner_utils.py write_params \
-          "$PARAMS" $INSTANCE_DIRECTORY/parameters.txt
+  FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
+                   "$PARAMS" )
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
               $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
-              $CANDLE_DATA_DIR
-              $INSTANCE_DIRECTORY/parameters.txt )
+              /candle_data_dir
+              $FLAGS )  # $INTERNAL_DIRECTORY/parameters.txt
 else # "BENCHMARKS"
 
   # The Python command line arguments:
