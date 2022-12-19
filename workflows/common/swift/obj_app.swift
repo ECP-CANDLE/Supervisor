@@ -17,7 +17,8 @@
 
   string outdir;
 
-  outdir = "%s/%s/Output/%s/%s" % (turbine_output, model_name, expid, runid);
+  outdir = "%s/%s" % (turbine_output, runid);
+  // outdir = "%s/%s/Output/%s/%s" % (turbine_output, model_name, expid, runid);
 
   printf("running model shell script in: %s", outdir);
 

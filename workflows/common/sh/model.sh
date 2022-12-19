@@ -40,7 +40,7 @@ RUNID=$4
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 # # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
-set -x
+#set -x
 echo CMT $CANDLE_MODEL_TYPE
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
@@ -92,7 +92,7 @@ echo
 log "USING PYTHON:" $( which python )
 echo
 
-set -x
+#set -x
 # Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
 if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
@@ -129,11 +129,19 @@ $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
   # grep for Singularity process and wait
+  sleep 3 #sleep for sometime so that job id is available
   PID=$(ps ux | awk '/[S]ingularity/{print $2}')
+  PID2=$(ps ux | grep '[S]ingularity')
+  echo $PID, "--is the PID..and PID2:", $PID2
   wait $PID
-
+  ls -ltrh
+  sleep 1
   # get results of the format Loss: xxx last occurence of in the model.log file
-  RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
+  #RESULT=$(awk -v FS="Loss:" 'NF>1{print $2}' model.log | tail -1)
+  # using set -x will break the following
+  RES=$(awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' model.log)
+  echo $RES
+  RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
   PID=$!
