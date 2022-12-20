@@ -8,28 +8,12 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-if [[ ! -d $EMEWS_PROJECT_ROOT/../../../Benchmarks ]]
-then
-  echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
-  exit 1
-fi
-BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
-export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Attn1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/examples/ADRP:$BENCHMARKS_ROOT/examples/xform-smiles
 export BENCHMARK_TIMEOUT
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-
-#source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
-
-# Uncomment to turn on Swift/T logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
-# Do not commit with logging enabled, users have run out of disk space
-# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
 usage()
 {
@@ -69,22 +53,18 @@ get_cfg_sys $3
 get_cfg_prm $4
 MODEL_NAME=$5
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR   # :$BENCHMARKS_ROOT/common # This is now candle_lib
-# Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
-export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
-
 source_site env   $SITE
 source_site sched $SITE
-
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
 
 if [[ ${EQR:-} == "" ]]
 then
   abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
 fi
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+
+export TURBINE_JOBNAME="MBO_${EXPID}"
 
 RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
@@ -144,10 +124,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
-
-# Use for Summit (LSF needs two %)... actually, it may not be LSF as Biowulf (which uses SLURM) seems to need this too now
-if [ ${site2:-} == "summit" ] || [ ${site2:-} == "biowulf" ]
+# Handle %-escapes in TURBINE_STDOUT
+if [ $SITE == "summit"  ] || \
+   [ $SITE == "biowulf" ] || \
+   [ $SITE == "polaris" ]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
@@ -156,8 +136,6 @@ fi
 
 mkdir -pv $TURBINE_OUTPUT/out
 
-#swift-t -n $PROCS \
-#        -o $TURBINE_OUTPUT/workflow.tic \
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -179,7 +157,10 @@ then
   exit 1
 fi
 
-# ALW 2021-01-21: Please don't comment out the "-o $TURBINE_OUTPUT/workflow.tic" option below; otherwise, we get permissions issues on Biowulf. Thanks!
+# We use 'swift-t -o' to allow swift-t to prevent scheduler errors
+# on Biowulf.  Reported by ALW 2021-01-21
+
+(
 set -x
 swift-t -O 0 -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
@@ -209,6 +190,7 @@ swift-t -O 0 -n $PROCS \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
   tee $STDOUT
+)
 
 if (( ${PIPESTATUS[0]} ))
 then
@@ -216,8 +198,4 @@ then
   exit 1
 fi
 
-# echo "EXIT CODE: 0" | tee -a $STDOUT
-
-# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-# ALW 1/14/21: Removing this line again as I may not care about the job monitoring anymore and it clouds up the working directory
-#echo $TURBINE_OUTPUT > turbine-directory.txt
+echo "EXIT CODE: 0" | tee -a $STDOUT

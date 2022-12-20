@@ -92,8 +92,8 @@ string FRAMEWORK = "keras";
         string results[];
         foreach param, j in param_array
         {
-            results[j] = obj(param,
-                             "%02i_%03i_%04i" % (restart_number,i,j));
+            run_id = "%02i_%03i_%04i" % (restart_number,i,j);
+            results[j] = obj(param, exp_id, run_id);
         }
         string result = join(results, ";");
         // printf(result);
