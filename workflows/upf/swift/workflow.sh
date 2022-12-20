@@ -4,9 +4,9 @@ set -eu
 # UPF WORKFLOW SH
 
 # Autodetect this workflow directory
-export EMEWS_PROJECT_ROOT=$( readlink --canonicalize $( dirname $0 )/.. )
-export WORKFLOWS_ROOT=$(     readlink --canonicalize $EMEWS_PROJECT_ROOT/..  )
-export BENCHMARKS_ROOT=$(    readlink --canonicalize $EMEWS_PROJECT_ROOT/../../../Benchmarks )
+export EMEWS_PROJECT_ROOT=$( realpath $( dirname $0 )/.. )
+export WORKFLOWS_ROOT=$(     realpath $EMEWS_PROJECT_ROOT/..  )
+export BENCHMARKS_ROOT=$(    realpath $EMEWS_PROJECT_ROOT/../../../Benchmarks )
 
 BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
