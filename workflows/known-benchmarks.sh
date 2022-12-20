@@ -1,4 +1,6 @@
 
+# OBSOLETED: see common/sh/set-pythonpath.sh 2022-12-20
+
 # Known Benchmarks
 # Generate the list of Benchmarks that Supervisor knows about
 # To add a Known Benchmark, add its paths to BENCHMARKS_DIRS_BASE below
