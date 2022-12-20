@@ -15,4 +15,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 PY=$ROOT/Miniconda
 PATH=$PY/bin:$PATH
 
-EQR=not-installed
+R_HOME=$ROOT/R-4.2.2/lib64/R
+EQR=$ROOT/EQ-R
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}:$R_HOME/lib
