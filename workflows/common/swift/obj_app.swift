@@ -20,7 +20,7 @@
   outdir = "%s/%s" % (turbine_output, runid);
   // outdir = "%s/%s/Output/%s/%s" % (turbine_output, model_name, expid, runid);
 
-  printf("running model shell script in: %s", outdir);
+  printf("obj_app: running model shell script in: %s", outdir);
 
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
@@ -29,7 +29,7 @@
   {
     obj_result = get_results(result_file);
   }
-  printf("result(%s): %s", runid, obj_result);
+  printf("obj_app: result(%s): '%s'", runid, obj_result);
 }
 
 // /**
