@@ -27,15 +27,14 @@ then
   exit 1
 fi
 
-CANDLE_MODEL_TYPE="BENCHMARKS"
-
 if (( ${#} == 7 ))
 then
   CANDLE_MODEL_TYPE=$6
   CANDLE_IMAGE=$7
- elif (( ${#} == 5 ))
- then
-   echo "Not a singularity run"
+elif (( ${#} == 5 ))
+then
+  CANDLE_MODEL_TYPE="BENCHMARKS"
+  CANDLE_IMAGE=NONE
 else
   usage
   exit 1
