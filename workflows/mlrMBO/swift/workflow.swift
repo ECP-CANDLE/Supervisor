@@ -14,11 +14,12 @@ import EQR;
 import R;
 import assert;
 import python;
-/* Helper for reporting environment variables common/swift/candle_utils.swift
-* import candle_utils;
-*
-* report_env();
-*/
+
+// Helper for reporting environment variables for debugging
+// Cf. common/swift/candle_utils.swift
+// This can be removed as desired.
+import candle_utils;
+report_env();
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
