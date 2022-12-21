@@ -17,7 +17,8 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME " \
+       "[CANDLE_MODEL_TYPE] [CANDLE_IMAGE]"
 }
 
 if (( ${#} != 7 )) && (( ${#} != 5 ))
@@ -43,8 +44,9 @@ fi
 TURBINE_OUTPUT=""
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/
-  echo "Running "$MODEL_NAME "workflow with" $CANDLE_MODEL_TYPE "and image" $CANDLE_IMAGE
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
+         $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 fi
 
 get_site    $1 # Sets SITE
@@ -58,7 +60,8 @@ source_site sched $SITE
 
 if [[ ${EQR:-} == "" ]]
 then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
+  abort "The site '$SITE' did not set the location of EQ/R: " \
+        "this will not work!"
 fi
 
 # Set up PYTHONPATH for model
