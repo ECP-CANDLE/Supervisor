@@ -8,7 +8,7 @@ export PROCS=${PROCS:-3}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-3}
 
 # For Theta:
 # export QUEUE=${QUEUE:-debug-flat-quad}
