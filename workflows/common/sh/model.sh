@@ -41,7 +41,6 @@ RUNID=$4
 # Set instance_directory to that and cd into it.
 # # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
 #set -x
-echo CMT $CANDLE_MODEL_TYPE
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
   # TODO: Rename "instance" to "run"
@@ -74,6 +73,8 @@ log()
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
+log "HOST: $( hostname )"
+log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
 # log "CANDLE_MODEL_TYPE: $CANDLE_MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
