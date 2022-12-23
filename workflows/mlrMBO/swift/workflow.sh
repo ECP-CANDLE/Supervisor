@@ -29,8 +29,8 @@ fi
 
 if (( ${#} == 7 ))
 then
-  CANDLE_MODEL_TYPE=$6
-  CANDLE_IMAGE=$7
+  export CANDLE_MODEL_TYPE=$6
+  export CANDLE_IMAGE=$7
 elif (( ${#} == 5 ))
 then
   CANDLE_MODEL_TYPE="BENCHMARKS"
@@ -189,6 +189,8 @@ swift-t -O 0 -n $PROCS \
         -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
         -e CANDLE_DATA_DIR \
+        -e CANDLE_MODEL_TYPE \
+        -e CANDLE_IMAGE \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
   tee $STDOUT
