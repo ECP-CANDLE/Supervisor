@@ -1,5 +1,5 @@
 
-# MLRMBO CFG SYS 1
+# MLRMBO CFG SYS NIGHTLY
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEWS
