@@ -29,16 +29,16 @@
       string_params <- elements_of_lists_to_json(dots[[1L]])
       # print(dots)
       # print(paste0("parallelMap2 called with list_param: ",string_params))
-      # print(paste("parallelMap2 called with list size:", length(string_params)))
+      print(paste("mlrMBO: produced task count:  ", length(dots[[1L]])))
       OUT_put(string_params)
       string_results = IN_get()
-
       st = proc.time() - st
 
       # Assumes results are in the form a;b;c
       # Note: can also handle vector returns for each,
       # i.e., a,b;c,d;e,f
       res <- string_to_list_of_vectors(string_results)
+      print(paste("mlrMBO: received result count:", length(res)))
       # using dummy time
       return(result_with_extras_if_exist(res,st[3]))
     }
@@ -179,7 +179,7 @@
   # This is a string of R code containing arguments to main_function(),
   # e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
   msg <- IN_get()
-  print(paste("Received params1 msg: ", msg))
+  print(paste("Received mlrMBO configuration parameters msg: ", msg))
 
   # Edit the R code to make a list constructor expression
   code = paste0("list(",msg,")")
