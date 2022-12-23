@@ -10,13 +10,7 @@ export PROCS=${PROCS:-3}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-3}
 
-# For Theta:
-# export QUEUE=${QUEUE:-debug-flat-quad}
-
 export WALLTIME=${WALLTIME:-00:05:00}
-# export WALLTIME=${WALLTIME:-120}
-
-#export PROJECT=Candle_ECP
 
 # Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.
