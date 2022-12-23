@@ -6,16 +6,11 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( realpath $( dirname $0 )/.. )
 export WORKFLOWS_ROOT=$(     realpath $EMEWS_PROJECT_ROOT/..  )
-export BENCHMARKS_ROOT=$(    realpath $EMEWS_PROJECT_ROOT/../../../Benchmarks )
 
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-
-export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 usage()
 {
@@ -39,23 +34,13 @@ then
   exit 1
 fi
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
-export PYTHONPATH
-
-# Set PYTHONPATH for BENCHMARK related stuff in obj_app mode
-export APP_PYTHONPATH+=:$BENCHMARK_DIR # :$BENCHMARKS_ROOT/common # This is now candle_lib
-
 source_site env   $SITE
-source_site sched   $SITE
+source_site sched $SITE
+
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 log_path PYTHONPATH
-
-if [[ ${EQR:-} == "" ]]
-then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
-fi
 
 export TURBINE_JOBNAME="UPF_${EXPID}"
 
@@ -65,7 +50,6 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-# Andrew: Allows for custom model.sh if desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
@@ -85,21 +69,19 @@ cp $CFG_SYS $TURBINE_OUTPUT
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-which swift-t
-
-# module list
-
 cp -v $UPF $TURBINE_OUTPUT
 
 # TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 TURBINE_STDOUT=
 
-log_path LD_LIBRARY_PATH
-
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
   abort "upf/workflow.sh: Set CANDLE_DATA_DIR!"
 fi
+
+export CANDLE_IMAGE=${CANDLE_IMAGE:-}
+
+which swift-t
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
