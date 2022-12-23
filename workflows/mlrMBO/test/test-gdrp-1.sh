@@ -22,7 +22,7 @@ export EMEWS_PROJECT_ROOT
 export CFG_SYS=$THIS/cfg-sys-nightly.sh
 export CFG_PRM=$THIS/cfg-prm-nightly.sh
 
-# Specify the R file for This file must be present in the $EMEWS_PROJECT_ROOT/R
+# Specify the mlrMBO algorithm R file
 export R_FILE=mlrMBO-mbo.R
 
 CANDLE_MODEL_TYPE="SINGULARITY"

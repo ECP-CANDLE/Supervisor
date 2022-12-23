@@ -1,5 +1,5 @@
 
-# NT3 Hyperparameter Search - Test 1
+# GraphDRP Hyperparameter Search - Test "small"
 # These parameters should stay small for short tests
 #       and use no dense parameters to avoid mlrMBO crashes
 
