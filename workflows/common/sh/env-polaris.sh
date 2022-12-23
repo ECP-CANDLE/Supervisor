@@ -6,7 +6,7 @@ SWIFT_IMPL=app
 
 CSC249=/lus/grand/projects/CSC249ADOA01
 ROOT=$CSC249/public/sfw/polaris
-SWIFT=$ROOT/swift-t/2022-11-28
+SWIFT=$ROOT/swift-t/2022-12-16
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
