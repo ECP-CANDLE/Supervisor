@@ -1,4 +1,4 @@
-# CFG PRM 1
+# CFG PRM NIGHTLY
 
 # mlrMBO settings
 
