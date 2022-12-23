@@ -32,9 +32,9 @@ elif [ "$MODEL_NAME" = "graphdrp" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/graphdrp_small.R}
 elif [ "$MODEL_NAME" = "dummy" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/dummy_nightly.R}
-elif [ "$PARAM_SET_FILE" != "" ]; then
+elif [[ "${PARAM_SET_FILE:-}" != "" ]]; then
     PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
 else
-    echo "Invalid model-" $MODEL_NAME
+    printf "Could not find PARAM_SET_FILE for model: '%s'\n" $MODEL_NAME
     exit 1
 fi
