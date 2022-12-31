@@ -3,11 +3,11 @@
 # mlrMBO settings
 
 # Total iterations
-PROPOSE_POINTS=${PROPOSE_POINTS:-5}
+PROPOSE_POINTS=${PROPOSE_POINTS:-10}
 MAX_CONCURRENT_EVALUATIONS=${MAX_CONCURRET_EVALUATIONS:-1}
 MAX_ITERATIONS=${MAX_ITERATIONS:-3}
 MAX_BUDGET=${MAX_BUDGET:-180}
-DESIGN_SIZE=${DESIGN_SIZE:-5}
+DESIGN_SIZE=${DESIGN_SIZE:-10}
 
 # TODO: move the following code to a utility library-
 #       this is a configuration file
@@ -35,6 +35,7 @@ elif [ "$MODEL_NAME" = "dummy" ]; then
 elif [[ "${PARAM_SET_FILE:-}" != "" ]]; then
     PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
 else
-    printf "Could not find PARAM_SET_FILE for model: '%s'\n" $MODEL_NAME
-    exit 1
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/graphdrp_small.R}
+#    printf "Could not find PARAM_SET_FILE for model: '%s'\n" $MODEL_NAME
+#    exit 1
 fi
