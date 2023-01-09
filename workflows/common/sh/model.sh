@@ -90,10 +90,18 @@ log "PARAMS:"
 echo $PARAMS | print_json
 
 echo
-log "USING PYTHON:" $( which python )
+log "USING PYTHON:" $( which python3 )
 echo
 
-#set -x
+# Cf. utils.sh
+log_path APP_PYTHONPATH
+log_path PYTHONPATH
+log_path LD_LIBRARY_PATH
+show     PYTHONHOME
+
+# Set up PYTHONPATH for app tasks
+export PYTHONPATH=${APP_PYTHONPATH:-}:${PYTHONPATH:-}
+
 # Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
 if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
