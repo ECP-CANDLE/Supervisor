@@ -7,6 +7,7 @@ SFW=/homes/woz/Public/sfw
 
 SWIFT=$SFW/swift-t/2022-11-02
 PY=$SFW/Anaconda
+EQPY=$SFW/EQ-Py
 EQR=$SFW/EQ-R
 R=$SFW/R-4.1.0
 
@@ -17,6 +18,8 @@ export LD_LIBRARY_PATH=$R/lib/R/lib:${LD_LIBRARY_PATH:-}
 
 # How to run CANDLE models:
 SWIFT_IMPL="app"
+
+PYTHONPATH=$EQPY/src:${PYTHONPATH:-}
 
 # Log settings to output
 echo "Programs:"
