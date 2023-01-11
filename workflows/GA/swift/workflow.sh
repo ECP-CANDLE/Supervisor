@@ -60,6 +60,9 @@ source_site sched $SITE
 
 EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
 
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+
 # Set PYTHONPATH for BENCHMARK related stuff
 source $WORKFLOWS_ROOT/known-benchmarks.sh
 PYTHONPATH+=:$EQPY
@@ -139,7 +142,7 @@ fi
 
 echo APP_PYPATH $APP_PYTHONPATH
 
-
+set -x
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPY -r $EQPY \
