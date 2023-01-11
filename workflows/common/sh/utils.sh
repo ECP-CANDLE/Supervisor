@@ -94,7 +94,9 @@ python_envs()
   then
     # We do not currently need this except on MCS and Spock:
     # Swift/T should grab PYTHONPATH automatically
-    if [[ ${SITE} == "mcs" ]] || [[ ${SITE} == "spock" ]] # || [[ ${SITE} == "polaris" ]]
+    if [[ ${SITE} == "mcs" ]] || \
+         [[ ${SITE} == "spock" ]] || \
+         [[ ${SITE} == "lambda" ]]
     then
       # MCS discards PYTHONPATH in subshells
       RESULT+=( -e PYTHONPATH=$PYTHONPATH )
