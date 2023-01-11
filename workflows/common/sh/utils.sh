@@ -61,13 +61,19 @@ show()
 }
 
 log_path()
-# Pretty print a colon-separated variable
+# Pretty print a colon-separated variable, one entry per line
 # Provide the name of the variable (no dollar sign)
 {
-  echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl --number-width=2 --number-separator ": "
-  echo --
-  echo
+  # First, test if $1 is the name of a set shell variable:
+  if eval test \$\{$1:-\}
+  then
+    echo ${1}:
+    eval echo \$$1 | tr : '\n' | nl
+    echo --
+    echo
+  else
+    echo "log_path(): ${1} is unset."
+  fi
 }
 
 which_check()
