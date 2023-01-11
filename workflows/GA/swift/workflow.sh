@@ -13,10 +13,8 @@ then
   echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
   exit 1
 fi
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1
+
 export BENCHMARK_TIMEOUT
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
 SCRIPT_NAME=$(basename $0)
 
@@ -64,7 +62,6 @@ EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 # Set PYTHONPATH for BENCHMARK related stuff
-source $WORKFLOWS_ROOT/known-benchmarks.sh
 PYTHONPATH+=:$EQPY
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 

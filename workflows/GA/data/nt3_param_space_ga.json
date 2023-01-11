@@ -10,8 +10,8 @@
   {
     "name": "epochs",
     "type": "int",
-    "lower": 100,
-    "upper": 500,
+    "lower": 1,
+    "upper": 5,
     "sigma": 20
   },
 
