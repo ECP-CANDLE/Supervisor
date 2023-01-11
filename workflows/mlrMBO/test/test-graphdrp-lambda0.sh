@@ -48,7 +48,7 @@ then
 fi
 
 export CANDLE_MODEL_TYPE="SINGULARITY"
-export CANDLE_IMAGE="/software/improve/images/GraphDRP\:0.0.1-20221109.sif"
+export CANDLE_IMAGE="/software/improve/images/GraphDRP.sif"
 export INIT_PARAMS_FILE="/software/improve/graphdrp_default_model.txt"
 
 # Submit job

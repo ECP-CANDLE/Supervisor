@@ -23,10 +23,12 @@ export CFG_SYS=$THIS/cfg-sys-nightly.sh
 export CFG_PRM=$THIS/cfg-prm-nightly.sh
 
 # Specify the mlrMBO algorithm R file
-export R_FILE=mlrMBO-ils.R
+export R_FILE=mlrMBO-mbo.R
 
 CANDLE_MODEL_TYPE="SINGULARITY"
-CANDLE_IMAGE=/lus/grand/projects/CSC249ADOA01/images/GraphDRP.sif
+# CANDLE_IMAGE=/software/improve/images/GraphDRP.sif # lambda
+CANDLE_IMAGE=/lus/grand/projects/CSC249ADOA01/images/GraphDRP.sif # Polaris
+
 
 export MODEL_NAME="graphdrp"
 
