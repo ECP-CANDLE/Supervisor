@@ -4,7 +4,7 @@
 
 SEED=${SEED:-1}
 # Total iterations
-NUM_ITERATIONS=${NUM_ITERATIONS:-2}
+NUM_ITERATIONS=${NUM_ITERATIONS:-7}
 # Size of GA population (i.e. the number of parameter sets to evaluate)
 POPULATION_SIZE=${POPULATION_SIZE:-4}
 # the GA strategy: one of 'simple' or 'mu_plus_lambda'. See

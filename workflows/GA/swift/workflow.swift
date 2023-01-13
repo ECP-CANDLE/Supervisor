@@ -25,12 +25,16 @@ string r_ranks[] = split(resident_work_ranks,",");
 
 string strategy = argv("strategy");
 string ga_params_file = argv("ga_params");
-string init_params_file = argv("init_params", "");
+// string init_params_file = argv("init_params", "");
 float mut_prob = string2float(argv("mutation_prob", "0.2"));
 
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string model_name     = getenv("MODEL_NAME");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string candle_image     = getenv("CANDLE_IMAGE");
+string init_params_file     = getenv("INIT_PARAMS_FILE");
+
 printf("TURBINE_OUTPUT: " + turbine_output);
 
 string restart_number = argv("restart_number", "1");
