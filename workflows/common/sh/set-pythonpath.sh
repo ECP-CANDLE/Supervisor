@@ -10,7 +10,8 @@
 # with Benchmarks normally alongside Supervisor
 # If MODEL_PYTHON_DIR is set, that is added to PYTHONPATH
 
-BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
+SUPERVISOR=$( cd $EMEWS_PROJECT_ROOT/../.. ; /bin/pwd )
+BENCHMARKS_DEFAULT=$( cd $SUPERVISOR/../Benchmarks ; /bin/pwd )
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
 
 if [[ ! -d $BENCHMARKS_ROOT ]]
@@ -24,8 +25,10 @@ fi
 # APP_PYTHONPATH+=:$BENCHMARK_DIRS:$BENCHMARKS_ROOT/common
 #     PYTHONPATH+=:$BENCHMARK_DIRS:$BENCHMARKS_ROOT/common
 
-
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
+# Set up Supervisor
+export PYTHONPATH
+PYTHONPATH+=:$SUPERVISOR/workflows/common/python
+PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
 # Add known CANDLE Benchmarks to PYTHONPATH
 PYTHONPATH+=:$BENCHMARKS_ROOT/Pilot1/P1B1
