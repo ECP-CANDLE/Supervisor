@@ -8,7 +8,7 @@ export PROCS=${PROCS:-6}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-6}
 export QUEUE=${QUEUE:-debug-scaling}
 export WALLTIME=${WALLTIME:-00:05:00}
 
