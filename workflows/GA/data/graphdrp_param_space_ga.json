@@ -1,5 +1,6 @@
 [
   {
+ 
     "name": "activation",
     "type": "categorical",
     "element_type": "string",
@@ -43,6 +44,6 @@
   {
     "name": "epochs",
     "type": "constant",
-    "value": 5
+    "value": 2
   }
 ]
