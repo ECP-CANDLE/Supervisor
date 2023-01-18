@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# TEST MLRMBO GDRP 1
+# TEST POLARIS
 # For GraphDRP
 
 if (( ${#} != 1 ))
@@ -28,7 +28,6 @@ export GA_FILE=deap_ga.py
 CANDLE_MODEL_TYPE="SINGULARITY"
 # CANDLE_IMAGE=/software/improve/images/GraphDRP.sif # lambda
 CANDLE_IMAGE=/lus/grand/projects/CSC249ADOA01/images/GraphDRP.sif # Polaris
-
 
 export MODEL_NAME="graphdrp"
 
