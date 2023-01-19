@@ -1,6 +1,6 @@
 [
   {
- 
+
     "name": "activation",
     "type": "categorical",
     "element_type": "string",

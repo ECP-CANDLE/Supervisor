@@ -1,4 +1,3 @@
-
 import os
 import subprocess
 from pathlib import Path
@@ -36,28 +35,36 @@ def run(gParameters):
     model_sh = workflows / "common" / "sh" / "model.sh"
     print(model_sh)
     os.chdir(output_dir)
-    env = { "WORKFLOWS_ROOT": str(workflows),
-            "TURBINE_OUTPUT": output_dir,
-            "EXPID": expid,
-            "SITE": "lambda",
-            "OBJ_RETURN": "loss",
-            "BENCHMARK_TIMEOUT": "120",
-            "MODEL_NAME": gParameters["model1"],
-            "CANDLE_MODEL_TYPE": "SINGULARITY",
-            "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
-            "ADLB_RANK_OFFSET": "0",
-            "CANDLE_IMAGE": "/software/improve/images/GraphDRP.sif"
-           }
+    env = {
+        "WORKFLOWS_ROOT": str(workflows),
+        "TURBINE_OUTPUT": output_dir,
+        "EXPID": expid,
+        "SITE": "lambda",
+        "OBJ_RETURN": "loss",
+        "BENCHMARK_TIMEOUT": "120",
+        "MODEL_NAME": gParameters["model1"],
+        "CANDLE_MODEL_TYPE": "SINGULARITY",
+        "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
+        "ADLB_RANK_OFFSET": "0",
+        "CANDLE_IMAGE": "/software/improve/images/GraphDRP.sif"
+    }
     print("env: " + str(env))
-    cmd = [ "bash", model_sh,
-            "keras2", "{}", # empty JSON fragment
-            expid,
-            gParameters["run_id"] ]
+    cmd = [
+        "bash",
+        model_sh,
+        "keras2",
+        "{}",  # empty JSON fragment
+        expid,
+        gParameters["run_id"]
+    ]
     print("cmd: " + str(cmd))
     with open("model1.log", "w") as model1_log:
-        subprocess.run(cmd, env=env,
-                       stdout=model1_log, stderr=subprocess.STDOUT)
+        subprocess.run(cmd,
+                       env=env,
+                       stdout=model1_log,
+                       stderr=subprocess.STDOUT)
     print("Comparator DONE.")
+
 
 def main():
     gParameters = initialize_parameters()

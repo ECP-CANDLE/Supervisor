@@ -169,7 +169,7 @@ def main():
             exit(1)
         # Parse the workflow-provided JSON string:
         params = json.loads(sys.argv[2])
-        if   len(sys.argv) == 3:
+        if len(sys.argv) == 3:
             pass  # No defaults, OK
         elif len(sys.argv) == 4:
             defaults = read_config_file_dict(sys.argv[3])
@@ -179,6 +179,7 @@ def main():
     else:
         print("runner_utils: unknown subcommand: " + str(sys.argv))
         exit(1)
+
 
 if __name__ == "__main__":
     main()
