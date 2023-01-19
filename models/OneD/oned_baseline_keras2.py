@@ -1,6 +1,6 @@
 import os
 import candle
-from example import IBenchmark
+from oned import IBenchmark
 
 # Just because the tensorflow warnings are a bit verbose
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # This should be set outside as a user environment variable
 os.environ['CANDLE_DATA_DIR'] = os.environ['HOME'] + '/improve_data_dir'
 
-# file_path becomes the default location of the example_default_model.txt file
+# file_path becomes the default location of the oned_default_model.txt file
 file_path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -20,9 +20,9 @@ file_path = os.path.dirname(os.path.realpath(__file__))
 def initialize_parameters():
     i_bmk = IBenchmark(
         file_path,  # this is the path to this file needed to find default_model.txt
-        'example_default_model.txt',  # name of the default_model.txt file
+        'oned_default_model.txt',  # name of the default_model.txt file
         'keras',  # framework, choice is keras or pytorch
-        prog='example_baseline',  # basename of the model
+        prog='oned_baseline',  # basename of the model
         desc='IMPROVE Benchmark')
 
     gParameters = candle.finalize_parameters(
@@ -35,7 +35,7 @@ def initialize_parameters():
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import tensorflow as tf
 
 def func(x, n=1):
     # "func" takes in two arguments: "x" and "n", n is set to 1.
@@ -64,6 +64,11 @@ def run(params):
 
     print("returning training metrics: ", y)
 
+    h=tf.keras.callbacks.History()
+    h.history.setdefault('val_loss')
+
+    h.history['val_loss']=y
+    return h
     return {
         "val_loss": y,
     }  # metrics is used by the supervisor when running

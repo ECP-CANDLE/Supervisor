@@ -32,6 +32,8 @@ elif [ "$MODEL_NAME" = "graphdrp" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/graphdrp_small.R}
 elif [ "$MODEL_NAME" = "dummy" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/dummy_nightly.R}
+elif [ "$MODEL_NAME" = "oned" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/oned.R}
 elif [[ "${PARAM_SET_FILE:-}" != "" ]]; then
     PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
 else

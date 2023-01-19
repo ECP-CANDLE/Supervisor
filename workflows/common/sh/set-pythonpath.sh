@@ -28,7 +28,7 @@ fi
 # Set up Supervisor
 export PYTHONPATH
 PYTHONPATH+=:$SUPERVISOR/workflows/common/python
-PYTHONPATH+=:$SUPERVISOR/workflows/models/OneD
+PYTHONPATH+=:$SUPERVISOR/models/OneD
 PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
 # Add known CANDLE Benchmarks to PYTHONPATH
