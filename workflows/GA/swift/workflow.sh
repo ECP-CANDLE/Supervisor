@@ -172,6 +172,7 @@ fi
 
 (
 set -x
+which python swift-t
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPY -r $EQPY \
