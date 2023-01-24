@@ -10,6 +10,10 @@ SWIFT=$SFW/swift-t/mpich/2022-11-14-Jenkins
 
 PATH=$SWIFT/stc/bin:$PATH
 
+PYTHON=/nfs/gce/globalscratch/jain/conda_installs/
+export PATH=$PYTHON/bin:$PATH
+export PYTHONHOME=$PYTHON
+
 echo $SWIFT
 
 # Needed for Swift/T+R
