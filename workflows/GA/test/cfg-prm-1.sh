@@ -27,6 +27,8 @@ elif [ "$MODEL_NAME" = "graphdrp" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/graphdrp_param_space_ga.json}
 elif [ "$MODEL_NAME" = "tc1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/tc1_param_space_ga.json}
+elif [ "$MODEL_NAME" = "oned" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/oned_param_space_ga.json}
 # TODO: Uncomment when parameter files are available
 # elif [ "$MODEL_NAME" = "p1b3" ]; then
 #     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b3_param_space_ga.json}
