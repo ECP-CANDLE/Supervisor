@@ -77,9 +77,7 @@
                       se.method = "jackknife",
                       se.boot = 2)
     ctrl = makeMBOControl(n.objectives = 1,
-                          propose.points = propose.points,
-			  impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax,
-			  trafo.y.fun = makeMBOTrafoFunction('log', log))
+                          propose.points = propose.points)
     ctrl = setMBOControlInfill(ctrl,
                                crit = makeMBOInfillCritCB(),
                                opt.restarts = 1,

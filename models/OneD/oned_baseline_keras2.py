@@ -37,15 +37,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
+
 def func(x, n=1):
     # "func" takes in two arguments: "x" and "n", n is set to 1.
     # The function returns a calculation using the input "x" and a default value of "n" equal to 1.
     # The calculation is a linear combination of three trigonometric functions (sine, cosine)
     # with the addition of a random normal variable scaled by the input "n".
 
-    y = 0.02 * x + 0.5 * np.sin(1 * x + 0.1) + 0.75 * np.cos(
-        0.25 * x - 0.3) + n * np.random.normal(0, 0.2, 1)
-    return y[0]
+    #y = 0.02 * x + 0.5 * np.sin(1 * x + 0.1) + 0.75 * np.cos(
+    #    0.25 * x - 0.3) + n * np.random.normal(0, 0.2, 1)
+
+    # remove random part
+    y = 0.02 * x + 0.5 * np.sin(1 * x + 0.1) + 0.75 * np.cos(0.25 * x - 0.3)
+
+    return y
 
 
 def run(params):
@@ -64,10 +69,12 @@ def run(params):
 
     print("returning training metrics: ", y)
 
-    h=tf.keras.callbacks.History()
+    h = tf.keras.callbacks.History()
     h.history.setdefault('val_loss')
 
-    h.history['val_loss']=y
+    y_array = np.ndarray(2)
+    y_array.fill(y)
+    h.history['val_loss'] = y_array
     return h
     return {
         "val_loss": y,
