@@ -19,19 +19,20 @@ then
   exit 1
 fi
 
+echo "RUN: $DIR"
+
 if ! [[ -d $DIR/save/ckpts/epochs ]]
 then
+  echo "No epochs directory."
   exit
 fi
 
 cd $DIR/save/ckpts/epochs
-
+set -x
 MODELS=( $( ls ) )
 
-echo ${MODELS[@]}
-
 N=${#MODELS[@]}
-echo $N
+echo "MODELS: $N"
 
 # Do not clean the last 3 models
 for (( i=0 ; i<$N-3 ; i++ ))

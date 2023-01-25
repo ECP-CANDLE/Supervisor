@@ -27,6 +27,8 @@ class Node:
         self.mae = None
         self.r2 = None
         self.corr = None
+        # The final learning rate:
+        self.lr = None
         # Differences wrt parent (lower is better)
         self.loss_delta = None
         self.val_loss_delta = None
@@ -226,9 +228,11 @@ class Node:
             value_string = tail[:comma]
             self.val_data = int(value_string)
 
-    def parse_error_data(self, fp):
-        """fp is the file pointer to save/python.log If lines are not found,
-        node.mse, etc., will remain None."""
+    def parse_python_log(self, fp):
+        """
+        fp is the file pointer to save/python.log
+        If lines are not found, node.mse, etc., will remain None
+        """
         marker = "Comparing y_true "
         # The marker is just after the date:
         # We search this way for speed.
@@ -237,6 +241,11 @@ class Node:
             line = fp.readline()
             if line == "":
                 break
+            if line.startswith("Epoch ", date_len) and
+               "lr=" in line:
+               tokens = line.split("=")
+               self.lr = float(tokens[1])
+               print("%s lr=%0.3f" % (self.id, self.lr))
             if line.startswith(marker, date_len):
                 line = fp.readline()
                 tokens = check_token(line, 2, "mse:")

@@ -130,9 +130,9 @@ def parse_log(log_fp, nodes):
                 node_current.stop_early()
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
-            logger.debug("node done.")
+            logger.info("node done.")
             # find_val_data(node_current) # old format?
-            find_error_data(node_current)
+            parse_python_log(node_current)
             nodes_found += 1
             node_current = None
 
@@ -144,7 +144,7 @@ def parse_build_df(line, logger=None):
     assert len(tokens) == 6
     global build_df
     build_df = float(tokens[4])
-    logger.info("build_df: %0.2f" % build_df)
+    # logger.info("build_df: %0.2f" % build_df)
     return build_df
 
 
@@ -167,7 +167,7 @@ def find_error_data(node):
     if not os.path.exists(python_log):
         return
     with open(python_log) as fp:
-        node.parse_error_data(fp)
+        node.parse_python_log(fp)
     if node.mse is None:
         logger.fatal("Could not find error data for node: " + node.id)
 

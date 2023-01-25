@@ -20,7 +20,6 @@ then
   exit 1
 fi
 
-
 # Put all matching file names in this file, one per line
 # (this could contain thousands of entries, too long for command line):
 LOG_LIST=$DIR/log-list.txt
