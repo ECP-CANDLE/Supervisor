@@ -27,8 +27,10 @@ class Node:
         self.mae = None
         self.r2 = None
         self.corr = None
+        # The first learning rate:
+        self.lr_first = None
         # The final learning rate:
-        self.lr = None
+        self.lr_final = None
         # Differences wrt parent (lower is better)
         self.loss_delta = None
         self.val_loss_delta = None
@@ -241,11 +243,15 @@ class Node:
             line = fp.readline()
             if line == "":
                 break
-            if line.startswith("Epoch ", date_len) and
+            if line.startswith("Epoch ", date_len) and \
                "lr=" in line:
-               tokens = line.split("=")
-               self.lr = float(tokens[1])
-               print("%s lr=%0.3f" % (self.id, self.lr))
+                tokens = line.split("=")
+                lr = float(tokens[1])
+                if self.lr is None:
+                    self.lr_first = lr
+                else:
+                    self.lr_final = lr
+                print("%s lr=%0.6f" % (self.id, self.lr))
             if line.startswith(marker, date_len):
                 line = fp.readline()
                 tokens = check_token(line, 2, "mse:")
