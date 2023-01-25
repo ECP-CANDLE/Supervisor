@@ -61,11 +61,19 @@ show()
 }
 
 log_path()
-# Pretty print a colon-separated variable
+# Pretty print a colon-separated variable, one entry per line
 # Provide the name of the variable (no dollar sign)
 {
-  echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl
+  # First, test if $1 is the name of a set shell variable:
+  if eval test \$\{$1:-\}
+  then
+    echo ${1}:
+    eval echo \$$1 | tr : '\n' | nl
+    echo --
+    echo
+  else
+    echo "log_path(): ${1} is unset."
+  fi
 }
 
 which_check()
@@ -92,7 +100,9 @@ python_envs()
   then
     # We do not currently need this except on MCS and Spock:
     # Swift/T should grab PYTHONPATH automatically
-    if [[ ${SITE} == "mcs" ]] || [[ ${SITE} == "spock" ]]
+    if [[ ${SITE} == "mcs" ]] || \
+         [[ ${SITE} == "spock" ]] || \
+         [[ ${SITE} == "lambda" ]]
     then
       # MCS discards PYTHONPATH in subshells
       RESULT+=( -e PYTHONPATH=$PYTHONPATH )
@@ -126,6 +136,7 @@ get_site()
   export SITE=$1
 }
 
+
 check_experiment() {
   if [[ -d $TURBINE_OUTPUT ]]; then
     while true; do
@@ -142,11 +153,13 @@ check_experiment() {
 
 get_expid()
 # Get Experiment IDentifier
-# EXPID is the name of the new directory under experiments/
-# If the user provides -a, this function will autogenerate
-#   a new EXPID under the experiments directory,
-# If EXP_SUFFIX is set in the environment, the resulting
-#   EXPID will have that suffix.
+# EXPID: The name of the new directory under experiments/
+#        If the user provides -a, this function will autogenerate
+#          a new EXPID under the experiments directory,
+#        If EXP_SUFFIX is set in the environment, the resulting
+#          EXPID will have that suffix.
+# CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
+#        Defaults to "BENCHMARKS"
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
@@ -154,13 +167,21 @@ get_expid()
 {
   if (( ${#} < 1 ))
   then
-    echo "get_expid(): could not find EXPID argument!"
+    echo "get_expid(): provide EXPID [CANDLE_MODEL_TYPE?]"
     return 1
   fi
 
-  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
-
   export EXPID=$1
+  export CANDLE_MODEL_TYPE=${2:-BENCHMARKS}
+
+  export EXPERIMENTS=""
+
+  if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+  then
+    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/$MODEL_NAME/Output}
+  else # "BENCHMARKS"
+    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  fi
 
   local i=0 EXPS E TO
 
@@ -179,14 +200,14 @@ get_expid()
     then
       for E in ${EXPS[@]}
       do
-        EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+        EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
         if [[ $E == $EXPID ]]
         then
           i=$(( i + 1 ))
         fi
       done
     fi
-    EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+    EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
     export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
@@ -200,12 +221,6 @@ get_expid()
     exit 1
   fi
   TURBINE_OUTPUT=$TO
-
-  # Andrew: Needed for functionality with George's restart.py script for UPF jobs
-  if [ -f metadata.json ]; then
-    mv metadata.json $TURBINE_OUTPUT
-  fi
-
 }
 
 next()

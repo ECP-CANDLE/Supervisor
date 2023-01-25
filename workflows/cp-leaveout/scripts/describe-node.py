@@ -3,11 +3,12 @@
 # DESCRIBE NODE PY
 #
 
-import argparse, json
+import argparse
+import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument('plan', type=str, help='Plan data file')
-parser.add_argument('node', type=str, help='The node e.g. "1.2.3"')
+parser.add_argument("plan", type=str, help="Plan data file")
+parser.add_argument("node", type=str, help='The node e.g. "1.2.3"')
 args = parser.parse_args()
 
 try:

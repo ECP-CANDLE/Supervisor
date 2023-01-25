@@ -17,7 +17,7 @@ $ make install-binaries install-libraries install-headers
 
 == Install Python
 
-$ ./configure 
+$ ./configure
   --prefix=/gpfs/alpine/world-shared/med106/sw/gcc-7.4.0/Python-3.5.1
   --enable-shared
 $ nice make -j

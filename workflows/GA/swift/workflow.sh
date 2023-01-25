@@ -13,10 +13,8 @@ then
   echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
   exit 1
 fi
-export BENCHMARKS_ROOT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd)
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/TC1:$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1
+
 export BENCHMARK_TIMEOUT
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
 SCRIPT_NAME=$(basename $0)
 
@@ -32,37 +30,69 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME" \
+       "[CANDLE_MODEL_TYPE] [CANDLE_IMAGE]"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 7 )) && (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
-if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
- }
+if (( ${#} == 7 ))
 then
+  export CANDLE_MODEL_TYPE=$6
+  export CANDLE_IMAGE=$7
+elif (( ${#} == 5 ))
+then
+  CANDLE_MODEL_TYPE="BENCHMARKS"
+  CANDLE_IMAGE=NONE
+else
   usage
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+TURBINE_OUTPUT=""
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
+         $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
+fi
+
+get_site    $1 # Sets SITE
+get_expid   $2 $CANDLE_MODEL_TYPE # Sets EXPID
+get_cfg_sys $3
+get_cfg_prm $4
+MODEL_NAME=$5
 
 source_site env   $SITE
-source_site sched   $SITE
+source_site sched $SITE
+
+EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
+
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 # Set PYTHONPATH for BENCHMARK related stuff
-EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$EQPY
+PYTHONPATH+=:$EQPY
+PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+export TURBINE_JOBNAME="GA_${EXPID}"
+RESTART_FILE_ARG=""
+if [[ ${RESTART_FILE:-} != "" ]]
+then
+  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
+fi
+
+RESTART_NUMBER_ARG=""
+if [[ ${RESTART_NUMBER:-} != "" ]]
+then
+  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
+fi
+
+
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
                 -ni=$NUM_ITERATIONS
@@ -105,8 +135,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# Use for Summit (LSF needs two %)
-if [[ ${SITE:-} == "summit" ]]
+# Handle %-escapes in TURBINE_STDOUT
+if [ $SITE == "summit"  ] || \
+   [ $SITE == "biowulf" ] || \
+   [ $SITE == "polaris" ]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
@@ -132,8 +164,15 @@ else
   STDOUT=""
 fi
 
-# echo's anything following this to standard out
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
+  exit 1
+fi
 
+(
+set -x
+which python swift-t
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p -I $EQPY -r $EQPY \
@@ -145,9 +184,11 @@ swift-t -O 0 -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
+        -e APP_PYTHONPATH \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
         -e MODEL_NAME \
         -e SITE \
@@ -155,10 +196,13 @@ swift-t -O 0 -n $PROCS \
         -e SH_TIMEOUT \
         -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
+        -e CANDLE_DATA_DIR \
+        -e CANDLE_MODEL_TYPE \
+        -e CANDLE_IMAGE \
         $WAIT_ARG \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
     tee $STDOUT
-
+)
 
 if (( ${PIPESTATUS[0]} ))
 then
@@ -166,8 +210,7 @@ then
   exit 1
 fi
 
-# echo "EXIT CODE: 0" | tee -a $STDOUT
+echo "EXIT CODE: 0" | tee -a $STDOUT
 
 # Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
 echo $TURBINE_OUTPUT > turbine-directory.txt
-      

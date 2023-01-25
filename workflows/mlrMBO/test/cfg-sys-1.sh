@@ -35,6 +35,13 @@ BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-3600}
 # This timeout is implemented with the shell command 'timeout'
 export SH_TIMEOUT=${SH_TIMEOUT:-}
 
+# Resident task worker rank for mlrMBO algorithm
+if [[ ${TURBINE_RESIDENT_WORK_WORKERS:-} == "" ]]
+then
+    export TURBINE_RESIDENT_WORK_WORKERS=1
+    export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+fi
+
 # Ignore errors: If 1, unknown errors will be reported to model.log
 # but will not bring down the Swift workflow.  See model.sh .
 export IGNORE_ERRORS=0

@@ -1,15 +1,16 @@
-
 # DATA SIZE PY
 # Get the training data size from the file
 
-import argparse, logging, os, sys
-import pandas as pd
+import argparse
+import logging
+import os
+import sys
 
+import pandas as pd
 from utils import fail
 
 parser = argparse.ArgumentParser(description="Extract the data size")
-parser.add_argument("input",
-                    help="The training file")
+parser.add_argument("input", help="The training file")
 args = parser.parse_args()
 
 print("data-size.py: opening '%s' ..." % args.input)
@@ -32,7 +33,7 @@ if ext == ".h5" or ext == ".hdf5":
     clms = df_x_train_0.columns
     print(clms)
     for clm in clms:
-        print(df_x_train_0.at[2,clm])
+        print(df_x_train_0.at[2, clm])
     # print(df_x_train_1.columns)
 
     store.close()
@@ -61,13 +62,12 @@ elif ext == ".feather":
 
 print("data-size: OK.")
 
-    # total size: (529940, 6215)
+# total size: (529940, 6215)
 
 # store = pd.HDFStore(args.input, "r", complevel=9, complib="blosc:snappy")
 # print(str(store))
 
 # print(store.get("y_val"))
-
 
 # f = h5py.File(args.file, "r")
 

@@ -5,6 +5,9 @@ set -eu
 
 # Shell wrapper around Keras model
 
+# Note that APP_PYTHONPATH is used by models here and
+# not just PYTHONPATH
+
 # Note: Under Swift/T, the initial output from here will go
 # to the main Swift/T stdout and be mixed with output from
 # other models.
@@ -13,32 +16,45 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh FRAMEWORK PARAMS RUNID"
+  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID"
   echo "The environment should have:"
   echo "  EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
   echo "  SITE OBJ_RETURN BENCHMARK_TIMEOUT"
   echo "  and MODEL_NAME EXPID for model_runner.py"
-  echo "If SH_TIMEOUT is provided, we run under the shell command timeout"
+  echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 3 ))
+if (( ${#} != 4 ))
 then
+  echo "Wrong number of arguments: received ${#} , required: 4"
   usage
   exit 1
 fi
 
-FRAMEWORK=$1 # Usually "keras"
-# JSON string of parameters
+FRAMEWORK=$1 # Usually "keras" or "pytorch"
+# JSON string of parameters:
 PARAMS="$2"
-RUNID=$3
+EXPID=$3
+RUNID=$4
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
-INSTANCE_DIRECTORY=$TURBINE_OUTPUT/run/$RUNID
+# # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
+#set -x
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  # TODO: Rename "instance" to "run"
+  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID
+  INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
+else # "BENCHMARKS"
+  INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+fi
 
 # All stdout/stderr after this point goes into model.log !
-mkdir -p $INSTANCE_DIRECTORY
+mkdir -pv $INSTANCE_DIRECTORY
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
+echo "redirecting to: LOG_FILE=$INSTANCE_DIRECTORY/model.log"
+set +x
 exec >> $LOG_FILE
 exec 2>&1
 cd $INSTANCE_DIRECTORY
@@ -57,6 +73,9 @@ log()
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
+log "HOST: $( hostname )"
+log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
+# log "CANDLE_MODEL_TYPE: $CANDLE_MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -71,49 +90,94 @@ log "PARAMS:"
 echo $PARAMS | print_json
 
 echo
-log "USING PYTHON:" $( which python )
+log "USING PYTHON:" $( which python3 )
 echo
 
-# The Python command line arguments:
-PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
-         "$PARAMS"
-         "$INSTANCE_DIRECTORY"
-         "$FRAMEWORK"
-         "$RUNID"
-         "$BENCHMARK_TIMEOUT" )
+# Cf. utils.sh
+log_path APP_PYTHONPATH
+log_path PYTHONPATH
+log_path LD_LIBRARY_PATH
+show     PYTHONHOME
 
-# The desired model command:
-MODEL_CMD="python3 -u ${PY_CMD[@]}"
+# Set up PYTHONPATH for app tasks
+export PYTHONPATH=${APP_PYTHONPATH:-}:${PYTHONPATH:-}
+
+# Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+
+  # No model_runner, need to write parameters.txt explicitly:
+  #  get hyper_parameter_map to pass as 2nd argument
+
+  FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
+                   "$PARAMS" )
+  MODEL_CMD=( singularity exec --nv
+              --bind $CANDLE_DATA_DIR:/candle_data_dir
+              $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+              /candle_data_dir
+              $FLAGS )  # $INTERNAL_DIRECTORY/parameters.txt
+else # "BENCHMARKS"
+
+  # The Python command line arguments:
+  PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
+           "$PARAMS"
+           "$INSTANCE_DIRECTORY"
+           "$FRAMEWORK"
+           "$RUNID"
+           "$BENCHMARK_TIMEOUT" )
+
+  MODEL_CMD=( python3 -u "${PY_CMD[@]}" )
+  # model_runner/runner_utils writes result.txt
+fi
+
 log "MODEL_CMD: ${MODEL_CMD[@]}"
 
 # Run Python!
-if $TIMEOUT_CMD ${MODEL_CMD[@]}
+$TIMEOUT_CMD "${MODEL_CMD[@]}" &
+PID=$!
+
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
-  : # Assume success so we can keep a failed exit code
+  wait $PID
+  ls -ltrh
+  sleep 1  # Wait for initial output
+  # Get last results of the format "IMPROVE_RESULT xxx" in model.log
+  # NOTE: Enabling set -x will break the following
+  RES=$(awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' model.log)
+  echo $RES
+  RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')"
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
-  # $? is the exit status of the most recently executed command
-  # (i.e the line in the 'if' condition)
+  wait $PID
   CODE=$?
-  echo # spacer
-  if (( $CODE == 124 ))
+  if (( CODE ))
   then
-    log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
-    # This will trigger a NaN (the result file does not exist)
-    exit 0
-  else
-    log "MODEL ERROR! (CODE=$CODE)"
-    if (( ${IGNORE_ERRORS:-0} ))
+    echo # spacer
+    if (( $CODE == 124 ))
     then
-      log "IGNORING ERROR."
+      log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
       # This will trigger a NaN (the result file does not exist)
       exit 0
+    else
+      log "MODEL ERROR! (CODE=$CODE)"
+      if (( ${IGNORE_ERRORS:-0} ))
+      then
+        log "IGNORING ERROR."
+        # This will trigger a NaN (the result file does not exist)
+        exit 0
+      fi
+      log "ABORTING WORKFLOW (exit 1)"
+      exit 1 # Unknown error in Python: abort the workflow
     fi
-    log "ABORTING WORKFLOW (exit 1)"
-    exit 1 # Unknown error in Python: abort the workflow
   fi
+
+  # Get results from model.log: last occurrence of "loss: xxx"
+  RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
+  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 fi
 
 log "END: SUCCESS"
+
 exit 0 # Success
 
 # Local Variables:

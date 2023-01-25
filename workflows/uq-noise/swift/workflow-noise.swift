@@ -60,4 +60,3 @@ foreach level, i in label_noise_array
              run_id, label_noise, result);
     }
 }
-

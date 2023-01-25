@@ -47,6 +47,8 @@ then
   export WAIT=1
 fi
 
+export CANDLE_MODEL_TYPE="Benchmarks"
+
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 

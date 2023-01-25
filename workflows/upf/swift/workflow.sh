@@ -4,18 +4,13 @@ set -eu
 # UPF WORKFLOW SH
 
 # Autodetect this workflow directory
-export EMEWS_PROJECT_ROOT=$( readlink --canonicalize $( dirname $0 )/.. )
-export WORKFLOWS_ROOT=$(     readlink --canonicalize $EMEWS_PROJECT_ROOT/..  )
-export BENCHMARKS_ROOT=$(    readlink --canonicalize $EMEWS_PROJECT_ROOT/../../../Benchmarks )
+export EMEWS_PROJECT_ROOT=$( realpath $( dirname $0 )/.. )
+export WORKFLOWS_ROOT=$(     realpath $EMEWS_PROJECT_ROOT/..  )
 
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/NT3:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4:$BENCHMARKS_ROOT/Pilot3/P3B5
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
-
-export TURBINE_LOG=0 TURBINE_DEBUG=0 ADLB_DEBUG=0
 
 usage()
 {
@@ -29,32 +24,25 @@ then
 fi
 
 if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3
-  UPF=$4
+  get_site    $1               # Sets SITE
+  get_expid   $2 "SINGULARITY" # Sets EXPID, TURBINE_OUTPUT
+  get_cfg_sys $3               # Sets CFG_SYS
+  UPF=$4                       # The JSON hyperparameter file
  }
 then
   usage
   exit 1
 fi
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
-export PYTHONPATH
-
 source_site env   $SITE
-source_site sched   $SITE
+source_site sched $SITE
+
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 log_path PYTHONPATH
 
-if [[ ${EQR:-} == "" ]]
-then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
-fi
-
-export TURBINE_JOBNAME="JOB:${EXPID}"
+export TURBINE_JOBNAME="UPF_${EXPID}"
 
 OBJ_PARAM_ARG=""
 if [[ ${OBJ_PARAM:-} != "" ]]
@@ -62,7 +50,6 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
-# Andrew: Allows for custom model.sh if desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
 
@@ -82,31 +69,19 @@ cp $CFG_SYS $TURBINE_OUTPUT
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-# which mpicc
-which swift-t
-
-# module list
-
 cp -v $UPF $TURBINE_OUTPUT
 
-site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+# TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+TURBINE_STDOUT=
 
-# ALW 2020-11-15: If we're running the candle wrapper scripts in which
-# case if this file were being called then $CANDLE_RUN_WORKFLOW=1,
-# don't set $TURBINE_LAUNCH_OPTIONS as this variable and the settings
-# in the declaration below are handled by the wrapper scripts
-if [[ ${site2} == "summit" && ${CANDLE_RUN_WORKFLOW:-0} != 1 ]]
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
-  export TURBINE_LAUNCH_OPTIONS="-a1 -g1 -c7"
+  abort "upf/workflow.sh: Set CANDLE_DATA_DIR!"
 fi
 
-TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
-# TURBINE_STDOUT=
+export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
-echo OMP_NUM_THREADS ${OMP_NUM_THREADS:-UNSET}
-export OMP_NUM_THREADS=1
-
-log_path LD_LIBRARY_PATH
+which swift-t
 
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
@@ -119,13 +94,15 @@ swift-t -n $PROCS \
         -e MODEL_SH \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
-        -e MODEL_NAME \
+        -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
         -e PYTHONUNBUFFERED=1 \
+        -e CANDLE_MODEL_TYPE \
+        -e CANDLE_IMAGE \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
 #        -e PYTHONVERBOSE=1

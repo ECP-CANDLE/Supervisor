@@ -1,0 +1,9 @@
+[
+  {
+    "name": "x",
+    "type": "float",
+    "lower": 0.0,
+    "upper": 20.0,
+    "sigma": 0.1
+  }
+]

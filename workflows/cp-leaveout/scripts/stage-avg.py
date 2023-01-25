@@ -28,20 +28,22 @@ while True:
     stage, run = tokens[0:2]
     # print(stage, run)
     offset = 2
-    for index in range(0,len(labels)):
+    for index in range(0, len(labels)):
         label = labels[index]
         if stage not in data[label]:
             data[label][stage] = []
-        data[label][stage].append(tokens[offset+index])
+        data[label][stage].append(tokens[offset + index])
 
 # Debug dump of all data:
 # print(data)
+
 
 def avg(L):
     s = 0.0
     for v in L:
         s += float(v)
     return s / len(L)
+
 
 def mean_confidence_interval(data, confidence=0.95):
     import numpy as np
@@ -51,9 +53,10 @@ def mean_confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)
     n = len(a)
     m, se = np.mean(a), scipy.stats.sem(a)
-    h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
-    c = 100.0 * h / m # Interval scaled to mean
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2.0, n - 1)
+    c = 100.0 * h / m  # Interval scaled to mean
     return m, h, c
+
 
 # Average each data[label][stage] and report
 print("# %-5s %-6s AVG" % ("STAT", "STAGE"))

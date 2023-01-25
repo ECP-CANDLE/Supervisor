@@ -1,2 +1,2 @@
 horovod = "/home/wozniak/proj/horovod"
-execfile(horovod+"/examples/keras_mnist.py")
+execfile(horovod + "/examples/keras_mnist.py")

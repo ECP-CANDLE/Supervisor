@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-4}
+export PROCS=${PROCS:-3}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
@@ -37,6 +37,9 @@ export IGNORE_ERRORS=0
 # if the deap python package is not installed with swift-t's embedded python
 # it may be ncessary to include its location in the PYTHONPATH
 # export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
+
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # for running locally, edit as necessary
 # export PYTHONHOME=$HOME/anaconda3

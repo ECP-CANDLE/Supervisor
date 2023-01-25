@@ -1,4 +1,3 @@
-
 # EXTRACT NODE INFO PY
 
 # Input:  Provide an experiment directory
@@ -7,14 +6,16 @@
 # Use print-node-info to print the node info
 # See Node.py for the data structure
 
-import argparse, logging, os, pickle
+import argparse
+import logging
+import os
+import pickle
 
-from utils import fail
 from Node import Node
+from utils import fail
 
-parser = argparse.ArgumentParser(description='Parse all log files')
-parser.add_argument('directory',
-                    help='The experiment directory (EXPID)')
+parser = argparse.ArgumentParser(description="Parse all log files")
+parser.add_argument("directory", help="The experiment directory (EXPID)")
 
 args = parser.parse_args()
 
@@ -52,8 +53,8 @@ def parse_logs(log_files):
         total = len(log_files)
         index = 0
         for log_file in log_files:
-            progress = "%4i/%4i (%2.f%%)" % \
-                       (index, total, 100.0*index/total)
+            progress = "%4i/%4i (%2.f%%)" % (index, total,
+                                             100.0 * index / total)
             logger.info("Opening: %12s %s" % (progress, log_file))
             with open(log_file) as fp:
                 parse_log(fp, nodes)
@@ -73,7 +74,8 @@ def parse_log(log_fp, nodes):
     while True:
         line = log_fp.readline()
         # print(line)
-        if line == "": break
+        if line == "":
+            break
         if "DONE: run_id" in line:
             # This is also a MODEL RUNNER line,
             # but could be DEBUG or INFO
@@ -128,9 +130,9 @@ def parse_log(log_fp, nodes):
                 node_current.stop_early()
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
-            logger.debug("node done.")
+            logger.info("node done.")
             # find_val_data(node_current) # old format?
-            find_error_data(node_current)
+            parse_python_log(node_current)
             nodes_found += 1
             node_current = None
 
@@ -142,12 +144,12 @@ def parse_build_df(line, logger=None):
     assert len(tokens) == 6
     global build_df
     build_df = float(tokens[4])
-    logger.info("build_df: %0.2f" % build_df)
+    # logger.info("build_df: %0.2f" % build_df)
     return build_df
 
 
 def trace(message):
-    logger.log(level=logging.DEBUG-5, msg=message)
+    logger.log(level=logging.DEBUG - 5, msg=message)
 
 
 # def find_val_data(node):
@@ -165,7 +167,7 @@ def find_error_data(node):
     if not os.path.exists(python_log):
         return
     with open(python_log) as fp:
-        node.parse_error_data(fp)
+        node.parse_python_log(fp)
     if node.mse is None:
         logger.fatal("Could not find error data for node: " + node.id)
 

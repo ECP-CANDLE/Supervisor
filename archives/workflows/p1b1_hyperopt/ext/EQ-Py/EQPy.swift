@@ -11,10 +11,10 @@ pragma worktypedef resident_work;
 
 string init_package_string =
 """
-import eqpy          
-import %s            
-import threading 
-p = threading.Thread(target=%s.run) 
+import eqpy
+import %s
+import threading
+p = threading.Thread(target=%s.run)
 p.start()
 """;
 

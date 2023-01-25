@@ -29,10 +29,9 @@ printf("A:") =>
       printf("B[\"%s\"]=%i", k0, v0);
       C[string2int(k0)] = v0;
     }
-    
+
     foreach v1, k1 in C
     {
       printf("C[%i]=%i", k1, v1);
     }
   }
-  

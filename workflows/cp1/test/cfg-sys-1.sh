@@ -2,7 +2,7 @@
 # MLRMBO CFG SYS 1
 
 # The total number of MPI processes including 2
-# for swift internals, and the number of 
+# for swift internals, and the number of
 # mlrMBO instances and the number of individual
 # Uno HPO runs.
 export PROCS=${PROCS:-6}

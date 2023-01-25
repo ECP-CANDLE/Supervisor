@@ -29,16 +29,16 @@
       string_params <- elements_of_lists_to_json(dots[[1L]])
       # print(dots)
       # print(paste0("parallelMap2 called with list_param: ",string_params))
-      # print(paste("parallelMap2 called with list size:", length(string_params)))
+      print(paste("mlrMBO: produced task count:  ", length(dots[[1L]])))
       OUT_put(string_params)
       string_results = IN_get()
-
       st = proc.time() - st
 
       # Assumes results are in the form a;b;c
       # Note: can also handle vector returns for each,
       # i.e., a,b;c,d;e,f
       res <- string_to_list_of_vectors(string_results)
+      print(paste("mlrMBO: received result count:", length(res)))
       # using dummy time
       return(result_with_extras_if_exist(res,st[3]))
     }
@@ -71,26 +71,25 @@
                             restart.file) {
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", 
-                      predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest",
+                      predict.type = "se",
                       fix.factors.prediction = TRUE,
-                      se.method = "jackknife", 
+                      se.method = "jackknife",
                       se.boot = 2)
-    ctrl = makeMBOControl(n.objectives = 1, 
+    ctrl = makeMBOControl(n.objectives = 1,
                           propose.points = propose.points,
-			  impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax,
-			  trafo.y.fun = makeMBOTrafoFunction('log', log))
-    ctrl = setMBOControlInfill(ctrl, 
+                          impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax)
+    ctrl = setMBOControlInfill(ctrl,
                                crit = makeMBOInfillCritCB(),
-                               opt.restarts = 1, 
+                               opt.restarts = 1,
                                opt.focussearch.points = 1000)
-    ctrl = setMBOControlTermination(ctrl, 
-                                    max.evals = max.budget, 
+    ctrl = setMBOControlTermination(ctrl,
+                                    max.evals = max.budget,
                                     iters = max.iterations)
 
     chkpntResults<-NULL
     # TODO: Make this an argument
-    restartFile<-restart.file 
+    restartFile<-restart.file
     if (file.exists(restart.file)) {
       print(paste("Loading restart:", restart.file))
 
@@ -179,7 +178,7 @@
   # This is a string of R code containing arguments to main_function(),
   # e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
   msg <- IN_get()
-  print(paste("Received params1 msg: ", msg))
+  print(paste("Received mlrMBO configuration parameters msg: ", msg))
 
   # Edit the R code to make a list constructor expression
   code = paste0("list(",msg,")")

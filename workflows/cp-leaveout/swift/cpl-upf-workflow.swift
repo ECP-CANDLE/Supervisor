@@ -84,7 +84,7 @@ global const string FRAMEWORK = "keras";
     r = obj(json2, node) =>
       string hist_json = read_history(node);
       db_stop_result = plangen_stop(db_file, node, plan_id, hist_json) =>
-    assert(db_stop_result != "EXCEPTION", "Exception in plangen_stop()!") =>                                   
+    assert(db_stop_result != "EXCEPTION", "Exception in plangen_stop()!") =>
     printf("stop_subplan result: %s", db_stop_result);
   } else {
     printf("plan node already marked complete: %s result=%s", node, db_start_result) =>
@@ -194,6 +194,6 @@ main() {
 
   // string result = join(results, ";") =>
   file out<"%s/plan_id.txt" % turbine_output> = write("%s\n" % plan_id);
-  write_lines(results, "results.txt") => 
+  write_lines(results, "results.txt") =>
   printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
 }

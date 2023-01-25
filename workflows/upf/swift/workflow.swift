@@ -17,11 +17,11 @@ report_env();
 string FRAMEWORK = "keras";
 
 // Scan command line
-file   upf        = input(argv("f"));
-int    benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+file   upf = input(argv("f"));
+int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
 string model_name     = getenv("MODEL_NAME");
-string exp_id         = getenv("EXPID");
+string expid          = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 
 // Report some key facts:
@@ -38,8 +38,8 @@ string results[];
 foreach params,i in upf_lines
 {
   printf("params: %s", params);
-  id = json_get(params, "id");
-  results[i] = obj(params, id);
+  runid = json_get(params, "id");
+  results[i] = obj(params, expid, runid);
   assert(results[i] != "EXCEPTION", "exception in obj()!");
 }
 

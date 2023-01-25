@@ -50,4 +50,3 @@ source "$SITE"_submit.cfg
 
 #echo $CMD
 $CMD
-

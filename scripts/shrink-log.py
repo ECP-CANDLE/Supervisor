@@ -1,4 +1,3 @@
-
 # SHRINK LOG PY
 # argv: 2 filenames : tr file and summary-*.txt
 # Called by shrink-log-single.sh
@@ -8,9 +7,12 @@
 # Removes redundant batch size information
 # Fixes newline before "Current time" report
 
-import os, re, stat, sys, time
+import os
+import re
+import stat
+import sys
+import time
 from collections import deque
-
 
 # Only 1/shrink_factor training lines are copied
 shrink_factor = 100
@@ -26,7 +28,8 @@ def shrink(fp_in, fp_out):
     starts = 0  # Initial hold_space ETAs are immediately printed
     line_previous = ""
     for line in fp_in:
-        if len(line) == 1: continue  # Blank line
+        if len(line) == 1:
+            continue  # Blank line
         line = line.replace("\b", "")
         if "batch:" in line or "Current" in line:
             # Found a training line
@@ -64,20 +67,20 @@ def hsize(size, decimal_places=2):
     if size < 1024:
         return "%4i B" % size
     size /= 1024
-    for unit in ["KB","MB","GB","TB"]:
+    for unit in ["KB", "MB", "GB", "TB"]:
         if size < 1024:
             break
         size /= 1024
     return f"{size:.{decimal_places}f} {unit}"
 
 
-file_in  = sys.argv[1]
+file_in = sys.argv[1]
 file_out = sys.argv[2]
 
 # Do not process files that have not changed since the last run
 # of this script:
-if os.path.exists(file_out) and \
-   os.path.getmtime(file_in) < os.path.getmtime(file_out):
+if os.path.exists(
+        file_out) and os.path.getmtime(file_in) < os.path.getmtime(file_out):
     print("skipping:  " + file_in)
     exit()
 
@@ -85,8 +88,7 @@ t0 = time.time()
 s0 = os.stat(file_in)
 z0 = s0[stat.ST_SIZE]
 h0 = hsize(z0)
-print("shrink:                       %11s                 %s" %
-      (h0, file_in))
+print("shrink:                       %11s                 %s" % (h0, file_in))
 
 with open(file_in, "r") as fp_in:
     with open(file_out, "w") as fp_out:
@@ -97,7 +99,7 @@ t1 = time.time()
 z1 = s1[stat.ST_SIZE]
 
 t = t1 - t0
-rate = hsize(z0/t)
+rate = hsize(z0 / t)
 
 print("shrank:  %0.2fs %11s/s  %11s -> %11s  %s" %
       (t, rate, hsize(z0), hsize(z1), file_in))

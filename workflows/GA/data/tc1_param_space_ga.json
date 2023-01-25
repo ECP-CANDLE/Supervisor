@@ -23,7 +23,17 @@
     "name": "activation",
     "type": "categorical",
     "element_type": "string",
-    "values": ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
+    "values": [
+      "softmax",
+      "elu",
+      "softplus",
+      "softsign",
+      "relu",
+      "tanh",
+      "sigmoid",
+      "hard_sigmoid",
+      "linear"
+    ]
   },
 
   {
@@ -62,5 +72,4 @@
     "type": "constant",
     "value": 5
   }
-
 ]

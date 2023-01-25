@@ -4,11 +4,11 @@
 
 SEED=${SEED:-1}
 # Total iterations
-NUM_ITERATIONS=${NUM_ITERATIONS:-2}
+NUM_ITERATIONS=${NUM_ITERATIONS:-7}
 # Size of GA population (i.e. the number of parameter sets to evaluate)
 POPULATION_SIZE=${POPULATION_SIZE:-4}
-# the GA strategy: one of 'simple' or 'mu_plus_lambda'. See 
-# https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms 
+# the GA strategy: one of 'simple' or 'mu_plus_lambda'. See
+# https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
 
@@ -23,8 +23,12 @@ elif [ "$MODEL_NAME" = "p1b1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b1_param_space_ga.json}
 elif [ "$MODEL_NAME" = "nt3" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/nt3_param_space_ga.json}
+elif [ "$MODEL_NAME" = "graphdrp" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/graphdrp_param_space_ga.json}
 elif [ "$MODEL_NAME" = "tc1" ]; then
     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/tc1_param_space_ga.json}
+elif [ "$MODEL_NAME" = "oned" ]; then
+    PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/oned_param_space_ga.json}
 # TODO: Uncomment when parameter files are available
 # elif [ "$MODEL_NAME" = "p1b3" ]; then
 #     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b3_param_space_ga.json}
