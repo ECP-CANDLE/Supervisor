@@ -247,16 +247,16 @@ class Node:
                "lr=" in line:
                 tokens = line.split("=")
                 lr = float(tokens[1])
-                if self.lr is None:
+                # print("%s lr=%0.6f" % (self.id, lr))
+                if self.lr_first is None:
                     self.lr_first = lr
                 else:
                     self.lr_final = lr
-                print("%s lr=%0.6f" % (self.id, self.lr))
             if line.startswith(marker, date_len):
                 line = fp.readline()
                 tokens = check_token(line, 2, "mse:")
                 self.mse = float(tokens[3])
-                print("mse: " + str(self.mse))
+                # print("mse: " + str(self.mse))
                 line = fp.readline()
                 tokens = check_token(line, 2, "mae:")
                 self.mae = float(tokens[3])
