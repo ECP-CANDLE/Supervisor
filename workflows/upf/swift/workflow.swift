@@ -17,7 +17,11 @@ report_env();
 string FRAMEWORK = "keras";
 
 // Scan command line
+<<<<<<< Updated upstream
 file   upf = input(argv("f"));
+=======
+file   upf        = input(argv("f"));
+>>>>>>> Stashed changes
 int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
 string model_name     = getenv("MODEL_NAME");

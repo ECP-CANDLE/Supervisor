@@ -25,6 +25,7 @@ try:
   J = """%s"""
   hyper_parameter_map = json.loads(J)
   hyper_parameter_map['framework'] = 'keras'
+  hyper_parameter_map['framework'] = 'keras'
   hyper_parameter_map['save'] = '{}/output'.format(outdir)
   hyper_parameter_map['instance_directory'] = outdir
   hyper_parameter_map['model_name'] = '%s'
