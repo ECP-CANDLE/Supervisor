@@ -24,10 +24,14 @@ then
 fi
 
 if ! {
-  get_site    $1               # Sets SITE
-  get_expid   $2 "SINGULARITY" # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3               # Sets CFG_SYS
-  UPF=$4                       # The JSON hyperparameter file
+  # Sets SITE
+  # Sets EXPID, TURBINE_OUTPUT
+  # Sets CFG_SYS
+  # UPF is the JSON hyperparameter file
+  get_site    $1               && \
+  get_expid   $2 "SINGULARITY" && \
+  get_cfg_sys $3               && \
+  UPF=$4
  }
 then
   usage
