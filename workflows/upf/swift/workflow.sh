@@ -59,8 +59,7 @@ export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -f=$UPF # ALW: keeping it as $UPF to allow $UPF to be a full path
-                #-f=$TURBINE_OUTPUT/$UPF # Copied to TURBINE_OUTPUT below
+                -f=$UPF
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
