@@ -29,7 +29,7 @@ if ! {
   # Sets CFG_SYS
   # UPF is the JSON hyperparameter file
   get_site    $1               && \
-  get_expid   $2 "SINGULARITY" && \
+  get_expid   $2               && \
   get_cfg_sys $3               && \
   UPF=$4
  }
