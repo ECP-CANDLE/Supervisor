@@ -192,9 +192,8 @@ swift-t -O 0 -n $PROCS \
         -e CANDLE_MODEL_TYPE \
         -e CANDLE_IMAGE \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} ) |& \
   tee $STDOUT
-)
 
 if (( ${PIPESTATUS[0]} ))
 then
