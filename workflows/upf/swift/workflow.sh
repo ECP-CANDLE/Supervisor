@@ -108,5 +108,7 @@ swift-t -n $PROCS \
         -e CANDLE_IMAGE \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
+# Can provide this to debug Python settings:
 #        -e PYTHONVERBOSE=1
-#         -e PATH=$PATH
+# Can provide this if needed to reset PATH:
+#        -e PATH=$PATH
