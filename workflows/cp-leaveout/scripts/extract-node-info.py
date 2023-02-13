@@ -162,7 +162,7 @@ def trace(message):
 #         logger.fatal("Could not find val data for node: " + node.id)
 
 
-def find_error_data(node):
+def parse_python_log(node):
     python_log = args.directory + "/run/%s/save/python.log" % node.id
     if not os.path.exists(python_log):
         return
