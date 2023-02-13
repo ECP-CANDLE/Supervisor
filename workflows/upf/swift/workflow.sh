@@ -24,10 +24,14 @@ then
 fi
 
 if ! {
-  get_site    $1               # Sets SITE
-  get_expid   $2 "SINGULARITY" # Sets EXPID, TURBINE_OUTPUT
-  get_cfg_sys $3               # Sets CFG_SYS
-  UPF=$4                       # The JSON hyperparameter file
+  # Sets SITE
+  # Sets EXPID, TURBINE_OUTPUT
+  # Sets CFG_SYS
+  # UPF is the JSON hyperparameter file
+  get_site    $1               && \
+  get_expid   $2               && \
+  get_cfg_sys $3               && \
+  UPF=$4
  }
 then
   usage
@@ -55,8 +59,7 @@ export BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -f=$UPF # ALW: keeping it as $UPF to allow $UPF to be a full path
-                #-f=$TURBINE_OUTPUT/$UPF # Copied to TURBINE_OUTPUT below
+                -f=$UPF
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -106,5 +109,7 @@ swift-t -n $PROCS \
         -e CANDLE_IMAGE \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
+# Can provide this to debug Python settings:
 #        -e PYTHONVERBOSE=1
-#         -e PATH=$PATH
+# Can provide this if needed to reset PATH:
+#        -e PATH=$PATH

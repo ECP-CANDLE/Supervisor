@@ -85,6 +85,25 @@ Analytically determine the number of Nodes in the workflow given N and S.
 
 Compile workflow statistics
 
+==== Report learning rates
+
+Dump start and end learning rates into `lrs.txt`
+
+----
+$ scripts/report-lrs.sh $D > $D/lrs.txt
+----
+
+=== Data management
+
+==== mk-log-tar.sh
+
+Make a tarball of just the important logs (not the big HDF files).
+
+==== cp-subtree.sh
+
+Make a copy of experiment run subtrees; includes a random sample of
+leaf nodes and all their parents.
+
 === Analysis for model.log files
 
 These are not really supported for Summit runs
