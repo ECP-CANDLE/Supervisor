@@ -8,7 +8,8 @@ import math
 import os
 import sys
 import time
-
+import traceback
+import importlib
 import runner_utils
 from log_tools import *
 from runner_utils import ModelResult
@@ -141,8 +142,10 @@ def run(hyper_parameter_map, obj_return):
     with open(directory + "/rank.txt", "w") as fp:
         fp.write(str(os.getenv("ADLB_RANK_SELF")) + "\n")
 
-    framework = hyper_parameter_map["framework"]
-    model_name = hyper_parameter_map["model_name"]
+    framework = hyper_parameter_map['framework']
+    print("framework: " + str(framework))
+    sys.stdout.flush()
+    model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
 
     runner_utils.format_params(hyper_parameter_map)
@@ -173,8 +176,16 @@ def run(hyper_parameter_map, obj_return):
     except Exception as e:
         logger.warn("RUN EXCEPTION: " + str(e))
         print("RUN EXCEPTION: " + str(e))
+        info = sys.exc_info()
+        s = traceback.format_tb(info[2])
+        sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
+                         repr(e) + ' ... \\n' + ''.join(s))
+        sys.stdout.write('\\n')
+        sys.stdout.flush()
+
         # logger.warn("Caught InvalidArgumentError")
         exception = True
+        exit(1)
     log("PKG RUN STOP")
 
     if framework == "keras":

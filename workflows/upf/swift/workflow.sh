@@ -92,6 +92,7 @@ swift-t -n $PROCS \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e MODEL_SH \
+        -e FI_MR_CACHE_MAX_COUNT=0 \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \

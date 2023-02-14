@@ -27,7 +27,7 @@ original  = CANDLE_DATA + "/top21_2020Jul/top21.h5"
 lincs1000 = CANDLE_DATA + "/top21_2020Jul/lincs1000"
 
 # The file we are creating here:
-output   = CANDLE_DATA + "/top21_2020Jul/top21-cleaned.h5"
+output = CANDLE_DATA + "/top21_2020Jul/top21-cleaned-dd.h5"
 
 # List of names in LINCS:
 lincs = []
@@ -67,7 +67,7 @@ for column in columns:
     elif column.startswith("DD_"):
         # print("DD " + column)
         count_DD += 1
-        delete_these.append(column)
+        # delete_these.append(column)
     elif column == "AUC" or column == "DRUG" or column == "CELL":
         count_key += 1
     else:

@@ -175,7 +175,7 @@ then
   :
 fi
 
-# which python swift-t java
+which python swift-t java
 
 if [[ ${MACHINE:-} == "" ]]
 then
