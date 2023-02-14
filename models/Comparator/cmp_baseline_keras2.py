@@ -30,40 +30,57 @@ def run(gParameters):
     print("file_path: %s" % file_path)
     output_dir = gParameters["output_dir"]
     expid = gParameters["experiment_id"]
+    runid = gParameters["run_id"]
     supervisor = Path(file_path).absolute().parent.parent
     workflows = supervisor / "workflows"
-    model_sh = workflows / "common" / "sh" / "model.sh"
     print(model_sh)
     os.chdir(output_dir)
-    env = {
-        "WORKFLOWS_ROOT": str(workflows),
-        "TURBINE_OUTPUT": output_dir,
-        "EXPID": expid,
-        "SITE": "lambda",
-        "OBJ_RETURN": "loss",
-        "BENCHMARK_TIMEOUT": "120",
-        "MODEL_NAME": gParameters["model1"],
-        "CANDLE_MODEL_TYPE": "SINGULARITY",
-        "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
-        "ADLB_RANK_OFFSET": "0",
-        "CANDLE_IMAGE": "/software/improve/images/GraphDRP.sif"
-    }
+    cmd  = make_cmd(str(workflows), expid, runid)
+    run_dir = Path(os.getenv("CANDLE_DATA_DIR")) \
+        / model1 / "Output" / expid / runid
     print("env: " + str(env))
-    cmd = [
-        "bash",
-        model_sh,
-        "keras2",
-        "{}",  # empty JSON fragment
-        expid,
-        gParameters["run_id"]
-    ]
     print("cmd: " + str(cmd))
-    with open("model1.log", "w") as model1_log:
-        subprocess.run(cmd,
-                       env=env,
-                       stdout=model1_log,
-                       stderr=subprocess.STDOUT)
+    results = {}
+    for i in [ 1, 2 ]:
+        result =
+        model_name = gParameters["model%i" % i]
+        env = make_env(str(workflows), model_name)
+        with open(run_dir + "/start-%i.log" % i, "w") as fp:
+            subprocess.run(cmd, env=env,
+                           stdout=start_log,
+                           stderr=subprocess.STDOUT)
+        run_dir = Path(os.getenv("CANDLE_DATA_DIR")) \
+            / model_name / "Output" / expid / runid
+        with open(run_dir / "result.txt") as fp:
+            line = fp.readline()
+            results[i] = int(line)
+            print("cmp: result %i: %f" % (i, results[i]))
     print("Comparator DONE.")
+
+
+def make_env(workflows, model_name):
+    env = { "WORKFLOWS_ROOT": workflows,
+            "TURBINE_OUTPUT": output_dir,
+            "EXPID": expid,
+            "SITE": "lambda",
+            "OBJ_RETURN": "loss",
+            "BENCHMARK_TIMEOUT": "120",
+            "MODEL_NAME": model_name,
+            "CANDLE_MODEL_TYPE": "SINGULARITY",
+            "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
+            "ADLB_RANK_OFFSET": "0",
+            "CANDLE_IMAGE": "/software/improve/images/GraphDRP.sif"
+           }
+    return env
+
+
+def make_cmd(workflows, expid, runid):
+    model_sh = workflows / "common" / "sh" / "model.sh"
+
+    cmd = [ "bash", model_sh,
+            "keras2", "{}", # empty JSON fragment
+            expid,
+            runid ]
 
 
 def main():

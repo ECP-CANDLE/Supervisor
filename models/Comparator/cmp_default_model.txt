@@ -3,4 +3,4 @@
 model_name = 'cmp'
 
 model1 = 'graphdrp'
-model2 = 'graphdrp'
+model2 = 'graphdrp'  # 'graphdrp2'
