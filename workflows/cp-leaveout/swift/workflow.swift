@@ -9,6 +9,7 @@
   Flags:
   -N : Number of nodes per stage (see default in code)
   -S : Number of stages          (see default in code)
+  -E : Number of epochs          (see default in Benchmark)
   -P : Early stopping patience   (see default in code)
   -r : Use RunType.RESTART, default is RunType.RUN_ALL
        RUN_ALL means this is a fresh run with no prior results
