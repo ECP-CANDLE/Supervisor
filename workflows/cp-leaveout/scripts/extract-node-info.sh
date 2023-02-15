@@ -29,7 +29,7 @@ RESTARTS=( $DIR/restarts/* )
 
 for RESTART in ${RESTARTS[@]}
 do
-  $SUPERVISOR/scripts/shrink-logs.sh $RESTART
+  $SUPERVISOR/scripts/shrink-logs.sh $RESTART/out
 done
 $SUPERVISOR/scripts/shrink-logs.sh $DIR
 
