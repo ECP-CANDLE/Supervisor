@@ -37,7 +37,7 @@ This makes the Python Pickle containing the Node data.  See Node.py .
 This avoids needing to walk all logs all the time (which takes tens of seconds).
 
 ----
-$ scripts/extract-node-info.sh $D
+$ scripts/extract-node-info.sh $D [nodes...]
 ----
 
 The data structure in the Pickle is a simple dictionary mapping node ID strings e.g. "1.2.3.4" to object of type Node.
@@ -59,6 +59,8 @@ $ scripts/print-node-info.sh $D
 1.1.1.2.4.3  : 5 :  1 /  1 : 0.01510 : 2019-12-23 18:01:51 - 2019-12-23 18:06:28 :
 ...
 ----
+
+If specific node IDs are given on the command line, only those records are printed.
 
 ==== Find loss increases (find-loss-increases)
 
