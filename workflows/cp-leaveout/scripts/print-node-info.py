@@ -46,7 +46,11 @@ def print_all(data):
 
 def print_selected(data, nodes):
     for node_id in nodes:
-        node = data[node_id]
+        try:
+            node = data[node_id]
+        except KeyError:
+            print("Could not find node: '%s'" % node_id)
+            exit(1)
         print(node.str_table())
 
 
