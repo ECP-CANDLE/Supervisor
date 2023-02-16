@@ -16,6 +16,12 @@ source $SUPERVISOR/workflows/common/sh/utils.sh
 SIGNATURE -H "Provide an output DIR (e.g., .../experiments/X042/out)!" \
           DIR - ${*}
 
+if ! which python 2>&1 > /dev/null
+then
+  echo "shrink-logs.sh: Add python to PATH!"
+  exit 1
+fi
+
 export PYTHONPATH+=:$SUPERVISOR/workflows/common/python
 
 if ! [[ -d $DIR ]]
