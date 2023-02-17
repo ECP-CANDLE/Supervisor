@@ -26,6 +26,9 @@
         code that will be pushed into Swift/T for conciseness...
   NOTE: On Summit, you have to use sys.stdout.flush() after
         Python output on stdout
+
+  RESTART EXAMPLE:
+  test/test-512.sh summit EXP003 flat -r -N=4 -S=6 -E=5 -P=5
 */
 
 import assert;
