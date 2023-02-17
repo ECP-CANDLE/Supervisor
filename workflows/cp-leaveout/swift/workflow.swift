@@ -4,8 +4,8 @@
 
   Simply run with: 'swift-t workflow.swift <FILE SETTINGS>'
   Or specify the N, S values:
-  'swift-t workflow.swift -N=6 -S=6 <FILE SETTINGS>'
-  for 55,986 tasks.
+  'swift-t workflow.swift -N=4 -S=6 <FILE SETTINGS>'
+  for ### tasks.
   Flags:
   -N : Number of nodes per stage (see default in code)
   -S : Number of stages          (see default in code)
