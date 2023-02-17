@@ -150,7 +150,7 @@ class Node:
     def parse_load_initial(self, line, logger=None):
         tokens = line.split()
         self.load_initial = float(tokens[4])
-        print("load_initial: " + str(self.load_initial))
+        # print("load_initial: " + str(self.load_initial))
 
     def parse_epoch_status(self, line, logger=None):
         tokens = line.split()
