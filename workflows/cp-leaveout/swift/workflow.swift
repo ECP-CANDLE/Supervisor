@@ -100,7 +100,6 @@ global const string FRAMEWORK = "keras";
 run_stage(int N, int S, string this, int stage, void block,
           string plan_id, string db_file, string runtype)
 {
-
   // printf("stage: %i this: %s", stage, this);
   // Run the model
   void parent = run_single(this, stage, block, plan_id);
