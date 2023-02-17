@@ -109,7 +109,10 @@ run_stage(int N, int S, string this, int stage, void block,
     // Recurse to the child stages
     foreach id_child in [1:N]
     {
-      run_stage(N, S, this+"."+id_child, stage+1, parent,
+      run_stage(N, S,
+                // We want padded node IDs like "1.01.03" , "1.10.16"
+                "%s.%02i" % (this, id_child),
+                stage+1, parent,
                 plan_id, db_file, runtype);
     }
   }
@@ -154,7 +157,7 @@ run_stage(int N, int S, string this, int stage, void block,
       printf("run_single(): stop_subplan result: '%s'", result2);
       v = propagate(obj_result);
     }
-    else
+    else // result1 != 0
     {
       printf("run_single(): plan node already marked complete: " +
              "%s result=%s", node, result1) =>
