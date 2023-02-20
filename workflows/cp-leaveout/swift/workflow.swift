@@ -190,7 +190,7 @@ run_stage(int N, int S, string this, int stage, void block,
   if (stage > 1)
   {
     n = strlen(this);
-    parent = substring(this, 0, n-2);
+    parent = substring(this, 0, n-3);
     result = json_fragment + ----
 ,
 "initial_weights": "../%s/save/model.h5"
