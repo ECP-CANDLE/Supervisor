@@ -173,6 +173,7 @@ else
 
   # Get results from model.log: last occurrence of "loss: xxx"
   RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
+  log "RESULT: $RESULT"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 fi
 
