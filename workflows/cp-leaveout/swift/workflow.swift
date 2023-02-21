@@ -151,8 +151,8 @@ run_stage(int N, int S, string this, int stage, void block,
       {
         result2 = "RETRY";
       }
-      assert(obj_result != "EXCEPTION" && obj_result != "",
-             "Exception in obj()!");
+      assert(obj_result != "", "Error in obj(): result is empty!");
+      assert(obj_result != "EXCEPTION", "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("run_single(): stop_subplan result: '%s'", result2);
       v = propagate(obj_result);
