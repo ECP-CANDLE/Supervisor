@@ -193,7 +193,12 @@ else
 fi
 
 # TURBINE_STDOUT=""
-export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+if [[ $SITE == "Summit" ]]
+then
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+fi
 mkdir -pv $TURBINE_OUTPUT/out
 
 # set -x
