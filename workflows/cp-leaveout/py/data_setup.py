@@ -31,7 +31,7 @@ def setup_nvm(params):
     # nvme_enabled = True
     print("NVMe: %r" % nvme_enabled)
     if not nvme_enabled:
-        return
+        return params
     # copy original datafrom to NVMe disk space
     try:
         src = Path(params["dataframe_from"])
