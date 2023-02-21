@@ -138,7 +138,7 @@ run_stage(int N, int S, string this, int stage, void block,
     if (result1 == "0")
     {
       // Run the model
-      obj_result = obj(json, node);
+      obj_result = obj(json, exp_id, node);
       printf("run_single(): completed: node: '%s' result: '%s'",
              node, obj_result);
       // Update the DB to complete the model run

@@ -45,10 +45,12 @@ except Exception as e:
   obj_result = 'EXCEPTION'
 ----;
 
-(string obj_result) obj(string params, string iter_indiv_id) {
+(string obj_result) obj(string params,
+                        string expid,
+                        string runid) {
   string outdir = "%s/run/%s" % (turbine_output, iter_indiv_id);
   string code = code_template % (outdir, params, model_name,
-                                 exp_id, iter_indiv_id, benchmark_timeout);
+                                 expid, iter_indiv_id, benchmark_timeout);
   obj_result = python_persist(code, "str(obj_result)");
   printf("obj_py:obj(): obj_result: '%s'", obj_result);
 }
