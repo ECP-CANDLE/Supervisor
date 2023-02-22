@@ -8,7 +8,7 @@
 # Note that 1 process is reserved for Swift/T
 # For example, if PROCS=4 that gives you 3 workers,
 # i.e., 3 concurrent Keras runs.
-export PROCS=${PROCS:-128}
+export PROCS=${PROCS:-8}
 
 # MPI processes per node.  This should not exceed PROCS.
 # Cori has 32 cores per node, 128GB per node
@@ -37,9 +37,9 @@ export PPN=${PPN:-8}
 # export TURBINE_LAUNCH_OPTIONS="-a1 -g6 -c7"
 
 # Crusher
-export WALLTIME=${WALLTIME:-2:00:00}
+export WALLTIME=${WALLTIME:-0:15:00}
 # export TURBINE_LAUNCH_OPTIONS="-N2 --ntasks-per-node=8 -c8 --gpus-per-task=1 --gpus-per-node=8 --gpu-bind=closest"
-export TURBINE_LAUNCH_OPTIONS="-c 8 --gpus-per-task=1 --gpus-per-node=8 --gpu-bind=closest"
+export TURBINE_LAUNCH_OPTIONS="-c 4 --ntasks-per-node=8 --gpus-per-task=1 --gpus-per-node=8"
 # echo WALLTIME: $WALLTIME
 
 # export MAIL_ENABLED=1
