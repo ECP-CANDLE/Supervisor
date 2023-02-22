@@ -104,12 +104,13 @@ swift-t -n $PROCS \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \
         -e TURBINE_STDOUT=$TURBINE_STDOUT \
-        -e PYTHONUNBUFFERED=1 \
         -e CANDLE_MODEL_TYPE \
         -e CANDLE_IMAGE \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 
 # Can provide this to debug Python settings:
 #        -e PYTHONVERBOSE=1
+# Can provide this if needed for debugging crashes:
+#        -e PYTHONUNBUFFERED=1
 # Can provide this if needed to reset PATH:
 #        -e PATH=$PATH
