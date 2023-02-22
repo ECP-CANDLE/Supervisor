@@ -89,7 +89,7 @@ which swift-t
 swift-t -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
-        -p -I $EQR -r $EQR \
+        -p \
         -I $WORKFLOWS_ROOT/common/swift \
         -i obj_$SWIFT_IMPL \
         -e BENCHMARKS_ROOT \
