@@ -18,6 +18,7 @@ PATH=$SWIFT/turbine/bin:$PATH
 # R=$ROOT/R/4.1.3/lib64/R
 # LD_LIBRARY_PATH+=:$R/lib
 
+PY=/gpfs/alpine/med106/proj-shared/hm0/candle_tf_frontier
 # PY=/gpfs/alpine/world-shared/med106/sw/conda/2021-10-06/envs/CANDLE-2021-10-06
 # PY=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.5.2-py39-0
 # PY=/gpfs/alpine/world-shared/med106/sw/open-ce-1.1.3-py37/
