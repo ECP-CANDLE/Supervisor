@@ -18,7 +18,7 @@ export PROCS=${PROCS:-6}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-1}
 
-export WALLTIME=${WALLTIME:-12:00:00}
+export WALLTIME=${WALLTIME:-01:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
