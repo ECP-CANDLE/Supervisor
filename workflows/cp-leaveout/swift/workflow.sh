@@ -19,7 +19,7 @@ BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/Uno
 export BENCHMARK_TIMEOUT
 export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
-PYTHONPATH=${PYTHONPATH:-}:$BENCHMARK_DIR
+export PYTHONPATH=${PYTHONPATH:-}:$BENCHMARK_DIR:$BENCHMARKS_ROOT/Pilot1/Uno
 
 SCRIPT_NAME=$(basename $0)
 
@@ -193,13 +193,15 @@ else
 fi
 
 # TURBINE_STDOUT=""
-if [[ $SITE == "Summit" ]]
+if [[ $SITE == "summit" || $SITE == "frontier" ]]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 fi
 mkdir -pv $TURBINE_OUTPUT/out
+
+LD_LIBRARY_PATH=/opt/cray/libfabric/1.15.2.0/lib64
 
 # set -x
 swift-t -O 0 -n $PROCS \
@@ -231,9 +233,6 @@ swift-t -O 0 -n $PROCS \
         $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]}
   # | \
   # tee $STDOUT
-
-#
-#         -e HIP_VISIBLE_DEVICES="0,1" \
 
 # -e USER # Needed on Summit to find NVME
 # -j /usr/bin/java # Give this to Swift/T if needed for Java
