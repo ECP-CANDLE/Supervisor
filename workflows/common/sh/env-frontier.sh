@@ -4,17 +4,17 @@
 # SWIFT_IMPL=echo
 SWIFT_IMPL=py
 
-# CANDLE software installation root:
-MED106=/gpfs/alpine/world-shared/med106
-ROOT=$MED106/gounley1/frontier
+ROOT=/autofs/nccs-svm1_home1/wozniak/Public/sfw/frontier
+# SWIFT=$ROOT/swift-t/2022-07-25  # Works
+SWIFT=$ROOT/swift-t/2023-02-23
 
-# Add Swift/T to PATH
-SWIFT=$ROOT/swift-t-install
+export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
 # Set up Python:
-PY=/gpfs/alpine/med106/world-shared/gounley1/frontier/conda540
+# PY=/gpfs/alpine/med106/proj-shared/hm0/candle_tf_2.10
+PY=/gpfs/alpine/world-shared/med106/gounley1/frontier/conda540b
 export PYTHONHOME=$PY
 PATH=$PY/bin:$PATH
 

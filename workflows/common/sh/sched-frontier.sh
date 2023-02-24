@@ -6,5 +6,5 @@ MACHINE="-m slurm"
 export TURBINE_LAUNCHER=srun
 
 # Default CANDLE account settings for Spock:
-export PROJECT=${PROJECT:-MED106_frontier}
+export PROJECT=${PROJECT:-MED106}
 export QUEUE=${QUEUE:-batch}
