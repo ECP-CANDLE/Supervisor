@@ -10,3 +10,5 @@ MACHINE="-m slurm"
 export PROJECT=${PROJECT:-MED106}
 
 export TURBINE_PRELAUNCH="source activate /gpfs/alpine/med106/proj-shared/hm0/candle_tf_2.10"
+
+export TURBINE_LAUNCH_OPTIONS="--gpus-per-task=1 --gpus-per-node=$PPN"
