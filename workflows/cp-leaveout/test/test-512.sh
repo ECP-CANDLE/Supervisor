@@ -82,7 +82,7 @@ do
   fi
 done
 
-if [[ ! -e $BENCHMARK_DATA/cache ]]
+if [[ ! -d $BENCHMARK_DATA/cache ]]
 then
   echo "$0: The cache does not exist: $BENCHMARK_DATA/cache"
   echo "$0: Use mkdir to create this directory"
