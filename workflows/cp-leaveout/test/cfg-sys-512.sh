@@ -12,11 +12,11 @@
 # 3 	92 	921 	12.0 	0
 # 4 	46 	91 	6.0 	0
 # 5 	1 	45 	2.0
-export PROCS=${PROCS:-6}
+export PROCS=${PROCS:-8}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-8}
 
 export WALLTIME=${WALLTIME:-01:00:00}
 
