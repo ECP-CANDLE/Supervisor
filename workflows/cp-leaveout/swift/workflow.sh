@@ -70,7 +70,8 @@ APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
 APP_PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+# Job name limit on Frontier: 8
+export TURBINE_JOBNAME=$EXPID
 
 if [ -z ${GPU_STRING+x} ];
 then
