@@ -17,6 +17,8 @@ then
   exit 1
 fi
 
+echo DB: $DB
+
 COMPLETE=$(
 sqlite3 $DB <<EOF
 SELECT COUNT(status) FROM runhist WHERE (status="COMPLETE") ;
