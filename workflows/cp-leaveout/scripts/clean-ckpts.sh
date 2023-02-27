@@ -18,7 +18,7 @@ then
   exit 1
 fi
 
-RUNS=( $( echo $DIR/run/1.1.1.3.1.1 ) )
+RUNS=( $( echo $DIR/run/* ) )
 
 for RUN in ${RUNS[@]}
 do

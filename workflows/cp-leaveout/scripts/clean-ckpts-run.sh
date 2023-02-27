@@ -28,7 +28,6 @@ then
 fi
 
 cd $DIR/save/ckpts/epochs
-set -x
 MODELS=( $( ls ) )
 
 N=${#MODELS[@]}
