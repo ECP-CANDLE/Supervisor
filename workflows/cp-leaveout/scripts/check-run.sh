@@ -27,11 +27,17 @@ SUCCESS=0
 
 if grep -q "User defined signal 2" $DIR/output.txt
 then
+  # Summit time out
   echo "Job timed out normally."
   SUCCESS=1
-fi
 
-if grep -q "TURBINE: EXIT CODE: 0" $DIR/output.txt
+elif grep -q "DUE TO TIME LIMIT" $DIR/output.txt
+then
+  # Frontier time out
+  echo "Job timed out normally."
+  SUCCESS=1
+
+elif grep -q "TURBINE: EXIT CODE: 0" $DIR/output.txt
 then
   echo "Job completed normally."
   grep "TURBINE: MPIEXEC TIME: " $DIR/output.txt
