@@ -74,6 +74,7 @@ def pre_run(params):
         params["plan"],
         params["use_exported_data"],
     )
+    print("TopN_Args: " + str(args))
 
     data = params["benchmark_data"]
     try:
@@ -141,4 +142,11 @@ def pre_run(params):
 def post_run(params, output_dict):
     print("data_setup(): post_run")
     sys.stdout.flush()
+    if "use_exported_data" in params:
+        try:
+            os.remove(params["use_exported_data"])
+        except OSError as e:
+            print("Error: %s - %s." % (e.filename, e.strerror))
+    else:
+        print("use_exported_data not in params")
     return ModelResult.SUCCESS
