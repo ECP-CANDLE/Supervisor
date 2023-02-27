@@ -52,9 +52,13 @@ CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem/top21_2020Jul
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.hdf5
+if (( ! ${BIG_PLAN:-0} ))
+then
 PLAN_JSON=$CANDLE_DATA/plangen_cell703-p4_drug1492-p1-u.json # 2022-07
 # PLAN_JSON=$CANDLE_DATA/plangen_CELL2917-p4_DRUG2148-p4.json # 2023-02
-# PLAN_JSON=/gpfs/alpine/med106/proj-shared/brettin/Supervisor/workflows/cp-leaveout/plangen_CELL2917-p4_DRUG2148-p4.json
+else
+PLAN_JSON=/gpfs/alpine/med106/proj-shared/brettin/Supervisor/workflows/cp-leaveout/plangen_CELL2917-p4_DRUG2148-p4.json
+fi
 # DATAFRAME_CSV=$CANDLE_DATA/top21.h5  # 2022-07
 DATAFRAME_CSV=$CANDLE_DATA/top21-cleaned-dd.h5  # NEW 2022-10
 # BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno
