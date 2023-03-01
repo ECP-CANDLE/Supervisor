@@ -6,7 +6,8 @@ SWIFT_IMPL=py
 
 ROOT=/autofs/nccs-svm1_home1/wozniak/Public/sfw/frontier
 # SWIFT=$ROOT/swift-t/2022-07-25  # Works
-SWIFT=$ROOT/swift-t/2023-02-23
+# SWIFT=$ROOT/swift-t/2023-02-23
+SWIFT=/gpfs/alpine/world-shared/med106/gounley1/frontier/swift-t-install
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
