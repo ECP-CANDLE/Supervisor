@@ -1,0 +1,26 @@
+
+Two test cases to broadcast a file to /dev/shm on all compute nodes.
+Both cases run the same Swift workflow (!), they just use different external settings
+to move the data.
+
+== sbcast
+
+Usage:
+----
+$ ./sbcast-1.sh
+----
+
+Inserts an `sbcast` command into the `turbine-slurm.sh` script for execution
+just before the workflow starts.  Does this via `TURBINE_PRELAUNCH`
+https://swift-lang.github.io/swift-t/sites.html#turbine_prelaunch[(manual)].
+
+== MPI-IO
+
+Usage:
+----
+$ ./mpi-io.sh
+----
+
+Uses a Turbine leader hook
+http://swift-lang.github.io/swift-t/guide.html#hooks[(manual)]
+to use MPI-IO to make the file copy.
