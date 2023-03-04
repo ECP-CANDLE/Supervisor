@@ -1,6 +1,6 @@
 [Global_Params]
 
-model_name = 'cmp'
+model_name = 'graphdrp'
 
 model1 = 'graphdrp'
 model2 = 'graphdrp'  # 'graphdrp2'
