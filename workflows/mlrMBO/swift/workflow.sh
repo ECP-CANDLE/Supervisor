@@ -46,8 +46,6 @@ then
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
   printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
-else
-  export CANDLE_OUTPUT_DIR=$TURBINE_OUTPUT
 fi
 
 get_site    $1 # Sets SITE
@@ -180,7 +178,6 @@ swift-t -O 0 -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e CANDLE_OUTPUT_DIR=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \

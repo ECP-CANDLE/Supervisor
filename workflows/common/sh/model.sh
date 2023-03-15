@@ -48,6 +48,7 @@ then
   INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+  export CANDLE_OUTPUT_DIR=$INSTANCE_DIRECTORY
 fi
 
 # All stdout/stderr after this point goes into model.log !
