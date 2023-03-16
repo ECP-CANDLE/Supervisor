@@ -1,0 +1,165 @@
+{
+"epochs": 10,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 10,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 10,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 11,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 11,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 11,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 12,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 12,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 12,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 13,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 13,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 13,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 14,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 14,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 14,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 15,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 15,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 15,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 16,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 16,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 16,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 17,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 17,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 17,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 18,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 18,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 18,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 19,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 19,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 19,
+"batch_size": 7,
+MORE_PARAMS
+}
+{
+"epochs": 20,
+"batch_size": 5,
+MORE_PARAMS
+}
+{
+"epochs": 20,
+"batch_size": 6,
+MORE_PARAMS
+}
+{
+"epochs": 20,
+"batch_size": 7,
+MORE_PARAMS
+}
