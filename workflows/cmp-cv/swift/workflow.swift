@@ -41,7 +41,7 @@ string results[];
 compare(string exp_id, string run_id)
 {
   python_persist("import compare",
-                 "compare.compare("%s", \"%s\")") % (exp_id, run_id));
+                 "compare.compare(\"%s\", \"%s\")") % (exp_id, run_id));
 }
 
 // Evaluate each parameter set
