@@ -8,10 +8,10 @@ See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more in
 - upf-1.txt is used as the input file to specify the model hyperparameters as well as the model name and candle_image location.
 
 ```
-{"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-{"id": "RUN001", "epochs": 2, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-{"id": "RUN002", "epochs": 1, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
-{"id": "RUN003", "epochs": 2, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
+{"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/path/to/sif/DrugCell.sif"}
+{"id": "RUN001", "epochs": 2, "model_name": "DrugCell", "candle_image": "/path/to/sif/DrugCell.sif"}
+{"id": "RUN002", "epochs": 1, "model_name": "SWnet_CCLE", "candle_image": "/path/to/sif/SWnet.sif"}
+{"id": "RUN003", "epochs": 2, "model_name": "SWnet_CCLE", "candle_image": "/path/to/sif/SWnet.sif"}
 ```
 
 
