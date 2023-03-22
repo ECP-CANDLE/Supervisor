@@ -25,6 +25,7 @@ See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more in
     singularity build --fakeroot /path/for/sif/DerugCell.sif /path/to/DrugCell.def
     singularity build --fakeroot /path/for/sif/SWnet.sif /path/to/SWnet.def
     ```
+    
 - Add /path/for/sif/DerugCell.sif and  /path/for/sif/SWnet.sif to the PYTHONPATH in workflow.sh
 - Create the CANDLE_DATA_DIR. Place drug_features.csv in the CANDLE_DATA_DIR
 - Run the command ./test-small-1.sh SITE
