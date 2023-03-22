@@ -13,7 +13,7 @@ import sys;
 import candle_utils;
 // report_env();
 
-string FRAMEWORK = "keras";
+string FRAMEWORK = "pytorch";
 
 // Scan command line
 // file   plan = input(argv("plan"));
@@ -38,30 +38,45 @@ string gparams_lines[] = file_lines(gparams_file);
 string results[];
 // string run_ids[];
 
-compare(string exp_id, string run_id)
+// compare(string exp_id, string run_id)
+// {
+//   python_persist("import compare",
+//                  "compare.compare(\"%s\", \"%s\")") % (exp_id, run_id);
+// }
+
+compare(string expid, string runid)
 {
-  python_persist("import compare",
-                 "compare.compare("%s", \"%s\")") % (exp_id, run_id));
+  python_persist("import compare", "compare.compare(\"%s\", \"%s\")" % (expid, runid) );
+  // python_persist("import compare", "compare.compare()");
 }
 
 // Evaluate each parameter set
-foreach model, i in model_lines
+// foreach model, i in model_lines
+// {
+foreach gparam, j in gparams_lines
 {
-  foreach gparam, j in gparams_lines
-  {
-    run_id = i*1000000 + j;
+  // runid = i*1000000 + j;
+  runid = j;
 
-    // printf("model: %s", model);
-    m = "\"model_name\": \"%s\"" % model;
+  printf("runid: %s", runid);
+  // printf("model: %s", model);
 
-    gparams = replace(gparam, "MORE_PARAMS", m, 0);
-    printf(gparams);
-    results[run_id] = obj(params, expid, runid) =>
-      compare(exp_id, run_id);
+  // printf("model: %s", model);
+  // m = "\"model_name\": \"%s\"" % model;
 
-    // assert(results[i] != "EXCEPTION", "exception in obj()!");
-  }
+  // gparams = replace(gparam, "MORE_PARAMS", m, 0);
+  printf("gparams: %s", gparam);
+  // printf("GPARAMS: %s", gparams);
+  model_name = json_get(gparam, "model_name");
+  candle_image = json_get(gparam, "candle_image");
+  printf("MODEL: %s", model_name);
+  // printf(gparams);
+  // results[runid] = obj(gparam, expid, repr(runid) );
+  results[runid] = obj(gparam, expid, repr(runid), model_name, candle_image) => compare(expid, repr(runid) );
+
+  // assert(results[i] != "EXCEPTION", "exception in obj()!");
 }
+// }
 
 // // Join all result values into one big semicolon-delimited string
 // string result = join(run_ids, ";");

@@ -17,7 +17,7 @@ usage()
   echo "CMP-CV: usage: workflow.sh SITE EXPID CFG_SYS PLAN"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 5 ))
 then
   usage
   exit 1
@@ -32,6 +32,7 @@ if ! {
   get_expid   $2               && \
   get_cfg_sys $3               && \
   UPF=$4
+  MODELS=$5
  }
 then
   usage
@@ -43,6 +44,8 @@ source_site sched $SITE
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/DrugCell"
+export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/SWnet"
 
 log_path PYTHONPATH
 
@@ -50,10 +53,12 @@ export TURBINE_JOBNAME="CMP_${EXPID}"
 
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export BENCHMARK_TIMEOUT
-
-CMD_LINE_ARGS=( --expid=$EXPID
-                --benchmark_timeout=$BENCHMARK_TIMEOUT
-                --plan=$PLAN
+PLAN="PLAN_NOT_DEFINED"
+CMD_LINE_ARGS=( -expid=$EXPID
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -plan=$PLAN
+                -models=$MODELS
+                -gparams=$UPF
               )
 
 USER_VARS=( $CMD_LINE_ARGS )

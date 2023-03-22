@@ -24,7 +24,7 @@ usage()
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 6 ))
 then
   echo "Wrong number of arguments: received ${#} , required: 4"
   usage
@@ -36,6 +36,9 @@ FRAMEWORK=$1 # Usually "keras" or "pytorch"
 PARAMS="$2"
 EXPID=$3
 RUNID=$4
+# MODEL_NAME=$5
+export MODEL_NAME=$5
+export CANDLE_IMAGE=$6
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
@@ -44,7 +47,7 @@ RUNID=$4
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
   # TODO: Rename "instance" to "run"
-  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID
+  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID # gihan -removing $ in MODEL_NAME
   INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID

@@ -9,11 +9,13 @@
 */
 (string obj_result) obj(string params,
                         string expid,
-                        string runid)
+                        string runid,
+                        string model_name,
+                        string candle_image)
 {
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
-  string model_name     = getenv("MODEL_NAME");
+  // string model_name     = getenv("MODEL_NAME");
 
   string outdir;
 
@@ -25,7 +27,7 @@
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
   string result_file = outdir/"result.txt";
-  wait (run_model(model_sh, params, expid, runid))
+  wait (run_model(model_sh, params, expid, runid, model_name, candle_image))
   {
     obj_result = get_results(result_file);
   }
@@ -36,10 +38,10 @@
    Swift/T app function that runs the Benchmark
 */
 app (void o) run_model (string model_sh, string params,
-                        string expid, string runid)
+                        string expid, string runid, string model_name, string candle_image)
 {
   //                  1       2      3     4
-  "bash" model_sh FRAMEWORK params expid runid;
+  "bash" model_sh FRAMEWORK params expid runid model_name candle_image;
 }
 
 /**
