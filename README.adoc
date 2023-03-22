@@ -20,6 +20,7 @@ See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more in
 - Clone Supervisor from https://github.com/ECP-CANDLE/Supervisor
 - Clone the DrugCell and SWnet model directories from https://github.com/gihanpanapitiya/DrugCell/tree/to_candle and https://github.com/gihanpanapitiya/SWnet/tree/to_candle
     - Checkout to_candle branches and create the Singularity containers (.sif files) using the command,
+
     ```
     singularity build --fakeroot /path/for/sif/DerugCell.sif /path/to/DrugCell.def
     singularity build --fakeroot /path/for/sif/SWnet.sif /path/to/SWnet.def
