@@ -17,9 +17,9 @@ See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more in
 
 ### Running the specific example at workflows/cmp-cv/test
 
-- Clone Supervisor https://github.com/gihanpanapitiya/Supervisor/tree/gihan_cmp
+- Clone Supervisor from https://github.com/ECP-CANDLE/Supervisor
 - Clone the DrugCell and SWnet model directories from https://github.com/gihanpanapitiya/DrugCell/tree/to_candle and https://github.com/gihanpanapitiya/SWnet/tree/to_candle
-    - Checkout to_candle branches and create the Singularity containers using the command,
+    - Checkout to_candle branches and create the Singularity containers (.sif files) using the command,
     ```
     singularity build --fakeroot /path/for/sif/DerugCell.sif /path/to/DrugCell.def
     singularity build --fakeroot /path/for/sif/SWnet.sif /path/to/SWnet.def
