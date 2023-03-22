@@ -5,6 +5,14 @@ See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more in
 - Create the CANDLE_DATA_DIR. Place drug_features.csv in the CANDLE_DATA_DIR
 - The paths of the model's directories have to be added to the PYTHONPATH in workflow.sh
 - Start the run using the command ./test-small-1.sh SITE, where SITE is the name of the computing system. test-small-1.sh is at workflows/cmp-cv/test
+- upf-1.txt is used as the input file to specify the model hyperparameters as well as the model name and candle_image location.
+
+```
+{"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
+{"id": "RUN001", "epochs": 2, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
+{"id": "RUN002", "epochs": 1, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
+{"id": "RUN003", "epochs": 2, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
+```
 
 
 #### Known issues
