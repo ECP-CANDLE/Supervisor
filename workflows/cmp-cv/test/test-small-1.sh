@@ -3,11 +3,11 @@ set -eu
 
 # CMP-CV TEST SMALL 1
 
-# if (( ${#} != 2 ))
-# then
-#   echo "usage: test BENCHMARK_NAME SITE"
-#   exit 1
-# fi
+if (( ${#} != 1 ))
+then
+  echo "usage: test SITE"
+  exit 1
+fi
 
 # export MODEL_NAME=$1
 SITE=$1

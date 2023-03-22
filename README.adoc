@@ -1,1 +1,7 @@
 See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more information.
+
+# Running the feature domain based comparison
+
+- Create the CANDLE_DATA_DIR. Place drug_features.csv in the CANDLE_DATA_DIR
+- The paths of the model's directories have to be added to the PYTHONPATH in workflow.sh
+- Start the run using the command ./test-small-1.sh SITE, where SITE is the name of the computing system. test-small-1.sh is at workflows/cmp-cv/test
