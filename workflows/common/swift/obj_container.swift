@@ -7,7 +7,7 @@
     params : The JSON string of params to be passed to the Benchmark
     run_id : A string run ID that will be the output directory name
 */
-(string obj_result) obj(string params,
+(string obj_result) obj_container(string params,
                         string expid,
                         string runid,
                         string model_name,

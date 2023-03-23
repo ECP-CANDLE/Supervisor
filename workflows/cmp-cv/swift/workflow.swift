@@ -72,7 +72,9 @@ foreach gparam, j in gparams_lines
   printf("MODEL: %s", model_name);
   // printf(gparams);
   // results[runid] = obj(gparam, expid, repr(runid) );
-  results[runid] = obj(gparam, expid, repr(runid), model_name, candle_image) => compare(expid, repr(runid) );
+  results[runid] = obj_container(gparam, expid, repr(runid), model_name, candle_image) => compare(expid, repr(runid) );
+  // results[runid] = obj(gparam, expid, repr(runid));
+  //  => compare(expid, repr(runid) );
 
   // assert(results[i] != "EXCEPTION", "exception in obj()!");
 }
