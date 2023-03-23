@@ -24,21 +24,27 @@ usage()
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 6 ))
+if (( ${#} < 4 ))
 then
-  echo "Wrong number of arguments: received ${#} , required: 4"
+  echo "Wrong number of arguments: received ${#} , required: at least 4"
   usage
   exit 1
 fi
 
-FRAMEWORK=$1 # Usually "keras" or "pytorch"
-# JSON string of parameters:
-PARAMS="$2"
-EXPID=$3
-RUNID=$4
-# MODEL_NAME=$5
-export MODEL_NAME=$5
-export CANDLE_IMAGE=$6
+if (( ${#} >= 4 ))
+  then
+  FRAMEWORK=$1 # Usually "keras" or "pytorch"
+  # JSON string of parameters:
+  PARAMS="$2"
+  EXPID=$3
+  RUNID=$4
+fi
+
+if (( ${#} == 6 ))
+  then
+  export MODEL_NAME=$5
+  export CANDLE_IMAGE=$6
+fi
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
