@@ -4,6 +4,18 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
 
+"""
+This script can be used to filter a subset of the test set based on
+the properties of the drug molecules. For example, here we can select the
+molecules of which the 'prop' is between two values (provided in the 
+2nd and 3rd elements of each list in the conditions list. We can then 
+find the prediction errors for this domain. Knowledge of the errors of differnt
+molecular groups is helpful to understand the currrent deficiencies of the drug 
+response models (or any molecular property prediction model in general). This knowledge
+is then allow us to improve the models as well as use predictions from the models which 
+produce highly accurate preidictions for certain domains. 
+"""
+
 conditions = pd.DataFrame([[ 'nAromAtom' , 5, 10 ],
                             ['nAtom', 20, 50], 
                             ['BertzCT', 800, 1000]],
