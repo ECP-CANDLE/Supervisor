@@ -231,10 +231,8 @@ class Node:
             self.val_data = int(value_string)
 
     def parse_python_log(self, fp):
-        """
-        fp is the file pointer to save/python.log
-        If lines are not found, node.mse, etc., will remain None
-        """
+        """fp is the file pointer to save/python.log If lines are not found,
+        node.mse, etc., will remain None."""
         marker = "Comparing y_true "
         # The marker is just after the date:
         # We search this way for speed.

@@ -171,13 +171,12 @@ def run(hyper_parameter_map, obj_return):
     # Run the model!
     log("PKG RUN START")
 
-
     # check for epochs if not present set to 1, used for checking early stopping in function get_results
     if "epochs" in hyper_parameter_map:
         epochs = hyper_parameter_map["epochs"]
     else:
         epochs = 1
-        
+
     if framework == 'keras':
 
         try:
@@ -187,8 +186,8 @@ def run(hyper_parameter_map, obj_return):
             print("RUN EXCEPTION: " + str(e))
             info = sys.exc_info()
             s = traceback.format_tb(info[2])
-            sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
-                            repr(e) + ' ... \\n' + ''.join(s))
+            sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' + repr(e) +
+                             ' ... \\n' + ''.join(s))
             sys.stdout.write('\\n')
             sys.stdout.flush()
 
@@ -214,16 +213,18 @@ def run(hyper_parameter_map, obj_return):
                 if history == "EPOCHS_COMPLETED_ALREADY":
                     result, history_result = "EPOCHS_COMPLETED_ALREADY", None
                 else:
-                    result, history_result = get_results(history, obj_return,
-                                                        epochs)
+                    result, history_result = get_results(
+                        history, obj_return, epochs)
         else:
             result, history_result = "RUN_EXCEPTION", None
 
     elif framework == 'pytorch':
         val_scores, infer_scores = pkg.run(params)
+
         class history:
+
             def __init__(self, val_scores):
-                self.history = {'val_loss': [val_scores['val_loss']] }
+                self.history = {'val_loss': [val_scores['val_loss']]}
 
         history = history(val_scores)
         result, history_result = get_results(history, obj_return, epochs)

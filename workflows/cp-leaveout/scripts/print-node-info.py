@@ -10,7 +10,9 @@ from utils import fail
 
 parser = argparse.ArgumentParser(description="Print Node info stats")
 parser.add_argument("directory", help="The experiment directory (EXPID)")
-parser.add_argument("nodes", default="", nargs="*",
+parser.add_argument("nodes",
+                    default="",
+                    nargs="*",
                     help="Nodes to print (optional, defaults to all)")
 
 args = parser.parse_args()
@@ -22,7 +24,6 @@ try:
         data = pickle.load(fp)
 except IOError as e:
     fail(e, os.EX_IOERR, "Could not read: " + node_pkl)
-
 
 # Raw data printing:
 # print(str(args))
@@ -40,8 +41,7 @@ def print_all(data):
         count += 1
         if node.stopped_early:
             earlies += 1
-    print("print-node-info: %i/%i runs stopped early." %
-          (earlies, count))
+    print("print-node-info: %i/%i runs stopped early." % (earlies, count))
 
 
 def print_selected(data, nodes):
