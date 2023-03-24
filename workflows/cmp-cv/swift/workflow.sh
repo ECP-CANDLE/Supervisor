@@ -82,7 +82,8 @@ then
 fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
-# export $SWIFT_IMPL=container
+
+export SWIFT_IMPL=container
 
 which swift-t
 
