@@ -171,50 +171,62 @@ def run(hyper_parameter_map, obj_return):
     # Run the model!
     log("PKG RUN START")
 
-    try:
-        history = pkg.run(params)
-    except Exception as e:
-        logger.warn("RUN EXCEPTION: " + str(e))
-        print("RUN EXCEPTION: " + str(e))
-        info = sys.exc_info()
-        s = traceback.format_tb(info[2])
-        sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
-                         repr(e) + ' ... \\n' + ''.join(s))
-        sys.stdout.write('\\n')
-        sys.stdout.flush()
-
-        # logger.warn("Caught InvalidArgumentError")
-        exception = True
-        exit(1)
-    log("PKG RUN STOP")
-
-    if framework == "keras":
-        runner_utils.keras_clear_session(framework)
-
-    stop_perf(Ps)
-    finish = time.time()
-    duration = finish - start
 
     # check for epochs if not present set to 1, used for checking early stopping in function get_results
     if "epochs" in hyper_parameter_map:
         epochs = hyper_parameter_map["epochs"]
     else:
         epochs = 1
+        
+    if framework == 'keras':
 
-    # Default result if there is no val_loss (as in infer.py)
-    result = 0
-    history_result = {}
-    if not exception:
-        logger.info("DONE: run_id %s in %0.2f seconds." %
-                    (hyper_parameter_map["run_id"], duration))
-        if history is not None:
-            if history == "EPOCHS_COMPLETED_ALREADY":
-                result, history_result = "EPOCHS_COMPLETED_ALREADY", None
-            else:
-                result, history_result = get_results(history, obj_return,
-                                                     epochs)
-    else:
-        result, history_result = "RUN_EXCEPTION", None
+        try:
+            history = pkg.run(params)
+        except Exception as e:
+            logger.warn("RUN EXCEPTION: " + str(e))
+            print("RUN EXCEPTION: " + str(e))
+            info = sys.exc_info()
+            s = traceback.format_tb(info[2])
+            sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
+                            repr(e) + ' ... \\n' + ''.join(s))
+            sys.stdout.write('\\n')
+            sys.stdout.flush()
+
+            # logger.warn("Caught InvalidArgumentError")
+            exception = True
+            exit(1)
+        log("PKG RUN STOP")
+
+        # if framework == "keras":
+        runner_utils.keras_clear_session(framework)
+
+        stop_perf(Ps)
+        finish = time.time()
+        duration = finish - start
+
+        # Default result if there is no val_loss (as in infer.py)
+        result = 0
+        history_result = {}
+        if not exception:
+            logger.info("DONE: run_id %s in %0.2f seconds." %
+                        (hyper_parameter_map["run_id"], duration))
+            if history is not None:
+                if history == "EPOCHS_COMPLETED_ALREADY":
+                    result, history_result = "EPOCHS_COMPLETED_ALREADY", None
+                else:
+                    result, history_result = get_results(history, obj_return,
+                                                        epochs)
+        else:
+            result, history_result = "RUN_EXCEPTION", None
+
+    elif framework == 'pytorch':
+        val_scores, infer_scores = pkg.run(params)
+        class history:
+            def __init__(self, val_scores):
+                self.history = {'val_loss': [val_scores['val_loss']] }
+
+        history = history(val_scores)
+        result, history_result = get_results(history, obj_return, epochs)
 
     return (result, history_result)
 
@@ -339,8 +351,9 @@ def get_results(history, obj_return, epochs_expected):
             logger.info("get_results(): " + msg)
             with open("stop.marker", "w") as fp:
                 fp.write(msg + "\n")
+        print("VALUES: ", values, values[-1], type(values[-1]))
         # Default: the last value in the history
-        result = values[-1]
+        result = float(values[-1])
     else:
         logger.warning("get_results(): objective function return key " +
                        "not found: " + 'key: "' + obj_return + '" - ' +

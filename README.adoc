@@ -1,1 +1,39 @@
 See the https://ecp-candle.github.io/Supervisor/home.html[Home Page] for more information.
+
+# Running the feature domain based comparison
+
+- Create the CANDLE_DATA_DIR. Place drug_features.csv in the CANDLE_DATA_DIR
+ - drug_features.csv shoulld contain the drug features of at least the test set drug molecules
+- The paths of the model's directories have to be added to the PYTHONPATH in workflow.sh
+- Start the run using the command ./test-small-1.sh SITE, where SITE is the name of the computing system. test-small-1.sh is at workflows/cmp-cv/test
+- upf-1.txt is used as the input file to specify the model hyperparameters as well as the model name and candle_image location.
+
+```
+{"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/path/to/sif/DrugCell.sif"}
+{"id": "RUN001", "epochs": 2, "model_name": "DrugCell", "candle_image": "/path/to/sif/DrugCell.sif"}
+{"id": "RUN002", "epochs": 1, "model_name": "SWnet_CCLE", "candle_image": "/path/to/sif/SWnet.sif"}
+{"id": "RUN003", "epochs": 2, "model_name": "SWnet_CCLE", "candle_image": "/path/to/sif/SWnet.sif"}
+```
+
+### Running the specific example at workflows/cmp-cv/test
+
+- Clone Supervisor from https://github.com/ECP-CANDLE/Supervisor
+- Clone the DrugCell and SWnet model directories from https://github.com/gihanpanapitiya/DrugCell/tree/to_candle and https://github.com/gihanpanapitiya/SWnet/tree/to_candle
+    - Checkout to_candle branches and create the Singularity containers (.sif files) using the command,
+
+    ```
+    singularity build --fakeroot /path/for/sif/DerugCell.sif /path/to/DrugCell.def
+    singularity build --fakeroot /path/for/sif/SWnet.sif /path/to/SWnet.def
+    ```
+    
+- Add /path/for/sif/DerugCell.sif and  /path/for/sif/SWnet.sif to the PYTHONPATH in workflow.sh
+- Create the CANDLE_DATA_DIR. Place drug_features.csv in the CANDLE_DATA_DIR
+- Run the command ./test-small-1.sh SITE
+
+
+#### Known issues
+
+- some input files required for analysis have to be manually added to candle data dir
+- outputs get written to 'experiments' not CANDLE_DATA_DIR
+- python paths have to be explicitly specified in workflow.sh
+- singularity container is not being used even though the CANDLE_MODEL_TYPE=SINGULARITY is specified
