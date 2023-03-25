@@ -173,7 +173,12 @@ get_expid()
   fi
 
   export EXPID=$1
-  export CANDLE_MODEL_TYPE=${2:-BENCHMARKS}
+
+  if [[ -z "${CANDLE_MODEL_TYPE}" ]]; then
+    CANDLE_MODEL_TYPE="BENCHMARKS"
+  fi
+
+echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE}"
 
   export EXPERIMENTS=""
 
