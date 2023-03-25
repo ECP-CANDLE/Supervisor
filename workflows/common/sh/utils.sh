@@ -178,7 +178,13 @@ get_expid()
     CANDLE_MODEL_TYPE="BENCHMARKS"
   fi
 
-echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE}"
+  echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE}"
+
+  if [[ -z "${MODEL_NAME}" ]]; then
+    MODEL_NAME="cmp"
+  fi
+
+  echo "MODEL_NAME is set to: ${MODEL_NAME}"
 
   export EXPERIMENTS=""
 
