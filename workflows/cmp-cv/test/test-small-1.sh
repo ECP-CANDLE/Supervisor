@@ -25,5 +25,4 @@ CFG_SYS=$THIS/cfg-sys-1.sh
 # export CANDLE_IMAGE=/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif
 export CANDLE_MODEL_TYPE="SINGULARITY"
 
-# export CANDLE_MODEL_TYPE="BENCHMARKS"
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt $THIS/models-1.txt

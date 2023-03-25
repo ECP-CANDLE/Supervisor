@@ -23,6 +23,7 @@ int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
 string expid          = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
 
 // Report some key facts:
 printf("CMP-CV: %s", filename(model_file));
