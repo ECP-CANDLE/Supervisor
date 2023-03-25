@@ -121,6 +121,11 @@ then
 
   FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
                    "$PARAMS" )
+
+  # Remove --candle image flag and the second argument, assume it is the last argument
+  export FLAGS="${FLAGS/ --candle_image*/}"
+
+  # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
               $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
