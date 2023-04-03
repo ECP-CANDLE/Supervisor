@@ -42,8 +42,6 @@ CANDLE_MODEL_TYPE="BENCHMARKS"
 # CANDLE_IMAGE=/software/improve/images/GraphDRP.sif # lambda
 CANDLE_IMAGE=None # Polaris
 
-export MODEL_NAME="nt3"
-
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
 export OBJ_RETURN="val_loss"
