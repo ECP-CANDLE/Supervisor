@@ -102,7 +102,7 @@ def expand_params(params, hyper_parameter_map):
         if type(v) in DATA_TYPES:
             v = DATA_TYPES[type(v)]
         if isinstance(v, basestring):
-            v = "'{}'".format(v)
+            v = "{}".format(v)
         if k == "solr_root" or k == "timeout" or k == "id":
             # this must written at the end
             pass  # Not a command-line parameter
