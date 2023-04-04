@@ -17,13 +17,13 @@ string FRAMEWORK = "pytorch";
 
 // Scan command line
 // file   plan = input(argv("plan"));
-file   model_file = input(argv("models"));
-file   gparams_file = input(argv("gparams"));
-int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
+file model_file = input(argv("models"));
+file gparams_file = input(argv("gparams"));
+int  benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
-string expid          = getenv("EXPID");
-string turbine_output = getenv("TURBINE_OUTPUT");
-string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string expid             = getenv("EXPID");
+string turbine_output    = getenv("TURBINE_OUTPUT");
+string candle_model_type = getenv("CANDLE_MODEL_TYPE");
 
 // Report some key facts:
 printf("CMP-CV: %s", filename(model_file));
