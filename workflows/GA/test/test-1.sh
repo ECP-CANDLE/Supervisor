@@ -38,6 +38,10 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
 
+CANDLE_MODEL_TYPE="BENCHMARKS"
+# CANDLE_IMAGE=/software/improve/images/GraphDRP.sif # lambda
+CANDLE_IMAGE=None # Polaris
+
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
 export OBJ_RETURN="val_loss"
@@ -48,8 +52,8 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
-
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM $MODEL_NAME \
+                                      $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 # Check job output
 TURBINE_OUTPUT=$( readlink turbine-output )
 echo $TURBINE_OUTPUT

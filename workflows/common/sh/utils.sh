@@ -621,7 +621,7 @@ pad_keys() {
   # Pad 1st tokens
   printf "%-15s " $1
   shift
-  echo ${*}
+  echo $*
 }
 
 print_json() {
