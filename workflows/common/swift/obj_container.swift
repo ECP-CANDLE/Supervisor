@@ -40,7 +40,7 @@
 app (void o) run_model (string model_sh, string params,
                         string expid, string runid, string model_name, string candle_image)
 {
-  //                  1       2      3     4
+  //                  1       2      3     4       5           6
   "bash" model_sh FRAMEWORK params expid runid model_name candle_image;
 }
 
