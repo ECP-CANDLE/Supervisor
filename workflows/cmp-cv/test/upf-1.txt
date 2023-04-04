@@ -1,4 +1,4 @@
 {"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
 {"id": "RUN001", "epochs": 2, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-{"id": "RUN002", "epochs": 1, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
-{"id": "RUN003", "epochs": 2, "model_name": "SWnet_CCLE", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
+{"id": "RUN002", "epochs": 1, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
+{"id": "RUN003", "epochs": 2, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}

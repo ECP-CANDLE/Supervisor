@@ -180,9 +180,7 @@ get_expid()
 
   echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE}"
 
-  if [[ -z "${MODEL_NAME}" ]]; then
-    MODEL_NAME="cmp"
-  fi
+  MODEL_NAME=${MODEL_NAME:-cmp}
 
   echo "MODEL_NAME is set to: ${MODEL_NAME}"
 

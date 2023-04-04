@@ -1,4 +1,5 @@
 CANDLE_DATA_DIR = os.getenv("CANDLE_DATA_DIR")
+MODEL_NAME = os.getenv("MODEL_NAME")
 
 
 def compare(exp_id, run_id):
@@ -7,7 +8,7 @@ def compare(exp_id, run_id):
     gParams = read_params(exp_id, run_id)
     model = gParams("model_name")
 
-    directory = f"{CANDLE_DATA_DIR}/Output/{exp_id}/{run_id}"
+    directory = f"{CANDLE_DATA_DIR}/{model}/Output/{exp_id}/{run_id}"
     df_res = pd.read_csv(f"{directory}/test_predictions.csv")
 
     # a class to calculate errors for subsets of the validation/test set
