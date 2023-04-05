@@ -45,9 +45,10 @@ string results[];
 //                  "compare.compare(\"%s\", \"%s\")") % (exp_id, run_id);
 // }
 
-compare(string expid, string runid)
+compare(string model_name, string expid, string runid)
 {
-  python_persist("import compare", "compare.compare(\"%s\", \"%s\")" % (expid, runid) );
+  printf("Calling compare with model_name: %s", model_name)=>
+  python_persist("import compare", "compare.compare(\"%s\", \"%s\", \"%s\")" % (model_name, expid, runid) );
   // python_persist("import compare", "compare.compare()");
 }
 
@@ -73,7 +74,7 @@ foreach gparam, j in gparams_lines
   printf("MODEL: %s", model_name);
   // printf(gparams);
   // results[runid] = obj(gparam, expid, repr(runid) );
-  results[runid] = obj_container(gparam, expid, repr(runid), model_name, candle_image) => compare(expid, repr(runid) );
+  results[runid] = obj_container(gparam, expid, repr(runid), model_name, candle_image) => compare(model_name, expid, repr(runid) );
   // results[runid] = obj(gparam, expid, repr(runid));
   //  => compare(expid, repr(runid) );
 

@@ -130,7 +130,9 @@ then
               --bind $CANDLE_DATA_DIR:/candle_data_dir
               $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
               /candle_data_dir
-              $FLAGS )  # $INTERNAL_DIRECTORY/parameters.txt
+              $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
+              --experiment_id $EXPID
+              --run_id $RUNID)  
 else # "BENCHMARKS"
 
   # The Python command line arguments:
@@ -160,7 +162,8 @@ then
   # NOTE: Enabling set -x will break the following
   RES=$(awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' model.log)
   echo $RES
-  RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')"
+  RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
+  echo $RESULT, ": Result"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
   wait $PID

@@ -25,17 +25,17 @@ conditions = pd.DataFrame(
 CANDLE_DATA_DIR = os.getenv("CANDLE_DATA_DIR")
 
 
-def compare(exp_id, run_id):
+def compare(model_name, exp_id, run_id):
     cmp_results = {}
     print(f"compare: run_id={run_id}")
     # gParams = read_params(exp_id, run_id)
     # model = gParams("model_name")
 
-    model = "DrugCell"  # TODO: Hardcoded. have to get this from output dir?
-    turbine_output = os.getenv("TURBINE_OUTPUT")
-
-    outdir = os.path.join(turbine_output, run_id, 'Output', 'EXP000',
-                          'RUN000')  # TODO: Have to fix this
+    # model = "DrugCell"  # TODO: Hardcoded. have to get this from output dir?
+    # turbine_output = os.getenv("TURBINE_OUTPUT") 
+    
+    CANDLE_DATA_DIR = os.getenv("CANDLE_DATA_DIR")
+    outdir = os.path.join(CANDLE_DATA_DIR, model_name, "Output", exp_id, run_id)  
     directory = outdir
     # directory = f"{CANDLE_DATA_DIR}/Output/{exp_id}/{run_id}"
     print("reading the predictions....")
@@ -43,24 +43,25 @@ def compare(exp_id, run_id):
 
     # a class to calculate errors for subsets of the validation/test set
     print("reading the drug feature file....")
-    # TODO: Should have to save the above file in this file
-    bmk = Benchmark(fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
-                   )  # TODO: have to have a drug features for a common test set
-    subset_err, final_domain_err = bmk.error_by_feature_domains_model(
-        df_res, conditions)
+    # # TODO: Should have to save the above file in this file
+    # bmk = Benchmark(fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
+    #                )  # TODO: have to have a drug features for a common test set
+    # subset_err, final_domain_err = bmk.error_by_feature_domains_model(
+    #     df_res, conditions)
 
-    # or this
-    # fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
-    # subset_err, final_domain_err = error_by_feature_domains_model(fp_path, df_res, conditions)
+    # # or this
+    # # fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
+    # # subset_err, final_domain_err = error_by_feature_domains_model(fp_path, df_res, conditions)
 
-    # collect results for comparison
-    cmp_prop = 'nAtom'  # TODO: Get this from gParameters
-    subset_err.set_index(
-        'prop', inplace=True
-    )  # TODO: use 'prop' as a parameter and move it to cmp_models.txt
-    cmp_results[run_id] = subset_err.loc[
-        cmp_prop,
-        'error']  # this is the property based on which we want to do the comparison
+    # # collect results for comparison
+    # cmp_prop = 'nAtom'  # TODO: Get this from gParameters
+    # subset_err.set_index(
+    #     'prop', inplace=True
+    # )  # TODO: use 'prop' as a parameter and move it to cmp_models.txt
+    # cmp_results[run_id] = subset_err.loc[
+    #     cmp_prop,
+    #     'error']  # this is the property based on which we want to do the comparison
+    cmp_results[run_id] =  -1 # set to -1 for now as we don't have the drug features file
     with open(f"{directory}/subset_err.txt", "w") as fp:
         fp.write(str(cmp_results[run_id]))
 
