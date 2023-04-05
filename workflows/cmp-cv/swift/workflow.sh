@@ -44,9 +44,10 @@ source_site sched $SITE
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+
 export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/DrugCell"
 export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/SWnet"
-
+export PYTHONPATH="${PYTHONPATH}:$WORKFLOWS_ROOT/cmp-cv/py"
 log_path PYTHONPATH
 
 export TURBINE_JOBNAME="CMP_${EXPID}"
