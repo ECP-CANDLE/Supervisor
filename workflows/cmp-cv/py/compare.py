@@ -43,25 +43,27 @@ def compare(model_name, exp_id, run_id):
 
     # a class to calculate errors for subsets of the validation/test set
     print("reading the drug feature file....")
-    # # TODO: Should have to save the above file in this file
-    # bmk = Benchmark(fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
-    #                )  # TODO: have to have a drug features for a common test set
-    # subset_err, final_domain_err = bmk.error_by_feature_domains_model(
-    #     df_res, conditions)
+    # TODO: Should have to save the above file in this file
+    # copy and place the following in your CANDLE_DATA_DIR
+    # cp /lambda_stor/homes/ac.gpanapitiya/ccmg-mtg/benchmark/drug_features.csv .
+    bmk = Benchmark(fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
+                   )  # TODO: have to have a drug features for a common test set
+    subset_err, final_domain_err = bmk.error_by_feature_domains_model(
+        df_res, conditions)
 
     # # or this
-    # # fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
-    # # subset_err, final_domain_err = error_by_feature_domains_model(fp_path, df_res, conditions)
+    # fp_path=f'{CANDLE_DATA_DIR}/drug_features.csv'
+    # subset_err, final_domain_err = error_by_feature_domains_model(fp_path, df_res, conditions)
 
-    # # collect results for comparison
-    # cmp_prop = 'nAtom'  # TODO: Get this from gParameters
-    # subset_err.set_index(
-    #     'prop', inplace=True
-    # )  # TODO: use 'prop' as a parameter and move it to cmp_models.txt
-    # cmp_results[run_id] = subset_err.loc[
-    #     cmp_prop,
-    #     'error']  # this is the property based on which we want to do the comparison
-    cmp_results[run_id] =  -1 # set to -1 for now as we don't have the drug features file
+    # collect results for comparison
+    cmp_prop = 'nAtom'  # TODO: Get this from gParameters
+    subset_err.set_index(
+        'prop', inplace=True
+    )  # TODO: use 'prop' as a parameter and move it to cmp_models.txt
+    cmp_results[run_id] = subset_err.loc[
+        cmp_prop,
+        'error']  # this is the property based on which we want to do the comparison
+    # cmp_results[run_id] =  -1 # set to -1 for now as we don't have the drug features file
     with open(f"{directory}/subset_err.txt", "w") as fp:
         fp.write(str(cmp_results[run_id]))
 
