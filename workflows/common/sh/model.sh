@@ -40,10 +40,11 @@ if (( ${#} >= 4 ))
   RUNID=$4
 fi
 
-if (( ${#} == 6 ))
+if (( ${#} == 7 ))
   then
   export MODEL_NAME=$5
   export CANDLE_IMAGE=$6
+  export MODEL_SCRIPT=$7
 fi
 
 # Each model run, runs in its own "instance" directory
@@ -128,7 +129,7 @@ then
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
-              $CANDLE_IMAGE train.sh $ADLB_RANK_OFFSET
+              $CANDLE_IMAGE $MODEL_SCRIPT $ADLB_RANK_OFFSET
               /candle_data_dir
               $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
               --experiment_id $EXPID

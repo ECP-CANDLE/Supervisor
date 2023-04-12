@@ -1,4 +1,6 @@
-{"id": "RUN001", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-{"id": "RUN002", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-{"id": "RUN003", "epochs": 1, "model_name": "SWnet", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
-{"id": "RUN004", "epochs": 1, "model_name": "SWnet", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
+{"id": "RUN001", "epochs": 1, "model_name": "DrugCell", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/DrugCell.sif"}
+{"id": "RUN002", "epochs": 2, "model_name": "DrugCell", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/DrugCell.sif"}
+{"id": "RUN003", "epochs": 1, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
+{"id": "RUN004", "epochs": 2, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
+
+
