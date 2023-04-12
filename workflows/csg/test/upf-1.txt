@@ -1,0 +1,4 @@
+{"id": "RUN001", "batch_size": 16, "epochs": 4, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
+{"id": "RUN002", "batch_size": 32, "epochs": 3, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
+{"id": "RUN003", "batch_size": 64, "epochs": 2, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
+{"id": "RUN004", "batch_size": 128, "epochs": 1, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
