@@ -182,7 +182,7 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} |& \
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} 2>&1 \
   tee $STDOUT
 
 

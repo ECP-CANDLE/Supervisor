@@ -39,6 +39,7 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
 export OBJ_RETURN="val_loss"
+export CANDLE_MODEL_TYPE="BENCHMARKS"
 
 if [[ $SITE == "theta" ]]
 then

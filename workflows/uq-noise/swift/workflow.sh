@@ -56,7 +56,7 @@ source_site env   $SITE
 source_site sched $SITE
 
 # Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
+PYTHONPATH+=:$BENCHMARK_DIR:$XCORR_ROOT
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
 
 export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common:$XCORR_ROOT
@@ -86,6 +86,12 @@ then
   fi
   # $EMEWS_PROJECT_ROOT/db/db-cplo-init $DB_FILE $UQ_NOISE_ID
 fi
+
+
+
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+
 
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -exp_id=$EXPID
@@ -124,6 +130,18 @@ then
   WAIT_ARG="-t w"
   echo "Turbine will wait for job completion."
 fi
+
+# Handle %-escapes in TURBINE_STDOUT
+if [ $SITE == "summit"  ] || \
+   [ $SITE == "biowulf" ] || \
+   [ $SITE == "polaris" ]
+then
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+else
+  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+fi
+
+mkdir -pv $TURBINE_OUTPUT/out
 
 if [[ ${MACHINE:-} == "" ]]
 then
@@ -185,7 +203,7 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} |& \
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} 2>&1 \
   tee $STDOUT
 
 

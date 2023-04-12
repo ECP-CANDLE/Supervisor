@@ -4,7 +4,7 @@
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-2}
+export PROCS=${PROCS:-3}
 # export PROCS=${PROCS:-128}
 
 # MPI processes per node
@@ -16,6 +16,9 @@ export QUEUE=${QUEUE:-debug-cache-quad}
 # export QUEUE=R.candle
 
 export WALLTIME=${WALLTIME:-00:15:00}
+
+RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}
