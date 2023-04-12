@@ -51,8 +51,8 @@ foreach gparam, j in gparams_lines
   model_script = "train.sh";
 
   printf("MODEL: %s", model_name);
-  
+  // TODO: Add preprocessing script
   results[runid] = obj_container(gparam, expid, repr(runid), model_name, candle_image, model_script);
-  
+  // TODO: Add inference script or loop to do multiple inferences on a trained model
 }
 
