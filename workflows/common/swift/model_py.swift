@@ -1,6 +1,7 @@
 
 /**
-   OBJ PY SWIFT
+   CANDLE MODEL: PY
+   Runs CANDLE models as Swift/T python() functions
 */
 
 string code_template =
@@ -45,9 +46,11 @@ except Exception as e:
   obj_result = 'EXCEPTION'
 ----;
 
-(string obj_result) obj(string params,
-                        string expid,
-                        string runid) {
+(string obj_result) candle_model_train(string params,
+                                       string expid,
+                                       string runid,
+                                       string model_name)
+{
   string outdir = "%s/run/%s" % (turbine_output, runid);
   string code = code_template % (outdir, params, model_name,
                                  expid, runid, benchmark_timeout);

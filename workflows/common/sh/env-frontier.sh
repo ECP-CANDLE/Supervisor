@@ -1,8 +1,8 @@
 
 # ENV Frontier
 
-# SWIFT_IMPL=echo
-SWIFT_IMPL=py
+# CANDLE_MODEL_IMPL=echo
+CANDLE_MODEL_IMPL=py
 
 # From Wozniak
 # MED106=/gpfs/alpine/world-shared/med106

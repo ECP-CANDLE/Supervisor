@@ -16,7 +16,7 @@ export R_HOME=/home/wozniak/Public/sfw/R-3.5.3/lib/R
 
 # Swift/T
 export PATH=/home/wozniak/Public/sfw/swift-t/stc/bin:$PATH
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # EMEWS Queues for R
 # EQR=/opt/EQ-R

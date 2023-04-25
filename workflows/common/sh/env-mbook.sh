@@ -16,7 +16,7 @@ PATH=$PY/bin:$PATH
 export LD_LIBRARY_PATH=/Library/Frameworks/R.framework/Resources/lib/:${LD_LIBRARY_PATH:-}
 
 # How to run CANDLE models:
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # PYTHONPATH=$EQPY/src:${PYTHONPATH:-}
 

@@ -3,7 +3,8 @@ set -eu
 
 # MODEL.SH
 
-# Shell wrapper around Keras model
+# Supervisor shell wrapper around CANDLE model
+# Used for CANDLE_MODEL_IMPL types: "app" and "container"
 
 # Note that APP_PYTHONPATH is used by models here and
 # not just PYTHONPATH
@@ -16,45 +17,47 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID"
+  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID MODEL_TYPE MODEL_NAME MODEL_ACTION"
+  echo "MODEL_TYPE is BENCHMARK or SINGULARITY"
+  echo "MODEL_NAME is the CANDLE Benchmark name (e.g., 'uno')"
+  echo "           or a /path/to/image.sif"
+  echo "MODEL_ACTION is unused for a Benchmark,"
+  echo "             for Singularity it is a script (e.g., 'ACTION.sh')"
   echo "The environment should have:"
-  echo "  EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
-  echo "  SITE OBJ_RETURN BENCHMARK_TIMEOUT"
-  echo "  and MODEL_NAME EXPID for model_runner.py"
+  echo "                EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
+  echo "                SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "                CANDLE_DATA_DIR"
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} < 4 ))
+set -x
+if (( ${#} != 7 ))
 then
-  echo "Wrong number of arguments: received ${#} , required: at least 4"
+  echo
+  echo "model.sh: Wrong number of arguments: received ${#} , required: 7"
+  echo
   usage
   exit 1
 fi
 
-if (( ${#} >= 4 ))
-  then
-  FRAMEWORK=$1 # Usually "keras" or "pytorch"
-  # JSON string of parameters:
-  PARAMS="$2"
-  EXPID=$3
-  RUNID=$4
-fi
-
-if (( ${#} == 7 ))
-  then
-  export MODEL_NAME=$5
-  export CANDLE_IMAGE=$6
-  export MODEL_SCRIPT=$7
-fi
+FRAMEWORK=$1 # Usually "keras" or "pytorch"
+# JSON string of parameters:
+PARAMS="$2"
+export EXPID=$3
+export RUNID=$4
+export MODEL_TYPE=$5
+export MODEL_NAME=$6
+export MODEL_ACTION=$7
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
 # # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
 #set -x
-if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+if [[ $MODEL_TYPE = "SINGULARITY" ]]
 then
   # TODO: Rename "instance" to "run"
-  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_NAME/Output/$EXPID/$RUNID
+  MODEL_TOKEN=$( basename $MODEL_NAME .sif )
+  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
   INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
@@ -86,7 +89,7 @@ log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
 log "HOST: $( hostname )"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
-# log "CANDLE_MODEL_TYPE: $CANDLE_MODEL_TYPE"
+log "MODEL_TYPE: $MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -113,8 +116,8 @@ show     PYTHONHOME
 # Set up PYTHONPATH for app tasks
 export PYTHONPATH=${APP_PYTHONPATH:-}:${PYTHONPATH:-}
 
-# Construct the desired model command MODEL_CMD based on CANDLE_MODEL_TYPE:
-if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+# Construct the desired model command MODEL_CMD based on MODEL_TYPE:
+if [[ ${MODEL_TYPE:-} == "SINGULARITY" ]]
 then
 
   # No model_runner, need to write parameters.txt explicitly:
@@ -129,11 +132,13 @@ then
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
-              $CANDLE_IMAGE $MODEL_SCRIPT $ADLB_RANK_OFFSET
+              $MODEL_NAME ${MODEL_ACTION}.sh $ADLB_RANK_OFFSET
               /candle_data_dir
               $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
               --experiment_id $EXPID
-              --run_id $RUNID)  
+              --run_id $RUNID
+            )
+
 else # "BENCHMARKS"
 
   # The Python command line arguments:
@@ -154,17 +159,17 @@ log "MODEL_CMD: ${MODEL_CMD[@]}"
 $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 PID=$!
 
-if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+if [[ ${MODEL_TYPE:-} == "SINGULARITY" ]]
 then
   wait $PID
   ls -ltrh
   sleep 1  # Wait for initial output
-  # Get last results of the format "IMPROVE_RESULT xxx" in model.log
-  # NOTE: Enabling set -x will break the following
-  RES=$(awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' model.log)
-  echo $RES
+  # Get last results of the format "CANDLE_RESULT xxx" in model.log
+  # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
+  RES=$( awk -v FS="CANDLE_RESULT" 'NF>1 {x=$2} END {print x}' \
+             $INSTANCE_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
-  echo $RESULT, ": Result"
+  echo "CANDLE RESULT: '$RESULT'"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
   wait $PID

@@ -4,7 +4,7 @@
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 # GCC 8.3.1, TensorFlow 2.4.1, opence 1.2.0-py38-0, R 3.6.1
 
-SWIFT_IMPL=py
+CANDLE_MODEL_IMPL=py
 
 # Let modules initialize LD_LIBRARY_PATH before changing it:
 set +eu # modules create errors outside our control

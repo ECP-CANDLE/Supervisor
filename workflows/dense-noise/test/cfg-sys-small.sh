@@ -1,18 +1,19 @@
 
-# CFG SYS 1
+# CFG SYS SMALL
 
 # The number of MPI processes
-# Note that 2 processes are reserved for Swift/EMEMS
+# Note that 2 processes are reserved for Swift/EMEWS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
 export PROCS=${PROCS:-2}
 
 # MPI processes per node
-export PPN=${PPN:-1}
+export PPN=${PPN:-2}
 
-export WALLTIME=${WALLTIME:-00:05:00}
+export WALLTIME=${WALLTIME:-00:60:00}
 
 # CANDLE@ALCF:
 export PROJECT=CSC249ADOA01
+export QUEUE="debug-scaling"
 
 # Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.

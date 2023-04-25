@@ -22,7 +22,7 @@ export LD_LIBRARY_PATH=$SFW/R-4.1.0/lib/R/lib
 export PYTHONPATH=${PYTHONPATH:-}
 
 EQR=$SFW/EQ-R
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # For test output processing:
 export LOCAL=1

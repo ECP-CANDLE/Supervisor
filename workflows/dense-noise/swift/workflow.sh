@@ -47,7 +47,7 @@ then
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+echo "workflow.sh start: MODEL_NAME=$MODEL_NAME"
 
 source_site env   $SITE
 source_site sched $SITE
@@ -55,9 +55,13 @@ source_site sched $SITE
 # Set PYTHONPATH for BENCHMARK related stuff
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python  # needed for model_runner
 
-export APP_PYTHONPATH=$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
-
 export TURBINE_JOBNAME="${EXPID}"
+
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  echo "workflow.sh: CANDLE_DATA_DIR is not set!"
+  exit 1
+fi
 
 if [ -z ${GPU_STRING+x} ];
 then
@@ -86,8 +90,8 @@ mkdir -pv $TURBINE_OUTPUT/data
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-SWIFT_IMPL="py"
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+CANDLE_MODEL_IMPL="container"
+OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
@@ -103,18 +107,8 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# Handle %-escapes in TURBINE_STDOUT
-if [ $SITE == "summit"  ] || \
-   [ $SITE == "biowulf" ] || \
-   [ $SITE == "polaris" ]
-then
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-else
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-fi
-
+# Output handline
 mkdir -pv $TURBINE_OUTPUT/out
-
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -125,20 +119,22 @@ then
   ln -s $TURBINE_OUTPUT turbine-output
 else
   # When running on a scheduled system, Swift/T automatically redirects
-  # stdout to the turbine-output directory.  This will just be for
-  # warnings or unusual messages
-  # use for summit (slurm needs two %)
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-
-  #export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-  mkdir -pv $TURBINE_OUTPUT/out
+  # stdout to the turbine-output directory.
+  # Some systems do % interpretation in environment variables,
+  #              we escape them in TURBINE_STDOUT here:
+  if [[ $SITE == "summit"  ]] || \
+     [[ $SITE == "biowulf" ]] || \
+     [[ $SITE == "polaris" ]]
+  then
+    : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+  else
+    : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
+  fi
   STDOUT=""
 fi
 
-#echo ${CMD_LINE_ARGS[@]}
-
 cd $TURBINE_OUTPUT
-cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
+cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 swift-t -n $PROCS \
         ${MACHINE:-} \
@@ -153,6 +149,7 @@ swift-t -n $PROCS \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e OBJ_RETURN \
+        -e CANDLE_DATA_DIR \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
@@ -163,9 +160,8 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} 2>&1 \
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} 2>&1 | \
   tee $STDOUT
-
 
 if (( ${PIPESTATUS[0]} ))
 then
@@ -173,4 +169,4 @@ then
   exit 1
 fi
 
-# echo "EXIT CODE: 0" | tee -a $STDOUT
+echo "JOB OK" | tee -a $STDOUT

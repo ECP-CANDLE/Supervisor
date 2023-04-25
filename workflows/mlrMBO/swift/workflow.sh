@@ -114,7 +114,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 # Andrew: Allows for custom model.sh file, if that's desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}

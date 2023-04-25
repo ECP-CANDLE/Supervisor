@@ -34,7 +34,7 @@ fi
 TURBINE_PY=$( readlink --canonicalize $TURBINE_PY_LIB/.. )
 PATH=$TURBINE_PY/bin:$PATH
 
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # # EMEWS Queues for R
 # EQR=$( spack find -p eqr | sed -n 's/eqr@[.0-9]*//p' )

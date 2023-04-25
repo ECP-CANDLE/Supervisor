@@ -91,7 +91,7 @@ swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
         -I $WORKFLOWS_ROOT/common/swift \
-        -i obj_$SWIFT_IMPL \
+        -i model_$CANDLE_MODEL_IMPL \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
         -e MODEL_SH \

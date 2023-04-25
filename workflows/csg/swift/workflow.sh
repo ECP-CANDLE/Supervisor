@@ -84,7 +84,7 @@ fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
-export SWIFT_IMPL=container
+export CANDLE_MODEL_IMPL=container
 
 which swift-t
 
@@ -93,7 +93,7 @@ swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
         -I $WORKFLOWS_ROOT/common/swift \
-        -i obj_$SWIFT_IMPL \
+        -i model_$CANDLE_MODEL_IMPL \
         -e BENCHMARKS_ROOT \
         -e CANDLE_PROJECT_ROOT \
         -e MODEL_SH \

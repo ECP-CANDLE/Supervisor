@@ -1,5 +1,8 @@
 
-// OBJ ECHO
+/**
+   CANDLE MODEL: CONTAINER
+   Pretends to run CANDLE models, actually just echoes its arguments
+*/
 
 /**
     This has the same signature as the main objective function
@@ -8,8 +11,11 @@
     params : The JSON string of params to be passed to the Benchmark
     run_id : A string run ID that will be the output directory name
 */
-(string obj_result) obj(string params_in,
-                        string run_id) {
+(string model_result) candle_model_train(string params,
+                                         string expid,
+                                         string runid,
+                                         string model_name)
+{
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
 
@@ -18,5 +24,5 @@
   //                                              1       2       3
   printf("bash model.sh %s %s %s in: %s", FRAMEWORK, params, run_id,
          turbine_output) =>
-    obj_result = "ECHO SUCCESS";
+    model_result = "ECHO SUCCESS";
 }

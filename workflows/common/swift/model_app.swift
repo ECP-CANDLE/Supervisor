@@ -1,19 +1,24 @@
 
-// OBJ APP
+/**
+   CANDLE MODEL: APP
+   Runs CANDLE models as Swift/T app functions
+*/
 
 /**
     The main objective function used by the CANDLE/Supervisor
     model exploration (optimization) loop.
     params : The JSON string of params to be passed to the Benchmark
-    run_id : A string run ID that will be the output directory name
+    expid  : A string experiment ID that will be in the output directory name
+    runid  : A string run ID that will be in the output directory name
+    model_name : Benchmark (e.g., "uno") 
 */
-(string obj_result) obj(string params,
-                        string expid,
-                        string runid)
+(string obj_result) candle_model_train(string params,
+                                       string expid,
+                                       string runid,
+                                       string model_name)
 {
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
-  string model_name     = getenv("MODEL_NAME");
 
   string outdir;
 
@@ -38,8 +43,8 @@
 app (void o) run_model (string model_sh, string params,
                         string expid, string runid)
 {
-  //                  1       2      3     4
-  "bash" model_sh FRAMEWORK params expid runid;
+  //                  1       2      3     4        5          6         7
+  "bash" model_sh FRAMEWORK params expid runid "BENCHMARK" model_name "train";
 }
 
 /**

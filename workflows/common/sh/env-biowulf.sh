@@ -50,7 +50,7 @@ export TURBINE_HOME="$SWIFT_T_INSTALL/turbine"
 export TURBINE_LOG="1"
 export ADLB_DEBUG_RANKS="1"
 export ADLB_DEBUG_HOSTMAP="1"
-export SWIFT_IMPL="app"
+export CANDLE_MODEL_IMPL="app"
 
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]; then # if $TURBINE_RESIDENT_WORK_WORKERS is unset...

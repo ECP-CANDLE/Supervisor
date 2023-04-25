@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# UQ NOISE TEST 1
+# DENSE NOISE TEST 1
 
 usage()
 {
@@ -26,6 +26,7 @@ EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
 export EMEWS_PROJECT_ROOT
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
+SCRIPT=$( basename $0 .sh )
 
 # Select configurations
 export CFG_SYS=$THIS/cfg-sys-small.sh
@@ -46,17 +47,7 @@ fi
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
 
-# Wait for job
-TURBINE_OUTPUT=$( readlink turbine-output )
-queue_wait
-
-# Check job output
-OUTPUT=$TURBINE_OUTPUT/output.txt
-WORKFLOW=$( basename $EMEWS_PROJECT_ROOT )
-
-SCRIPT=$( basename $0 .sh )
-
-echo "$SCRIPT: SUCCESS"
+echo "$SCRIPT: OK"
 
 # Local Variables:
 # c-basic-offset: 2;

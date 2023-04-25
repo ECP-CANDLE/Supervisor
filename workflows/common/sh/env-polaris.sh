@@ -1,12 +1,12 @@
 
 # ENV Polaris
 
-# SWIFT_IMPL=echo
-SWIFT_IMPL=app
+# CANDLE_MODEL_IMPL=echo
+CANDLE_MODEL_IMPL=app
 
 CSC249=/lus/grand/projects/CSC249ADOA01
 ROOT=$CSC249/public/sfw/polaris
-SWIFT=$ROOT/swift-t/2022-12-16
+SWIFT=$ROOT/swift-t/2023-04-19
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH

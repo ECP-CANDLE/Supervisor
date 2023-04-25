@@ -11,7 +11,7 @@ export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH:+:}
 PYTHONPATH+=$WORKFLOWS_ROOT/common/python:
 
 export PATH=$SWIFT_T/stc/bin:$PATH
-SWIFT_IMPL="py"
+CANDLE_MODEL_IMPL="py"
 
 # EMEWS Queues for R
 EQR=$WORKFLOWS_ROOT/common/ext/EQ-R

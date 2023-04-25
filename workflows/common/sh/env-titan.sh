@@ -1,4 +1,4 @@
-SWIFT_IMPL=app
+CANDLE_MODEL_IMPL=app
 export R=/ccs/proj/med106/gounley1/titan/R-3.2.1/lib64/R
 export PY=/sw/xk6/deeplearning/1.0/sles11.3_gnu4.9.3
 export LD_LIBRARY_PATH=$PY/lib:$R/lib:$LD_LIBRARY_PATH
