@@ -168,40 +168,36 @@ def run(hyper_parameter_map, obj_return):
     history = None
     exception = False
 
-    # Run the model!
-    log("PKG RUN START")
-
-    # check for epochs if not present set to 1, used for checking early stopping in function get_results
+    # check for epochs if not present set to 1,
+    # used for checking early stopping in function get_results
     if "epochs" in hyper_parameter_map:
         epochs = hyper_parameter_map["epochs"]
     else:
         epochs = 1
 
-    if framework == 'keras':
+    log("PKG RUN START")
+    if framework == "keras":
 
         try:
+            # Run the model!
             history = pkg.run(params)
         except Exception as e:
             logger.warn("RUN EXCEPTION: " + str(e))
             print("RUN EXCEPTION: " + str(e))
             info = sys.exc_info()
             s = traceback.format_tb(info[2])
-            sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' + repr(e) +
-                             ' ... \\n' + ''.join(s))
-            sys.stdout.write('\\n')
+            # This produces backslashes in output like "\n\n"
+            #      on Frontier 2023-02-26
+            # sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
+            #                  repr(e) + ' ... \\n' + ''.join(s))
+            # sys.stdout.write('\\n')
+            sys.stdout.write('\n\nEXCEPTION in model run(): \n' +
+                             repr(e) + ' ... \n' + ''.join(s))
+            sys.stdout.write('\n')
             sys.stdout.flush()
-
-            # logger.warn("Caught InvalidArgumentError")
             exception = True
             exit(1)
-        log("PKG RUN STOP")
-
-        # if framework == "keras":
         runner_utils.keras_clear_session(framework)
-
-        stop_perf(Ps)
-        finish = time.time()
-        duration = finish - start
 
         # Default result if there is no val_loss (as in infer.py)
         result = 0
@@ -228,6 +224,12 @@ def run(hyper_parameter_map, obj_return):
 
         history = history(val_scores)
         result, history_result = get_results(history, obj_return, epochs)
+
+    log("PKG RUN STOP")
+
+    stop_perf(Ps)
+    finish = time.time()
+    duration = finish - start
 
     return (result, history_result)
 
@@ -291,7 +293,9 @@ def run_model(hyper_parameter_map):
         exit(1)
     elif result == ModelResult.SKIP:
         logger.info("run_pre() returned SKIP ...")
+        logger.info("model_runner: EXIT")
         sys.stdout.flush()
+        time.sleep(10)
         return ("SKIP", "HISTORY_EMPTY")
     else:
         assert result == ModelResult.SUCCESS  # proceed...
