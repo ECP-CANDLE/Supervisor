@@ -46,7 +46,7 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 log_path PYTHONPATH
 
-export TURBINE_JOBNAME="UPF_${EXPID}"
+export TURBINE_JOBNAME="${EXPID}"
 
 OBJ_PARAM_ARG=""
 if [[ ${OBJ_PARAM:-} != "" ]]
