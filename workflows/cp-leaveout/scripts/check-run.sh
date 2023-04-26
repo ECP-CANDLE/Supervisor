@@ -37,11 +37,19 @@ then
   echo "Job timed out normally."
   SUCCESS=1
 
-elif grep -q "TURBINE: EXIT CODE: 0" $DIR/output.txt
+elif grep -q "EXIT CODE: 0" $DIR/output.txt
 then
   echo "Job completed normally."
-  grep "TURBINE: MPIEXEC TIME: " $DIR/output.txt
+  grep "MPIEXEC TIME: " $DIR/output.txt
   SUCCESS=1
+fi
+
+if (( ! SUCCESS ))
+then
+  # Find MPI Aborts on Frontier
+  grep "START:" $DIR/output.txt
+  grep "MPICH .* Abort" $DIR/output.txt | \
+    cut --delimiter ' ' --fields=1-12
 fi
 
 if (( ! SUCCESS ))
