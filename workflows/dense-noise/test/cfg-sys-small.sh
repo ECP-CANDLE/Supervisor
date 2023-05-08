@@ -12,8 +12,12 @@ export PPN=${PPN:-2}
 export WALLTIME=${WALLTIME:-00:60:00}
 
 # CANDLE@ALCF:
-export PROJECT=CSC249ADOA01
-export QUEUE="debug-scaling"
+# export PROJECT=CSC249ADOA01
+# export QUEUE="debug-scaling"
+
+# CANDLE@OLCF:
+export PROJECT=MED106
+export QUEUE=batch
 
 # Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.

@@ -1,5 +1,5 @@
 /*
-  UQ NOISE SWIFT
+  DENSE NOISE WORKFLOW SWIFT
   Main workflow
 */
 

@@ -90,7 +90,7 @@ mkdir -pv $TURBINE_OUTPUT/data
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-CANDLE_MODEL_IMPL="container"
+CANDLE_MODEL_IMPL="py"
 OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
