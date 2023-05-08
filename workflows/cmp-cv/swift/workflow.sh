@@ -84,7 +84,7 @@ fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
-export CANDLE_MODEL_IMPL=container
+export CANDLE_MODEL_IMPL=py
 
 which swift-t
 

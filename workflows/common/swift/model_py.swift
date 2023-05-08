@@ -17,7 +17,7 @@ try:
   import tensorflow
   from tensorflow import keras
 
-  obj_result = '-100'
+  model_result = '-100'
   outdir = '%s'
 
   if not os.path.exists(outdir):
@@ -34,7 +34,7 @@ try:
   hyper_parameter_map['run_id'] = '%s'
   hyper_parameter_map['timeout'] = %d
 
-  obj_result, history = model_runner.run_model(hyper_parameter_map)
+  model_result, history = model_runner.run_model(hyper_parameter_map)
 
 except Exception as e:
   info = sys.exc_info()
@@ -43,17 +43,17 @@ except Exception as e:
                    repr(e) + ' ... \\n' + ''.join(s))
   sys.stdout.write('\\n')
   sys.stdout.flush()
-  obj_result = 'EXCEPTION'
+  model_result = 'EXCEPTION'
 ----;
 
-(string obj_result) candle_model_train(string params,
-                                       string expid,
-                                       string runid,
-                                       string model_name)
+(string model_result) candle_model_train(string params,
+                                         string expid,
+                                         string runid,
+                                         string model_name)
 {
   string outdir = "%s/run/%s" % (turbine_output, runid);
   string code = code_template % (outdir, params, model_name,
                                  expid, runid, benchmark_timeout);
-  obj_result = python_persist(code, "str(obj_result)");
-  printf("obj_py:obj(): obj_result: '%s'", obj_result);
+  model_result = python_persist(code, "str(model_result)");
+  printf("model_py:candle_model_train(): model_result: '%s'", model_result);
 }

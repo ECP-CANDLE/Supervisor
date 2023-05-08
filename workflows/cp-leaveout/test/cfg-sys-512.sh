@@ -12,13 +12,13 @@
 # 3 	92 	921 	12.0 	0
 # 4 	46 	91 	6.0 	0
 # 5 	1 	45 	2.0
-export PROCS=${PROCS:-8}
+export PROCS=${PROCS:-2048}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-8}
 
-export WALLTIME=${WALLTIME:-01:00:00}
+export WALLTIME=${WALLTIME:-12:00:00}
 
 # command separated list of gpu ids
 # export GPU_STRING=${GPU_STRING:-0}

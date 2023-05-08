@@ -161,24 +161,21 @@ get_expid()
 #          EXPID will have that suffix.
 # CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
 #        Defaults to "BENCHMARKS"
+#        This variable affects the experiment directory structure
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
 #    from the compute nodes without accessing the soft-links
 {
-  if (( ${#} < 1 ))
+  if (( ${#} != 1 ))
   then
-    echo "get_expid(): provide EXPID [CANDLE_MODEL_TYPE?]"
+    echo "get_expid(): provide EXPID"
     return 1
   fi
 
   export EXPID=$1
 
-  if [[ -z "${CANDLE_MODEL_TYPE}" ]]; then
-    CANDLE_MODEL_TYPE="BENCHMARKS"
-  fi
-
-  echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE}"
+  echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE:=BENCHMARKS}"
 
   MODEL_NAME=${MODEL_NAME:-cmp}
 
@@ -218,10 +215,10 @@ get_expid()
       done
     fi
     EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
-    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
-    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
   mkdir -pv $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
@@ -230,7 +227,7 @@ get_expid()
     echo "Could not canonicalize: $TURBINE_OUTPUT"
     exit 1
   fi
-  TURBINE_OUTPUT=$TO
+  export TURBINE_OUTPUT=$TO
 }
 
 next()

@@ -1052,10 +1052,12 @@ def get_subplan(plan_dict, subplan_id=None):
         A (content, subplan_id) pair is returned. The returned name is useful when
         using default arguments to retrieve the root plan.
     """
-
     if subplan_id is None:
         subplan_id, content = _get_first_entry(plan_dict)
     else:
+        # print("get_subplan dump:")
+        # json.dump(plan_dict, sys.stdout, indent=2)
+        # print("keys: %i" % len(plan_dict.keys()))
         content = plan_dict.get(subplan_id)
     return content, subplan_id
 
@@ -1173,8 +1175,9 @@ def get_subplan_features(plan_dict, subplan_id, parent_features=False):
     """
 
     # acquire feature_set names populated in the plan
+    print("get_subplan_features(): " + subplan_id)
     content, _ = get_subplan(plan_dict, subplan_id)
-    if not content:
+    if content is None:
         print("get_subplan() found no content!")
         return None, None, None, None
 

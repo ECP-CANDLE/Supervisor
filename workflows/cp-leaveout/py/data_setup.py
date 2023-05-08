@@ -24,37 +24,45 @@ class TopN_Args:
         self.output = output
 
 
-def setup_nvm(params):
+def setup_local_fs(params):
     # username = os.environ['USER']  # No longer works on Summit 2021-10-13
     username = params["user"]
-    nvme_enabled = Path("/mnt/bb/{}".format(username)).exists()
-    # nvme_enabled = True
+    userdir = Path("/mnt/bb/%s" % username)
+    nvme_enabled = userdir.exists()
     print("NVMe: %r" % nvme_enabled)
     if not nvme_enabled:
         return params
-    # copy original datafrom to NVMe disk space
+    # The training data directory for this workflow node:
+    nodedir = userdir / params["node"]
+    os.makedirs(nodedir, exist_ok=True)
+    # copy original datafrom to NVMe
     try:
         src = Path(params["dataframe_from"])
-        dest = Path("/mnt/bb/{}/{}".format(username, src.name))
+        local_orig = userdir / src.name
+        local_train = nodedir / Path("topN.uno.h5")
+        dest = Path(local_orig)
         if not dest.exists():
             start = time.time()
             count = dest.write_bytes(src.read_bytes())
             stop = time.time()
             duration = stop - start
             rate = count / duration / (1024 * 1024)
-            print("File copy completed. Original dataframe " +
-                  "copied to NVM in %0.1f seconds (%0.1f MB/s)." %
-                  (duration, rate))
+            print("Original dataframe copied to NVM in " +
+                  "%0.1f seconds (%0.1f MB/s)." % (duration, rate))
         else:
+            # Report file size:
+            stats = os.stat(local_orig)
             print("File copy skipped. " +
-                  "Original dataframe already exists in NVM.")
+                  "Original dataframe already exists in NVM: size=%i" %
+                  stats.st_size)
     except Exception as e:
         print("Error occurred in copying original dataframe\n" + str(e))
         traceback.print_exc()
         return ModelResult.ERROR
     params["dataframe_from"] = dest.resolve()
-    # Do not do this: it changes the location of the training data
-    # params["use_exported_data"] = "/mnt/bb/{}/{}".format(username, params["use_exported_data"])
+    # WARNING: this changes the location of the training data:
+    params["dataframe_from"] = local_orig
+    params["use_exported_data"] = local_train
     return params
 
 
@@ -68,13 +76,14 @@ def pre_run(params):
     # softlink to cache & config file
     # build node specific training/validation dataset
 
+    params = setup_local_fs(params)
+
     args = TopN_Args(
         params["dataframe_from"],
         params["node"],
         params["plan"],
-        params["use_exported_data"],
+        output=params["use_exported_data"],
     )
-    print("TopN_Args: " + str(args))
 
     data = params["benchmark_data"]
     try:
@@ -96,9 +105,8 @@ def pre_run(params):
         print("data_setup: build_dataframe(output=%s) ..." % args.output)
         sys.stdout.flush()
         if not os.path.exists(args.output):
-            params = setup_nvm(params)
             out_orig = args.output
-            args.output = out_orig + ".part"
+            args.output = Path(str(out_orig) + ".part")
             start = time.time()
             topN_to_uno.build_dataframe(args)
             stop = time.time()
@@ -144,7 +152,8 @@ def post_run(params, output_dict):
     sys.stdout.flush()
     if "use_exported_data" in params:
         try:
-            os.remove(params["use_exported_data"])
+            # os.remove(params["use_exported_data"])
+            pass
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
     else:

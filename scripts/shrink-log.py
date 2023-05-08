@@ -88,7 +88,7 @@ t0 = time.time()
 s0 = os.stat(file_in)
 z0 = s0[stat.ST_SIZE]
 h0 = hsize(z0)
-print("shrink:                       %11s                 %s" % (h0, file_in))
+print("shrink:                       %11s                 %s" % (h0, file_out))
 
 with open(file_in, "r") as fp_in:
     with open(file_out, "w") as fp_out:
@@ -102,4 +102,4 @@ t = t1 - t0
 rate = hsize(z0 / t)
 
 print("shrank:  %0.2fs %11s/s  %11s -> %11s  %s" %
-      (t, rate, hsize(z0), hsize(z1), file_in))
+      (t, rate, hsize(z0), hsize(z1), file_out))

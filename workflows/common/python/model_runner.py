@@ -17,6 +17,7 @@ from runner_utils import ModelResult
 logger = None
 
 print("MODEL RUNNER...")
+sys.stdout.flush()
 
 # Set PYTHONPATH:
 # Let MODEL_PYTHON_DIR override default Benchmarks model locations
@@ -127,7 +128,7 @@ def stop_perf(Ps):
             Ps[s].terminate()
 
 
-def run(hyper_parameter_map, obj_return):
+def run(hyper_parameter_map, model_return):
     start = time.time()
     global logger
     logger = get_logger(logger, "MODEL RUNNER")
@@ -208,7 +209,7 @@ def run(hyper_parameter_map, obj_return):
                     result, history_result = "EPOCHS_COMPLETED_ALREADY", None
                 else:
                     result, history_result = get_results(
-                        history, obj_return, epochs)
+                        history, model_return, epochs)
         else:
             result, history_result = "RUN_EXCEPTION", None
 
@@ -221,30 +222,29 @@ def run(hyper_parameter_map, obj_return):
                 self.history = {'val_loss': [val_scores['val_loss']]}
 
         history = history(val_scores)
-        result, history_result = get_results(history, obj_return, epochs)
-
-    log("PKG RUN STOP")
+        result, history_result = get_results(history, model_return, epochs)
 
     stop_perf(Ps)
     finish = time.time()
     duration = finish - start
-    
+
     #  print the run_id and duration
     logger.info("DONE: run_id %s in %0.2f seconds." %
                 (hyper_parameter_map["run_id"], duration))
+    log("PKG RUN STOP")
 
     return (result, history_result)
 
 
-def get_obj_return():
-    obj_return = os.getenv("OBJ_RETURN")
-    valid_obj_returns = ["loss", "val_loss", "val_corr", "val_acc"]
-    if obj_return is None:
-        raise Exception("No OBJ_RETURN was in the environment!")
-    if obj_return not in valid_obj_returns:
-        raise Exception("Invalid value for OBJ_RETURN: use: " +
-                        str(valid_obj_returns))
-    return obj_return
+def get_model_return():
+    model_return = os.getenv("MODEL_RETURN")
+    valid_model_returns = ["loss", "val_loss", "val_corr", "val_acc"]
+    if model_return is None:
+        raise Exception("No MODEL_RETURN was in the environment!")
+    if model_return not in valid_model_returns:
+        raise Exception("Invalid value for MODEL_RETURN: use: " +
+                        str(valid_model_returns))
+    return model_return
 
 
 def load_pre_post(hyper_parameter_map, key):
@@ -282,7 +282,7 @@ def run_model(hyper_parameter_map):
     os.chdir(instance_directory)
     global logger
     logger = get_logger(logger, "MODEL RUNNER")
-    obj_return = get_obj_return()
+    model_return = get_model_return()
     # logger.info("run_model: node: " + hyper_parameter_map['node'])
     directory = hyper_parameter_map["instance_directory"]
     os.chdir(directory)
@@ -302,7 +302,7 @@ def run_model(hyper_parameter_map):
     else:
         assert result == ModelResult.SUCCESS  # proceed...
 
-    result, history = run(hyper_parameter_map, obj_return)
+    result, history = run(hyper_parameter_map, model_return)
     runner_utils.write_output(result, directory)
     runner_utils.write_output(
         json.dumps(history, cls=runner_utils.FromNPEncoder), directory,
@@ -334,25 +334,25 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
     return params
 
 
-def get_results(history, obj_return, epochs_expected):
+def get_results(history, model_return, epochs_expected):
     """Return the history entry that the user requested.
 
     Also checks for early stopping and if so marks the directory.
-    history: The Keras history object
+    history: The Keras history modelect
     """
 
-    logger.debug('get_results(): "%s"' % obj_return)
+    logger.debug('get_results(): "%s"' % model_return)
 
     known_params = ["loss", "val_loss", "val_corr", "val_dice_coef"]
 
-    if obj_return not in known_params:
+    if model_return not in known_params:
         raise ValueError("Unsupported objective function return " + 'key: "' +
-                         obj_return + '" - ' +
-                         "use obj_param to specify one of " + str(known_params))
+                         model_return + '" - ' +
+                         "use model_param to specify one of " + str(known_params))
 
-    if obj_return in history.history:
+    if model_return in history.history:
         # Good value
-        values = history.history[obj_return]
+        values = history.history[model_return]
         if len(values) < epochs_expected:
             msg = "early stopping: %i/%i" % (len(values), epochs_expected)
             logger.info("get_results(): " + msg)
@@ -363,21 +363,21 @@ def get_results(history, obj_return, epochs_expected):
         result = float(values[-1])
     else:
         logger.warning("get_results(): objective function return key " +
-                       "not found: " + 'key: "' + obj_return + '" - ' +
+                       "not found: " + 'key: "' + model_return + '" - ' +
                        "history: " + str(history.history.keys()))
         logger.warning("get_results(): returning NaN")
         result = math.nan
 
     # Fix NaNs:
     if math.isnan(result):
-        if obj_return == "val_corr" or obj_return == "val_dice_coef":
+        if model_return == "val_corr" or model_return == "val_dice_coef":
             # Return the negative result
             result = -result
         else:
             # Just return a large number
             result = 999999999
 
-    print("result: " + obj_return + ": " + str(result))
+    print("result: " + model_return + ": " + str(result))
     history_result = history.history.copy()
     return result, history_result
 

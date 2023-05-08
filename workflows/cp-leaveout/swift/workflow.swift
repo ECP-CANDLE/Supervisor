@@ -107,7 +107,7 @@ global const string FRAMEWORK = "keras";
 run_stage(string db_file, string plan_id, string runtype,
           void token_parent, int stage, string parent, string this)
 {
-  printf("stage: %i parent: %s this: %s", stage, parent, this);
+  // printf("stage: %i parent: %s this: %s", stage, parent, this);
   // Run the model
   void token_this = run_single(plan_id, token_parent, stage,
                                parent, this);
@@ -147,19 +147,19 @@ run_stage(string db_file, string plan_id, string runtype,
     json_fragment = make_json_fragment(parent, this, stage);
     json = "{\"node\": \"%s\", %s}" % (this, json_fragment);
     token =>
-      printf("run_single(): running obj(%s)", this) =>
+      printf("run_single(): running candle_model_train(%s)", this) =>
       // Insert the model run into the DB
       result1 = plangen_start(this, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
       // Run the model
-      obj_result = obj(json, exp_id, this);
+      model_result = candle_model_train(json, exp_id, this, model_name);
       printf("run_single(): completed: node: '%s' result: '%s'",
-             this, obj_result);
+             this, model_result);
       // Update the DB to complete the model run
       string result2;
-      if (obj_result != "RUN_EXCEPTION")
+      if (model_result != "RUN_EXCEPTION")
       {
         result2 = plangen_stop(this, plan_id);
       }
@@ -167,11 +167,11 @@ run_stage(string db_file, string plan_id, string runtype,
       {
         result2 = "RETRY";
       }
-      assert(obj_result != "", "Error in obj(): result is empty!");
-      assert(obj_result != "EXCEPTION", "Exception in obj()!");
+      assert(model_result != "", "Error in obj(): result is empty!");
+      assert(model_result != "EXCEPTION", "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("run_single(): stop_subplan result: '%s'", result2);
-      v = propagate(obj_result);
+      v = propagate(model_result);
     }
     else // result1 != 0
     {
@@ -199,10 +199,12 @@ run_stage(string db_file, string plan_id, string runtype,
 "epochs":            %i,
 "es":                "True",
 "early_stopping":    %i,
+"experiment_id":     "%s",
+"run_id":            "%s",
 "use_exported_data": "topN.uno.h5",
 "benchmark_data":    "%s"
 ---- %
-(plan_json, user, dataframe_csv, epochs, early_stopping, benchmark_data);
+(plan_json, user, dataframe_csv, epochs, early_stopping, exp_id, this, benchmark_data);
   if (stage > 1)
   {
     result = json_fragment + ----
