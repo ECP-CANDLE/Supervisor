@@ -94,7 +94,7 @@ string FRAMEWORK = "keras";
         foreach param, j in param_array
         {
             run_id = "%02i_%03i_%04i" % (restart_number,i,j);
-            results[j] = obj(param, exp_id, run_id);
+            results[j] = candle_model_train(param, exp_id, run_id, model_name);
         }
         string result = join(results, ";");
         // printf(result);

@@ -203,8 +203,6 @@ def run(hyper_parameter_map, obj_return):
         result = 0
         history_result = {}
         if not exception:
-            logger.info("DONE: run_id %s in %0.2f seconds." %
-                        (hyper_parameter_map["run_id"], duration))
             if history is not None:
                 if history == "EPOCHS_COMPLETED_ALREADY":
                     result, history_result = "EPOCHS_COMPLETED_ALREADY", None
@@ -230,6 +228,10 @@ def run(hyper_parameter_map, obj_return):
     stop_perf(Ps)
     finish = time.time()
     duration = finish - start
+    
+    #  print the run_id and duration
+    logger.info("DONE: run_id %s in %0.2f seconds." %
+                (hyper_parameter_map["run_id"], duration))
 
     return (result, history_result)
 
