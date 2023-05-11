@@ -63,6 +63,8 @@ def setup_local_fs(params):
     # WARNING: this changes the location of the training data:
     params["dataframe_from"] = local_orig
     params["use_exported_data"] = local_train
+    params["plan"] = str(userdir / Path(params["plan"]).name)
+    print("Using plan file: " + params["plan"])
     return params
 
 
