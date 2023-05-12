@@ -32,10 +32,10 @@ def compare(model_name, exp_id, run_id):
     # model = gParams("model_name")
 
     # model = "DrugCell"  # TODO: Hardcoded. have to get this from output dir?
-    # turbine_output = os.getenv("TURBINE_OUTPUT") 
-    
+    # turbine_output = os.getenv("TURBINE_OUTPUT")
+
     CANDLE_DATA_DIR = os.getenv("CANDLE_DATA_DIR")
-    outdir = os.path.join(CANDLE_DATA_DIR, model_name, "Output", exp_id, run_id)  
+    outdir = os.path.join(CANDLE_DATA_DIR, model_name, "Output", exp_id, run_id)
     directory = outdir
     # directory = f"{CANDLE_DATA_DIR}/Output/{exp_id}/{run_id}"
     print("reading the predictions....")

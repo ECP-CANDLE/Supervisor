@@ -45,8 +45,6 @@ source_site sched $SITE
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
-export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/DrugCell"
-export PYTHONPATH="${PYTHONPATH}:/homes/ac.gpanapitiya/ccmg-mtg/models/to_Candle/SWnet"
 export PYTHONPATH="${PYTHONPATH}:$WORKFLOWS_ROOT/cmp-cv/py"
 log_path PYTHONPATH
 
@@ -84,7 +82,7 @@ fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
-export CANDLE_MODEL_IMPL=py
+export CANDLE_MODEL_IMPL=container
 
 which swift-t
 
@@ -101,7 +99,7 @@ swift-t -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \

@@ -78,7 +78,7 @@ foreach gparam, j in gparams_lines
   results[runid] = // obj_container(gparam, expid, repr(runid),
                    //              model_name, candle_image, model_script) =>
     candle_model_train(gparam, expid, repr(runid),
-                     model_name) =>
+                     candle_image) =>
 
     compare(model_name, expid, repr(runid));
   // results[runid] = obj(gparam, expid, repr(runid));
