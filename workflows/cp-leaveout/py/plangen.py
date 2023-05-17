@@ -4,6 +4,7 @@ import json
 import os
 import sqlite3
 import sys
+import time
 import traceback
 from abc import ABC, abstractmethod  # abstract class support
 from collections import OrderedDict, deque, namedtuple
@@ -18,7 +19,11 @@ from scipy.special import comb
 
 ISO_TIMESTAMP = "seconds"  # timestamp to ISO string
 ISO_TIMESTAMP_ENCODE = "%Y-%m-%dT%H:%M:%S"  # ISO string to timestamp
-DEBUG_SQL = True
+DEBUG_SQL = False # True
+
+
+conn = None
+csr  = None
 
 
 def isempty(path):
@@ -497,11 +502,20 @@ _delete_from_runhistory = """
     """
 
 
+# def log(msg):
+#     if DEBUG_SQL:
+#         with open("plangen_db.log", "a") as fp:
+#             fp.write(msg + "\n")
+#             fp.flush()
+
+from log_tools import *
+
+
+logger = get_logger(logger, "PLANGEN", milliseconds=True)
+
+
 def log(msg):
-    if DEBUG_SQL:
-        with open("plangen_db.log", "a") as fp:
-            fp.write(msg + "\n")
-            fp.flush()
+    logger.debug(msg)
 
 
 # ------------------------------------------------------------------------------
@@ -546,7 +560,7 @@ def execute_sql_stmt(conn, stmt, cursor=None, trap_exception=False):
         lclcsr = conn.cursor()
     try:
         db_exception = False
-        log("STMT: " + stmt)
+        # log("STMT: " + stmt)
         lclcsr.execute(stmt)
 
     except db_Error as e:
@@ -776,36 +790,40 @@ def start_subplan(db_path,
         the subplan. -1 is returned from a RESTART call if the a RunhistRow
         already exists for the plan/subplan and is marked COMPLETE.
     """
-
-    print("plangen: start_subplan: subplan_id=%s" % subplan_id)
-    sys.stdout.flush()
-    conn = db_connect(db_path)
-    csr = conn.cursor()
+    global conn, csr
+    start = time.time()
+    log("start_subplan: subplan_id=%s" % subplan_id)
+    # sys.stdout.flush()
+    if conn is None:
+        conn = db_connect(db_path)
+        csr = conn.cursor()
+        # conn.execute('PRAGMA journal_mode = WAL')
+        conn.execute('PRAGMA synchronous = OFF')
     skip = False
 
-    print("plangen: start_subplan: run_type:      '%s'" % str(run_type))
-    # print("plangen: start_subplan: run_type type:  %s"  % str(type(run_type)))
-    print("plangen: start_subplan: base:          '%s'" % str(RunType.RESTART))
-    sys.stdout.flush()
+    log("start_subplan: run_type:      '%s'" % str(run_type))
+    # log("plangen: start_subplan: run_type type:  %s"  % str(type(run_type)))
+    log("start_subplan: base:          '%s'" % str(RunType.RESTART))
+    # sys.stdout.flush()
 
     # skip previously completed work if RESTART
     if "RESTART" in str(run_type):
-        print("plangen: start_subplan: checking restart: %i" % plan_id)
-        sys.stdout.flush()
+        log("start_subplan: checking restart: %i" % plan_id)
+        # sys.stdout.flush()
         stmt = _select_row_from_runhist.format(plan_id, subplan_id)
         execute_sql_stmt(conn, stmt, cursor=csr)
         row = csr.fetchone()
 
         if row:
-            print("plangen: start_subplan: found row.")
+            log("start_subplan: found row.")
             runhist_rec = RunhistRow._make(row)
-            print("plangen: start_subplan: found '%s'" % runhist_rec.status)
+            log("start_subplan: found '%s'" % runhist_rec.status)
             if runhist_rec.status == RunStat.COMPLETE.name:
                 skip = True
-            print("plangen: start_subplan: skip %r" % skip)
+            # log("start_subplan: skip %r" % skip)
     else:
-        print("plangen: start_subplan: not checking restart")
-    sys.stdout.flush()
+        log("start_subplan: not checking restart")
+    # sys.stdout.flush()
 
     # construct/reinit a new runhist record
     if not skip:
@@ -818,16 +836,21 @@ def start_subplan(db_path,
 
         execute_sql_stmt(conn, stmt, cursor=csr)
 
-    csr.close()
+    # csr.close()
     conn.commit()
-    conn.close()
+    # conn.close()
 
     if skip:
-        print("plangen: start_subplan: subplan_id=%s: SKIP" % subplan_id)
-        return -1
+        token = "SKIP"
+        result = -1
     else:
-        print("plangen: start_subplan: subplan_id=%s: RUN" % subplan_id)
-        return 0
+        token = "RUN"
+        result = 0
+
+    log("start_subplan: subplan_id=%s: %s" % (subplan_id, result))
+    stop = time.time()
+    log("start_subplan: time: %0.3f" % (stop - start))
+    return result
 
 
 def stop_subplan(db_path, plan_id=None, subplan_id=None, comp_info_dict={}):
