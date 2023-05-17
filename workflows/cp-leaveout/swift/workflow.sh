@@ -115,7 +115,12 @@ then
   echo "Restart requested ..."
   if [[ ! -d $TURBINE_OUTPUT ]]
   then
-    echo "No prior run found!  (tried $TURBINE_OUTPUT/output.txt)"
+    echo "ERROR: No prior run found! (tried $TURBINE_OUTPUT)"
+    exit 1
+  fi
+  if [[ ! -f $TURBINE_OUTPUT/cplo.db ]]
+  then
+    echo "ERROR: No DB found! (tried $TURBINE_OUTPUT/cplo.db)"
     exit 1
   fi
   if [[ ! -f $TURBINE_OUTPUT/output.txt ]]
