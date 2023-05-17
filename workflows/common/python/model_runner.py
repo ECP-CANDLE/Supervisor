@@ -16,7 +16,7 @@ from runner_utils import ModelResult
 
 logger = None
 
-print("MODEL RUNNER...")
+print("MODEL RUNNER MODULE")
 sys.stdout.flush()
 
 # Set PYTHONPATH:

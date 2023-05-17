@@ -21,7 +21,6 @@ ISO_TIMESTAMP = "seconds"  # timestamp to ISO string
 ISO_TIMESTAMP_ENCODE = "%Y-%m-%dT%H:%M:%S"  # ISO string to timestamp
 DEBUG_SQL = False # True
 
-
 conn = None
 csr  = None
 
