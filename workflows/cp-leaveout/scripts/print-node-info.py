@@ -9,6 +9,8 @@ from Node import Node
 from utils import fail
 
 parser = argparse.ArgumentParser(description="Print Node info stats")
+parser.add_argument("--count", "-c", action="store_true",
+                    help="Simply count the nodes")
 parser.add_argument("directory", help="The experiment directory (EXPID)")
 parser.add_argument("nodes",
                     default="",
@@ -37,6 +39,7 @@ def print_all(data):
     count = 0
     earlies = 0
     for node in data.values():
+        # print(node.id)
         print(node.str_table())
         count += 1
         if node.stopped_early:
@@ -53,6 +56,10 @@ def print_selected(data, nodes):
             exit(1)
         print(node.str_table())
 
+
+if args.count:
+    print(len(data))
+    exit(0)
 
 if args.nodes == "":
     print_all(data)
