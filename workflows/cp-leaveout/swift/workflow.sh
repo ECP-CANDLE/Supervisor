@@ -258,6 +258,8 @@ export TURBINE_DB_WORKERS=1
 # Insert -e flags for Swift/T command line:
 ENV_ARG="-e $( echo ${ENVS[@]} | sed 's/  */ -e /g' )"
 
+export TURBINE_LOG=0
+
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p \

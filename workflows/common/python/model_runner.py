@@ -134,7 +134,7 @@ def run(hyper_parameter_map, model_return):
     logger = get_logger(logger, "MODEL RUNNER")
 
     logger.info("run(): START:")
-    sys.stdout.flush()
+    # sys.stdout.flush()
 
     directory = hyper_parameter_map[
         "instance_directory"]  # should be output_dir
@@ -145,7 +145,7 @@ def run(hyper_parameter_map, model_return):
 
     framework = hyper_parameter_map['framework']
     print("framework: " + str(framework))
-    sys.stdout.flush()
+    # sys.stdout.flush()
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
 
@@ -232,6 +232,7 @@ def run(hyper_parameter_map, model_return):
     logger.info("DONE: run_id %s in %0.2f seconds." %
                 (hyper_parameter_map["run_id"], duration))
     log("PKG RUN STOP")
+    sys.stdout.flush()
 
     return (result, history_result)
 
