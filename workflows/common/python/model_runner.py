@@ -192,8 +192,8 @@ def run(hyper_parameter_map, model_return):
             # sys.stdout.write('\\n\\nEXCEPTION in model run(): \\n' +
             #                  repr(e) + ' ... \\n' + ''.join(s))
             # sys.stdout.write('\\n')
-            sys.stdout.write('\n\nEXCEPTION in model run(): \n' +
-                             repr(e) + ' ... \n' + ''.join(s))
+            sys.stdout.write('\n\nEXCEPTION in model run(): \n' + repr(e) +
+                             ' ... \n' + ''.join(s))
             sys.stdout.write('\n')
             sys.stdout.flush()
             exception = True
@@ -348,7 +348,8 @@ def get_results(history, model_return, epochs_expected):
     if model_return not in known_params:
         raise ValueError("Unsupported objective function return " + 'key: "' +
                          model_return + '" - ' +
-                         "use model_param to specify one of " + str(known_params))
+                         "use model_param to specify one of " +
+                         str(known_params))
 
     if model_return in history.history:
         # Good value

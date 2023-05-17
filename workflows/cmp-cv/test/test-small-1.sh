@@ -18,7 +18,7 @@ EMEWS_PROJECT_ROOT=$( cd $THIS/..        ; /bin/pwd )
 WORKFLOWS_ROOT=$(     cd $THIS/../..     ; /bin/pwd )
 export EMEWS_PROJECT_ROOT
 
-export OBJ_RETURN="val_loss"
+export MODEL_RETURN="val_loss"
 CFG_SYS=$THIS/cfg-sys-1.sh
 
 # export MODEL_NAME="DrugCell"

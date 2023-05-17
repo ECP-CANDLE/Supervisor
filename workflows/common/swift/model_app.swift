@@ -10,13 +10,14 @@
     params : The JSON string of params to be passed to the Benchmark
     expid  : A string experiment ID that will be in the output directory name
     runid  : A string run ID that will be in the output directory name
-    model_name : Benchmark (e.g., "uno") 
+    model_name : Benchmark (e.g., "uno")
 */
 (string obj_result) candle_model_train(string params,
                                        string expid,
                                        string runid,
                                        string model_name)
 {
+
   string model_sh       = getenv("MODEL_SH");
   string turbine_output = getenv("TURBINE_OUTPUT");
 

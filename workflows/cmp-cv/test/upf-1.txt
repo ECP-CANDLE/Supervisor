@@ -3,13 +3,13 @@
 {"id": "RUN003", "epochs": 1, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
 {"id": "RUN004", "epochs": 2, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
 
-#GraphDRP 
-#{"id": "RUN004", "training_data" : "path/to/dir, 
+#GraphDRP
+#{"id": "RUN004", "training_data" : "path/to/dir,
 #   "testing_data": "path/to/dir",
 #   "infer_data" : [ path/to/dir ],
 #   "model_params": name_of_model_params_output_of_training,
-#    "epochs": 50, 
-#    "model_name": "GraphDRP", 
+#    "epochs": 50,
+#    "model_name": "GraphDRP",
 #    "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
 #{"id": "RUN004", "epochs": 50, "model_name": "GraphDRP", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
 #{"id": "RUN004", "epochs": 50, "model_name": "GraphDRP", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
