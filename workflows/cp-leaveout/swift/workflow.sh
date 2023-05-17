@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 set -eu
+shopt -s nullglob
 
 # CP-LEAVEOUT WORKFLOW
 # Main entry point for CP-LEAVEOUT workflow
@@ -135,8 +136,10 @@ then
     PRIORS=( $TURBINE_OUTPUT/output.txt
              $TURBINE_OUTPUT/out
              $TURBINE_OUTPUT/turbine*
-             $TURBINE_OUTPUT/jobid.txt )
+             $TURBINE_OUTPUT/jobid.txt
+             $TURBINE_OUTPUT/plangen_db.log* )
     mv ${PRIORS[@]} $PRIOR_RUN
+    cp $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
   fi
 else # Not a restart
   if [[ -f $TURBINE_OUTPUT/output.txt ]]
