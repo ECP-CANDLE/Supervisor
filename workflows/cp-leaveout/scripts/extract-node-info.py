@@ -67,8 +67,6 @@ def parse_logs(log_files):
 def parse_log(log_fp, nodes):
     nodes_found = 0
     node_current = None
-    # Temporary way to capture build DF time, which happens before
-    # node_current is defined.  Fixing log format to address this. 2021-11-28
     build_df = None
 
     while True:
@@ -76,42 +74,29 @@ def parse_log(log_fp, nodes):
         # print(line)
         if line == "":
             break
-        if "DONE: run_id" in line:
+        if line.startswith("data_setup.pre_run"):
+            if "node:" in line:
+                tokens = line.split()
+                node_id = tokens[-2].strip()
+                node_current = get_node(nodes, node_id, logger)
+        elif "DONE: run_id" in line:
             # This is also a MODEL RUNNER line,
             # but could be DEBUG or INFO
             # (should be INFO in future)
             if node_current is None:
                 # Restarted node with no epochs remaining:
                 continue
-            logger.info("RUN DONE.")
+            trace("RUN DONE.")
             node_current.parse_date_stop(line, logger)
         elif "MODEL RUNNER" in line:
             # print(line.strip())
-            if "DEBUG" in line:
-                if "PARAM UPDATE START" in line:
-                    logger.debug("New Node ...")
-                    node_current = Node(logger=logger)
-                    node_current.parse_date_start(line)
-                elif " node =" in line:
-                    logger.info("start: " + line)
-                    tokens = line.split()
-                    node_id = tokens[-1].strip()
-                    if node_id not in nodes:
-                        node_current.set_id(node_id, logger)
-                        nodes[node_id] = node_current
-                        if build_df is not None:
-                            node_current.build_df = build_df
-                            build_df = None
-                    else:
-                        logger.debug("lookup: " + node_id)
-                        node_current = nodes[node_id]
-                        node_current.new_segment()
-                        node_current.complete = False
-                elif " epochs =" in line:
-                    if node_current is None:
-                        # Restarted node with no epochs remaining:
-                        continue
-                    node_current.parse_epochs(line, logger)
+            if "PARAM UPDATE START" in line:
+                node_current.parse_date_start(line)
+            if " epochs =" in line:
+                if node_current is None:
+                    # Restarted node with no epochs remaining:
+                    continue
+                node_current.parse_epochs(line, logger)
         elif line.startswith("data_setup: build_dataframe() OK"):
             build_df = parse_build_df(line, logger)
         elif line.startswith("Loaded from initial_weights"):
@@ -124,19 +109,41 @@ def parse_log(log_fp, nodes):
             node_current.parse_training_done(line, logger)
         elif line.startswith("model wrote:"):
             node_current.parse_model_write(line, logger)
+        elif "topN_NoDataException" in line:
+            node_current.has_data = False
         elif "early stopping" in line:
-            if node_current is not None:
-                # TensorFlow may report early stopping even if at max epochs:
-                node_current.stop_early()
+            if not "setting early stopping patience" in line:
+                if node_current is not None:
+                    # TensorFlow may report early stopping even if at max epochs:
+                    node_current.stop_early()
         if node_current is not None and node_current.complete:
             # Store a complete Node in global dict nodes
-            logger.info("node done.")
+            trace("node done.")
             # find_val_data(node_current) # old format?
             parse_python_log(node_current)
+            # print(Node.str_table(node_current))
             nodes_found += 1
             node_current = None
+            # exit(0)
 
     logger.info("Found %i nodes in log." % nodes_found)
+
+
+def get_node(nodes, node_id, logger):
+
+    if "'" in node_id:
+        node_id = node_id.replace("'", "")
+    if node_id not in nodes:
+        trace("NEW:  " + node_id)
+        result = Node(logger=logger)
+        result.set_id(node_id, logger)
+        nodes[node_id] = result
+    else:
+        trace("lookup: " + node_id)
+        result = nodes[node_id]
+        result.new_segment()
+        result.complete = False
+    return result
 
 
 def parse_build_df(line, logger=None):
