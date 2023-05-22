@@ -80,7 +80,7 @@ def setup_local_fs(params):
 def pre_run(params):
     global logger
 
-    logger.info("pre_run(): node: '%s' ..." % params["node"])
+    logger.info("PRE_RUN node: %s ..." % params["node"])
 
     # softlink to cache & config file
     # build node specific training/validation dataset
@@ -129,11 +129,11 @@ def pre_run(params):
             # sys.stdout.flush()
             args.output = out_orig
         else:
-            print("data_setup: dataframe exists: %s" %
-                  os.path.realpath(args.output))
+            logger.info("data_setup: dataframe exists: %s" %
+                        os.path.realpath(args.output))
     except topN_to_uno.topN_NoDataException:
-        print("data_setup: caught topN_NoDataException: SKIP " +
-              "for node: '%s'" % params["node"])
+        logger.info("data_setup: topN_NoDataException: SKIP " +
+                    "node: %s" % params["node"])
         # sys.stdout.flush()
         directory = params["instance_directory"]
         with open(directory + "/NO-DATA.txt", "a") as fp:
@@ -152,7 +152,7 @@ def pre_run(params):
         traceback.print_exc(file=sys.stdout)
         sys.stdout.flush()
         return ModelResult.ERROR
-    logger.info("data_setup.pre_run() done.")
+    logger.info("PRE_RUN done.")
     # sys.stdout.flush()
     return ModelResult.SUCCESS
 
