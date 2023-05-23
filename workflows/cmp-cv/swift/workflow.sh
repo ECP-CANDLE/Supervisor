@@ -51,7 +51,7 @@ log_path PYTHONPATH
 export TURBINE_JOBNAME="CMP_${EXPID}"
 
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
-export BENCHMARK_TIMEOUT
+export BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-21600}  # 6 hours
 PLAN="PLAN_NOT_DEFINED"
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
