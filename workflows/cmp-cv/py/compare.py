@@ -12,10 +12,13 @@ models which produce highly accurate preidictions for certain domains.
 """
 
 import os
+import sys
 import pandas as pd
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
+
+CANDLE_DATA_DIR = os.getenv("CANDLE_DATA_DIR")
 
 conditions = pd.DataFrame(
     [['nAromAtom', 5, 10], ['nAtom', 20, 50], ['BertzCT', 800, 1000]],
@@ -39,6 +42,16 @@ def compare(model_name, exp_id, run_id):
     directory = outdir
     # directory = f"{CANDLE_DATA_DIR}/Output/{exp_id}/{run_id}"
     print("reading the predictions....")
+
+    gParams = read_params(exp_id, run_id)
+    model_name = gParams("model_name")
+    print(f"compare: model_name={model_name} exp_id={exp_id} run_id={run_id}")
+
+    sys.stdout.flush()
+
+    return
+
+    directory = f"{CANDLE_DATA_DIR}/{model_name}/Output/{exp_id}/{run_id}"
     df_res = pd.read_csv(f"{directory}/test_predictions.csv")
 
     # a class to calculate errors for subsets of the validation/test set
