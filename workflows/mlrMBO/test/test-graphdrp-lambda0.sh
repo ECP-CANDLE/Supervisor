@@ -41,7 +41,7 @@ export R_FILE=mlrMBO-mbo.R
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
-export OBJ_RETURN="val_loss"
+export MODEL_RETURN="val_loss"
 
 if [[ $SITE == "theta" ]]
 then
