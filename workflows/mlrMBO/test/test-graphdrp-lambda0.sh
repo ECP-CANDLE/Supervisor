@@ -32,6 +32,7 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
+export PARAM_SET_FILE=graphdrp_small.R
 export CFG_SYS=$THIS/cfg-sys-nightly.sh
 export CFG_PRM=$THIS/cfg-prm-nightly.sh
 
@@ -52,7 +53,9 @@ export CANDLE_IMAGE="/software/improve/images/GraphDRP.sif"
 export INIT_PARAMS_FILE="/software/improve/graphdrp_default_model.txt"
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+                                      $MODEL_NAME \
+                                      $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 
 # Check job output
 TURBINE_OUTPUT=$( readlink turbine-output )
