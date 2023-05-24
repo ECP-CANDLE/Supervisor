@@ -32,6 +32,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
+# Temporarily hard-coding to graphdrp:
+export PARAM_SET_FILE=$THIS/../data/graphdrp_small.R
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
