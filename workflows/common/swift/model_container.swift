@@ -12,7 +12,7 @@
     run_id : A string run ID that will be the output directory name
     model_name : A path to a SIF
 */
-(string obj_result) candle_model_train(string params,
+(string model_result) candle_model_train(string params,
                                        string expid,
                                        string runid,
                                        string model_name)
@@ -22,17 +22,17 @@
 
   model_token = rootname_string(basename_string(model_name));
   outdir = "%s/%s/Output/%s/%s" % (CDD, model_token, expid, runid);
-  printf("obj_container(): running in: %s", outdir);
+  printf("candle_model_train_container(): running in: %s", outdir);
 
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
   result_file = outdir/"result.txt";
   wait (run_model_train(model_sh, params, expid, runid, model_name))
   {
-    obj_result = get_results(result_file);
+    model_result = get_results(result_file);
   }
-  printf("model_train_container(): result(%s): '%s'",
-         runid, obj_result);
+  printf("candle_model_train_container(): result(%s): '%s'",
+         runid, model_result);
 }
 
 /**
