@@ -5,7 +5,7 @@ set -eu
 
 usage()
 {
-  echo "Usage: test BENCHMARK_NAME SITE RUN_DIR(optional)"
+  echo "Usage: test MODEL_NAME SITE RUN_DIR(optional)"
   echo "       RUN_DIR is optional, use -a for automatic"
 }
 
