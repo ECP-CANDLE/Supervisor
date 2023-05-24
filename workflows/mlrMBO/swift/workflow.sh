@@ -113,6 +113,7 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 mkdir -pv $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
+CANDLE_MODEL_IMPL=${CANDLE_MODEL_IMPL:-container}
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
