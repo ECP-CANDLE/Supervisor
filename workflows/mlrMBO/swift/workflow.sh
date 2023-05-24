@@ -118,8 +118,8 @@ then
   CANDLE_MODEL_IMPL="container"
 fi
 CANDLE_MODEL_IMPL=${CANDLE_MODEL_IMPL:-container}
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
+SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 # Andrew: Allows for custom model.sh file, if that's desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
@@ -168,20 +168,21 @@ fi
 # on Biowulf.  Reported by ALW 2021-01-21
 
 (
+  PY_ENVS=$( python_envs )
 set -x
 swift-t -O 0 -n $PROCS \
         -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
+        -I $SWIFT_LIBS_DIR \
+        -i $SWIFT_MODULE \
         -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
         -e APP_PYTHONPATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
-        $( python_envs ) \
+        $PY_ENVS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
         -e MODEL_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
@@ -197,8 +198,9 @@ swift-t -O 0 -n $PROCS \
         -e CANDLE_MODEL_TYPE \
         -e CANDLE_IMAGE \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} ) 2>&1 | \
-  tee $STDOUT
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} )
+# 2>&1 | \
+#  tee $STDOUT
 
 if (( ${PIPESTATUS[0]} ))
 then
