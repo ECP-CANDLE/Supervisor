@@ -1,5 +1,5 @@
 
-# SCHED Summit
+# SCHED Polaris
 
 # Scheduler settings for Swift/T/PBS/Polaris
 
