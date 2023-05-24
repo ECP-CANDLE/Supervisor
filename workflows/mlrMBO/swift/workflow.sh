@@ -179,7 +179,7 @@ swift-t -O 0 -n $PROCS \
         -e EMEWS_PROJECT_ROOT \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
