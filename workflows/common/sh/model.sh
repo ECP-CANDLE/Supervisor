@@ -30,7 +30,6 @@ usage()
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-set -x
 if (( ${#} != 7 ))
 then
   echo
@@ -166,7 +165,7 @@ then
   sleep 1  # Wait for initial output
   # Get last results of the format "CANDLE_RESULT xxx" in model.log
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
-  RES=$( awk -v FS="CANDLE_RESULT" 'NF>1 {x=$2} END {print x}' \
+  RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
              $INSTANCE_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
   echo "CANDLE RESULT: '$RESULT'"
