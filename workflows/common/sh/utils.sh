@@ -194,7 +194,7 @@ get_expid()
 
   local i=0 EXPS E TO
 
-  if [ $EXPID = "-a" ]
+  if [[ $EXPID == "-a" ]]
   then
     shift
     # Search for free experiment number
