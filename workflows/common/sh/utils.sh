@@ -185,7 +185,9 @@ get_expid()
 
   if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
   then
-    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/$MODEL_NAME/Output}
+    # Keep this directory in sync with model.sh RUN_DIRECTORY
+    MODEL_TOKEN=$( basename $MODEL_NAME .sif )
+    EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
   else # "BENCHMARKS"
     EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
   fi
