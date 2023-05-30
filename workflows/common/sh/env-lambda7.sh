@@ -1,5 +1,5 @@
 
-# ENV Lambda
+# ENV Lambda7
 # Environment settings for Lambda (Swift, Python, R, Tcl, etc.)
 
 # Everything is installed in here:
@@ -8,7 +8,7 @@ SFW=/homes/woz/Public/sfw
 SWIFT=$SFW/swift-t/2023-05-26
 PY=$SFW/Miniconda
 # EQPY=$SFW/EQ-Py
-EQR=$SFW/EQ-R
+export EQR=$SFW/EQ-R
 R=$SFW/R-4.1.0
 
 PATH=$SWIFT/stc/bin:$PATH
