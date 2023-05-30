@@ -8,12 +8,6 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-if [[ ! -d $EMEWS_PROJECT_ROOT/../../../Benchmarks ]]
-then
-  echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
-  exit 1
-fi
-
 export BENCHMARK_TIMEOUT
 
 SCRIPT_NAME=$(basename $0)
@@ -92,7 +86,6 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
-
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
                 -ni=$NUM_ITERATIONS
@@ -117,7 +110,6 @@ log_script
 #Store scripts to provenance
 #copy the configuration files to TURBINE_OUTPUT
 cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $INIT_PARAMS_FILE  $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
-
 
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
