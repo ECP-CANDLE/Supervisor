@@ -35,7 +35,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # Select configurations
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
-export PARAM_SET_FILE=graphdrp_param_space_ga.json
+# export PARAM_SET_FILE=graphdrp_param_space_ga.json
 
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
