@@ -163,37 +163,35 @@ then
 fi
 
 (
-# set -x
-which python swift-t
-swift-t -O 0 -n $PROCS \
-        ${MACHINE:-} \
-        -p -I $EQPY -r $EQPY \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e BENCHMARKS_ROOT \
-        -e EMEWS_PROJECT_ROOT \
-        $( python_envs ) \
-        -e APP_PYTHONPATH \
-        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
-        -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
-        -e MODEL_SH \
-        -e MODEL_NAME \
-        -e SITE \
-        -e BENCHMARK_TIMEOUT \
-        -e SH_TIMEOUT \
-        -e TURBINE_STDOUT \
-        -e IGNORE_ERRORS \
-        -e CANDLE_DATA_DIR \
-        -e CANDLE_MODEL_TYPE \
-        -e CANDLE_IMAGE \
-        $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} | 2>&1 \
-    tee $STDOUT
+  which python swift-t
+  swift-t -O 0 -n $PROCS \
+          ${MACHINE:-} \
+          -p -I $EQPY -r $EQPY \
+          -I $OBJ_DIR \
+          -i $OBJ_MODULE \
+          -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+          -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
+          -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+          -e BENCHMARKS_ROOT \
+          -e EMEWS_PROJECT_ROOT \
+          $( python_envs ) \
+          -e APP_PYTHONPATH \
+          -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+          -e MODEL_RETURN \
+          -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+          -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
+          -e MODEL_SH \
+          -e MODEL_NAME \
+          -e SITE \
+          -e BENCHMARK_TIMEOUT \
+          -e SH_TIMEOUT \
+          -e TURBINE_STDOUT \
+          -e IGNORE_ERRORS \
+          -e CANDLE_DATA_DIR \
+          -e CANDLE_MODEL_TYPE \
+          -e CANDLE_IMAGE \
+          $WAIT_ARG \
+          $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 )
 
 if (( ${PIPESTATUS[0]} ))
