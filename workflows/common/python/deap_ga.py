@@ -1,7 +1,9 @@
 import csv
+from datetime import datetime
 import json
 import math
 import random
+import sys
 import threading
 import time
 
@@ -141,6 +143,12 @@ def run():
     :param ga parameters file name: ga parameters file name (e.g., "ga_params.json")
     :param param_file: name of file containing initial parameters
     """
+    start_time = time.time()
+    time_string = datetime.fromtimestamp(start_time) \
+                          .strftime("%Y-%m-%d %H:%M:%S")
+    print("deap_ga: START: " + time_string)
+    sys.stdout.flush()
+
     eqpy.OUT_put("Params")
     params = eqpy.IN_get()
 
@@ -179,7 +187,7 @@ def run():
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
-    start_time = time.time()
+
     if strategy == "simple":
         pop, log = algorithms.eaSimple(
             pop,
@@ -215,6 +223,21 @@ def run():
     end_time = time.time()
 
     fitnesses = [str(p.fitness.values[0]) for p in pop]
+
+    time_string = datetime.fromtimestamp(end_time) \
+                          .strftime("%Y-%m-%d %H:%M:%S")
+    print("deap_ga: STOP:  " + time_string)
+    sys.stdout.flush()
+
+    best_i = -1
+    best_fitness = sys.float_info.max
+    for i in range(0, len(fitnesses)):
+        f = float(fitnesses[i])
+        if f < best_fitness:
+            best_i = i
+            best_fitness = f
+    print("deap_ga: BEST: %f == %s" % (best_fitness, str(pop[i])))
+    sys.stdout.flush()
 
     eqpy.OUT_put("DONE")
     # return the final population
