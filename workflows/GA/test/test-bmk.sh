@@ -2,7 +2,7 @@
 set -eu
 
 # GA TEST BMK
-# Runs any CANDLE Benchmark in using MODEL_IMPL="app"
+# Runs any CANDLE Benchmark using MODEL_IMPL="app"
 
 usage()
 {
