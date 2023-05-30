@@ -114,10 +114,13 @@ cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $INIT_PARAMS_FILE  $CF
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-# Allow the user to set an objective function
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
-# This is used by the obj_app objective function
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+  CANDLE_MODEL_IMPL="container"
+fi
+SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
+# This is used by the candle_model_train_app function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 WAIT_ARG=""
@@ -167,8 +170,8 @@ fi
   swift-t -O 0 -n $PROCS \
           ${MACHINE:-} \
           -p -I $EQPY -r $EQPY \
-          -I $OBJ_DIR \
-          -i $OBJ_MODULE \
+          -I $SWIFT_LIBS_DIR \
+          -i $SWIFT_MODULE \
           -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
           -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
           -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
