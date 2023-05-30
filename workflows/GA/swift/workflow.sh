@@ -163,7 +163,7 @@ then
 fi
 
 (
-set -x
+# set -x
 which python swift-t
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
