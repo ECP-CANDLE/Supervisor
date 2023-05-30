@@ -50,6 +50,8 @@ def func(x, n=1):
     # remove random part
     y = 0.02 * x + 0.5 * np.sin(1 * x + 0.1) + 0.75 * np.cos(0.25 * x - 0.3)
 
+    print("oned: f(x=%0.3f) => y=%0.3f" % (x, y))
+
     return y
 
 
