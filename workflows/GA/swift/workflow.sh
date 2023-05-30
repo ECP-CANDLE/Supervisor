@@ -62,7 +62,7 @@ then
 fi
 
 get_site    $1 # Sets SITE
-get_expid   $2 $CANDLE_MODEL_TYPE # Sets EXPID
+get_expid   $2 # Sets EXPID
 get_cfg_sys $3
 get_cfg_prm $4
 MODEL_NAME=$5
