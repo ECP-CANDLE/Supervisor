@@ -16,8 +16,6 @@ import python;
 import candle_utils;
 report_env();
 
-python("import sys ; import csv ; import _csv ; print('HELLO') ; sys.stdout.flush()");
-
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
