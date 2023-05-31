@@ -20,22 +20,26 @@ def obj_func(x):
     return 0
 
 
+# Produces something like:
 # {"batch_size":512,"epochs":51,"activation":"softsign",
 # "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
 # "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
-def create_list_of_json_strings(list_of_lists, super_delim=";"):
+def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
     # create string of ; separated jsonified maps
-    res = []
+    result = []
     global ga_params
-    for l in list_of_lists:
-        jmap = {}
-        for i, p in enumerate(ga_params):
-            jmap[p.name] = l[i]
+    for L in list_of_lists:
+        json_string = create_json_string(L)
+        result.append(json_string)
+    return super_delimiter.join(result)
 
-        jstring = json.dumps(jmap)
-        res.append(jstring)
 
-    return super_delim.join(res)
+def create_json_string(L):
+    json_dict = {}
+    for i, p in enumerate(ga_params):
+        json_dict[p.name] = L[i]
+    result = json.dumps(json_dict)
+    return result
 
 
 def create_fitnesses(params_string):
@@ -236,7 +240,7 @@ def run():
         if f < best_fitness:
             best_i = i
             best_fitness = f
-    print("deap_ga: BEST: %f == %s" % (best_fitness, str(pop[i])))
+    print("deap_ga: BEST: %s == %s" % (best_fitness, create_json_string(pop[i])))
     sys.stdout.flush()
 
     eqpy.OUT_put("DONE")
