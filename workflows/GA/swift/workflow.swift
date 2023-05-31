@@ -3,6 +3,7 @@
  * WORKFLOW.SWIFT
  */
 
+import assert;
 import io;
 import sys;
 import files;
@@ -66,13 +67,14 @@ string FRAMEWORK = "keras";
     }
     else if (params == "EQPY_ABORT")
     {
-        printf("EQPy Aborted");
+        printf("EQPy aborted...");
         string why = EQPy_get(ME);
         // TODO handle the abort if necessary
         // e.g. write intermediate results ...
         printf("%s", why) =>
         v = propagate() =>
-        c = false;
+        c = false =>
+            assert(false, "EQPY aborted!");
     }
     else
     {
