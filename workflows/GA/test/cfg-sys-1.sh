@@ -1,5 +1,5 @@
 #
-# COMBO CFG SYS 1
+# GA CFG SYS 1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
