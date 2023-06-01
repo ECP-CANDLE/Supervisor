@@ -73,7 +73,7 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 PYTHONPATH+=:$EQPY
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
-export TURBINE_JOBNAME="GA_${EXPID}"
+export TURBINE_JOBNAME=$EXPID
 RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
 then

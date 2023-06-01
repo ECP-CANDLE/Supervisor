@@ -88,11 +88,12 @@ log_script
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 
-# Allow the user to set an objective function
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
 # CANDLE_MODEL_IMPL: "container" on Polaris, "py" on Summit/Frontier
 CANDLE_MODEL_IMPL="container"
-OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
+
+# Allow the user to set an objective function
+SWIFT_LIBS_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
@@ -140,8 +141,8 @@ cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
+        -I $SWIFT_LIBS_DIR \
+        -i $SWIFT_MODULE \
         -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_STDOUT \
         -e BENCHMARKS_ROOT \
@@ -149,7 +150,7 @@ swift-t -n $PROCS \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e CANDLE_DATA_DIR \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \

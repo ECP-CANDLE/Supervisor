@@ -5,16 +5,16 @@ set -eu
 
 usage()
 {
-  echo "Usage: test SITE RUN_DIR MODEL_NAME"
+  echo "Usage: test MODEL_NAME SITE RUN_DIR"
   echo "       RUN_DIR: use -a for automatic"
 }
 
 RUN_DIR=""
 if (( ${#} == 3 ))
 then
-  SITE=$1
-  RUN_DIR=$2
-  export MODEL_NAME=$3
+  export MODEL_NAME=$1
+  SITE=$2
+  RUN_DIR=$3
 else
   usage
   exit 1
@@ -35,7 +35,7 @@ export CFG_PRM=$THIS/cfg-prm-1.sh
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
-export OBJ_RETURN="val_loss"
+export MODEL_RETURN="val_loss"
 
 export CANDLE_MODEL_TYPE="BENCHMARKS"
 
