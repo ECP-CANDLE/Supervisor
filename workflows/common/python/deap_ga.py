@@ -14,7 +14,7 @@ from deap import algorithms, base, creator, tools
 
 # list of ga_utils parameter objects
 ga_params = None
-
+iteration = 1
 
 def obj_func(x):
     return 0
@@ -59,6 +59,9 @@ def queue_map(obj_func, pops):
     # [[a,b,c,d],[e,f,g,h],...]
     if not pops:
         return []
+    global iteration
+    print("deap_ga: ITERATION: %i" % iteration)
+    sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
     split_result = result.split(";")
