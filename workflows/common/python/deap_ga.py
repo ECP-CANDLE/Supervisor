@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 import json
 import math
 import random
@@ -7,6 +6,7 @@ import sys
 import threading
 import time
 
+import log_tools
 import eqpy
 import ga_utils
 import numpy as np
@@ -15,6 +15,8 @@ from deap import algorithms, base, creator, tools
 # list of ga_utils parameter objects
 ga_params = None
 iteration = 1
+logger = log_tools.get_logger(None, "DEAP")
+
 
 def obj_func(x):
     return 0
@@ -34,11 +36,11 @@ def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
     return super_delimiter.join(result)
 
 
-def create_json_string(L):
+def create_json_string(L, indent=None):
     json_dict = {}
     for i, p in enumerate(ga_params):
         json_dict[p.name] = L[i]
-    result = json.dumps(json_dict)
+    result = json.dumps(json_dict, indent=indent)
     return result
 
 
@@ -60,10 +62,16 @@ def queue_map(obj_func, pops):
     if not pops:
         return []
     global iteration
-    print("deap_ga: ITERATION: %i" % iteration)
+    iteration_start = time.time()
+    logger.info("ITERATION: %i START" % iteration)
     sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
     result = eqpy.IN_get()
+    duration = time.time() - iteration_start
+    logger.info("ITERATION: %i STOP. duration: %0.3f" %
+                (iteration, duration))
+    sys.stdout.flush()
+    iteration += 1
     split_result = result.split(";")
     # TODO determine if max'ing or min'ing and use -9999999 or 99999999
     return [(float(x),) if not math.isnan(float(x)) else (float(99999999),)
@@ -93,8 +101,9 @@ def parse_init_params(params_file):
 
 
 def update_init_pop(pop, params_file):
-    global ga_params
-    print("Reading initial population from {}".format(params_file))
+    global ga_params, logger
+    logger.info("Reading initial population from {}".format(params_file))
+    sys.stdout.flush()
     init_params = parse_init_params(params_file)
     if len(pop) > len(init_params):
         raise ValueError(
@@ -147,21 +156,23 @@ def run():
     :param num_pop: size of population
     :param seed: random seed
     :param strategy: one of 'simple', 'mu_plus_lambda'
-    :param ga parameters file name: ga parameters file name (e.g., "ga_params.json")
+    :param ga parameters file name: ga parameters file name
+           (e.g., "ga_params.json")
     :param param_file: name of file containing initial parameters
     """
+    global logger
     start_time = time.time()
-    time_string = datetime.fromtimestamp(start_time) \
-                          .strftime("%Y-%m-%d %H:%M:%S")
-    print("deap_ga: START: " + time_string)
+    logger.info("OPTIMIZATION START")
     sys.stdout.flush()
 
     eqpy.OUT_put("Params")
     params = eqpy.IN_get()
 
-    # parse params
+    # Evaluate and log the params given by the workflow level:
     (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file,
      param_file) = eval("{}".format(params))
+    log_params(logger, num_iter, num_pop, seed)
+
     random.seed(seed)
     global ga_params
     ga_params = ga_utils.create_parameters(ga_params_file)
@@ -231,9 +242,7 @@ def run():
 
     fitnesses = [str(p.fitness.values[0]) for p in pop]
 
-    time_string = datetime.fromtimestamp(end_time) \
-                          .strftime("%Y-%m-%d %H:%M:%S")
-    print("deap_ga: STOP:  " + time_string)
+    logger.info("OPTIMIZATION STOP")
     sys.stdout.flush()
 
     best_i = -1
@@ -243,15 +252,24 @@ def run():
         if f < best_fitness:
             best_i = i
             best_fitness = f
-    print("deap_ga: BEST: %s == %s" % (best_fitness, create_json_string(pop[i])))
+    logger.info("BEST: %s == ...\n%s" %
+                (best_fitness, create_json_string(pop[i], indent=2)))
     sys.stdout.flush()
 
     eqpy.OUT_put("DONE")
     # return the final population
-    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}".format(
+    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}\n".format(
         create_list_of_json_strings(pop),
         ";".join(fitnesses),
         start_time,
         log,
         end_time,
     ))
+
+
+def log_params(logger, num_iter, num_pop, seed):
+    logger.info("HPO PARAMS START")
+    logger.info("num_iter: %4i" % num_iter)
+    logger.info("num_pop:  %4i" % num_pop)
+    logger.info("seed:     %4i" % seed)
+    logger.info("HPO PARAMS STOP")

@@ -25,7 +25,7 @@ usage()
   echo "             for Singularity it is a script (e.g., 'ACTION.sh')"
   echo "The environment should have:"
   echo "                EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
-  echo "                SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "                SITE MODEL_RETURN BENCHMARK_TIMEOUT"
   echo "                CANDLE_DATA_DIR"
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }

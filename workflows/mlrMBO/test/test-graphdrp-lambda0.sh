@@ -43,14 +43,13 @@ export R_FILE=mlrMBO-mbo.R
 # val_loss (default) and val_corr are supported
 export MODEL_RETURN="val_loss"
 
-if [[ $SITE == "theta" ]]
-then
-  export WAIT=1
-fi
+# export CANDLE_MODEL_TYPE="SINGULARITY"
+# export CANDLE_IMAGE="/software/improve/images/GraphDRP.sif"
+# export INIT_PARAMS_FILE="/software/improve/graphdrp_default_model.txt"
 
-export CANDLE_MODEL_TYPE="SINGULARITY"
-export CANDLE_IMAGE="/software/improve/images/GraphDRP.sif"
-export INIT_PARAMS_FILE="/software/improve/graphdrp_default_model.txt"
+export CANDLE_MODEL_TYPE="BENCHMARKS"
+export CANDLE_IMAGE="NONE"
+export CANDLE_MODEL_IMPL="app"
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \

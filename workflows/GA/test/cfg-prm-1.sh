@@ -4,13 +4,17 @@
 
 SEED=${SEED:-1}
 # Total iterations
-NUM_ITERATIONS=${NUM_ITERATIONS:-7}
-# Size of GA population (i.e. the number of parameter sets to evaluate)
-POPULATION_SIZE=${POPULATION_SIZE:-4}
+NUM_ITERATIONS=${NUM_ITERATIONS:-5}
+# Size of GA population
+# (i.e. the number of parameter sets to evaluate per iteration)
+POPULATION_SIZE=${POPULATION_SIZE:-8}
 # the GA strategy: one of 'simple' or 'mu_plus_lambda'. See
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
+
+# Polaris:
+# Run HiDRA on 10 nodes for 3 hours for 20 epochs
 
 INIT_PARAMS_FILE=${INIT_PARAMS_FILE:-}
 

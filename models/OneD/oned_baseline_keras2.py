@@ -69,6 +69,8 @@ def run(params):
     x = params['x']
     y = func(x)
 
+    print("IMPROVE_RESULT: " + str(y))
+
     print("returning training metrics: ", y)
 
     h = tf.keras.callbacks.History()

@@ -26,7 +26,7 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
-int max_budget = toint(argv("mb", "110"));
+int max_budget = toint(argv("mb", "1000"));
 int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
@@ -34,7 +34,6 @@ string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
-
 string model_name     = getenv("MODEL_NAME");
 string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
 string candle_image     = getenv("CANDLE_IMAGE");
@@ -43,8 +42,6 @@ string init_params_file     = getenv("INIT_PARAMS_FILE");
 
 printf("CANDLE mlrMBO Workflow");
 printf("TURBINE_OUTPUT: " + turbine_output);
-
-
 
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
@@ -81,11 +78,11 @@ string FRAMEWORK = "keras";
     }
     else if (params == "EQR_ABORT")
     {
-      printf("EQR aborted: see output for R error") =>
-      string why = EQR_get(ME);
-      printf("%s", why) =>
+      printf("EQR_ABORT: see output for R error") =>
+          string why = EQR_get(ME);
+      printf("EQR_ABORT: R exception: %s", why) =>
           // v = propagate(why) =>
-      c = false;
+          c = false;
     }
     else
     {
@@ -104,7 +101,8 @@ string FRAMEWORK = "keras";
 }
 
 // These must agree with the arguments to the objective function in mlrMBO.R,
-// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
+// except param.set.file is removed and processed by the mlrMBO.R
+// algorithm wrapper.
 string algo_params_template =
 """
 param.set.file='%s',
