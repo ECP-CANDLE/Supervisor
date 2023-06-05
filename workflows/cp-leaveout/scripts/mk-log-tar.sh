@@ -16,13 +16,29 @@ cd $DIR
 
 echo "find in $PWD ..."
 
-FILES=( $( find . -name python.log -or -name predicted.tsv ) )
+START=$SECONDS
+FILE_LIST=log-tar.list
+find . -name python.log    -or \
+       -name predicted.tsv -or \
+       -name "summ*.txt" > $FILE_LIST
+STOP=$SECONDS
+COUNT=$( wc -l < $FILE_LIST )
 
-echo "found ${#FILES[@]} files."
+DURATION=$(( STOP - START ))
+echo "found $COUNT files in $DURATION seconds."
 echo "running tar ..."
 
+START=$SECONDS
 TGZ=logs.tgz  # PWD==DIR
-time nice -n 19 tar cfz $TGZ ${FILES[@]}
+nice -n 19 tar czf $TGZ -T $FILE_LIST
+STOP=$SECONDS
+DURATION=$(( STOP - START ))
+SIZE=$( stat --format "%s" $TGZ )
+# MB/second:
+RATE_MBPS=$(( SIZE / DURATION / 1024 / 1024 ))
+# Files/second:
+RATE_FPS=$(( COUNT / DURATION ))
+echo "tar time: $DURATION seconds at $RATE_MBPS MB/s , $RATE_FPS files/s"
 
 echo "created:"
 ls -lh $TGZ
