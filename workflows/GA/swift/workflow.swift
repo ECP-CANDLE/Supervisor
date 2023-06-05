@@ -105,22 +105,17 @@ string FRAMEWORK = "keras";
     }
 }
 
-main() {
+main {
 
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
-  int random_seed = toint(argv("seed", "0"));
-  int num_iter = toint(argv("ni","100")); // -ni=100
-  int num_pop = toint(argv("np","100")); // -np=100;
-
-  //printf("NI: %i # num_iter", num_iter);
-  //printf("NV: %i # num_variations", num_variations);
-  //printf("NP: %i # num_pop", num_pop);
-  //printf("MUTPB: %f # mut_prob", mut_prob);
+  int random_seed = string2int(argv("seed", "0"));
+  int num_iter = string2int(argv("ni","100"));
+  int num_pop = string2int(argv("np","100"));
 
   int ME_ranks[];
   foreach r_rank, i in r_ranks{
-    ME_ranks[i] = toint(r_rank);
+    ME_ranks[i] = string2int(r_rank);
   }
 
   foreach ME_rank, i in ME_ranks {
