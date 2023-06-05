@@ -23,6 +23,7 @@ EXPID=$( basename $DIR )
 JOBID=$( cat $DIR/jobid.txt )
 show EXPID JOBID
 
+# Assume failure:
 SUCCESS=0
 
 if grep -q "User defined signal 2" $DIR/output.txt
@@ -46,8 +47,12 @@ fi
 
 if (( ! SUCCESS ))
 then
-  # Find MPI Aborts on Frontier
+  set -x
   grep "START:" $DIR/output.txt
+  # Find task that failed, e.g.:
+  # srun: error: frontier04081: task 1793: Exited with exit code 255
+  grep "error: .* exit code" $DIR/output.txt
+  # Find MPI Aborts on Frontier
   grep "MPICH .* Abort" $DIR/output.txt | \
     cut --delimiter ' ' --fields=1-12
 fi
