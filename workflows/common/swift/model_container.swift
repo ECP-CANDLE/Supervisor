@@ -47,7 +47,7 @@ app (void o) run_model_train(string model_sh, string params,
 }
 
 /**
-   Extracts the model output if it exists,
+   Extracts the model result if it exists,
    else, provides a NaN so the workflow can keep running
 */
 (string model_result) get_results(string result_file) {
