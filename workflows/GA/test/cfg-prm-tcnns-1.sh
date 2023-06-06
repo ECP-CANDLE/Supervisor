@@ -1,5 +1,4 @@
-# CFG PRM PACCMAN 1
-# GA settings
+# CFG PRM tCNNS 1
 
 SEED=${SEED:-1}
 # Total iterations
@@ -12,9 +11,6 @@ POPULATION_SIZE=${POPULATION_SIZE:-${POP_DEFAULT}}
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
-
-# Polaris:
-# Run HiDRA on 10 nodes for 3 hours for 20 epochs
 
 INIT_PARAMS_FILE=${INIT_PARAMS_FILE:-}
 
