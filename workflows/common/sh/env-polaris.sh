@@ -6,7 +6,7 @@ CANDLE_MODEL_IMPL=app
 
 CSC249=/lus/grand/projects/CSC249ADOA01
 ROOT=$CSC249/public/sfw/polaris
-SWIFT=$ROOT/swift-t/2023-05-23
+SWIFT=$ROOT/swift-t/2023-06-05
 
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
