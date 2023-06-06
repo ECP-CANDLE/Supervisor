@@ -183,7 +183,7 @@ def run(hyper_parameter_map, model_return):
             # Run the model!
             history = pkg.run(params)
         except Exception as e:
-            logger.warn("RUN EXCEPTION: " + str(e))
+            logger.info("RUN EXCEPTION: " + str(e))
             print("RUN EXCEPTION: " + str(e))
             info = sys.exc_info()
             s = traceback.format_tb(info[2])
@@ -336,15 +336,18 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
 
 
 def get_results(history, model_return, epochs_expected):
-    """Return the history entry that the user requested.
+    """
+    Return the history entry that the user requested via MODEL_RETURN,
+           which may be math.nan in case of error.
 
-    Also checks for early stopping and if so marks the directory.
-    history: The Keras history modelect
+    Also checks for early stopping and if so marks the directory
+         with a 0-byte file named "stop.marker"
+    history: The TensorFlow history
     """
 
     logger.debug('get_results(): "%s"' % model_return)
 
-    known_params = ["loss", "val_loss", "val_corr", "val_dice_coef"]
+    known_params = ["loss", "val_loss"]
 
     if model_return not in known_params:
         raise ValueError("Unsupported objective function return " + 'key: "' +
@@ -364,20 +367,11 @@ def get_results(history, model_return, epochs_expected):
         # Default: the last value in the history
         result = float(values[-1])
     else:
-        logger.warning("get_results(): objective function return key " +
+        logger.warning("get_results(): model return key " +
                        "not found: " + 'key: "' + model_return + '" - ' +
                        "history: " + str(history.history.keys()))
         logger.warning("get_results(): returning NaN")
         result = math.nan
-
-    # Fix NaNs:
-    if math.isnan(result):
-        if model_return == "val_corr" or model_return == "val_dice_coef":
-            # Return the negative result
-            result = -result
-        else:
-            # Just return a large number
-            result = 999999999
 
     print("result: " + model_return + ": " + str(result))
     history_result = history.history.copy()

@@ -47,7 +47,7 @@ app (void o) run_model_train(string model_sh, string params,
 }
 
 /**
-   Extracts the Benchmark output if it exists,
+   Extracts the model output if it exists,
    else, provides a NaN so the workflow can keep running
 */
 (string model_result) get_results(string result_file) {
@@ -56,7 +56,6 @@ app (void o) run_model_train(string model_sh, string params,
     model_result = trim(read(line));
   } else {
     printf("File not found: %s", result_file);
-    // return with a large value
-    model_result = "1e7";
+    model_result = "NaN";
   }
 }

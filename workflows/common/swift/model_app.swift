@@ -59,7 +59,6 @@ app (void o) run_model (string model_sh, string params,
     model_result = trim(read(line));
   } else {
     printf("File not found: %s", result_file);
-    // return with a large value
-    model_result = "1e7";
+    model_result = "NaN";
   }
 }

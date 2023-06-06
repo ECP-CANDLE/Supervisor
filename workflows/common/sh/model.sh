@@ -152,52 +152,50 @@ else # "BENCHMARKS"
   # model_runner/runner_utils writes result.txt
 fi
 
+echo
 log "MODEL_CMD: ${MODEL_CMD[@]}"
+echo
 
 # Run Python!
 $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 PID=$!
 
-if [[ ${MODEL_TYPE:-} == "SINGULARITY" ]]
+# Use if block to suppress errors:
+if wait $PID
 then
-  wait $PID
+  CODE=0
+else
+  CODE=$?
+fi
+
+log "$MODEL_TYPE: EXIT CODE: $CODE"
+if (( CODE == 0 ))
+then
   ls -ltrh
   sleep 1  # Wait for initial output
-  # Get last results of the format "CANDLE_RESULT xxx" in model.log
+  # Get last results of the format "IMPROVE RESULT xxx" in model.log
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
   RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
              $INSTANCE_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
-  echo "CANDLE RESULT: '$RESULT'"
+  echo "IMPROVE RESULT: '$RESULT'"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
 else
-  wait $PID
-  CODE=$?
-  if (( CODE ))
+  echo # spacer
+  if (( $CODE == 124 ))
   then
-    echo # spacer
-    if (( $CODE == 124 ))
-    then
-      log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
-      # This will trigger a NaN (the result file does not exist)
-      exit 0
-    else
-      log "MODEL ERROR! (CODE=$CODE)"
-      if (( ${IGNORE_ERRORS:-0} ))
-      then
-        log "IGNORING ERROR."
-        # This will trigger a NaN (the result file does not exist)
-        exit 0
-      fi
-      log "ABORTING WORKFLOW (exit 1)"
-      exit 1 # Unknown error in Python: abort the workflow
-    fi
+    log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
+  else
+    log "MODEL ERROR! (CODE=$CODE)"
   fi
-
-  # Get results from model.log: last occurrence of "loss: xxx"
-  RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
-  log "RESULT: $RESULT"
-  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+  if (( ${IGNORE_ERRORS:-0} == 0 ))
+  then
+    # Unknown error in Python: abort the workflow
+    log "ABORTING WORKFLOW (exit 1)"
+    exit 1
+  fi
+  # This will trigger a NaN (the result file does not exist)
+  log "IGNORING ERROR."
 fi
 
 log "END: SUCCESS"

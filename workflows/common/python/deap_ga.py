@@ -1,3 +1,9 @@
+"""
+DEAP GA PY
+
+EMEWS interface module for DEAP
+"""
+
 import csv
 import json
 import math
@@ -12,22 +18,31 @@ import ga_utils
 import numpy as np
 from deap import algorithms, base, creator, tools
 
-# list of ga_utils parameter objects
+# List of ga_utils parameter objects:
 ga_params = None
-iteration = 1
+
+# Last mean value (used if there are no new values):
+mean_last = None
+
+generation = 1
 logger = log_tools.get_logger(None, "DEAP")
 
 
 def obj_func(x):
+    """
+    Just a stub for the DEAP framework
+    """
     return 0
 
 
-# Produces something like:
-# {"batch_size":512,"epochs":51,"activation":"softsign",
-# "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
-# "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
 def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
-    # create string of ; separated jsonified maps
+    """
+    create string of semicolon-separated jsonified maps
+     Produces something like:
+       {"batch_size":512,"epochs":51,"activation":"softsign",
+        "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
+        "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
+    """
     result = []
     global ga_params
     for L in list_of_lists:
@@ -45,8 +60,8 @@ def create_json_string(L, indent=None):
 
 
 def create_fitnesses(params_string):
-    """return equivalent length tuple list.
-
+    """
+    return equivalent length tuple list.
     :type params_string: str
     """
     params = params_string.split(";")
@@ -55,28 +70,68 @@ def create_fitnesses(params_string):
     return res
 
 
-def queue_map(obj_func, pops):
-    # Note that the obj_func is not used
-    # sending data that looks like:
-    # [[a,b,c,d],[e,f,g,h],...]
+def make_floats(results):
+    """
+    results: String of data from workflow
+    return:  List of singleton-tuples, each a float
+    This function converts the workflow strings to the DEAP format,
+         and replaces any string NaNs in the results with
+         the mean of the current generation or
+         the mean of the prior   generation.
+    """
+    global mean_last
+    tokens = results.split(";")
+    NaNs   = []
+    values = []
+    output = {}
+    floats = []
+    for i, token in enumerate(tokens):
+        if token.lower() == "nan":
+            output[i] = "nan"
+            NaNs.append(i)
+        else:
+            f = float(token)
+            output[i] = f
+            values.append(f)
+    logger.info("RESULTS: values: %i NaNs: %i" %
+                (len(values), len(NaNs)))
+    if len(values) > 0:
+        mean = sum(values) / len(values)
+        mean_last = mean
+    else:
+        assert mean_last is not None, \
+            "all generation=1 results are NaN!"
+        mean = mean_last
+
+    for i in NaNs:
+        output[i] = mean
+    for i in range(0, len(tokens)):
+        floats.append((output[i],))
+    return floats
+
+
+def queue_map(_f, pops):
+    """
+    Note that _f is not used, but is part of the DEAP framework
+    Formats model parameters that look like:
+      [[a,b,c,d],[e,f,g,h],...]
+    """
     if not pops:
         return []
-    global iteration
-    iteration_start = time.time()
-    logger.info("ITERATION: %i START" % iteration)
+    global generation
+    generation_start = time.time()
+    logger.info("GENERATION: %i START: pop: %i" %
+                (generation, len(pops)))
     sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
-    result = eqpy.IN_get()
-    duration = time.time() - iteration_start
-    logger.info("ITERATION: %i STOP. duration: %0.3f" %
-                (iteration, duration))
+    results = eqpy.IN_get()
+    duration = time.time() - generation_start
+    logger.info("GENERATION: %i STOP.  duration: %0.3f" %
+                (generation, duration))
     sys.stdout.flush()
-    iteration += 1
-    split_result = result.split(";")
-    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
-    return [(float(x),) if not math.isnan(float(x)) else (float(99999999),)
-            for x in split_result]
-    # return [(float(x),) for x in split_result]
+    generation += 1
+    floats = make_floats(results)
+    return floats
 
 
 def make_random_params():

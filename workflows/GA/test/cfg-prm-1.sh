@@ -13,8 +13,9 @@ POPULATION_SIZE=${POPULATION_SIZE:-8}
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
 
-# Polaris:
-# Run HiDRA on 10 nodes for 3 hours for 20 epochs
+# Set IGNORE_ERRORS=1 to ignore model errors and
+#     allow NaNs in model results:
+# export IGNORE_ERRORS=1
 
 INIT_PARAMS_FILE=${INIT_PARAMS_FILE:-}
 
