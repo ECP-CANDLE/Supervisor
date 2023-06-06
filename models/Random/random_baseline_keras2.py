@@ -42,16 +42,29 @@ def initialize_parameters():
     return gParameters
 
 
-def model_implementation():
+def model_implementation(params):
     """ The implementation of the model w/o CANDLE conventions """
-    import random
-    result = random.random() * 10
+
+    from random import random
+    if "crash_probability" in params:
+        crash_probability = float(params["crash_probability"])
+        if random() < crash_probability:
+            raise FakeCrashException()
+
+    result = random() * 10
     return result
+
+
+class FakeCrashException(Exception):
+    """
+    A dummy uncaught Exception to test error handling in Supervisor
+    """
+    pass
 
 
 def run(params):
 
-    result = model_implementation()
+    result = model_implementation(params)
 
     print("IMPROVE_RESULT: " + str(result))
 
