@@ -8,6 +8,12 @@ CSC249=/lus/grand/projects/CSC249ADOA01
 ROOT=$CSC249/public/sfw/polaris
 SWIFT=$ROOT/swift-t/2023-06-05
 
+if ! [[ -d $SWIFT ]]
+then
+  echo "Not found: SWIFT=$SWIFT"
+  exit 1
+fi
+
 export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
