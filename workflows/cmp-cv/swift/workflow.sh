@@ -72,8 +72,8 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 cp -v $UPF $TURBINE_OUTPUT
 
-# TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
-TURBINE_STDOUT=
+TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+# TURBINE_STDOUT=
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then

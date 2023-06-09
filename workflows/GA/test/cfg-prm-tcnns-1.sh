@@ -11,6 +11,7 @@ POPULATION_SIZE=${POPULATION_SIZE:-${POP_DEFAULT}}
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
+export IGNORE_ERRORS=1
 
 INIT_PARAMS_FILE=${INIT_PARAMS_FILE:-}
 
