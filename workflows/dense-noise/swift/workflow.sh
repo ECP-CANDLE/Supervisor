@@ -128,7 +128,7 @@ else
      [[ $SITE == "biowulf" ]] || \
      [[ $SITE == "polaris" ]]
   then
-    : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+    export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
   else
     : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
   fi
