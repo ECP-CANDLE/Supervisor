@@ -52,10 +52,9 @@ foreach levelx, i in x_noise_levels
                 "  \"epochs\"        :  1 } ") %
                 (x_noise_level, y_noise_level);
       printf("running: %s", params);
-      result = obj(params, run_id);
+      result = obj(params, exp_id, run_id);
       printf("result %s : x_noise %0.3f y_noise %0.3f : %s",
              run_id, x_noise_level, y_noise_level, result);
     }
   }
 }
-

@@ -4,11 +4,17 @@ This is a stand-alone Swift/T test for Summit.
 Use
 
 ----
-./workflow.sh hello.swift
+$ ./workflow.sh hello.swift
 ----
 
 or
 
 ----
-./workflow.sh pyr.swift
+$ ./workflow.sh pyr.swift
+----
+
+For an interactive test, get on a batch node and run:
+
+----
+$ ./workflow-interactive.sh hello.swift
 ----

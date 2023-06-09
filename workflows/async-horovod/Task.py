@@ -1,9 +1,10 @@
-
 # TASK
 # This should be a user plug-in
 
 from __future__ import print_function
+
 import os
+
 
 class Task:
 
@@ -18,7 +19,8 @@ class Task:
         self.params = params
 
     def go(self):
-        import json, subprocess
+        import json
+        import subprocess
 
         J = json.loads(self.params)
         learning_rate = J["learning_rate"]
@@ -26,9 +28,14 @@ class Task:
         self.open_output()
 
         try:
-            args = [ self.script, self.output, "%04i"%self.number,
-                     str(self.parallelism),
-                     "adam", str(learning_rate) ]
+            args = [
+                self.script,
+                self.output,
+                "%04i" % self.number,
+                str(self.parallelism),
+                "adam",
+                str(learning_rate),
+            ]
             self.logger.debug("task: " + " ".join(args))
             self.process = subprocess.Popen(args=args,
                                             stdin=None,
@@ -37,6 +44,7 @@ class Task:
             print("started: ", self.process.pid)
         except Exception as e:
             import traceback
+
             traceback.print_exc()
             print("")
             print("error while attempting to run: " + " ".join(args))
@@ -51,8 +59,9 @@ class Task:
         except Exception as e:
             print("")
             from utils import fail
-            fail("Could not open task output file: " +
-                 output_file + "\n" + str(e))
+
+            fail("Could not open task output file: " + output_file + "\n" +
+                 str(e))
 
     def __del__(self):
         if self.fd is not None:

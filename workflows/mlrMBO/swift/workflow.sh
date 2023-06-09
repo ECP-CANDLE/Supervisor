@@ -8,70 +8,65 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-if [[ ! -d $EMEWS_PROJECT_ROOT/../../../Benchmarks ]]
-then
-  echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
-  exit 1
-fi
-BENCHMARKS_DEFAULT=$( cd $EMEWS_PROJECT_ROOT/../../../Benchmarks ; /bin/pwd )
-export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
-BENCHMARKS_DIR_BASE=$BENCHMARKS_ROOT/Pilot1/P1B1
-# $BENCHMARKS_ROOT/Pilot1/Attn1:$BENCHMARKS_ROOT/Pilot1/TC1:
-# :$BENCHMARKS_ROOT/Pilot1/P1B1:$BENCHMARKS_ROOT/Pilot1/Combo:$BENCHMARKS_ROOT/Pilot2/P2B1:$BENCHMARKS_ROOT/Pilot3/P3B1:$BENCHMARKS_ROOT/Pilot3/P3B3:$BENCHMARKS_ROOT/Pilot3/P3B4
 export BENCHMARK_TIMEOUT
-export BENCHMARK_DIR=${BENCHMARK_DIR:-$BENCHMARKS_DIR_BASE}
 
 SCRIPT_NAME=$(basename $0)
 
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
-#source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
-
-# Uncomment to turn on Swift/T logging. Can also set TURBINE_LOG,
-# TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
-# Do not commit with logging enabled, users have run out of disk space
-# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
-
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME " \
+       "[CANDLE_MODEL_TYPE] [CANDLE_IMAGE]"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 7 )) && (( ${#} != 5 ))
 then
   usage
   exit 1
 fi
 
-if ! {
-  get_site    $1 # Sets SITE
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
- }
+if (( ${#} == 7 ))
 then
+  export CANDLE_MODEL_TYPE=$6
+  export CANDLE_IMAGE=$7
+elif (( ${#} == 5 ))
+then
+  CANDLE_MODEL_TYPE="BENCHMARKS"
+  CANDLE_IMAGE=NONE
+else
   usage
   exit 1
 fi
 
-echo "Running "$MODEL_NAME "workflow"
+TURBINE_OUTPUT=""
+if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+then
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
+         $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
+fi
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common
+get_site    $1 # Sets SITE
+get_expid   $2 # Sets EXPID
+get_cfg_sys $3
+get_cfg_prm $4
+MODEL_NAME=$5
 
 source_site env   $SITE
 source_site sched $SITE
 
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python       # needed for model_runner and logs
-
 if [[ ${EQR:-} == "" ]]
 then
-  abort "The site '$SITE' did not set the location of EQ/R: this will not work!"
+  abort "The site '$SITE' did not set the location of EQ/R: " \
+        "this will not work!"
 fi
 
-export TURBINE_JOBNAME="JOB:${EXPID}"
+# Set up PYTHONPATH for model
+source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
+
+export TURBINE_JOBNAME="MBO_${EXPID}"
 
 RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
@@ -118,8 +113,13 @@ cp $WORKFLOWS_ROOT/common/R/$R_FILE $PARAM_SET_FILE $CFG_SYS $CFG_PRM $TURBINE_O
 mkdir -pv $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+  CANDLE_MODEL_IMPL="container"
+fi
+CANDLE_MODEL_IMPL=${CANDLE_MODEL_IMPL:-container}
+SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 # Andrew: Allows for custom model.sh file, if that's desired
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
@@ -131,8 +131,10 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# Use for Summit (LSF needs two %)
-if [[ ${SITE:-} == "summit" ]]
+# Handle %-escapes in TURBINE_STDOUT
+if [ $SITE == "summit"  ] || \
+   [ $SITE == "biowulf" ] || \
+   [ $SITE == "polaris" ]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
@@ -141,8 +143,6 @@ fi
 
 mkdir -pv $TURBINE_OUTPUT/out
 
-#swift-t -n $PROCS \
-#        -o $TURBINE_OUTPUT/workflow.tic \
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -158,19 +158,33 @@ else
   STDOUT=""
 fi
 
+if [[ ${CANDLE_DATA_DIR:-} == "" ]]
+then
+  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
+  exit 1
+fi
+
+# We use 'swift-t -o' to allow swift-t to prevent scheduler errors
+# on Biowulf.  Reported by ALW 2021-01-21
+
+(
+  PY_ENVS=$( python_envs )
+set -x
 swift-t -O 0 -n $PROCS \
+        -o $TURBINE_OUTPUT/workflow.tic \
         ${MACHINE:-} \
         -p -I $EQR -r $EQR \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+        -I $SWIFT_LIBS_DIR \
+        -i $SWIFT_MODULE \
+        -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
         -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+        -e APP_PYTHONPATH \
         -e BENCHMARKS_ROOT \
         -e EMEWS_PROJECT_ROOT \
-        $( python_envs ) \
+        $PY_ENVS \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
         -e MODEL_SH \
@@ -180,10 +194,13 @@ swift-t -O 0 -n $PROCS \
         -e SH_TIMEOUT \
         -e TURBINE_STDOUT \
         -e IGNORE_ERRORS \
+        -e CANDLE_DATA_DIR \
+        -e CANDLE_MODEL_TYPE \
+        -e CANDLE_IMAGE \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} |& \
-  tee $STDOUT
-
+        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} )
+# 2>&1 | \
+#  tee $STDOUT
 
 if (( ${PIPESTATUS[0]} ))
 then
@@ -191,7 +208,4 @@ then
   exit 1
 fi
 
-# echo "EXIT CODE: 0" | tee -a $STDOUT
-
-# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt
+echo "EXIT CODE: 0" | tee -a $STDOUT

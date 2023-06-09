@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 # PRINT STATS SH
 
@@ -10,13 +11,27 @@ fi
 
 DB=$1
 
-COMPLETE=$( 
+if ! which sqlite3 > /dev/null
+then
+  echo "print-stats.sh: Add sqlite3 to PATH!"
+  exit 1
+fi
+
+echo DB: $DB
+
+COMPLETE=$(
 sqlite3 $DB <<EOF
 SELECT COUNT(status) FROM runhist WHERE (status="COMPLETE") ;
 EOF
 )
 
-TOTAL=$( 
+SKIPPED=$(
+sqlite3 $DB <<EOF
+SELECT COUNT(status) FROM runhist WHERE (status="SKIP") ;
+EOF
+)
+
+TOTAL=$(
 sqlite3 $DB <<EOF
 SELECT COUNT(status) FROM runhist ;
 EOF
@@ -24,4 +39,5 @@ EOF
 
 REMAIN=$(( $TOTAL - $COMPLETE ))
 
-echo "COMPLETE / TOTAL = $COMPLETE / $TOTAL : $REMAIN remaining."
+echo "COMPLETE / TOTAL = $COMPLETE / $TOTAL"
+echo "remaining: $REMAIN skipped: $SKIPPED"

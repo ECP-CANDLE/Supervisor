@@ -3,7 +3,8 @@ set -eu
 
 # EXTRACT NODE INFO SH
 # Extract all data from all logs in given experiment directory
-# Provide an experiment directory
+# Provide an experiment directory DIR
+# Creates $DIR/node-info.pkl
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
@@ -19,26 +20,26 @@ then
   exit 1
 fi
 
-
-# # The stdout from the workflow (read by this script)
-# OUTPUT=$DIR/output.txt
-# # The output of this script, a plottable file
-# SUMMARY=$DIR/summary.txt
-
 # Put all matching file names in this file, one per line
 # (this could contain thousands of entries, too long for command line):
 LOG_LIST=$DIR/log-list.txt
 
+shopt -s nullglob  # Ignore empty globs
 RESTARTS=( $DIR/restarts/* )
 
-shopt -s nullglob # Ignore empty globs
+for RESTART in ${RESTARTS[@]}
+do
+  $SUPERVISOR/scripts/shrink-logs.sh $RESTART/out
+done
+$SUPERVISOR/scripts/shrink-logs.sh $DIR
+
 {
   for RESTART in ${RESTARTS[@]}
   do
-    echo $RESTART/out/out-*.txt
+    find $RESTART/out -name summary-
   done
-  echo $DIR/out/out-*.txt
-} | fmt -w 1 > $LOG_LIST
+  find $DIR/out -name summary-
+} > $LOG_LIST # | fmt -w 1
 
 export PYTHONPATH+=:$SUPERVISOR/workflows/common/python
 

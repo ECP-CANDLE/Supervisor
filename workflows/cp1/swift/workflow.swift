@@ -80,7 +80,7 @@ cell_feature_subset_path = '%s'
 if len(cell_feature_subset_path) > 0:
   params['cell_feature_subset_path'] = cell_feature_subset_path
   # GDSC_NCI60_1600_800_features.txt
-  # GDSC_NCI60_2000_1000.h5 
+  # GDSC_NCI60_2000_1000.h5
   import os
   ex_data_f = os.path.basename(params['cell_feature_subset_path'])
   idx = ex_data_f.rfind('_features')
@@ -132,7 +132,7 @@ record_id = DB.insert_xcorr_record(studies=studies,
 """;
 
 
-(string hpo_id) insert_hpo(string xcorr_record_id) 
+(string hpo_id) insert_hpo(string xcorr_record_id)
 {
   hpo_template =
 """
@@ -147,7 +147,7 @@ hpo_id = DB.insert_hpo_record(%s)
   hpo_id = python_persist(code, "str(hpo_id)");
 }
 
-(string run_id) insert_hpo_run(string hpo_id, string param_string, string run_directory) 
+(string run_id) insert_hpo_run(string hpo_id, string param_string, string run_directory)
 {
   run_template =
 """
@@ -162,7 +162,7 @@ run_id = DB.insert_hpo_run(%s, '%s', '%s')
   run_id = python_persist(code, "str(run_id)");
 }
 
-(void o) update_hpo_run(string run_id, string result) 
+(void o) update_hpo_run(string run_id, string result)
 {
   update_template =
 """

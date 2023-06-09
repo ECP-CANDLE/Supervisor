@@ -3,6 +3,7 @@
  * WORKFLOW.SWIFT
  */
 
+import assert;
 import io;
 import sys;
 import files;
@@ -10,9 +11,11 @@ import location;
 import string;
 import unix;
 import EQPy;
-import R;
 import assert;
 import python;
+
+import candle_utils;
+report_env();
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
@@ -21,12 +24,16 @@ string r_ranks[] = split(resident_work_ranks,",");
 
 string strategy = argv("strategy");
 string ga_params_file = argv("ga_params");
-string init_params_file = argv("init_params", "");
+// string init_params_file = argv("init_params", "");
 float mut_prob = string2float(argv("mutation_prob", "0.2"));
 
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string model_name     = getenv("MODEL_NAME");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string candle_image     = getenv("CANDLE_IMAGE");
+string init_params_file     = getenv("INIT_PARAMS_FILE");
+
 printf("TURBINE_OUTPUT: " + turbine_output);
 
 string restart_number = argv("restart_number", "1");
@@ -60,13 +67,14 @@ string FRAMEWORK = "keras";
     }
     else if (params == "EQPY_ABORT")
     {
-        printf("EQPy Aborted");
+        printf("EQPy aborted...");
         string why = EQPy_get(ME);
         // TODO handle the abort if necessary
         // e.g. write intermediate results ...
         printf("%s", why) =>
         v = propagate() =>
-        c = false;
+        c = false =>
+            assert(false, "EQPY aborted!");
     }
     else
     {
@@ -74,7 +82,7 @@ string FRAMEWORK = "keras";
         string results[];
         foreach param, j in param_array
         {
-            results[j] = obj(param, "%00i_%000i_%0000i" % (restart_number,i,j));
+            results[j] = candle_model_train(param, exp_id, "%00i_%000i_%0000i" % (restart_number,i,j), model_name);
         }
         string res = join(results, ";");
         // printf(res);
@@ -88,7 +96,7 @@ string FRAMEWORK = "keras";
   // (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file)
   algo_params = "%d,%d,%d,'%s',%f, '%s', '%s'" %
     (iters, pop, seed, strategy, mut_prob, ga_params_file, init_params_file);
-    EQPy_init_package(ME,"deap_ga") =>
+    EQPy_init_package(ME, "deap_ga") =>
     EQPy_get(ME) =>
     EQPy_put(ME, algo_params) =>
       loop(ME, ME_rank) => {
@@ -97,22 +105,17 @@ string FRAMEWORK = "keras";
     }
 }
 
-main() {
+main {
 
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
-  int random_seed = toint(argv("seed", "0"));
-  int num_iter = toint(argv("ni","100")); // -ni=100
-  int num_pop = toint(argv("np","100")); // -np=100;
-
-  //printf("NI: %i # num_iter", num_iter);
-  //printf("NV: %i # num_variations", num_variations);
-  //printf("NP: %i # num_pop", num_pop);
-  //printf("MUTPB: %f # mut_prob", mut_prob);
+  int random_seed = string2int(argv("seed", "0"));
+  int num_iter = string2int(argv("ni","100"));
+  int num_pop = string2int(argv("np","100"));
 
   int ME_ranks[];
   foreach r_rank, i in r_ranks{
-    ME_ranks[i] = toint(r_rank);
+    ME_ranks[i] = string2int(r_rank);
   }
 
   foreach ME_rank, i in ME_ranks {

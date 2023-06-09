@@ -71,7 +71,7 @@
                             restart.file) {
 
     print("Using randomForest")
-    surr.rf = makeLearner("regr.randomForest", predict.type = "se", 
+    surr.rf = makeLearner("regr.randomForest", predict.type = "se",
                           fix.factors.prediction = TRUE,
                           mtry = 6,
                           se.method = "bootstrap", se.boot = 50, se.ntree = 100)
@@ -84,7 +84,7 @@
 
     chkpntResults<-NULL
     # TODO: Make this an argument
-    restartFile<-restart.file 
+    restartFile<-restart.file
     if (file.exists(restart.file)) {
       print(paste("Loading restart:", restart.file))
 
@@ -135,30 +135,30 @@
   #iterative phase starts
   while (itr < max_itr){
 
-  
+
     print(sprintf("nevals = %03d", nrow(all_res)))
     min.index<-which(itr_res$y==min(itr_res$y))
-    
+
     par.set.t = par.set0
     pars = par.set.t$pars
     lens = getParamLengths(par.set.t)
     k = sum(lens)
     pids = getParamIds(par.set.t, repeated = TRUE, with.nr = TRUE)
-    
+
     snames = c("y", pids)
     reqDF = subset(itr_res, select = snames, drop =TRUE)
     bestDF <- reqDF[min.index,]
     print("reqDF")
     print(nrow(reqDF))
     print(summary(reqDF))
-    
+
     train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=100000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
     var.imp[which(var.imp[,1] < 0),1]<-0
     index <- sort(abs(var.imp[,1]),
                   decreasing = TRUE,
                   index.return = TRUE)$ix
-    
+
     inputs <- rownames(var.imp)[index]
     scores <- abs(var.imp[index,1])
     norm.scores <- 100 * scores / sum(scores)
@@ -168,7 +168,7 @@
     rnames <- inputs[remove.index]
     print('removing:')
     print(rnames)
-    
+
     par.set1<-par.set0
     pnames<-names(par.set$pars)
     print(par.set1)
@@ -201,7 +201,7 @@
     temp<-rbind(design,reqDF[,-1])
     design <- head(temp, n = propose.points)
     yvals <- predict(train.model,design)
-    
+
     USE_MODEL <- FALSE #TRUE
     if(USE_MODEL){
       design <- cbind(y=yvals, design)
@@ -213,7 +213,7 @@
     res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = TRUE)
     itr_res<-as.data.frame(res$opt.path)
     itr_res<-tail(itr_res, n = propose.points)
-   
+
     par.set0<-par.set1
     itr <- itr + 1
     all_res <- rbind(all_res, itr_res)

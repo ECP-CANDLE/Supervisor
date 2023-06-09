@@ -8,4 +8,3 @@ XCORR_DATA_DIR=$EMEWS_PROJECT_ROOT/xcorr_data
 # Location of the input file that contains the parameters for each run
 # 1 per row
 UPF_FILE=$EMEWS_PROJECT_ROOT/data/upf.txt
-

@@ -1,27 +1,27 @@
-import pandas as pd
-import numpy as np
-
-from keras.layers import Input, Dense, Dropout
-from keras.models import Model
-
-import time
 import json
+import time
 
 import matplotlib as mpl
+import numpy as np
+import pandas as pd
+from keras.layers import Dense, Dropout, Input
+from keras.models import Model
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 EPOCH = 10
 BATCH = 50
 
-P     = 60025    # 245 x 245
-N1    = 2000
-NE    = 600      # encoded dim
+P = 60025  # 245 x 245
+N1 = 2000
+NE = 600  # encoded dim
 F_MAX = 33.3
-DR    = 0.2
+DR = 0.2
 
 
 class AutoEncoder():
+
     def __init__(self, trainFileName, testFileName, metaDataDict):
         self.train = None
         self.test = None
@@ -65,7 +65,8 @@ class AutoEncoder():
         end = time.time()
         encoded_input = Input(shape=(NE,))
         self.encoder = Model(input_vector, encoded)
-        self.decoder = Model(encoded_input,
+        self.decoder = Model(
+            encoded_input,
             self.ae.layers[-1](self.ae.layers[-2](encoded_input)))
         self.ae.compile(optimizer='rmsprop', loss='mean_squared_error')
         self.initTime = end - start
@@ -74,8 +75,11 @@ class AutoEncoder():
 
     def trainEncoder(self):
         start = time.time()
-        self.ae.fit(self.x_train, self.x_train, batch_size=BATCH,
-            nb_epoch=EPOCH, validation_data=[self.x_test, self.x_test])
+        self.ae.fit(self.x_train,
+                    self.x_train,
+                    batch_size=BATCH,
+                    nb_epoch=EPOCH,
+                    validation_data=[self.x_test, self.x_test])
         end = time.time()
         self.trainTime = end - start
 
@@ -106,16 +110,18 @@ class AutoEncoder():
         plt.title("Histogram of Errors with 'auto' bins")
         plt.savefig('histogram.png')
 
+
 def saveJsonResult(jsonResult, jsonFilename):
     f = open(jsonFilename, 'w')
     f.write('[\n')
     for i, val in enumerate(jsonResult):
-        if i < len(jsonResult)-1:
-            f.write('\t'+val+',\n')
+        if i < len(jsonResult) - 1:
+            f.write('\t' + val + ',\n')
         else:
-            f.write('\t'+val+'\n')
+            f.write('\t' + val + '\n')
     f.write(']\n')
     f.close()
+
 
 def go(dir):
     # runs = 5
@@ -127,14 +133,14 @@ def go(dir):
     metaDataDict['benchmark-name'] = 'benchmark1'
     metaDataDict['type'] = 'autoencoder'
     # for i in range(runs):
-    autoencode = AutoEncoder(dir+'/breast.train.csv',
-                             dir+'/breast.test.csv',
-                             metaDataDict)
+    autoencode = AutoEncoder(dir + '/breast.train.csv',
+                             dir + '/breast.test.csv', metaDataDict)
     jsonResult.append(autoencode.resultJson)
     print jsonResult
     saveJsonResult(jsonResult, 'jsonResults.json')
     return repr(jsonResult)
     # return "OK"
+
 
 if __name__ == '__main__':
     go('.')

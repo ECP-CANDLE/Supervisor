@@ -8,7 +8,7 @@ export SITE="biowulf"
 # Job specification
 export EXPERIMENTS="$MY_DIR"
 #TODO GZ: These 2 variables are not needed
-export MODEL_NAME="mnist_upf_test" 
+export MODEL_NAME="mnist_upf_test"
 export OBJ_RETURN="val_loss"
 
 # Scheduler settings

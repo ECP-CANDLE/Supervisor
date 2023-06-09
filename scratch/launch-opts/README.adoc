@@ -4,7 +4,7 @@
 Edit +example.sh+ to select a +TURBINE_LAUNCH_OPTIONS+.  Then:
 
 ----
-$ ./example.sh 
+$ ./example.sh
 TURBINE-THETA SCRIPT
 NODES=2
 PROCS=2
@@ -15,7 +15,7 @@ running qsub ...
 Job routed to queue "debug-cache-quad".
 Memory mode set to cache quad for queue debug-cache-quad
 JOB_ID=161050
-$ 
+$
 ----
 
 Wait for job completion.  Then:

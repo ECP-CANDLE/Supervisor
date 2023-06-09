@@ -110,7 +110,7 @@ cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
 # Allow the user to set an objective function
 # OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-# OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+# OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 

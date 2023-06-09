@@ -13,7 +13,9 @@ DB=$1
 NODE=$2
 
 sqlite3 $DB <<EOF
-UPDATE runhist SET status="RESET" WHERE (subplan_id LIKE "${NODE}%") ;
+update runhist SET status="RESET" where (length(subplan_id) > 5 );
 EOF
 
-# update runhist SET status="RESET" where (length(subplan_id) > 5 );
+
+# UPDATE runhist SET status="RESET" WHERE (subplan_id LIKE "${NODE}%") ;
+# EOF

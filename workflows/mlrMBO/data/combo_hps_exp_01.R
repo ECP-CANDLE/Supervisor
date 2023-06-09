@@ -6,12 +6,12 @@
 
 
 param.set <- makeParamSet(
-  
+
   makeDiscreteParam("cell_features", values=c("mirna", "expression")),
 
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
-  
+
   # use consecutive 1000-neuron layers to facilitate residual connections
   makeDiscreteParam("dense",
               values=c("1000",
@@ -32,19 +32,16 @@ param.set <- makeParamSet(
   makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
 
   makeDiscreteParam("residual", values=c(1, 0)),
-  
+
   makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
 
   makeDiscreteParam("optimizer", values=c("adam", "sgd", "rmsprop")),
-                   
+
   makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
-                    
+
   makeDiscreteParam("reduce_lr", values=c(1, 0)),
-                    
+
   makeDiscreteParam("warmup_lr", values=c(1, 0)),
-                                     
+
   makeIntegerParam("epochs", lower=5, upper=1000)
 )
-
-
-

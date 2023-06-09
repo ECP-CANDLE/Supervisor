@@ -108,4 +108,3 @@ swift-t -O0 -l -n $PROCS $MACHINE -p -I $EQPY -r $EQPY \
         -e PATH=$PATH \
         -e PYTHONPATH=$PYTHONPATH \
         $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
-

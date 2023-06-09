@@ -10,48 +10,48 @@ library(randomForest)
 
 fun = function(x) {
   x = as.list(x)
-  res = 0    
+  res = 0
   print(x)
   print(paste(x,sep=",",collapse=";"))
   r = as.numeric(x$batch_size)
   i = as.numeric(x$drop)
   res<-r+i
-  
+
   if(x$model=="ae"){
     res<-res*1000
   }
-  
+
   if(x$activation == "relu"){
     res<-res*1000
   }
-  
+
   if(x$optimizer == "sgd"){
     res<-res*1000
   }
-  
+
   if(x$optimizer == "sgd"){
     res<-res*1000
-  }  
-  
+  }
+
   if(as.numeric(x$reduce_lr)){
     res<-res*1000
   }
-  
+
   return(res)
 }
 
 par.set = makeParamSet(
   # we optimize for ae and vae separately
   makeDiscreteParam("model", values=c("ae")),
-  
+
   # makeDiscreteParam("latent_dim", values=c(2, 8, 32, 128, 512)),
   makeIntegerParam("latent_dim", lower=1, upper=9, trafo = function(x) 2L^x),
 
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(0)),
-  
 
-  
+
+
     # use consecutive 978-neuron layers to facilitate residual connections
 #  makeDiscreteParam("dense", values=c("1500 500",
 #                                      "978 978",
@@ -59,21 +59,21 @@ par.set = makeParamSet(
 #                                      "978 978 978 978",
 #                                      "978 978 978 978 978",
 #                                      "978 978 978 978 978 978")),
-  
+
   makeDiscreteParam("residual", values=c(1, 0)),
-  
+
  makeDiscreteParam("activation", values=c("relu", "sigmoid", "tanh")),
-  
+
   makeDiscreteParam("optimizer", values=c("adam", "sgd")),
-                    
+
   makeNumericParam("learning_rate", lower=0.00001, upper=0.1),
-                    
+
   makeDiscreteParam("reduce_lr", values=c(1, 0)),
-                    
+
   makeDiscreteParam("warmup_lr", values=c(1, 0)),
-                    
+
   makeNumericParam("drop", lower=0, upper=0.9),
-                    
+
   makeIntegerParam("epochs", lower=2, upper=3)
 )
 
@@ -89,13 +89,13 @@ max.budget <- 1500
 propose.points<-9
 max.iterations<-5
 
-ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points, 
+ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                       trafo.y.fun = makeMBOTrafoFunction('log', log),
                       impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
 ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
-ctrl = setMBOControlInfill(ctrl, 
-                           crit = makeMBOInfillCritCB(), 
-                           opt.restarts = 1, 
+ctrl = setMBOControlInfill(ctrl,
+                           crit = makeMBOInfillCritCB(),
+                           opt.restarts = 1,
                            opt.focussearch.points = 1000)
 
 # d1 = generateGridDesign(par.set, trafo = TRUE)
@@ -151,10 +151,10 @@ ptm <- proc.time()
 # dummy objective function
 simple.obj.fun = function(x){}
 
-surr.rf = makeLearner("regr.randomForest", 
-                      predict.type = "se", 
+surr.rf = makeLearner("regr.randomForest",
+                      predict.type = "se",
                       fix.factors.prediction = TRUE,
-                      se.method = "jackknife", 
+                      se.method = "jackknife",
                       se.boot = 8)
 
 
@@ -178,20 +178,20 @@ surr.rf = makeLearner("regr.randomForest",
     time <-(proc.time() - ptm)
     print(sprintf("nevals = %03d; itr = %03d; time = %5.5f;", nrow(all_res), itr, as.numeric(time[3])))
     min.index<-which(itr_res$y==min(itr_res$y))
-    
+
     par.set.t = par.set0
     pars = par.set.t$pars
     lens = getParamLengths(par.set.t)
     k = sum(lens)
     pids = getParamIds(par.set.t, repeated = TRUE, with.nr = TRUE)
-    
+
     snames = c("y", pids)
     reqDF = subset(itr_res, select = snames, drop =TRUE)
     bestDF <- reqDF[min.index,]
     print("reqDF")
     print(nrow(reqDF))
     print(summary(reqDF))
-    
+
     print("itr-rf")
     train.model <- randomForest(log(y) ~ ., data=reqDF, ntree=10000, keep.forest=TRUE, importance=TRUE)
     var.imp <- importance(train.model, type = 1)
@@ -199,7 +199,7 @@ surr.rf = makeLearner("regr.randomForest",
     index <- sort(abs(var.imp[,1]),
                   decreasing = TRUE,
                   index.return = TRUE)$ix
-    
+
     inputs <- rownames(var.imp)[index]
     scores <- var.imp[index,1]
     remove.index <- which(scores >= 0.9*max(scores))
@@ -208,7 +208,7 @@ surr.rf = makeLearner("regr.randomForest",
     print('removing:')
     print(rnames)
 
-    
+
     par.set1<-par.set0
     pnames<-names(par.set$pars)
     print(par.set1)
@@ -239,7 +239,7 @@ surr.rf = makeLearner("regr.randomForest",
             } else {
               par.set1$pars[[index]]<-makeNumericParam(p, lower=ll, upper=uu, trafo = trafo)
             }
-          }   
+          }
         }
       }
     }
@@ -258,8 +258,8 @@ surr.rf = makeLearner("regr.randomForest",
 
     temp<-rbind(design,reqDF[,-1])
     design <- head(temp, n = propose.points)
-    
-    
+
+
     USE_MODEL <- TRUE
     if(USE_MODEL){
       yvals <- predict(train.model,design)
@@ -270,13 +270,13 @@ surr.rf = makeLearner("regr.randomForest",
     }
     print("mbo-itr")
     print(yvals)
-    
+
     print(summary(yvals))
     res = mbo(obj.fun, design = design, learner = surr.rf, control = ctrl, show.info = FALSE)
     itr_res<-as.data.frame(res$opt.path)
     itr_res<-cbind(itr_res, stime = as.numeric(time[3]))
     itr_res<-tail(itr_res, n = propose.points)
-   
+
     par.set0<-par.set1
     itr <- itr + 1
     print("bug msg:")

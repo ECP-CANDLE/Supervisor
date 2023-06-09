@@ -61,11 +61,19 @@ show()
 }
 
 log_path()
-# Pretty print a colon-separated variable
+# Pretty print a colon-separated variable, one entry per line
 # Provide the name of the variable (no dollar sign)
 {
-  echo ${1}:
-  eval echo \$$1 | tr : '\n' | nl
+  # First, test if $1 is the name of a set shell variable:
+  if eval test \$\{$1:-\}
+  then
+    echo ${1}:
+    eval echo \$$1 | tr : '\n' | nl
+    echo --
+    echo
+  else
+    echo "log_path(): ${1} is unset."
+  fi
 }
 
 which_check()
@@ -90,9 +98,16 @@ python_envs()
   RESULT=()
   if [[ ${PYTHONPATH:-} != "" ]]
   then
-    # We do not currently need this-
+    # We do not currently need this except on MCS and Spock:
     # Swift/T should grab PYTHONPATH automatically
-    : # RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    if [[ ${SITE} == "mcs"      ]] || \
+       [[ ${SITE} == "spock"    ]] || \
+       [[ ${SITE} == "lambda"   ]] || \
+       [[ ${SITE} == "frontier" ]]
+    then
+      # MCS discards PYTHONPATH in subshells
+      RESULT+=( -e PYTHONPATH=$PYTHONPATH )
+    fi
   fi
   if [[ ${PYTHONHOME:-} != "" ]]
   then
@@ -122,6 +137,7 @@ get_site()
   export SITE=$1
 }
 
+
 check_experiment() {
   if [[ -d $TURBINE_OUTPUT ]]; then
     while true; do
@@ -138,76 +154,85 @@ check_experiment() {
 
 get_expid()
 # Get Experiment IDentifier
-# EXPID is the name of the new directory under experiments/
-# If the user provides -a, this function will autogenerate
-#   a new EXPID under the experiments directory,
-# If EXP_SUFFIX is set in the environment, the resulting
-#   EXPID will have that suffix.
+# EXPID: The name of the new directory under experiments/
+#        If the user provides -a, this function will autogenerate
+#          a new EXPID under the experiments directory,
+#        If EXP_SUFFIX is set in the environment, the resulting
+#          EXPID will have that suffix.
+# CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
+#        Defaults to "BENCHMARKS"
+#        This variable affects the experiment directory structure
 # RETURN VALUES: EXPID and TURBINE_OUTPUT are exported into the environment
 # TURBINE_OUTPUT is canonicalized, because it may be soft-linked
 #    to another filesystem (e.g., on Summit), and must be accessible
 #    from the compute nodes without accessing the soft-links
 {
-  if (( ${#} < 1 ))
+  if (( ${#} != 1 ))
   then
-    echo "get_expid(): could not find EXPID argument!"
+    echo "get_expid(): provide EXPID or '-a'"
     return 1
   fi
 
-  EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
-
   export EXPID=$1
+
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS} ${MODEL_NAME:=cmp}
+  echo "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
+  echo "get_expid(): MODEL_NAME=$MODEL_NAME"
+
+  export EXPERIMENTS=""
+
+  if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
+  then
+    # Keep this directory in sync with model.sh RUN_DIRECTORY
+    MODEL_TOKEN=$( basename $MODEL_NAME .sif )
+    EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
+  else # "BENCHMARKS"
+    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  fi
 
   local i=0 EXPS E TO
 
-  if [ $EXPID = "-a" ]
+  if [[ $EXPID == "-a" ]]
   then
     shift
     # Search for free experiment number
-    mkdir -pv $EXPERIMENTS
+    if ! mkdir -pv $EXPERIMENTS
+    then
+      echo "get_expid(): could not make experiments directory:" \
+           $EXPERIMENTS
+      return 1
+    fi
     EXPS=( $( ls $EXPERIMENTS ) )
     if (( ${#EXPS[@]} != 0 ))
     then
       for E in ${EXPS[@]}
       do
-        EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
+        EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
         if [[ $E == $EXPID ]]
         then
           i=$(( i + 1 ))
         fi
       done
     fi
-    EXPID=$( printf "X%03i" $i )${EXP_SUFFIX:-}
-    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    EXPID=$( printf "EXP%03i" $i )${EXP_SUFFIX:-}
+    TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
     check_experiment
   else
-    export TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
+    TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
   mkdir -pv $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then
-    echo "Could not canonicalize: $TURBINE_OUTPUT"
+    echo "get_expid(): could not canonicalize: $TURBINE_OUTPUT"
     exit 1
   fi
-  TURBINE_OUTPUT=$TO
-
-  # Andrew: Needed for functionality with George's restart.py script for UPF jobs
-  if [ -f metadata.json ]; then
-    mv metadata.json $TURBINE_OUTPUT
-  fi
-
-  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
-  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
-    if [ -f "$CANDLE_INPUT_FILE" ]; then
-      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
-    fi
-  fi
-
+  export TURBINE_OUTPUT=$TO
 }
 
 next()
 # Obtain next available numbered file name matching pattern
+#        in global variable REPLY
 # E.g., 'next out-%02i' returns 'out-02' if out-00 and out-01 exist.
 {
   local PATTERN=$1 FILE="" i=0
@@ -348,22 +373,24 @@ queue_wait_site()
   SITE=$1
   JOBID=$2
 
-  if [[ $SITE == "cori" ]]
+  site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+
+  if [[ $site2 == "cori" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $SITE == "theta" ]]
+  elif [[ $site2 == "theta" ]]
   then
     queue_wait_cobalt $JOBID
-  elif [[ $SITE == "titan" ]]
-  then
-    queue_wait_pbs $JOBID
-  elif [[ $SITE == "summit" ]]
+  elif [[ $site2 =~ summit* ]]
   then
     queue_wait_lsf $JOBID
-  elif [[ $SITE == "pascal" ]]
+  elif [[ $site2 == "spock" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $SITE == "biowulf" ]]
+  elif [[ $site2 == "pascal" ]]
+  then
+    queue_wait_slurm $JOBID
+  elif [[ $site2 == "biowulf" ]]
   then
     queue_wait_slurm $JOBID
   else
@@ -564,6 +591,13 @@ log_script() {
   echo "" >> $LOG_NAME
   echo "## SCRIPT ###" >> $LOG_NAME
   cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+
+  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
+  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
+    if [ -f "$CANDLE_INPUT_FILE" ]; then
+      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
+    fi
+  fi
 }
 
 check_directory_exists() {
@@ -585,7 +619,7 @@ pad_keys() {
   # Pad 1st tokens
   printf "%-15s " $1
   shift
-  echo ${*}
+  echo $*
 }
 
 print_json() {

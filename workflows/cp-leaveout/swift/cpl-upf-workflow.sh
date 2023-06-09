@@ -65,7 +65,7 @@ CPL_PY=$EMEWS_PROJECT_ROOT/../cp-leaveout/py
 PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py:            # For plangen, data_setup
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python     # For log_tools
 PYTHONPATH+=:$CPL_PY
-PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks    
+PYTHONPATH+=:$BENCHMARK_DIR:$BENCHMARKS_ROOT/common # For Benchmarks
 
 APP_PYTHONPATH+=:$EMEWS_PROJECT_ROOT/py        # For plangen, data_setup
 APP_PYTHONPATH+=:$WORKFLOWS_ROOT/common/python # For log_tools
@@ -126,7 +126,7 @@ mkdir -p $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 

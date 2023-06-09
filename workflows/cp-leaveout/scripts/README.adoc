@@ -33,20 +33,22 @@ COMPLETE / TOTAL = 1364 / 1364 : 0 remaining.
 
 ==== Generate a Node Pickle (extract-node-info)
 
-This is a Python Pickle containing the Node data.  See Node.py .
+This makes the Python Pickle containing the Node data.  See Node.py .
 This avoids needing to walk all logs all the time (which takes tens of seconds).
 
 ----
-$ scripts/extract-node-info.sh $D
+$ scripts/extract-node-info.sh $D [nodes...]
 ----
+
+The data structure in the Pickle is a simple dictionary mapping node ID strings e.g. "1.2.3.4" to object of type Node.
 
 ==== Print Node info (print-node-info)
 
-Prints a big table of all Node statistics:
+Prints a big table of all Node statistics using the Node Pickle.
 
 Format:
 
-NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
+NODE STAGE EPOCHS-ACTUAL / EPOCHS-MAX LOSS VAL-LOSS TIME-START TIME_STOP EARLY-STOP?
 
 ----
 $ scripts/print-node-info.sh $D
@@ -57,6 +59,8 @@ $ scripts/print-node-info.sh $D
 1.1.1.2.4.3  : 5 :  1 /  1 : 0.01510 : 2019-12-23 18:01:51 - 2019-12-23 18:06:28 :
 ...
 ----
+
+If specific node IDs are given on the command line, only those records are printed.
 
 ==== Find loss increases (find-loss-increases)
 
@@ -83,10 +87,32 @@ Analytically determine the number of Nodes in the workflow given N and S.
 
 Compile workflow statistics
 
+==== Report learning rates
+
+Dump start and end learning rates into `lrs.txt`
+
+----
+$ scripts/report-lrs.sh $D > $D/lrs.txt
+----
+
+=== Data management
+
+==== mk-log-tar.sh
+
+Make a tarball of just the important logs (not the big HDF files).
+
+==== cp-subtree.sh
+
+Make a copy of experiment run subtrees; includes a random sample of
+leaf nodes and all their parents.
+
 === Analysis for model.log files
 
-These are not really supported for Summit runs because we are using in-memory Python,
-but they could be easily fixed.  Also, they run against the model.logs and not the Pickle, so they are slow.
+These are not really supported for Summit runs
+because we are using in-memory Python,
+but they could be easily fixed.
+Also, they run against the model.logs and not the Pickle,
+so they are slow.
 
 ==== extract-stats.sh
 
@@ -121,6 +147,14 @@ Average GPU utilization
 ==== List Nodes (list-nodes)
 
 List the Nodes from the JSON file.
+
+==== List Node Singles
+
+List the Nodes from the JSON file with a single cell line.
+
+==== Leaf Stats
+
+Report key stats from the python.log for the given nodes.
 
 ==== tar experiment
 

@@ -5,6 +5,8 @@
 
 #include <Python.h>
 
+#include <dlfcn.h>
+
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -57,6 +59,18 @@ python_init()
 {
   if (initialized) return true;
   verbose("python: initializing...");
+
+
+  char str_python_lib[32];
+#ifdef _WIN32
+  sprintf(str_python_lib, "lib%s.dll", PYTHON_NAME);
+#elif defined __unix__
+  sprintf(str_python_lib, "lib%s.so", "python3.8");
+#elif defined __APPLE__
+  sprintf(str_python_lib, "lib%s.dylib", PYTHON_NAME);
+#endif
+  dlopen(str_python_lib, RTLD_NOW | RTLD_GLOBAL);
+
   Py_InitializeEx(1);
   main_module  = PyImport_AddModule("__main__");
   if (main_module == NULL) return handle_python_exception();
@@ -65,6 +79,20 @@ python_init()
   local_dict = PyDict_New();
   if (local_dict == NULL) return handle_python_exception();
   initialized = true;
+
+  // long val = 43;
+  char* val = "MY VALUE!";
+  // if (PyDict_SetItemString(main_dict, "myvar", PyLong_FromLong(val))) {
+  if (PyDict_SetItemString(main_dict, "myvar", val)) {
+    assert(false);
+  }
+
+  char* result;
+  PyObject* po = PyDict_GetItemString(main_dict, "myvar");
+  int pc = PyArg_Parse(po, "s", &result);
+  if (pc != 1) return handle_python_non_string(po);
+  printf("result: %s\n", result);
+
   return true;
 }
 

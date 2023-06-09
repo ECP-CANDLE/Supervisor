@@ -8,21 +8,17 @@ then
 fi
 SCRIPT=$1
 
-SWIFT=
+THIS=$( readlink --canonicalize $( dirname $0 ) )
+SV=$(   readlink --canonicalize $THIS/../.. )
+source $SV/workflows/common/sh/env-summit-tf-2.4.1.sh
 
-module load spectrum-mpi/10.3.1.2-20200121
-
-G=/sw/summit/gcc/6.4.0/lib64
-R=""
-LD_LIBRARY_PATH=$G:$R:$LD_LIBRARY_PATH
-
+# Basic Swift/T environment settings:
 export PROJECT=MED106
-# export QUEUE=debug
 export PPN=2
-PROCS=4
+PROCS=2
 
-SWIFT=/gpfs/alpine/world-shared/med106/wozniak/sw/gcc-6.4.0/swift-t/2020-03-31-c/stc/bin/swift-t
+which swift-t
 
 set -x
-$SWIFT -m lsf -n $PROCS \
+swift-t -p -m lsf -n $PROCS -e PYTHONHOME  \
        $SCRIPT

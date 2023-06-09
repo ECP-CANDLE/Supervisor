@@ -13,4 +13,5 @@ DB=$1
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
+echo DB: $DB
 sqlite3 $DB < $THIS/print-db.sql

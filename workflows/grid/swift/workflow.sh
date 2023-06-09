@@ -93,7 +93,7 @@ CMD_LINE_ARGS=( -param_set_file=$PARAM_SET_FILE
                 -ds=$DESIGN_SIZE
                 -pp=$PROPOSE_POINTS
                 -it=$MAX_ITERATIONS
-                -settings=$EMEWS_PROJECT_ROOT/data/settings.json               
+                -settings=$EMEWS_PROJECT_ROOT/data/settings.json
                 -exp_id=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
@@ -115,7 +115,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-obj_$SWIFT_IMPL}
+OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 

@@ -1,17 +1,12 @@
+
 # LANGS APP SUMMIT SH
 
-# WIP 2019-02-28
+# Allow for user PYTHONPATH additions:
+APP_PYTHONPATH=${APP_PYTHONPATH:-}
 
-APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
-
-# Clear anything set by the system or Swift/T environment
-unset PYTHONPATH
-unset LD_LIBRARY_PATH
-
-# ROOT=/ccs/proj/med106/gounley1/summit
-ROOT=/ccs/proj/med106/hsyoo/summit
-export PY=$ROOT/conda36
-export LD_LIBRARY_PATH=/sw/summit/cuda/10.1.168/lib64:/sw/summit/gcc/4.8.5/lib64:$PY/lib
-export PYTHONHOME=$ROOT/conda36
+# Overwrite anything else set by the system or Swift/T environment:
+export PY=/gpfs/alpine/world-shared/med106/sw/open-ce-1.1.3-py37
+export LD_LIBRARY_PATH=$PY/lib
+export PYTHONHOME=$PY
 export PATH=$PYTHONHOME/bin:$PATH
-export PYTHONPATH=$PYTHONHOME/lib/python3.6:$PYTHONHOME/lib/python3.6/site-packages:$APP_PYTHONPATH
+export PYTHONPATH=$PYTHONHOME/lib/python3.9:$PYTHONHOME/lib/python3.9/site-packages:$APP_PYTHONPATH

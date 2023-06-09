@@ -28,7 +28,7 @@ fi
 
 if [[ "${PARAM_SET_FILE:-}" == "" ]]; then
   # PARAM_SET_FILE must be set before this script returns!
-  echo "Invalid model-" "'${MODEL_NAME:-}'"
+  echo "Cannot set PARAM_SET_FILE: unknown model: '${MODEL_NAME:-}'"
   exit 1
 fi
 set +x

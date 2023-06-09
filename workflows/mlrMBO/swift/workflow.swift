@@ -14,18 +14,19 @@ import EQR;
 import R;
 import assert;
 import python;
-/* Helper for reporting environment variables common/swift/candle_utils.swift
-* import candle_utils;
-* 
-* report_env();
-*/
+
+// Helper for reporting environment variables for debugging
+// Cf. common/swift/candle_utils.swift
+// This can be removed as desired.
+import candle_utils;
+report_env();
 
 string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 string resident_work_ranks = getenv("RESIDENT_WORK_RANKS");
 string r_ranks[] = split(resident_work_ranks,",");
 int propose_points = toint(argv("pp", "3"));
-int max_budget = toint(argv("mb", "110"));
+int max_budget = toint(argv("mb", "1000"));
 int max_iterations = toint(argv("it", "5"));
 int design_size = toint(argv("ds", "10"));
 string param_set = argv("param_set_file");
@@ -33,13 +34,14 @@ string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
 string restart_file = argv("restart_file", "DISABLED");
 string r_file = argv("r_file", "mlrMBO1.R");
-
 string model_name     = getenv("MODEL_NAME");
+string candle_model_type     = getenv("CANDLE_MODEL_TYPE");
+string candle_image     = getenv("CANDLE_IMAGE");
+string init_params_file     = getenv("INIT_PARAMS_FILE");
+
 
 printf("CANDLE mlrMBO Workflow");
 printf("TURBINE_OUTPUT: " + turbine_output);
-
-
 
 string restart_number = argv("restart_number", "1");
 string site = argv("site");
@@ -76,11 +78,11 @@ string FRAMEWORK = "keras";
     }
     else if (params == "EQR_ABORT")
     {
-      printf("EQR aborted: see output for R error") =>
-      string why = EQR_get(ME);
-      printf("%s", why) =>
+      printf("EQR_ABORT: see output for R error") =>
+          string why = EQR_get(ME);
+      printf("EQR_ABORT: R exception: %s", why) =>
           // v = propagate(why) =>
-      c = false;
+          c = false;
     }
     else
     {
@@ -88,8 +90,8 @@ string FRAMEWORK = "keras";
         string results[];
         foreach param, j in param_array
         {
-            results[j] = obj(param,
-                             "%00i_%000i_%0000i" % (restart_number,i,j));
+            run_id = "%02i_%03i_%04i" % (restart_number,i,j);
+            results[j] = candle_model_train(param, exp_id, run_id, model_name);
         }
         string result = join(results, ";");
         // printf(result);
@@ -99,7 +101,8 @@ string FRAMEWORK = "keras";
 }
 
 // These must agree with the arguments to the objective function in mlrMBO.R,
-// except param.set.file is removed and processed by the mlrMBO.R algorithm wrapper.
+// except param.set.file is removed and processed by the mlrMBO.R
+// algorithm wrapper.
 string algo_params_template =
 """
 param.set.file='%s',

@@ -3,27 +3,28 @@
 
 # Run this via install-candle.sh
 # Installs all R packages needed for Supervisor workflows
-
 # mlrMBO may need APT packages libxml2-dev libssl-dev curl-dev
 
-NCPUS = 16
-
+# Installation settings:
 r <- getOption("repos")
+# Change this mirror as needed:
 # r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
 r["CRAN"] <- "http://cran.wustl.edu/"
 options(repos = r)
+NCPUS = 8
 
-# Force Plotly 4.5.6 - not latest! Do not want shiny/httpuv, it does not work on Cooley!
-install.packages("https://cran.r-project.org/src/contrib/Archive/plotly/plotly_4.5.6.tar.gz")
-
-PKGS=(
-    "smoof",
+# Do plotly early in the list: It requires OpenSSL and Curl headers
+# which may not be available.
+PKGS <- list(
+    "RInside",
+    "plotly",
+    "jsonlite",
     "rgenoud",
     "DiceKriging",
-    "randomForest"
-    "jsonlite",
+    # not available for R 3.6.1 : needed for mlrMBO HPO:
+    "randomForest",
     "parallelMap",
-    "RInside",
+    # requires smoof requires misc3d requires --with-tcltk :
     "mlrMBO"
 )
 

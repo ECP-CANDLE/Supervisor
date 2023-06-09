@@ -10,5 +10,3 @@ XCORR_DATA_DIR=$EMEWS_PROJECT_ROOT/xcorr_data
 UPF_FILE=$EMEWS_PROJECT_ROOT/data/infer_upf.txt
 # Number of predictions to make for each inference runs
 N_PRED=30
-
-

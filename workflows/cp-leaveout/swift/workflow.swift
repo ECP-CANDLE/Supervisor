@@ -4,11 +4,14 @@
 
   Simply run with: 'swift-t workflow.swift <FILE SETTINGS>'
   Or specify the N, S values:
-  'swift-t workflow.swift -N=6 -S=6 <FILE SETTINGS>'
-  for 55,986 tasks.
+  'swift-t workflow.swift -N=4 -S=6 <FILE SETTINGS>'
+  for ### tasks.
+
   Flags:
   -N : Number of nodes per stage (see default in code)
   -S : Number of stages          (see default in code)
+  -E : Number of epochs          (see default in Benchmark)
+  -P : Early stopping patience   (see default in code)
   -r : Use RunType.RESTART, default is RunType.RUN_ALL
        RUN_ALL means this is a fresh run with no prior results
 
@@ -20,10 +23,15 @@
   --benchmark_data=<DIR> : Used by data_setup to set softlinks to
                            Uno cache and uno_auc_model.txt
 
+  NOTE: "token" variables are used to ensure that children do
+        not run before their parents
   NOTE: This workflow has some complex Python Exception handling
         code that will be pushed into Swift/T for conciseness...
   NOTE: On Summit, you have to use sys.stdout.flush() after
         Python output on stdout
+
+  RESTART EXAMPLE:
+  test/test-512.sh summit EXP003 flat -r -N=4 -S=6 -E=5 -P=5
 */
 
 import assert;
@@ -35,6 +43,7 @@ import string;
 import sys;
 
 import candle_utils;
+import plangen_2;
 
 report_env();
 
@@ -51,7 +60,6 @@ else
   N = 0;
 }
 // Maximum stage number with default
-// (tested up to S=7, 21,844 dummy tasks)
 int S;
 S_s = argv("S", "2");
 assert(strlen(S_s) > 0, "Set argument S with -S=<S>") =>
@@ -65,12 +73,16 @@ else
 {
   runtype = "plangen.RunType.RUN_ALL";
 }
-E_s = argv("E", "20");
+E_s = argv("E", "50");
 assert(strlen(E_s) > 0, "workflow.swift: you must provide an argument to -E");
 int max_epochs = string2int(E_s); // epochs=20 is just under 2h on Summit.
+P_s = argv("P", "10");
+assert(strlen(P_s) > 0, "workflow.swift: you must provide an argument to -P");
+int early_stopping = string2int(P_s);
 string plan_json      = argv("plan_json");
 string dataframe_csv  = argv("dataframe_csv");
 string db_file        = argv("db_file");
+string user           = argv("user", "NONE");  // for Summit NVME
 string benchmark_data = argv("benchmark_data");
 int    epoch_mode       = string2int(argv("epoch_mode", "1"));
 int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
@@ -79,33 +91,52 @@ string exp_id         = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 // END WORKFLOW ARGUMENTS
 
+printf("plangen: runtype:" + runtype);
+printf("benchmark_data: " + benchmark_data);
+
 // For compatibility with obj():
 global const string FRAMEWORK = "keras";
 
-/** RUN STAGE: A recursive function that manages the stage dependencies */
+/**
+   RUN STAGE: A recursive function that manages the stage dependencies
+   token_parent: Blocks progress until the parent node is done
+   parent:       The parent node,  e.g., "1.2.3"
+   this:         The current node, e.g., "1.2.3.4"
+*/
 (void v)
-run_stage(int N, int S, string this, int stage, void block,
-          string plan_id, string db_file, string runtype)
+run_stage(string db_file, string plan_id, string runtype,
+          void token_parent, int stage, string parent, string this)
 {
-
-  printf("stage: %i this: %s", stage, this);
+  // printf("stage: %i parent: %s this: %s", stage, parent, this);
   // Run the model
-  void parent = run_single(this, stage, block, plan_id);
+  void token_this = run_single(plan_id, token_parent, stage,
+                               parent, this);
 
   if (stage < S)
   {
     // Recurse to the child stages
-    foreach id_child in [1:N]
+    foreach child in [1:N]
     {
-      run_stage(N, S, this+"."+id_child, stage+1, parent,
-                plan_id, db_file, runtype);
+      run_stage(db_file, plan_id, runtype,
+                token_this, stage+1,
+                this,
+                "%s.%i" % (this, child)
+                ); // N, S,
     }
   }
   v = propagate();
 }
 
-/** RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops */
-(void v) run_single(string node, int stage, void block, string plan_id)
+/**
+   RUN SINGLE: Set up and run a single model via obj(), plus the SQL ops
+   token: Block on token so that this node does not run until the
+   parent is complete.
+   stage:  The current stage, e.g., 4
+   parent: The parent node,   e.g., "1.2.3"
+   this:   The current node,  e.g., "1.2.3.4"
+*/
+(void v) run_single(string plan_id, void token, int stage,
+                    string parent, string this)
 {
   if (stage == 0)
   {
@@ -113,118 +144,72 @@ run_stage(int N, int S, string this, int stage, void block,
   }
   else
   {
-    json_fragment = make_json_fragment(node, stage);
-    json = "{\"node\": \"%s\", %s}" % (node, json_fragment);
-    block =>
-      printf("run_single(): running obj(%s)", node) =>
+    json_fragment = make_json_fragment(parent, this, stage);
+    json = "{\"node\": \"%s\", %s}" % (this, json_fragment);
+    token =>
+      printf("run_single(): running candle_model_train(%s)", this) =>
       // Insert the model run into the DB
-      result1 = plangen_start(node, plan_id);
+      result1 = plangen_start(this, plan_id);
     assert(result1 != "EXCEPTION", "Exception in plangen_start()!");
     if (result1 == "0")
     {
       // Run the model
-      obj_result = obj(json, node)
-        // Update the DB to complete the model run
-        => result2 = plangen_stop(node, plan_id);
+      model_result = candle_model_train(json, exp_id, this, model_name);
       printf("run_single(): completed: node: '%s' result: '%s'",
-             node, obj_result);
-      assert(obj_result != "EXCEPTION" && obj_result != "",
-             "Exception in obj()!");
+             this, model_result);
+      // Update the DB to complete the model run
+      string result2;
+      if (model_result != "RUN_EXCEPTION")
+      {
+        result2 = plangen_stop(this, plan_id);
+      }
+      else
+      {
+        result2 = "RETRY";
+      }
+      assert(model_result != "", "Error in obj(): result is empty!");
+      assert(model_result != "EXCEPTION", "Exception in obj()!");
       assert(result2 != "EXCEPTION", "Exception in plangen_stop()!");
       printf("run_single(): stop_subplan result: '%s'", result2);
-      v = propagate(obj_result);
+      v = propagate(model_result);
     }
-    else
+    else // result1 != 0
     {
       printf("run_single(): plan node already marked complete: " +
-             "%s result=%s", node, result1) =>
+             "%s result=%s", this, result1) =>
         v = propagate();
     }
   }
 }
 
-// This DB configuration and python_db() function will put all
-// calls to python_db() on rank DB corresponding to
-// environment variable TURBINE_DB_WORKERS:
-
-pragma worktypedef DB;
-
-@dispatch=DB
-(string output) python_db(string code, string expr="repr(0)")
-"turbine" "0.1.0"
- [ "set <<output>> [ turbine::python 1 1 <<code>> <<expr>> ]" ];
-
-// Simply use python_db() to log the DB rank:
-python_db(
-----
-import os, sys
-print("This rank is the DB rank: %s" % os.getenv("ADLB_RANK_SELF"))
-sys.stdout.flush()
-----
-);
-
-(string result) plangen_start(string node, string plan_id)
-{
-  result = python_db(
-----
-import fcntl, sys, traceback
-import plangen
-try:
-    result = str(plangen.start_subplan('%s', '%s', %s, '%s', %s))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
-    sys.stdout.flush()
-    result = "EXCEPTION"
-----  % (db_file, plan_json, plan_id, node, runtype),
-    "result");
-}
-
-(string result) plangen_stop(string node, string plan_id)
-{
-  result = python_db(
-----
-import plangen
-import fcntl, sys, traceback
-try:
-    result = str(plangen.stop_subplan('%s', '%s', '%s', {}))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    sys.stdout.write(str(e) + ' ... \\n' + ''.join(s) + '\\n')
-    sys.stdout.flush()
-    result = 'EXCEPTION'
----- % (db_file, plan_id, node),
-      "result");
-}
-
 /** MAKE JSON FRAGMENT: Construct the JSON parameter fragment for the model */
-(string result) make_json_fragment(string this, int stage)
+(string result) make_json_fragment(string parent, string this, int stage)
 {
   int epochs = compute_epochs(stage);
   json_fragment = ----
-"pre_module":     "data_setup",
-"post_module":    "data_setup",
-"plan":           "%s",
-"config_file":    "uno_auc_model.txt",
-"cache":          "cache/top6_auc",
-"dataframe_from": "%s",
-"save_weights":   "model.h5",
-"gpus": "0",
-"epochs": %i,
-"es": "True",
+"pre_module":        "data_setup",
+"post_module":       "data_setup",
+"plan":              "%s",
+"config_file":       "uno_auc_model.txt",
+"cache":             "cache/top6_auc",
+"user":              "%s",
+"dataframe_from":    "%s",
+"save_weights":      "save/model.h5",
+"gpus":              "0",
+"epochs":            %i,
+"es":                "True",
+"early_stopping":    %i,
+"experiment_id":     "%s",
+"run_id":            "%s",
 "use_exported_data": "topN.uno.h5",
-"benchmark_data": "%s"
+"benchmark_data":    "%s"
 ---- %
-(plan_json, dataframe_csv, epochs, benchmark_data);
+(plan_json, user, dataframe_csv, epochs, early_stopping, exp_id, this, benchmark_data);
   if (stage > 1)
   {
-    n = strlen(this);
-    parent = substring(this, 0, n-2);
     result = json_fragment + ----
 ,
-"initial_weights": "../%s/model.h5"
+"initial_weights": "../%s/save/model.h5"
 ---- % parent;
   }
   else
@@ -236,32 +221,10 @@ except Exception as e:
 printf("CP LEAVEOUT WORKFLOW: START: N=%i S=%i", N, S);
 
 // First: simple test that we can import plangen
-check = python_persist(----
-try:
-    import plangen
-    result = 'OK'
-except Exception as e:
-    result = str(e)
-----,
-"result");
-printf("python result: import plangen: '%s'", check) =>
-  assert(check == "OK", "could not import plangen, check PYTHONPATH!");
+check = plangen_check();
+assert(check == "OK", "could not import plangen, check PYTHONPATH!");
 
-// Initialize the DB
-plan_id = python_persist(
-----
-import sys, traceback
-import plangen
-try:
-    result = str(plangen.plan_prep('%s', '%s', %s))
-except Exception as e:
-    info = sys.exc_info()
-    s = traceback.format_tb(info[2])
-    print(str(e) + ' ... \\n' + ''.join(s))
-    sys.stdout.flush()
-    result = 'EXCEPTION'
----- % (db_file, plan_json, runtype),
-"result");
+plan_id = plangen_prep(db_file, plan_json, "NOTHING");
 printf("DB plan_id: %s", plan_id);
 assert(plan_id != "EXCEPTION", "Plan prep failed!");
 
@@ -270,5 +233,5 @@ assert(plan_id != "-1", "Plan already exists!");
 
 // Kickoff the workflow
 stage = 0;
-run_stage(N, S, "1", stage, propagate(), plan_id, db_file, runtype);
-// printf("CP LEAVEOUT WORKFLOW: RESULTS: COMPLETE");
+run_stage(db_file, plan_id, runtype,
+          propagate(), stage, "", "1");

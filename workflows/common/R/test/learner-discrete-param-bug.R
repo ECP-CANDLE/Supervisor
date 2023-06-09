@@ -16,27 +16,27 @@ fun = function(x) {
   r = as.numeric(x$batch_size)
   i = as.numeric(x$drop)
   res<-r+i
-  
+
   if(x$model=="ae"){
     res<-res*1000
   }
-  
+
   if(x$activation == "relu"){
     res<-res*1000
   }
-  
+
   if(x$optimizer == "sgd"){
     res<-res*1000
   }
-  
+
   if(x$optimizer == "sgd"){
     res<-res*1000
-  }  
-  
+  }
+
   if(as.numeric(x$reduce_lr)){
     res<-res*1000
   }
-  
+
   return(res)
 }
 
@@ -49,7 +49,7 @@ par.set = makeParamSet(
   # use a subset of 978 landmark features only to speed up training
   makeDiscreteParam("use_landmark_genes", values=c(1)),
   # large batch_size only makes sense when warmup_lr is on
-  # makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024), 
+  # makeDiscreteParam("batch_size", values=c(32, 64, 128, 256, 512, 1024),
   makeIntegerParam("batch_size", lower=5, upper=10, trafo = function(x) 2L^x),
   # use consecutive 978-neuron layers to facilitate residual connections
   makeDiscreteParam("dense", values=c("1500 500",
@@ -80,13 +80,13 @@ max.budget <- 1500
 propose.points<-9
 max.iterations<-5
 
-ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points, 
+ctrl = makeMBOControl(n.objectives = 1, propose.points = propose.points,
                       trafo.y.fun = makeMBOTrafoFunction('log', log),
                       impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax )
 ctrl = setMBOControlTermination(ctrl, max.evals = max.budget, iters = max.iterations)
-ctrl = setMBOControlInfill(ctrl, 
-                           crit = makeMBOInfillCritCB(), 
-                           opt.restarts = 1, 
+ctrl = setMBOControlInfill(ctrl,
+                           crit = makeMBOInfillCritCB(),
+                           opt.restarts = 1,
                            opt.focussearch.points = 1000)
 
 # d1 = generateGridDesign(par.set, trafo = TRUE)
@@ -138,10 +138,10 @@ for (v in par.set$pars){
 
 design=mydesign
 
-surr.rf = makeLearner("regr.randomForest", 
-                      predict.type = "se", 
+surr.rf = makeLearner("regr.randomForest",
+                      predict.type = "se",
                       fix.factors.prediction = TRUE,
-                      se.method = "jackknife", 
+                      se.method = "jackknife",
                       se.boot = 8)
 
 

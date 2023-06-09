@@ -1,0 +1,3 @@
+{"id": "test1", "epochs": 3, "dense": "200 15"}
+{"id": "test2", "epochs": 3, "dense": "200 20"}
+{"id": "test3", "epochs": 3, "dense": "200 25"}

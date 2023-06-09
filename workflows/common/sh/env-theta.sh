@@ -1,6 +1,7 @@
 
-# LANGS Theta
-# Language settings for Theta (Swift, Python, R, Tcl, etc.)
+# ENV Theta
+
+# Environment settings for Theta (Swift, Python, R, Tcl, etc.)
 
 # TCL=/home/wozniak/Public/sfw/theta/tcl-8.6.1
 # export R=/home/wozniak/Public/sfw/theta/R-3.4.0/lib64/R
@@ -57,7 +58,7 @@ fi
 # Selects the *.swift files to include
 # If "app", use app functions
 # If "py", use in-memory Python functions
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # Log settings to output
 echo "Programs:"

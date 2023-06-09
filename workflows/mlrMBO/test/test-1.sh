@@ -5,7 +5,7 @@ set -eu
 
 usage()
 {
-  echo "Usage: test BENCHMARK_NAME SITE RUN_DIR(optional)"
+  echo "Usage: test MODEL_NAME SITE RUN_DIR(optional)"
   echo "       RUN_DIR is optional, use -a for automatic"
 }
 
@@ -32,6 +32,8 @@ WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 # Select configurations
+# Temporarily hard-coding to graphdrp:
+export PARAM_SET_FILE=$THIS/../data/graphdrp_small.R
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
@@ -43,7 +45,7 @@ export R_FILE=mlrMBO-ils.R
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
-export OBJ_RETURN="val_loss"
+export MODEL_RETURN="val_loss"
 
 if [[ $SITE == "theta" ]]
 then

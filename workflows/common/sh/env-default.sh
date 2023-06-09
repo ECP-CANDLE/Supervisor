@@ -5,7 +5,7 @@
 
 export PYTHONPATH=${EMEWS_PROJECT_ROOT}/python:${PYTHONPATH:-}
 
-SWIFT_IMPL=app
+CANDLE_MODEL_IMPL=app
 
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]
@@ -15,3 +15,5 @@ then
     export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 fi
 
+# This can be used for an OpenMPI hosts file
+# export TURBINE_LAUNCH_OPTIONS="--hostfile $HOME/hosts.txt"
