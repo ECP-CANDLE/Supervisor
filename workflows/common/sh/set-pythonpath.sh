@@ -17,6 +17,7 @@ export PYTHONPATH
 PYTHONPATH+=:$SUPERVISOR/workflows/common/python
 PYTHONPATH+=:$SUPERVISOR/models/OneD
 PYTHONPATH+=:$SUPERVISOR/models/Random
+PYTHONPATH+=:$SUPERVISOR/models/Comparator
 PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
 # The remainder of this script sets up PYTHONPATHs
