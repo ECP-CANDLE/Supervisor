@@ -82,11 +82,12 @@ string FRAMEWORK = "keras";
         string results[];
         foreach param, j in param_array
         {
-            results[j] = candle_model_train(param, exp_id, "%00i_%000i_%0000i" % (restart_number,i,j), model_name);
+            run_id = "run_%02i_%03i_%04i" % (restart_number, i, j);
+            results[j] =
+                candle_model_train(param, exp_id, run_id, model_name);
         }
-        string res = join(results, ";");
-        // printf(res);
-        EQPy_put(ME, res) => c = true;
+        string result = join(results, ";");
+        EQPy_put(ME, result) => c = true;
     }
   }
 }
