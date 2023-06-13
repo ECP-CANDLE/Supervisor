@@ -6,6 +6,10 @@ set -eu
 # Supervisor shell wrapper around CANDLE model
 # Used for CANDLE_MODEL_IMPL types: "app" and "container"
 
+# The result number is written to $PWD/result.txt,
+#     and additionally to a file in optional environment
+#     variable RESULT_FILE
+
 # Note that APP_PYTHONPATH is used by models here and
 # not just PYTHONPATH
 
@@ -60,11 +64,12 @@ then
   INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
-  export CANDLE_OUTPUT_DIR=$INSTANCE_DIRECTORY
 fi
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -pv $INSTANCE_DIRECTORY
+export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
+                                     $INSTANCE_DIRECTORY )
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
 echo "redirecting to: LOG_FILE=$INSTANCE_DIRECTORY/model.log"
 set +x
@@ -171,6 +176,8 @@ fi
 log "$MODEL_TYPE: EXIT CODE: $CODE"
 if (( CODE == 0 ))
 then
+  echo PWD: $( pwd -P )
+  echo INSTANCE_DIRECTORY: $INSTANCE_DIRECTORY
   ls -ltrh
   sleep 1  # Wait for initial output
   # Get last results of the format "IMPROVE RESULT xxx" in model.log
@@ -180,6 +187,10 @@ then
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
   echo "IMPROVE RESULT: '$RESULT'"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+  if [[ ${RESULT_FILE:-} != "" ]]
+  then
+    echo $RESULT > $RESULT_FILE
+  fi
 else
   echo # spacer
   if (( $CODE == 124 ))
