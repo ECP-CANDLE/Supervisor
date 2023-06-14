@@ -86,7 +86,12 @@ def make_floats(results):
     output = {}
     floats = []
     for i, token in enumerate(tokens):
-        if token.lower() == "nan":
+        if len(token) == 0:
+            msg = "received: 0-length token at: %i" % i
+            logger.info("ERROR: " + msg )
+            logger.info("       tokens: " + str(tokens))
+            raise Exception("make_floats(): " + msg)
+        elif token.lower() == "nan":
             output[i] = "nan"
             NaNs.append(i)
         else:
