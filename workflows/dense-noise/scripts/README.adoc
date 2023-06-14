@@ -1,0 +1,14 @@
+
+== SIF and DEF files
+
+Copy these into your Singularity/definitions directory for use.
+Run the scripts from the Singularity/ directory.
+
+Typical use:
+
+----
+./build-Uno.sh  ~/proj/{candle_lib,Benchmarks} /tmp/$USER
+./update-Uno.sh ~/proj/{candle_lib,Benchmarks} /tmp/$USER
+----
+
+Update is 60% faster if /tmp/$USER/Uno.sif already exists.

@@ -1,0 +1,41 @@
+
+# UNO UPDATE DEF
+# Loads an existing Uno container and updates it with the latest code
+# from local directories
+
+Bootstrap: localimage
+From: /tmp/woz/Uno.sif.bak
+# /home/woz/proj/Singularity/build/Uno.sif
+
+%labels
+	MAINTAINER	woz@anl.gov
+	VERSION	v0.0.1
+
+%environment
+	# Available at runtime not build time
+	MODEL="Uno"
+	PATH=$PATH:$SINGULARITY_ROOTFS/IMPROVE/${MODEL}
+	WORK_DIR=$SINGULARITY_ROOTFS/IMPROVE/
+	CANDLE_DATA_DIR=/candle_data_dir
+
+%post
+
+    # git clone https://github.com/ECP-CANDLE/candle_lib.git
+    cd /tmp/candle_lib
+    # git checkout develop
+    python -m pip install .
+    cd -
+    # git clone https://github.com/ECP-CANDLE/Benchmarks.git
+    # cd Benchmarks
+    # git checkout issue-119
+    cp -r /tmp/Benchmarks .
+    cp /usr/local/Benchmarks/Pilot1/Uno/train.sh /usr/local/bin
+    cd /usr/local
+    find Benchmarks -print0 -type d | xargs -0 -n 16 chmod ugo+rx
+    find Benchmarks -print0 -type f | xargs -0 -n 16 chmod ugo+r
+    chmod a+rx /usr/local/bin/train.sh
+
+
+# Local Variables:
+# mode: sh;
+# End:
