@@ -36,7 +36,7 @@ def initialize_parameters(default_model="cmp_default_model.txt"):
 
 
 def run(gParameters):
-    print("COMPARATOR")
+    print("Comparator: START")
     pp(gParameters)
     global file_path
     print("file_path: %s" % file_path)
@@ -51,6 +51,7 @@ def run(gParameters):
 
     results = [None, None]
     for i in [0, 1]:
+        print("cmp: subjob: %i: START" % i)
         gParams[i]["output_dir"] = "/candle_data_dir"
         print("output_dir: " + gParams[i]["output_dir"])
 
@@ -85,10 +86,12 @@ def run(gParameters):
             line = fp.readline()
             results[i] = float(line)
         print("cmp: result %i: %f" % (i, results[i]))
+        print("cmp: subjob: %i: DONE" % i)
     diff = -abs(results[1] - results[0])
     print("cmp: result diff: %f" % diff)
-    with open(gParameters["output_dir"] + "/result.txt", "w") as fp:
-        fp.write("%f\n" % diff)
+    print("IMPROVE_RESULT %f" % diff)
+    # with open(gParameters["output_dir"] + "/result.txt", "w") as fp:
+    #     fp.write("%f\n" % diff)
 
     print("Comparator DONE.")
 
