@@ -22,9 +22,15 @@ mkdir -pv $SINGULARITY_CACHEDIR
 # Get the directory containing this script:
 THIS=${0:A:h}
 
-singularity build --fakeroot --force \
-    --bind $BENCHMARKS:/tmp/Benchmarks \
-    --bind $CANDLE_LIB:/tmp/candle_lib \
-    $SIF $THIS/Uno.def
+BINDS=(
+  --bind $BENCHMARKS:/tmp/Benchmarks
+  --bind $CANDLE_LIB:/tmp/candle_lib
+)
 
+(
+  set -x
+  which singularity
+  singularity build --fakeroot --force $BINDS \
+              $SIF $THIS/Uno.def
+)
 echo "created: $SIF"
