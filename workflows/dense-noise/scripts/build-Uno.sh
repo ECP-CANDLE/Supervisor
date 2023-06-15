@@ -13,6 +13,7 @@ CANDLE_LIB=$1
 BENCHMARKS=$2
 OUTPUT_DIR=$3
 
+mkdir -pv $OUTPUT_DIR
 SIF=$OUTPUT_DIR/Uno.sif
 
 export SINGULARITY_CACHEDIR=/tmp/$USER/singularity-cache
