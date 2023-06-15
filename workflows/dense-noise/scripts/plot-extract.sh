@@ -21,8 +21,14 @@ then
 fi
 
 EXPID=$( basename $DIR )
-JOBID=$( cat $DIR/jobid.txt )
-show EXPID JOBID
+JOBID=""
+if [[ -r $DIR/jobid.txt ]]
+then
+  # jobid.txt does not exist for non-scheduled workflows
+  JOBID=$( cat $DIR/jobid.txt )
+fi
+
+echo "EXPID=$EXPID JOBID=${JOBID:-local}"
 
 OUTS=( $DIR/out/out-*.txt )
 
