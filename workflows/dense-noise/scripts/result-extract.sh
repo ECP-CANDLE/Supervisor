@@ -36,4 +36,4 @@ echo "outputs: ${#OUTS[@]}"
 
 grep --no-filename "result" ${OUTS[@]} > $DIR/out-all.txt
 
-python $THIS/plot-extract.py $DIR/out-all.txt $DIR/plot.h5
+python $THIS/result-extract.py $DIR/out-all.txt $DIR/plot.h5
