@@ -12,3 +12,23 @@ Typical use:
 ----
 
 Update is 60% faster if /tmp/$USER/Uno.sif already exists.
+
+== Plots
+
+Set `DIR` to an output directory.
+
+For dense-noise, run:
+
+----
+$ ./result-extract.sh $DIR
+----
+
+to make the `$DIR/plot.h5` file by extracting output data into HDF5 format.
+
+Then run
+
+----
+$ ./mk-plot.sh $DIR
+----
+
+to make `$DIR/heat.png`.
