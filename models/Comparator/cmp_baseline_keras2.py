@@ -9,7 +9,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
-from pprint import pprint, pp
+from pprint import pprint as pp
 
 
 import candle
@@ -156,11 +156,11 @@ def partition_params(gParameters):
 
     print("")
     print("params 0:")
-    pp(result[0], sort_dicts=True)
+    pp(sorted(result[0]))
 
     print("")
     print("params 1:")
-    pp(result[1], sort_dicts=True)
+    pp(sorted(result[1]))
     print("")
     return result
 
