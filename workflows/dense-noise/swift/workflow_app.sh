@@ -88,8 +88,8 @@ log_script
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 
-# CANDLE_MODEL_IMPL: "container" on Polaris, "py" on Summit/Frontier
-CANDLE_MODEL_IMPL="container"
+# CANDLE_MODEL_IMPL: "container" or "app" on Polaris, "py" on Summit/Frontier
+CANDLE_MODEL_IMPL="app"
 
 # Allow the user to set an objective function
 SWIFT_LIBS_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
@@ -133,12 +133,6 @@ else
     : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
   fi
   STDOUT=""
-fi
-
-# Singularity settings
-if [[ $SITE == "polaris" ]]
-then
-  export TURBINE_PRELAUNCH="/usr/share/lmod/lmod/init/bash ; module load singularity"
 fi
 
 cd $TURBINE_OUTPUT
