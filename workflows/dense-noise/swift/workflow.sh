@@ -138,7 +138,7 @@ fi
 # Singularity settings
 if [[ $SITE == "polaris" ]]
 then
-  export TURBINE_PRELAUNCH="module load singularity"
+  export TURBINE_PRELAUNCH="/usr/share/lmod/lmod/init/bash ; module load singularity"
 fi
 
 cd $TURBINE_OUTPUT
