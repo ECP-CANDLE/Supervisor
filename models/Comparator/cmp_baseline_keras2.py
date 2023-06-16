@@ -80,7 +80,8 @@ def run(gParameters):
                                stderr=subprocess.STDOUT,
                                check=True)
             except subprocess.CalledProcessError:
-                print("cmd failed.  See " + cmp_log_name)
+                print("cmp_baseline_keras2: subprocess failed: " +
+                      "see " + cmp_log_name)
                 exit(1)
         with open(result_file) as fp:
             line = fp.readline()
