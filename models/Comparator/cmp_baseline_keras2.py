@@ -88,7 +88,10 @@ def run(gParameters):
             results[i] = float(line)
         print("cmp: result %i: %f" % (i, results[i]))
         print("cmp: subjob: %i: DONE" % i)
-    diff = -abs(results[1] - results[0])
+    # Return relative difference of results,
+    # negated to maximize difference (DEAP does minimization)
+    diff = -abs(   (results[1] - results[0]) /
+                max(results[1] , results[0])  )
     print("cmp: result diff: %f" % diff)
     print("IMPROVE_RESULT %f" % diff)
     # with open(gParameters["output_dir"] + "/result.txt", "w") as fp:
