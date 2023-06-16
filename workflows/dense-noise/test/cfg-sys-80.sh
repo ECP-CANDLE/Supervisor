@@ -4,20 +4,21 @@
 # The number of MPI processes
 # Note that 1 processes is reserved for Swift
 # The default of 2 gives you 1 worker, i.e., 1 concurrent Python
-export PROCS=${PROCS:-2}
+export PROCS=${PROCS:-80}
 # Polaris: procs 80, ppn 8 walltime 1hr debug-scaling --- debug - 2nodes, 
 # MPI processes per node
-export PPN=${PPN:-2}
+export PPN=${PPN:-8}
 
-export WALLTIME=${WALLTIME:-00:05:00}
+export WALLTIME=${WALLTIME:-00:60:00}
 
 # CANDLE@ALCF:
 # export PROJECT=CSC249ADOA01
 export PROJECT=candle_aesp
 #export PROJECT=swift-t-polaris
- export QUEUE="debug"         # Up to  2 nodes
-# export QUEUE="debug-scaling" # Up to 10 nodes
+# export QUEUE="debug"         # Up to  2 nodes
+export QUEUE="debug-scaling" # Up to 10 nodes
 #export QUEUE="prod"            # At least 10 nodes
+
 
 # CANDLE@OLCF:
 # export PROJECT=MED106
