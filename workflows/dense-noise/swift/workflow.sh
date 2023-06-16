@@ -135,6 +135,12 @@ else
   STDOUT=""
 fi
 
+# Singularity settings
+if [[ $SITE == "polaris" ]]
+then
+  export TURBINE_PRELAUNCH="module load singularity"
+fi
+
 cd $TURBINE_OUTPUT
 cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
