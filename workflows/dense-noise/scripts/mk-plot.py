@@ -25,4 +25,5 @@ plot.set_ylabel("noise level (%)")
 plot.collections[0].colorbar.set_label("error (val_loss)")
 fig = plot.get_figure()
 fig.savefig(args.plot)
+
 print("plotted: " + args.plot)
