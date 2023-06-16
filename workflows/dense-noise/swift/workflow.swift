@@ -15,13 +15,11 @@ import math;
 
 string FRAMEWORK = "keras";
 
-string xcorr_root = getenv("XCORR_ROOT");
-string preprocess_rnaseq = getenv("PREPROP_RNASEQ");
-string emews_root = getenv("EMEWS_PROJECT_ROOT");
 string turbine_output = getenv("TURBINE_OUTPUT");
 
-string exp_id = argv("exp_id");
-int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
+string exp_id        = argv("exp_id");
+string train_sources = argv("train");
+
 string model_name = getenv("MODEL_NAME");
 
 printf("DENSE NOISE WORKFLOW.SWIFT");
@@ -40,12 +38,21 @@ int num_trials = 5;
 int trials[] = [0:num_trials-1];
 
 
+/*
+ GDSC - big and slow
+ gCSI - small
+ CTRP - small
+ ALMANAC -
+ NCI60
+*/
+printf("train_sources: " + train_sources);
+
 json_template = """
 {
   "layer_force": %4i,
   "noise"      : %5.2f,
   "epochs"     : %2i,
-  "train_sources" : "gCSI",
+  "train_sources" : "%s",
   "experiment_id": "%s",
   "run_id":        "%s",
   "candle_result": "val_loss",
@@ -62,7 +69,7 @@ foreach neuron in neurons
       y_noise_level = levely * noise_step;
       run_id = "%04i-%06.2f-%02i" % (neuron, y_noise_level, trial);
       params = json_template %
-        (neuron, y_noise_level, epochs, exp_id, run_id);
+        (neuron, y_noise_level, epochs, train_sources, exp_id, run_id);
       printf("running: %s: %s", run_id, params);
       result = candle_model_train(params, exp_id, run_id, model_name);
       printf("result: %s : neuron %i y_noise %0.3f : %s",

@@ -26,10 +26,11 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM " \
+       "MODEL_NAME TRAIN_SOURCES"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 6 ))
 then
   usage
   exit 1
@@ -41,6 +42,7 @@ if ! {
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
+  TRAIN_SOURCES=$6
  }
 then
   usage
@@ -78,6 +80,7 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -exp_id=$EXPID
                 -site=$SITE
+                -train=$TRAIN_SOURCES
               )
 
 USER_VARS=( $CMD_LINE_ARGS )

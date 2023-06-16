@@ -5,16 +5,17 @@ set -eu
 
 usage()
 {
-  echo "Usage: test MODEL_NAME SITE RUN_DIR"
+  echo "Usage: test MODEL_NAME SITE RUN_DIR TRAIN_SOURCES"
   echo "       RUN_DIR: use -a for automatic"
 }
 
 RUN_DIR=""
-if (( ${#} == 3 ))
+if (( ${#} == 4 ))
 then
   export MODEL_NAME=$1
   SITE=$2
   RUN_DIR=$3
+  TRAIN_SOURCES=$4
 else
   usage
   exit 1
@@ -45,7 +46,8 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+                                      $MODEL_NAME $TRAIN_SOURCES
 
 echo "$SCRIPT: OK"
 

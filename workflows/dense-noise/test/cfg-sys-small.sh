@@ -14,9 +14,9 @@ export WALLTIME=${WALLTIME:-00:05:00}
 # CANDLE@ALCF:
 # export PROJECT=CSC249ADOA01
 export PROJECT=swift-t-polaris
-# export QUEUE="debug"         # Up to  2 nodes
+export QUEUE=${QUEUE:-debug}   # Up to  2 nodes
 # export QUEUE="debug-scaling" # Up to 10 nodes
-export QUEUE="prod"            # At least 10 nodes
+# export QUEUE="prod"            # At least 10 nodes
 
 
 # CANDLE@OLCF:
