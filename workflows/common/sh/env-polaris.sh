@@ -18,7 +18,8 @@ export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
-PY=$ROOT/Miniconda
+PY=$ROOT/Miniconda-2023-06-16
+
 PATH=$PY/bin:$PATH
 
 R_HOME=$ROOT/R-4.2.2/lib64/R

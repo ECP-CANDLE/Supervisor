@@ -198,7 +198,7 @@ def make_env(workflows, gParams, result_file):
         "WORKFLOWS_ROOT": workflows,
         "TURBINE_OUTPUT": gParams["output_dir"],
         "EXPID": gParams["experiment_id"],
-        "SITE": "lambda",
+        "SITE": os.getenv("SITE"),
         "BENCHMARK_TIMEOUT": "120",
         "MODEL_NAME": gParams["model_name"],
         "MODEL_RETURN": "loss",

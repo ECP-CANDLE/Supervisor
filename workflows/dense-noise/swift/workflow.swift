@@ -39,14 +39,12 @@ float noise_step = 5; // Difference between noises
 int num_trials = 5;
 int trials[] = [0:num_trials-1];
 
-config = "/usr/local/Benchmarks/Pilot1/Uno/uno_auc_model.txt";
 
 json_template = """
 {
   "layer_force": %4i,
   "noise"      : %5.2f,
   "epochs"     : %2i,
-  "config"     : "%s",
   "train_sources" : "gCSI",
   "experiment_id": "%s",
   "run_id":        "%s",
@@ -64,7 +62,7 @@ foreach neuron in neurons
       y_noise_level = levely * noise_step;
       run_id = "%04i-%06.2f-%02i" % (neuron, y_noise_level, trial);
       params = json_template %
-        (neuron, y_noise_level, epochs, config, exp_id, run_id);
+        (neuron, y_noise_level, epochs, exp_id, run_id);
       printf("running: %s: %s", run_id, params);
       result = candle_model_train(params, exp_id, run_id, model_name);
       printf("result: %s : neuron %i y_noise %0.3f : %s",

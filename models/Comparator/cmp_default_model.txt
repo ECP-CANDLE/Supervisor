@@ -1,7 +1,8 @@
 [Global_Params]
 model_name = 'cmp'
 
-cmp_model_name = '/tmp/woz/Uno.sif'
+# cmp_model_name = '/tmp/woz/Uno.sif'
+cmp_model_name = '/home/rjain/Uno.sif'
 
 cmp_config_file = '/candle_data_dir/uno_auc_model.txt'
 
