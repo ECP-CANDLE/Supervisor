@@ -31,7 +31,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 SCRIPT=$( basename $0 .sh )
 
 # Select configurations
-export CFG_SYS=$THIS/cfg-sys-small.sh
+export CFG_SYS=$THIS/cfg-sys-80.sh
 # export CFG_SYS=$THIS/cfg-sys-big.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
