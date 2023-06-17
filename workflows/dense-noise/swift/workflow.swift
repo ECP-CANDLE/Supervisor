@@ -37,6 +37,7 @@ float noise_step = 5; // Difference between noises
 int num_trials = 5;
 int trials[] = [0:num_trials-1];
 
+print("num_trials: %i", num_trials);
 
 /*
  GDSC - big and slow
