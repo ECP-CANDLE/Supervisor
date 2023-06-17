@@ -138,12 +138,6 @@ else
   STDOUT=""
 fi
 
-# Singularity settings
-if [[ $SITE == "polaris" ]]
-then
-  export TURBINE_PRELAUNCH="/usr/share/lmod/lmod/init/bash ; module load singularity"
-fi
-
 cd $TURBINE_OUTPUT
 cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
