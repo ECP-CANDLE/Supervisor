@@ -1,7 +1,11 @@
 #!/bin/bash
 set -eu
 
-# PLOT EXTRACT SH
+# RESULT EXTRACT SH
+# Extracts "result" lines as printed by workflow.swift,
+#          which contain the dense and noise params and
+#          the result
+# Python creates the HDF5 file from these lines
 
 THIS=$( realpath $( dirname $0 ) )
 D_N=$(  realpath $THIS/.. )
