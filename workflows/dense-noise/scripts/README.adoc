@@ -17,13 +17,26 @@ Update is 60% faster if /tmp/$USER/Uno.sif already exists.
 
 Set `DIR` to an output directory.
 
+=== Extract the log data
+
+We need to make the `$DIR/plot.h5` file by extracting output data
+into HDF5 format.
+
 For dense-noise, run:
 
 ----
 $ ./result-extract.sh $DIR
 ----
 
-to make the `$DIR/plot.h5` file by extracting output data into HDF5 format.
+For GA,
+
+run:
+
+----
+$ ./model-extract.sh $DIR
+----
+
+=== Plot the extracted data
 
 Then run
 
