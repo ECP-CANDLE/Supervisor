@@ -9,7 +9,7 @@ export PROCS=${PROCS:-2}
 # MPI processes per node
 export PPN=${PPN:-2}
 
-export WALLTIME=${WALLTIME:-00:05:00}
+export WALLTIME=${WALLTIME:-00:10:00}
 
 # CANDLE@ALCF:
 # export PROJECT=CSC249ADOA01

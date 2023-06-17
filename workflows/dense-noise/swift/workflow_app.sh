@@ -26,10 +26,11 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM " \
+       "MODEL_NAME TRAIN_SOURCES1 TRAIN_SOURCES2"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 7 ))
 then
   usage
   exit 1
@@ -41,13 +42,15 @@ if ! {
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
+  TRAIN_SOURCES1=$6
+  TRAIN_SOURCES2=$7
  }
 then
   usage
   exit 1
 fi
 
-echo "workflow.sh start: MODEL_NAME=$MODEL_NAME"
+echo "workflow_app.sh start: MODEL_NAME=$MODEL_NAME"
 
 source_site env   $SITE
 source_site sched $SITE
@@ -59,7 +62,7 @@ export TURBINE_JOBNAME="${EXPID}"
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
-  echo "workflow.sh: CANDLE_DATA_DIR is not set!"
+  echo "workflow_app.sh: CANDLE_DATA_DIR is not set!"
   exit 1
 fi
 
@@ -78,6 +81,8 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -exp_id=$EXPID
                 -site=$SITE
+                -train1=$TRAIN_SOURCES1
+		-train2=$TRAIN_SOURCES2
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -99,7 +104,7 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 # log_path PYTHONPATH
 
-WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow.swift}
+WORKFLOW_SWIFT=${WORKFLOW_SWIFT:-workflow_app.swift}
 echo "WORKFLOW_SWIFT: $WORKFLOW_SWIFT"
 
 WAIT_ARG=""

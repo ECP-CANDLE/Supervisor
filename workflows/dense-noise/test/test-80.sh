@@ -10,12 +10,13 @@ usage()
 }
 
 RUN_DIR=""
-if (( ${#} == 4 ))
+if (( ${#} == 5 ))
 then
   export MODEL_NAME=$1
   SITE=$2
   RUN_DIR=$3
-  TRAIN_SOURCES=$4
+  TRAIN_SOURCES1=$4
+  TRAIN_SOURCES2=$5
 else
   usage
   exit 1
@@ -46,7 +47,7 @@ then
 fi
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow_app.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME $TRAIN_SOURCES
+$EMEWS_PROJECT_ROOT/swift/workflow_app.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME $TRAIN_SOURCES1 $TRAIN_SOURCES2
 
 echo "$SCRIPT: OK"
 
