@@ -1,5 +1,7 @@
 
 # MAKE PLOT PY
+# Must negate values as the cmp model produces a -abs()
+# Centered on median of actual values
 
 import argparse
 import os
