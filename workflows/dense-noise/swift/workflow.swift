@@ -29,23 +29,16 @@ printf("model_name: " + model_name);
 int epochs = 10;
 
 int neurons[] = [500:1000:50];
+// int neurons[] = [500:1000:100];
 
 float y_num_noises = 10; // Number of noise levels to try
 float y_noise_levels[] = [0:y_num_noises];
 float noise_step = 5; // Difference between noises
 
-int num_trials = 5;
+int num_trials = 1;
 int trials[] = [0:num_trials-1];
 
-print("num_trials: %i", num_trials);
-
-/*
- GDSC - big and slow
- gCSI - small
- CTRP - small
- ALMANAC -
- NCI60
-*/
+printf("num_trials: %i", num_trials);
 printf("train_sources: " + train_sources);
 
 json_template = """
@@ -57,7 +50,7 @@ json_template = """
   "experiment_id": "%s",
   "run_id":        "%s",
   "candle_result": "val_loss",
-  "ckpt_save_interval": 1
+  "ckpt_save_interval": 0
 }
 """;
 
