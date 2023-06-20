@@ -1,5 +1,5 @@
 
-# PLOT EXTRACT PY
+# RESULT EXTRACT PY
 
 import argparse
 import os
