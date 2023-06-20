@@ -37,7 +37,7 @@ for layer in values.keys():
         L = values[layer][noise]
         n = len(L)
         s = sum(L)
-        values[layer][noise] = n / s
+        values[layer][noise] = s / n
 
 import pandas as pd
 df = pd.DataFrame(values)
