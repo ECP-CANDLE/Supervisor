@@ -18,3 +18,9 @@ import pandas as pd
 
 df = pd.read_hdf(args.data, key=args.key)
 print(str(df))
+
+med = df.median().median()
+df = -df
+mx  = df.max().max()
+
+print("max: %r" % mx)
