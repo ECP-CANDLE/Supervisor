@@ -374,6 +374,7 @@ def get_results(history, model_return, epochs_expected):
         result = math.nan
 
     print("result: " + model_return + ": " + str(result))
+    print("IMPROVE_RESULT " + str(result))
     history_result = history.history.copy()
     return result, history_result
 
