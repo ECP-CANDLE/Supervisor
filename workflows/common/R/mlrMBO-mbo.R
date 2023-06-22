@@ -30,13 +30,9 @@ options(
                            level = NA_character_,
                            show.info = NA){
     st = proc.time()
-<<<<<<< Updated upstream
     print("parallelMap2() ...")
     mode <- deparse(substitute(fun))
     print(paste0("mode: ", mode))
-=======
-    print(paste("mlrMBO: parallelMap2 start"))
->>>>>>> Stashed changes
     #For wrapFun do this: initdesign
     if (mode == "wrapFun"){
       print("wrapFun")
