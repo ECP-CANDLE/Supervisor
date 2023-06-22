@@ -44,7 +44,7 @@ TURBINE_OUTPUT=""
 if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
 then
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
-  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
+  printf "workflow.sh mlrMBO model=%s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 fi
 
