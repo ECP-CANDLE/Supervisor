@@ -35,6 +35,8 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+export MODEL_RETURN=val_loss
+
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
 
