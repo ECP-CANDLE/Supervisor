@@ -12,7 +12,7 @@
     run_id : A string run ID that will be the output directory name
     model_name : A path to a SIF
 */
-(string obj_result) candle_model_train(string params,
+(string model_result) candle_model_train(string params,
                                        string expid,
                                        string runid,
                                        string model_name)
@@ -22,17 +22,17 @@
 
   model_token = rootname_string(basename_string(model_name));
   outdir = "%s/%s/Output/%s/%s" % (CDD, model_token, expid, runid);
-  printf("obj_container(): running in: %s", outdir);
+  printf("candle_model_train_container(): running in: %s", outdir);
 
   // We do not use a file type here because this file may not be created,
   // which is handled by get_results()
   result_file = outdir/"result.txt";
   wait (run_model_train(model_sh, params, expid, runid, model_name))
   {
-    obj_result = get_results(result_file);
+    model_result = get_results(result_file);
   }
-  printf("model_train_container(): result(%s): '%s'",
-         runid, obj_result);
+  printf("candle_model_train_container(): result(%s): '%s'",
+         runid, model_result);
 }
 
 /**
@@ -47,7 +47,7 @@ app (void o) run_model_train(string model_sh, string params,
 }
 
 /**
-   Extracts the Benchmark output if it exists,
+   Extracts the model result if it exists,
    else, provides a NaN so the workflow can keep running
 */
 (string model_result) get_results(string result_file) {
@@ -56,7 +56,6 @@ app (void o) run_model_train(string model_sh, string params,
     model_result = trim(read(line));
   } else {
     printf("File not found: %s", result_file);
-    // return with a large value
-    model_result = "1e7";
+    model_result = "NaN";
   }
 }

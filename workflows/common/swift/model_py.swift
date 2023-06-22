@@ -17,7 +17,7 @@ try:
   import tensorflow
   from tensorflow import keras
 
-  model_result = '-100'
+  model_result = 'NaN'
   outdir = '%s'
 
   if not os.path.exists(outdir):

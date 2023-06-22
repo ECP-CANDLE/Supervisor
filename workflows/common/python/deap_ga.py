@@ -1,44 +1,67 @@
+"""
+DEAP GA PY
+
+EMEWS interface module for DEAP
+"""
+
 import csv
 import json
 import math
 import random
+import sys
 import threading
 import time
 
+import log_tools
 import eqpy
 import ga_utils
 import numpy as np
 from deap import algorithms, base, creator, tools
 
-# list of ga_utils parameter objects
+# List of ga_utils parameter objects:
 ga_params = None
+
+# Last mean value (used if there are no new values):
+mean_last = None
+
+generation = 1
+logger = log_tools.get_logger(None, "DEAP")
 
 
 def obj_func(x):
+    """
+    Just a stub for the DEAP framework
+    """
     return 0
 
 
-# {"batch_size":512,"epochs":51,"activation":"softsign",
-# "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
-# "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
-def create_list_of_json_strings(list_of_lists, super_delim=";"):
-    # create string of ; separated jsonified maps
-    res = []
+def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
+    """
+    create string of semicolon-separated jsonified maps
+     Produces something like:
+       {"batch_size":512,"epochs":51,"activation":"softsign",
+        "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
+        "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
+    """
+    result = []
     global ga_params
-    for l in list_of_lists:
-        jmap = {}
-        for i, p in enumerate(ga_params):
-            jmap[p.name] = l[i]
+    for L in list_of_lists:
+        json_string = create_json_string(L)
+        result.append(json_string)
+    return super_delimiter.join(result)
 
-        jstring = json.dumps(jmap)
-        res.append(jstring)
 
-    return super_delim.join(res)
+def create_json_string(L, indent=None):
+    json_dict = {}
+    for i, p in enumerate(ga_params):
+        json_dict[p.name] = L[i]
+    result = json.dumps(json_dict, indent=indent)
+    return result
 
 
 def create_fitnesses(params_string):
-    """return equivalent length tuple list.
-
+    """
+    return equivalent length tuple list.
     :type params_string: str
     """
     params = params_string.split(";")
@@ -47,19 +70,73 @@ def create_fitnesses(params_string):
     return res
 
 
-def queue_map(obj_func, pops):
-    # Note that the obj_func is not used
-    # sending data that looks like:
-    # [[a,b,c,d],[e,f,g,h],...]
+def make_floats(results):
+    """
+    results: String of data from workflow
+    return:  List of singleton-tuples, each a float
+    This function converts the workflow strings to the DEAP format,
+         and replaces any string NaNs in the results with
+         the mean of the current generation or
+         the mean of the prior   generation.
+    """
+    global mean_last
+    tokens = results.split(";")
+    NaNs   = []
+    values = []
+    output = {}
+    floats = []
+    for i, token in enumerate(tokens):
+        if len(token) == 0:
+            msg = "received: 0-length token at: %i" % i
+            logger.info("ERROR: " + msg )
+            logger.info("       tokens: " + str(tokens))
+            raise Exception("make_floats(): " + msg)
+        elif token.lower() == "nan":
+            output[i] = "nan"
+            NaNs.append(i)
+        else:
+            f = float(token)
+            output[i] = f
+            values.append(f)
+    logger.info("RESULTS: values: %i NaNs: %i" %
+                (len(values), len(NaNs)))
+    if len(values) > 0:
+        mean = sum(values) / len(values)
+        mean_last = mean
+    else:
+        assert mean_last is not None, \
+            "all generation=1 results are NaN!"
+        mean = mean_last
+
+    for i in NaNs:
+        output[i] = mean
+    for i in range(0, len(tokens)):
+        floats.append((output[i],))
+    return floats
+
+
+def queue_map(_f, pops):
+    """
+    Note that _f is not used, but is part of the DEAP framework
+    Formats model parameters that look like:
+      [[a,b,c,d],[e,f,g,h],...]
+    """
     if not pops:
         return []
+    global generation
+    generation_start = time.time()
+    logger.info("GENERATION: %i START: pop: %i" %
+                (generation, len(pops)))
+    sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
-    result = eqpy.IN_get()
-    split_result = result.split(";")
-    # TODO determine if max'ing or min'ing and use -9999999 or 99999999
-    return [(float(x),) if not math.isnan(float(x)) else (float(99999999),)
-            for x in split_result]
-    # return [(float(x),) for x in split_result]
+    results = eqpy.IN_get()
+    duration = time.time() - generation_start
+    logger.info("GENERATION: %i STOP.  duration: %0.3f" %
+                (generation, duration))
+    sys.stdout.flush()
+    generation += 1
+    floats = make_floats(results)
+    return floats
 
 
 def make_random_params():
@@ -84,8 +161,9 @@ def parse_init_params(params_file):
 
 
 def update_init_pop(pop, params_file):
-    global ga_params
-    print("Reading initial population from {}".format(params_file))
+    global ga_params, logger
+    logger.info("Reading initial population from {}".format(params_file))
+    sys.stdout.flush()
     init_params = parse_init_params(params_file)
     if len(pop) > len(init_params):
         raise ValueError(
@@ -138,15 +216,23 @@ def run():
     :param num_pop: size of population
     :param seed: random seed
     :param strategy: one of 'simple', 'mu_plus_lambda'
-    :param ga parameters file name: ga parameters file name (e.g., "ga_params.json")
+    :param ga parameters file name: ga parameters file name
+           (e.g., "ga_params.json")
     :param param_file: name of file containing initial parameters
     """
+    global logger
+    start_time = time.time()
+    logger.info("OPTIMIZATION START")
+    sys.stdout.flush()
+
     eqpy.OUT_put("Params")
     params = eqpy.IN_get()
 
-    # parse params
+    # Evaluate and log the params given by the workflow level:
     (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file,
      param_file) = eval("{}".format(params))
+    log_params(logger, num_iter, num_pop, seed)
+
     random.seed(seed)
     global ga_params
     ga_params = ga_utils.create_parameters(ga_params_file)
@@ -179,7 +265,7 @@ def run():
 
     # num_iter-1 generations since the initial population is evaluated once first
     mutpb = mut_prob
-    start_time = time.time()
+
     if strategy == "simple":
         pop, log = algorithms.eaSimple(
             pop,
@@ -216,12 +302,34 @@ def run():
 
     fitnesses = [str(p.fitness.values[0]) for p in pop]
 
+    logger.info("OPTIMIZATION STOP")
+    sys.stdout.flush()
+
+    best_i = -1
+    best_fitness = sys.float_info.max
+    for i in range(0, len(fitnesses)):
+        f = float(fitnesses[i])
+        if f < best_fitness:
+            best_i = i
+            best_fitness = f
+    logger.info("BEST: %s == ...\n%s" %
+                (best_fitness, create_json_string(pop[i], indent=2)))
+    sys.stdout.flush()
+
     eqpy.OUT_put("DONE")
     # return the final population
-    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}".format(
+    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}\n".format(
         create_list_of_json_strings(pop),
         ";".join(fitnesses),
         start_time,
         log,
         end_time,
     ))
+
+
+def log_params(logger, num_iter, num_pop, seed):
+    logger.info("HPO PARAMS START")
+    logger.info("num_iter: %4i" % num_iter)
+    logger.info("num_pop:  %4i" % num_pop)
+    logger.info("seed:     %4i" % seed)
+    logger.info("HPO PARAMS STOP")

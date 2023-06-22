@@ -6,6 +6,10 @@ set -eu
 # Supervisor shell wrapper around CANDLE model
 # Used for CANDLE_MODEL_IMPL types: "app" and "container"
 
+# The result number is written to $PWD/result.txt,
+#     and additionally to a file in optional environment
+#     variable RESULT_FILE
+
 # Note that APP_PYTHONPATH is used by models here and
 # not just PYTHONPATH
 
@@ -25,12 +29,11 @@ usage()
   echo "             for Singularity it is a script (e.g., 'ACTION.sh')"
   echo "The environment should have:"
   echo "                EMEWS_PROJECT_ROOT|WORKFLOWS_ROOT TURBINE_OUTPUT"
-  echo "                SITE OBJ_RETURN BENCHMARK_TIMEOUT"
+  echo "                SITE MODEL_RETURN BENCHMARK_TIMEOUT"
   echo "                CANDLE_DATA_DIR"
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-set -x
 if (( ${#} != 7 ))
 then
   echo
@@ -61,11 +64,12 @@ then
   INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
 else # "BENCHMARKS"
   INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
-  export CANDLE_OUTPUT_DIR=$INSTANCE_DIRECTORY
 fi
 
 # All stdout/stderr after this point goes into model.log !
 mkdir -pv $INSTANCE_DIRECTORY
+export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
+                                     $INSTANCE_DIRECTORY )
 LOG_FILE=$INSTANCE_DIRECTORY/model.log
 echo "redirecting to: LOG_FILE=$INSTANCE_DIRECTORY/model.log"
 set +x
@@ -153,52 +157,56 @@ else # "BENCHMARKS"
   # model_runner/runner_utils writes result.txt
 fi
 
+echo
 log "MODEL_CMD: ${MODEL_CMD[@]}"
+echo
 
 # Run Python!
 $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 PID=$!
 
-if [[ ${MODEL_TYPE:-} == "SINGULARITY" ]]
+# Use if block to suppress errors:
+if wait $PID
 then
-  wait $PID
+  CODE=0
+else
+  CODE=$?
+fi
+
+log "$MODEL_TYPE: EXIT CODE: $CODE"
+if (( CODE == 0 ))
+then
+  echo PWD: $( pwd -P )
+  echo INSTANCE_DIRECTORY: $INSTANCE_DIRECTORY
   ls -ltrh
   sleep 1  # Wait for initial output
-  # Get last results of the format "CANDLE_RESULT xxx" in model.log
+  # Get last results of the format "IMPROVE RESULT xxx" in model.log
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
-  RES=$( awk -v FS="CANDLE_RESULT" 'NF>1 {x=$2} END {print x}' \
+  RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
              $INSTANCE_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
-  echo "CANDLE RESULT: '$RESULT'"
+  echo "IMPROVE RESULT: '$RESULT'"
   echo $RESULT > $INSTANCE_DIRECTORY/result.txt
-else
-  wait $PID
-  CODE=$?
-  if (( CODE ))
+  if [[ ${RESULT_FILE:-} != "" ]]
   then
-    echo # spacer
-    if (( $CODE == 124 ))
-    then
-      log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
-      # This will trigger a NaN (the result file does not exist)
-      exit 0
-    else
-      log "MODEL ERROR! (CODE=$CODE)"
-      if (( ${IGNORE_ERRORS:-0} ))
-      then
-        log "IGNORING ERROR."
-        # This will trigger a NaN (the result file does not exist)
-        exit 0
-      fi
-      log "ABORTING WORKFLOW (exit 1)"
-      exit 1 # Unknown error in Python: abort the workflow
-    fi
+    echo $RESULT > $RESULT_FILE
   fi
-
-  # Get results from model.log: last occurrence of "loss: xxx"
-  RESULT=$(awk -v FS="loss:" 'NF>1{print $2}' model.log | tail -1)
-  log "RESULT: $RESULT"
-  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+else
+  echo # spacer
+  if (( $CODE == 124 ))
+  then
+    log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
+  else
+    log "MODEL ERROR! (CODE=$CODE)"
+  fi
+  if (( ${IGNORE_ERRORS:-0} == 0 ))
+  then
+    # Unknown error in Python: abort the workflow
+    log "ABORTING WORKFLOW (exit 1)"
+    exit 1
+  fi
+  # This will trigger a NaN (the result file does not exist)
+  log "IGNORING ERROR."
 fi
 
 log "END: SUCCESS"

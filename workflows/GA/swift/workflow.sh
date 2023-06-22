@@ -8,12 +8,6 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-if [[ ! -d $EMEWS_PROJECT_ROOT/../../../Benchmarks ]]
-then
-  echo "Could not find Benchmarks in: $EMEWS_PROJECT_ROOT/../../../Benchmarks"
-  exit 1
-fi
-
 export BENCHMARK_TIMEOUT
 
 SCRIPT_NAME=$(basename $0)
@@ -62,7 +56,7 @@ then
 fi
 
 get_site    $1 # Sets SITE
-get_expid   $2 $CANDLE_MODEL_TYPE # Sets EXPID
+get_expid   $2 # Sets EXPID
 get_cfg_sys $3
 get_cfg_prm $4
 MODEL_NAME=$5
@@ -79,7 +73,7 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 PYTHONPATH+=:$EQPY
 PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
 
-export TURBINE_JOBNAME="GA_${EXPID}"
+export TURBINE_JOBNAME=$EXPID
 RESTART_FILE_ARG=""
 if [[ ${RESTART_FILE:-} != "" ]]
 then
@@ -91,7 +85,6 @@ if [[ ${RESTART_NUMBER:-} != "" ]]
 then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
-
 
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
@@ -118,14 +111,16 @@ log_script
 #copy the configuration files to TURBINE_OUTPUT
 cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $INIT_PARAMS_FILE  $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 
-
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-# Allow the user to set an objective function
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
-# This is used by the obj_app objective function
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+  CANDLE_MODEL_IMPL="container"
+fi
+SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
+# This is used by the candle_model_train_app function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 WAIT_ARG=""
@@ -171,37 +166,35 @@ then
 fi
 
 (
-set -x
-which python swift-t
-swift-t -O 0 -n $PROCS \
-        ${MACHINE:-} \
-        -p -I $EQPY -r $EQPY \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
-        -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
-        -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
-        -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
-        -e BENCHMARKS_ROOT \
-        -e EMEWS_PROJECT_ROOT \
-        $( python_envs ) \
-        -e APP_PYTHONPATH \
-        -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
-        -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
-        -e MODEL_SH \
-        -e MODEL_NAME \
-        -e SITE \
-        -e BENCHMARK_TIMEOUT \
-        -e SH_TIMEOUT \
-        -e TURBINE_STDOUT \
-        -e IGNORE_ERRORS \
-        -e CANDLE_DATA_DIR \
-        -e CANDLE_MODEL_TYPE \
-        -e CANDLE_IMAGE \
-        $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]} | 2>&1 \
-    tee $STDOUT
+  which python swift-t
+  swift-t -O 0 -n $PROCS \
+          ${MACHINE:-} \
+          -p -I $EQPY -r $EQPY \
+          -I $SWIFT_LIBS_DIR \
+          -i $SWIFT_MODULE \
+          -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+          -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
+          -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
+          -e BENCHMARKS_ROOT \
+          -e EMEWS_PROJECT_ROOT \
+          $( python_envs ) \
+          -e APP_PYTHONPATH \
+          -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
+          -e MODEL_RETURN \
+          -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
+          -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
+          -e MODEL_SH \
+          -e MODEL_NAME \
+          -e SITE \
+          -e BENCHMARK_TIMEOUT \
+          -e SH_TIMEOUT \
+          -e TURBINE_STDOUT \
+          -e IGNORE_ERRORS \
+          -e CANDLE_DATA_DIR \
+          -e CANDLE_MODEL_TYPE \
+          -e CANDLE_IMAGE \
+          $WAIT_ARG \
+          $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 )
 
 if (( ${PIPESTATUS[0]} ))

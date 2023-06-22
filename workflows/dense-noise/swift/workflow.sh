@@ -26,10 +26,11 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME"
+  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM " \
+       "MODEL_NAME TRAIN_SOURCES"
 }
 
-if (( ${#} != 5 ))
+if (( ${#} != 6 ))
 then
   usage
   exit 1
@@ -41,6 +42,7 @@ if ! {
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
+  TRAIN_SOURCES=$6
  }
 then
   usage
@@ -78,6 +80,7 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 CMD_LINE_ARGS=( -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -exp_id=$EXPID
                 -site=$SITE
+                -train=$TRAIN_SOURCES
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -88,10 +91,12 @@ log_script
 mkdir -pv $TURBINE_OUTPUT/run
 mkdir -pv $TURBINE_OUTPUT/data
 
+# CANDLE_MODEL_IMPL: "container" on Polaris, "py" on Summit/Frontier
+CANDLE_MODEL_IMPL="container"
+
 # Allow the user to set an objective function
-OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-CANDLE_MODEL_IMPL="py"
-OBJ_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
+SWIFT_LIBS_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
+SWIFT_MODULE=${OBJ_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
@@ -126,7 +131,7 @@ else
      [[ $SITE == "biowulf" ]] || \
      [[ $SITE == "polaris" ]]
   then
-    : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
+    export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
   else
     : # export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
   fi
@@ -139,8 +144,8 @@ cp $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
 swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
-        -I $OBJ_DIR \
-        -i $OBJ_MODULE \
+        -I $SWIFT_LIBS_DIR \
+        -i $SWIFT_MODULE \
         -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
         -e TURBINE_STDOUT \
         -e BENCHMARKS_ROOT \
@@ -148,7 +153,7 @@ swift-t -n $PROCS \
         -e APP_PYTHONPATH=$APP_PYTHONPATH \
         $( python_envs ) \
         -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e CANDLE_DATA_DIR \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \

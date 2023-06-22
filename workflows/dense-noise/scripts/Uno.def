@@ -1,0 +1,61 @@
+
+# UNO DEF
+# Uno definition that uses local code directories
+# Run with ./build-Uno.sh
+
+Bootstrap: docker
+From: tensorflow/tensorflow:2.4.2-gpu
+
+%labels
+	MAINTAINER	woz@anl.gov
+	VERSION	v0.0.1
+
+%setup
+	mkdir -p $SINGULARITY_ROOTFS/IMPROVE
+	cp src/Singularity_gpu_fix.sh $SINGULARITY_ROOTFS/IMPROVE/
+
+%environment
+	# Available at runtime not build time
+	MODEL="Uno"
+	PATH=$PATH:$SINGULARITY_ROOTFS/IMPROVE/${MODEL}
+	WORK_DIR=$SINGULARITY_ROOTFS/IMPROVE/
+	CANDLE_DATA_DIR=/candle_data_dir
+
+%post
+    # Install prerequisites and update image
+    # See this thread for more information about apt-keys for NVIDIA:
+    # https://forums.developer.nvidia.com/t/invalid-public-key-for-cuda-apt-repository/212901/18
+    ls /tmp/Benchmarks
+    apt-get install wget
+    apt-key del 7fa2af80
+    rm -v /etc/apt/sources.list.d/nvidia-ml.list /etc/apt/sources.list.d/cuda.list
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb
+    dpkg -i cuda-keyring_1.0-1_all.deb
+    apt-get update
+    apt-get install -y git ed
+    python -m pip install numba scikit-learn
+
+    mkdir -p $SINGULARITY_ROOTFS/IMPROVE /candle_data_dir
+    cd $SINGULARITY_ROOTFS/IMPROVE
+    chmod a+x Singularity_gpu_fix.sh
+    ./Singularity_gpu_fix.sh
+    cd /usr/local
+    # git clone https://github.com/ECP-CANDLE/candle_lib.git
+    cd /tmp/candle_lib
+    # git checkout develop
+    python -m pip install .
+    cd -
+    # git clone https://github.com/ECP-CANDLE/Benchmarks.git
+    # cd Benchmarks
+    # git checkout issue-119
+    cp -r /tmp/Benchmarks .
+    cp /usr/local/Benchmarks/Pilot1/Uno/train.sh /usr/local/bin
+    cd /usr/local
+    find Benchmarks -print0 -type d | xargs -0 -n 16 chmod ugo+rx
+    find Benchmarks -print0 -type f | xargs -0 -n 16 chmod ugo+r
+    chmod a+rx /usr/local/bin/train.sh
+
+
+# Local Variables:
+# mode: sh;
+# End:

@@ -169,30 +169,30 @@ get_expid()
 {
   if (( ${#} != 1 ))
   then
-    echo "get_expid(): provide EXPID"
+    echo "get_expid(): provide EXPID or '-a'"
     return 1
   fi
 
   export EXPID=$1
 
-  echo "CANDLE_MODEL_TYPE is set to: ${CANDLE_MODEL_TYPE:=BENCHMARKS}"
-
-  MODEL_NAME=${MODEL_NAME:-cmp}
-
-  echo "MODEL_NAME is set to: ${MODEL_NAME}"
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS} ${MODEL_NAME:=cmp}
+  echo "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
+  echo "get_expid(): MODEL_NAME=$MODEL_NAME"
 
   export EXPERIMENTS=""
 
   if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
   then
-    EXPERIMENTS=${EXPERIMENTS:-$CANDLE_DATA_DIR/$MODEL_NAME/Output}
+    # Keep this directory in sync with model.sh RUN_DIRECTORY
+    MODEL_TOKEN=$( basename $MODEL_NAME .sif )
+    EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
   else # "BENCHMARKS"
     EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
   fi
 
   local i=0 EXPS E TO
 
-  if [ $EXPID = "-a" ]
+  if [[ $EXPID == "-a" ]]
   then
     shift
     # Search for free experiment number
@@ -224,7 +224,7 @@ get_expid()
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then
-    echo "Could not canonicalize: $TURBINE_OUTPUT"
+    echo "get_expid(): could not canonicalize: $TURBINE_OUTPUT"
     exit 1
   fi
   export TURBINE_OUTPUT=$TO
@@ -232,6 +232,7 @@ get_expid()
 
 next()
 # Obtain next available numbered file name matching pattern
+#        in global variable REPLY
 # E.g., 'next out-%02i' returns 'out-02' if out-00 and out-01 exist.
 {
   local PATTERN=$1 FILE="" i=0

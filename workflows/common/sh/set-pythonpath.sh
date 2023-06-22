@@ -11,6 +11,22 @@
 # If MODEL_PYTHON_DIR is set, that is added to PYTHONPATH
 
 SUPERVISOR=$( cd $EMEWS_PROJECT_ROOT/../.. ; /bin/pwd )
+
+# Set up Supervisor
+export PYTHONPATH
+PYTHONPATH+=:$SUPERVISOR/workflows/common/python
+PYTHONPATH+=:$SUPERVISOR/models/OneD
+PYTHONPATH+=:$SUPERVISOR/models/Random
+PYTHONPATH+=:$SUPERVISOR/models/Comparator
+PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
+
+# The remainder of this script sets up PYTHONPATHs
+#     for the CANDLE Benchmarks if they are found
+if ! [[ -d $SUPERVISOR/../Benchmarks ]]
+then
+  # The user must be running an external model or container
+  return
+fi
 BENCHMARKS_DEFAULT=$( cd $SUPERVISOR/../Benchmarks ; /bin/pwd )
 export BENCHMARKS_ROOT=${BENCHMARKS_ROOT:-${BENCHMARKS_DEFAULT}}
 
@@ -24,12 +40,6 @@ fi
 #       in the common compute-node Python environment:  2022-12-20
 # APP_PYTHONPATH+=:$BENCHMARK_DIRS:$BENCHMARKS_ROOT/common
 #     PYTHONPATH+=:$BENCHMARK_DIRS:$BENCHMARKS_ROOT/common
-
-# Set up Supervisor
-export PYTHONPATH
-PYTHONPATH+=:$SUPERVISOR/workflows/common/python
-PYTHONPATH+=:$SUPERVISOR/models/OneD
-PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
 # Add known CANDLE Benchmarks to PYTHONPATH
 PYTHONPATH+=:$BENCHMARKS_ROOT/Pilot1/P1B1

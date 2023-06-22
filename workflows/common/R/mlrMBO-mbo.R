@@ -1,6 +1,14 @@
-  set.seed(12345)
-
   # mlrMBO EMEWS Algorithm Wrapper
+
+  set.seed(12345)
+  options(warn=2)
+  options(error=function()traceback(2))
+
+options(
+  parallelMap.default.mode        = "local",
+  parallelMap.default.cpus        = 1,
+  parallelMap.default.show.info   = TRUE
+)
 
   emews_root <- Sys.getenv("EMEWS_PROJECT_ROOT")
   if (emews_root == "") {
@@ -22,9 +30,12 @@
                            level = NA_character_,
                            show.info = NA){
     st = proc.time()
-
+    print("parallelMap2() ...")
+    mode <- deparse(substitute(fun))
+    print(paste0("mode: ", mode))
     #For wrapFun do this: initdesign
-    if (deparse(substitute(fun)) == "wrapFun"){
+    if (mode == "wrapFun"){
+      print("wrapFun")
       dots <- list(...)
       string_params <- elements_of_lists_to_json(dots[[1L]])
       # print(dots)
@@ -37,15 +48,34 @@
       # Assumes results are in the form a;b;c
       # Note: can also handle vector returns for each,
       # i.e., a,b;c,d;e,f
+      print(paste0("mlrMBO: received result: ", string_results))
       res <- string_to_list_of_vectors(string_results)
       print(paste("mlrMBO: received result count:", length(res)))
       # using dummy time
-      return(result_with_extras_if_exist(res,st[3]))
+      extras = result_with_extras_if_exist(res,st[3])
+      print(paste0("mlrMBO: extras: ", extras))
+      return(extras)
     }
-    # For all other values of deparse(substitute(fun)) eg. proposePointsByInfillOptimization, doBaggingTrainIteration etc.
-    else{
-      return(pm(fun, ..., more.args = more.args, simplify = simplify, use.names = use.names, impute.error = impute.error,
-                level = level, show.info = show.info))
+    # For all other values of deparse(substitute(fun)) eg.
+    # proposePointsByInfillOptimization, doBaggingTrainIteration etc.
+    else {
+      print("pm() ...")
+      # tryCatch(
+      ## pm_out <- pm(fun, ..., more.args = more.args, simplify = simplify,
+      ##              use.names = use.names, impute.error = impute.error,
+      ##              level = level, show.info = show.info)
+                   # ,
+                   # error=function(e){print(paste("CATCH: ", e))})
+      dots <- list(...)
+      print(paste0("dots: ", dots))
+      flush.console()
+      pm_out <- fun(opt.state=...)
+## , more.args = more.args, simplify = simplify,
+##                     use.names = use.names, impute.error = impute.error,
+##                     level = level, show.info = show.info)
+      print(paste0("pm_out ...", pm_out))
+      flush.console()
+      return(pm_out)
     }
   }
 
@@ -64,7 +94,7 @@
   # dummy objective function
   simple.obj.fun = function(x){}
 
-  main_function <- function(max.budget = 110,
+  main_function <- function(max.budget = 1000,
                             max.iterations = 10,
                             design.size=10,
                             propose.points=10,
@@ -80,9 +110,12 @@
                           propose.points = propose.points,
                           impute.y.fun = function(x, y, opt.path, ...) .Machine$double.xmax)
     ctrl = setMBOControlInfill(ctrl,
-                               crit = makeMBOInfillCritCB(),
-                               opt.restarts = 1,
-                               opt.focussearch.points = 1000)
+                               crit = crit.cb
+# makeMBOInfillCritCB(),
+                               # opt.restarts = 1
+# ,
+#                                opt.focussearch.points = 1000
+)
     ctrl = setMBOControlTermination(ctrl,
                                     max.evals = max.budget,
                                     iters = max.iterations)
@@ -142,9 +175,12 @@
       }
       # each discrete variable should be represented once, else optimization will fail
       # this checks if design size is less than max number of discrete values
-      print(paste0("design size=", design.size, " must be greater or equal to maximum discrete values=", max_val_discrete))
       if (design.size < max_val_discrete){
-        print("Aborting! design.size is less than the discrete parameters specified")
+        print(paste0("design size=", design.size,
+                     " must be >= to maximum discrete values=",
+                     max_val_discrete))
+        print("Aborting! design.size < the discrete parameters specified")
+        flush.console()
         quit()
       }
 
@@ -166,8 +202,10 @@
       	design = chkpntResults
     }
     # print(paste("design:", design))
-    configureMlr(show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
-    res = mbo(obj.fun, design = design, learner = NULL, control = ctrl, show.info = TRUE)
+    configureMlr()
+      # show.info = FALSE, show.learner.output = FALSE, on.learner.warning = "quiet")
+    res = mbo(obj.fun, design = design, learner = NULL, control = ctrl,
+              show.info = TRUE)
     return(res)
   }
 
@@ -178,7 +216,7 @@
   # This is a string of R code containing arguments to main_function(),
   # e.g., "max.budget = 110, max.iterations = 10, design.size = 10, ..."
   msg <- IN_get()
-  print(paste("Received mlrMBO configuration parameters msg: ", msg))
+  cat(paste0("Received mlrMBO configuration parameters msg: ", msg))
 
   # Edit the R code to make a list constructor expression
   code = paste0("list(",msg,")")
@@ -205,8 +243,10 @@
 
   turbine_output <- Sys.getenv("TURBINE_OUTPUT")
   if (turbine_output != "") {
+    print(paste0("setwd(): ", turbine_output))
     setwd(turbine_output)
   }
+  print("saving final_res.Rds ...")
   # This will be saved to experiment directory
   saveRDS(final_res,file = "final_res.Rds")
 

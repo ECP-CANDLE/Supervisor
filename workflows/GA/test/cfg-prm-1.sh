@@ -4,13 +4,18 @@
 
 SEED=${SEED:-1}
 # Total iterations
-NUM_ITERATIONS=${NUM_ITERATIONS:-7}
-# Size of GA population (i.e. the number of parameter sets to evaluate)
-POPULATION_SIZE=${POPULATION_SIZE:-4}
+NUM_ITERATIONS=${NUM_ITERATIONS:-5}
+# Size of GA population
+# (i.e. the number of parameter sets to evaluate per iteration)
+POPULATION_SIZE=${POPULATION_SIZE:-8}
 # the GA strategy: one of 'simple' or 'mu_plus_lambda'. See
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
 GA_STRATEGY=${STRATEGY:-simple}
+
+# Set IGNORE_ERRORS=1 to ignore model errors and
+#     allow NaNs in model results:
+# export IGNORE_ERRORS=1
 
 INIT_PARAMS_FILE=${INIT_PARAMS_FILE:-}
 
@@ -36,7 +41,7 @@ elif [ "$MODEL_NAME" = "oned" ]; then
 #     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p1b2_param_space_ga.json}
 # elif [ "$MODEL_NAME" = "p2b1" ]; then
 #     PARAM_SET_FILE=${PARAM_SET_FILE:-$EMEWS_PROJECT_ROOT/data/p2b1_param_space_ga.json}
-elif [ "$PARAM_SET_FILE" != "" ]; then
+elif [ "${PARAM_SET_FILE:-}" != "" ]; then
     PARAM_SET_FILE=${EMEWS_PROJECT_ROOT}/data/${PARAM_SET_FILE}
 else
     echo "Invalid model-" $MODEL_NAME
