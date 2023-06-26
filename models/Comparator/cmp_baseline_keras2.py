@@ -1,6 +1,4 @@
-
-"""
-CMP BASELINE KERAS2
+"""CMP BASELINE KERAS2.
 
 Compares two models
 """
@@ -10,7 +8,6 @@ import os
 import subprocess
 from pathlib import Path
 from pprint import pprint as pp
-
 
 import candle
 
@@ -44,7 +41,7 @@ def run(gParameters):
     supervisor = Path(file_path).absolute().parent.parent
     workflows = supervisor / "workflows"
 
-    expid     = gParameters["experiment_id"]
+    expid = gParameters["experiment_id"]
     cmp_runid = gParameters["run_id"]
 
     gParams = partition_params(gParameters)
@@ -80,8 +77,8 @@ def run(gParameters):
                                stderr=subprocess.STDOUT,
                                check=True)
             except subprocess.CalledProcessError:
-                print("cmp_baseline_keras2: subprocess failed: " +
-                      "see " + cmp_log_name)
+                print("cmp_baseline_keras2: subprocess failed: " + "see " +
+                      cmp_log_name)
                 exit(1)
         with open(result_file) as fp:
             line = fp.readline()
@@ -90,8 +87,7 @@ def run(gParameters):
         print("cmp: subjob: %i: DONE" % i)
     # Return relative difference of results,
     # negated to maximize difference (DEAP does minimization)
-    diff = -abs(   (results[1] - results[0]) /
-                max(results[1] , results[0])  )
+    diff = -abs((results[1] - results[0]) / max(results[1], results[0]))
     print("cmp: result diff: %f" % diff)
     print("IMPROVE_RESULT %f" % diff)
     # with open(gParameters["output_dir"] + "/result.txt", "w") as fp:
@@ -128,7 +124,7 @@ def partition_params(gParameters):
 
     # The cmp_ keys override the other keys,
     # so we have to hold them and assign them last:
-    result   = ({}, {})
+    result = ({}, {})
     override = ({}, {})
 
     for key in gParameters.keys():
@@ -141,7 +137,8 @@ def partition_params(gParameters):
                 # print(str(type(gParameters[key])))
                 found = True
                 break
-        if found: continue
+        if found:
+            continue
         if key.startswith("cmp_"):
             k = key[n0:]
             print("key: cmp_ : " + key + " " + k)
@@ -173,8 +170,9 @@ def partition_params(gParameters):
 
 
 def assign_both(result, gParameters, key, k=None):
-    """ Assign to both underlying models 0 and 1. """
-    if k is None: k = key
+    """Assign to both underlying models 0 and 1."""
+    if k is None:
+        k = key
     for j in [0, 1]:
         result[j][k] = gParameters[key]
     # print(str(type(gParameters[key])))
@@ -184,15 +182,9 @@ def assign_both(result, gParameters, key, k=None):
 def make_cmd(workflows, gParams):
     model_sh = workflows + "/common" + "/sh" + "/model.sh"
     cmd = [
-        "bash",
-        model_sh,
-        "keras2",
-        json.dumps(gParams),
-        gParams["experiment_id"],
-        gParams["run_id"],
-        "SINGULARITY",
-        gParams["model_name"],
-        "train"
+        "bash", model_sh, "keras2",
+        json.dumps(gParams), gParams["experiment_id"], gParams["run_id"],
+        "SINGULARITY", gParams["model_name"], "train"
     ]
     return cmd
 

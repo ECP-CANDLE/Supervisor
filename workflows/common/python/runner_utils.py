@@ -96,7 +96,7 @@ def write_params(params, hyper_parameter_map):
 
 
 def expand_params(params, hyper_parameter_map):
-    """ Expand dict of params into command-line flags """
+    """Expand dict of params into command-line flags."""
 
     parent_dir = (hyper_parameter_map["instance_directory"]
                   if "instance_directory" in hyper_parameter_map else ".")

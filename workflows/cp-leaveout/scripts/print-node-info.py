@@ -9,7 +9,9 @@ from Node import Node
 from utils import fail
 
 parser = argparse.ArgumentParser(description="Print Node info stats")
-parser.add_argument("--count", "-c", action="store_true",
+parser.add_argument("--count",
+                    "-c",
+                    action="store_true",
                     help="Simply count the nodes")
 parser.add_argument("directory", help="The experiment directory (EXPID)")
 parser.add_argument("nodes",

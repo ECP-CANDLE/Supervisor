@@ -1,4 +1,3 @@
-
 # MODEL EXTRACT PY
 
 import argparse
@@ -11,8 +10,8 @@ from pprint import pp
 
 parser = argparse.ArgumentParser()
 parser.add_argument("models", help="The list of model.logs")
-parser.add_argument("data", help="The extracted data " +
-                                 "(output from this script)")
+parser.add_argument("data",
+                    help="The extracted data " + "(output from this script)")
 args = parser.parse_args(sys.argv[1:])
 
 # Raw data collection
@@ -37,11 +36,13 @@ def extract_model_log(model_log):
     with open(model_log, "r") as fp:
         for line in fp:
             tokens = re.split(" +", line)
-            if len(tokens) < 2: continue
+            if len(tokens) < 2:
+                continue
             if tokens[0] == "IMPROVE_RESULT":
                 error = float(tokens[1])
                 continue
-            if len(tokens) < 3: continue
+            if len(tokens) < 3:
+                continue
             if tokens[1] == "noise":
                 noise = float(tokens[2])
             elif tokens[1] == "layer_force":
@@ -57,9 +58,10 @@ def extract_model_log(model_log):
               (noise, layer, error, model_log))
     print("data: noise=%r layer=%r error=%r : %s" %
           (noise, layer, error, model_log))
-    if (layer,noise) not in values:
-        values[(layer,noise)] = []
-    values[(layer,noise)].append(error)
+    if (layer, noise) not in values:
+        values[(layer, noise)] = []
+    values[(layer, noise)].append(error)
+
 
 with open(args.models) as fp:
     for line in fp:
@@ -84,15 +86,17 @@ noise_min = noises[0]
 noise_max = noises[-1]
 noise_range = noise_max - noise_min
 buckets = 10
-noise_buckets = [ int(noise_min + i*noise_range/buckets)
-                  for i in range(0, buckets) ]
+noise_buckets = [
+    int(noise_min + i * noise_range / buckets) for i in range(0, buckets)
+]
 
 layer_min = layers[0]
 layer_max = layers[-1]
 layer_range = layer_max - layer_min
 buckets = 10
-layer_buckets = [ int(layer_min + i*layer_range/buckets)
-                  for i in range(0, buckets) ]
+layer_buckets = [
+    int(layer_min + i * layer_range / buckets) for i in range(0, buckets)
+]
 
 print(str(noise_buckets))
 print(str(layer_buckets))
@@ -108,18 +112,18 @@ print(str(data))
 
 # print("values: %i" % len(values))
 
+
 def find_bucket(v, L):
-    """
-    Find greatest entry in L that is less than v
-    List L must be sorted
-    May return None
-    """
+    """Find greatest entry in L that is less than v List L must be sorted May
+    return None."""
     assert len(L) > 0
     for i in range(0, len(L)):
         if L[i] > v:
-            if i == 0: return None
-            return L[i-1]
+            if i == 0:
+                return None
+            return L[i - 1]
     return L[i]
+
 
 count = 0
 for kv in values:
@@ -143,6 +147,7 @@ for layer in layer_buckets:
 # pp(data)
 
 import pandas as pd
+
 df = pd.DataFrame(data)
 
 # Sort the columns from left to right (layers):

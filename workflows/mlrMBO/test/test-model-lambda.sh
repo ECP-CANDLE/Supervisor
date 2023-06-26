@@ -39,7 +39,7 @@ export CFG_PRM=$THIS/cfg-prm-nightly.sh
 export PARAM_SET_FILE=$4
 
 # Move experiment config in place - is R file wtf
-if [ -f $PARAM_SET_FILE ] 
+if [ -f $PARAM_SET_FILE ]
 then
 	echo $WORKFLOWS_ROOT
 	echo $EMEWS_PROJECT_ROOT

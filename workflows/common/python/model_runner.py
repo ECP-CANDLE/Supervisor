@@ -336,9 +336,8 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
 
 
 def get_results(history, model_return, epochs_expected):
-    """
-    Return the history entry that the user requested via MODEL_RETURN,
-           which may be math.nan in case of error.
+    """Return the history entry that the user requested via MODEL_RETURN, which
+    may be math.nan in case of error.
 
     Also checks for early stopping and if so marks the directory
          with a 0-byte file named "stop.marker"
@@ -367,9 +366,9 @@ def get_results(history, model_return, epochs_expected):
         # Default: the last value in the history
         result = float(values[-1])
     else:
-        logger.warning("get_results(): model return key " +
-                       "not found: " + 'key: "' + model_return + '" - ' +
-                       "history: " + str(history.history.keys()))
+        logger.warning("get_results(): model return key " + "not found: " +
+                       'key: "' + model_return + '" - ' + "history: " +
+                       str(history.history.keys()))
         logger.warning("get_results(): returning NaN")
         result = math.nan
 

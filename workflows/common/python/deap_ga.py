@@ -1,5 +1,4 @@
-"""
-DEAP GA PY
+"""DEAP GA PY.
 
 EMEWS interface module for DEAP
 """
@@ -29,19 +28,17 @@ logger = log_tools.get_logger(None, "DEAP")
 
 
 def obj_func(x):
-    """
-    Just a stub for the DEAP framework
-    """
+    """Just a stub for the DEAP framework."""
     return 0
 
 
 def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
-    """
-    create string of semicolon-separated jsonified maps
-     Produces something like:
-       {"batch_size":512,"epochs":51,"activation":"softsign",
-        "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
-        "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
+    """create string of semicolon-separated jsonified maps Produces something
+    like:
+
+    {"batch_size":512,"epochs":51,"activation":"softsign",
+     "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
+     "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
     """
     result = []
     global ga_params
@@ -60,8 +57,8 @@ def create_json_string(L, indent=None):
 
 
 def create_fitnesses(params_string):
-    """
-    return equivalent length tuple list.
+    """return equivalent length tuple list.
+
     :type params_string: str
     """
     params = params_string.split(";")
@@ -81,14 +78,14 @@ def make_floats(results):
     """
     global mean_last
     tokens = results.split(";")
-    NaNs   = []
+    NaNs = []
     values = []
     output = {}
     floats = []
     for i, token in enumerate(tokens):
         if len(token) == 0:
             msg = "received: 0-length token at: %i" % i
-            logger.info("ERROR: " + msg )
+            logger.info("ERROR: " + msg)
             logger.info("       tokens: " + str(tokens))
             raise Exception("make_floats(): " + msg)
         elif token.lower() == "nan":
@@ -98,8 +95,7 @@ def make_floats(results):
             f = float(token)
             output[i] = f
             values.append(f)
-    logger.info("RESULTS: values: %i NaNs: %i" %
-                (len(values), len(NaNs)))
+    logger.info("RESULTS: values: %i NaNs: %i" % (len(values), len(NaNs)))
     if len(values) > 0:
         mean = sum(values) / len(values)
         mean_last = mean
@@ -116,17 +112,16 @@ def make_floats(results):
 
 
 def queue_map(_f, pops):
-    """
-    Note that _f is not used, but is part of the DEAP framework
-    Formats model parameters that look like:
-      [[a,b,c,d],[e,f,g,h],...]
+    """Note that _f is not used, but is part of the DEAP framework Formats
+    model parameters that look like:
+
+    [[a,b,c,d],[e,f,g,h],...]
     """
     if not pops:
         return []
     global generation
     generation_start = time.time()
-    logger.info("GENERATION: %i START: pop: %i" %
-                (generation, len(pops)))
+    logger.info("GENERATION: %i START: pop: %i" % (generation, len(pops)))
     sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
     results = eqpy.IN_get()

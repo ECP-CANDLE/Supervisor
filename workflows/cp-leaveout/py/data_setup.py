@@ -11,7 +11,6 @@ import topN_to_uno
 from runner_utils import ModelResult
 from log_tools import *
 
-
 logger = get_logger(logger, "DATA SETUP")
 
 logger.info("LOAD:")
@@ -56,7 +55,7 @@ def setup_local_fs(params):
             duration = stop - start
             rate = count / duration / (1024 * 1024)
             logger.info("Original dataframe copied to NVM in " +
-                  "%0.1f seconds (%0.1f MB/s)." % (duration, rate))
+                        "%0.1f seconds (%0.1f MB/s)." % (duration, rate))
         else:
             # Report file size:
             stats = os.stat(local_orig)
@@ -121,8 +120,7 @@ def pre_run(params):
             topN_to_uno.build_dataframe(args)
             stop = time.time()
             duration = stop - start
-            logger.info("build_dataframe() OK : " +
-                        "%0.1f seconds." % duration)
+            logger.info("build_dataframe() OK : " + "%0.1f seconds." % duration)
             # sys.stdout.flush()
             os.rename(args.output, out_orig)
             logger.info("rename() OK")
