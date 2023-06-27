@@ -5,6 +5,8 @@ Overview of CANDLE/Supervisor
 
 The CANDLE/Supervisor architecture is depicted in the figure below:
 
+image::./img/Supervisor.png[]
+
 ![architecture](./img/Supervisor.png)
 
 In the image, blue components are those to be heavily edited by users, where the white components will require little or no changes.
