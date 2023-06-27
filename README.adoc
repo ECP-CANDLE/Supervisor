@@ -1,4 +1,6 @@
 
+:toc:
+
 = Overview of CANDLE/Supervisor
 
 CANDLE/Supervisor is a collection of workflows and supporting scripts to run ensembles of deep learning models on exascale computers.  These include flat parameter sweeps, hyperparameter optimization, and other analysis workflows.
