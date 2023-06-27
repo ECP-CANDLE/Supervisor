@@ -24,7 +24,7 @@ To extend this case, you can add other environment settings known to GA, Supervi
 
 The `supervisor` tool is essentially a configuration file manager that passes data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
 
-`source_site`:: Find a site-specific configuration file
+`source_site`:: Find a site-specific configuration file.  These are formatted as `env-SITE.sh`, `sched-SITE.sh`, etc.
 `find_cfg`:: Find a configuration file and store its full path in `REPLY`
 `source_cfg`:: Find a configuration file and `source` it
 
