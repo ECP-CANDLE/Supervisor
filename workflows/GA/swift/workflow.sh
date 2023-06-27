@@ -24,47 +24,35 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME" \
-       "[CANDLE_MODEL_TYPE] [CANDLE_IMAGE]"
+  echo "GA/workflow.sh: usage: workflow.sh SITE TEST_SCRIPT"
 }
 
-if (( ${#} != 7 )) && (( ${#} != 5 ))
+if (( ${#} != 2 ))
 then
   usage
   exit 1
-fi
-
-if (( ${#} == 7 ))
-then
-  export CANDLE_MODEL_TYPE=$6
-  export CANDLE_IMAGE=$7
-elif (( ${#} == 5 ))
-then
-  CANDLE_MODEL_TYPE="BENCHMARKS"
-  CANDLE_IMAGE=NONE
-else
-  usage
-  exit 1
-fi
-
-TURBINE_OUTPUT=""
-if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
-then
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
-  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
-         $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 fi
 
 get_site    $1 # Sets SITE
-get_expid   $2 # Sets EXPID
-get_cfg_sys $3
-get_cfg_prm $4
-MODEL_NAME=$5
+TEST_SCRIPT=$2
+
+source_cfg -v $TEST_SCRIPT
+
+# Sets EXPID.  If EXPID=="" , applies -a
+get_expid ${EXPID:--a}
+
+if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+then
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  printf "Running GA workflow with model %s and model type %s\n" \
+         $MODEL_NAME $CANDLE_MODEL_TYPE
+fi
+mkdir -p $TURBINE_OUTPUT
 
 source_site env   $SITE
 source_site sched $SITE
 
-EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
+: ${EQPY:=$WORKFLOWS_ROOT/common/ext/EQ-Py}
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
@@ -86,11 +74,32 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
+if [[ ${SEED:-} == "" ]]
+then
+  # Auto-generate SEED based on clock (nanos) and PID
+  # Use 10# to force value to decimal (cannot have leading 0s)
+  SEED=$(( ( 10#$(date +%N) + ${$}) % 1000000 ))
+fi
+
+# Defaults for GA/DEAP:
+: ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=simple}
+# Miscellaneous defaults:
+: ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
+: ${MODEL_RETURN:=val_loss} ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
+export CANDLE_MODEL_TYPE
+
+if ! find_cfg $PARAM_SET_FILE
+then
+  crash "Could not find PARAM_SET_FILE: $PARAM_SET_FILE"
+fi
+PARAM_SET_FILE=$REPLY
+
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
                 -ni=$NUM_ITERATIONS
                 -np=$POPULATION_SIZE
-                -strategy=$GA_STRATEGY
+                -strategy=$STRATEGY
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
@@ -98,6 +107,8 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -site=$SITE
               )
 
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 if [[ ${INIT_PARAMS_FILE:-} != "" ]]
 then
@@ -108,8 +119,7 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 #Store scripts to provenance
-#copy the configuration files to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $INIT_PARAMS_FILE  $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $PARAM_SET_FILE ${INIT_PARAMS_FILE:-} $TURBINE_OUTPUT
 
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
@@ -118,6 +128,7 @@ if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
   CANDLE_MODEL_IMPL="container"
 fi
+
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the candle_model_train_app function
@@ -131,19 +142,17 @@ then
 fi
 
 # Handle %-escapes in TURBINE_STDOUT
-if [ $SITE == "summit"  ] || \
-   [ $SITE == "biowulf" ] || \
-   [ $SITE == "polaris" ]
+if [[ $SITE == "summit"   ]] || \
+   [[ $SITE == "biowulf"  ]] || \
+   [[ $SITE == "polaris"  ]] || \
+   [[ $SITE == "frontier" ]]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 fi
-
 mkdir -pv $TURBINE_OUTPUT/out
 
-#swift-t -n $PROCS \
-#        -o $TURBINE_OUTPUT/workflow.tic \
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -161,8 +170,7 @@ fi
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
-  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
-  exit 1
+  crash "CANDLE_DATA_DIR is not set in the environment!"
 fi
 
 (
@@ -192,7 +200,6 @@ fi
           -e IGNORE_ERRORS \
           -e CANDLE_DATA_DIR \
           -e CANDLE_MODEL_TYPE \
-          -e CANDLE_IMAGE \
           $WAIT_ARG \
           $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 )
@@ -204,6 +211,3 @@ then
 fi
 
 echo "EXIT CODE: 0" | tee -a $STDOUT
-
-# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt

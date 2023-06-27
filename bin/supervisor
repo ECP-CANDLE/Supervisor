@@ -1,0 +1,51 @@
+#!/bin/bash
+set -eu
+
+# SUPERVISOR
+# Externally-runnable workflow starter
+
+THIS=$( cd $( dirname $0 ) ; /bin/pwd )
+SUPERVISOR_HOME=$( cd $THIS/.. ; /bin/pwd )
+source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
+LOG_NAME="supervisor"
+
+usage()
+{
+  log "usage:   $ supervisor <SITE> <WORKFLOW> <TEST_SCRIPT>"
+}
+
+while getopts "h" OPT
+do
+  case $OPT in
+    h)
+      usage
+      exit
+       ;;
+    *)
+      # Bash prints an error
+      exit 1
+  esac
+done
+shift $(( OPTIND - 1))
+
+if (( ${#} < 3 ))
+then
+  error "insufficient arguments!"
+  usage
+  exit 1
+fi
+
+SITE=$1
+WORKFLOW=$2
+TEST_SCRIPT=$3
+
+if ! [[ -d $SUPERVISOR_HOME/workflows/$WORKFLOW ]]
+then
+  crash "no such workflow: '$WORKFLOW'"
+fi
+
+sv_path_prepend $SUPERVISOR_HOME/workflows/$WORKFLOW/test
+sv_path_prepend $PWD
+
+export SUPERVISOR_PATH
+$SUPERVISOR_HOME/workflows/$WORKFLOW/supervisor $SITE $TEST_SCRIPT

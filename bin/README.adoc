@@ -1,0 +1,23 @@
+
+= The `supervisor` tool
+
+== Quickstart
+
+----
+$ supervisor frontier GA test-1.sh
+----
+
+where `test-1.sh` contains:
+
+----
+export MODEL_NAME=nt3
+export PARAM_SET_FILE=random_param_space.json
+----
+
+will do a DEAP GA on CANDLE Benchmark NT3 with a parameter search defined in `random_param_space.json` .
+
+To extend this case, you can add other environment settings known to GA, Supervisor, or Swift/T to `test-1.sh`.  All controls are through this file.
+
+== Structuring experiments
+
+The `supervisor` tool.
