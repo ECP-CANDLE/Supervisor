@@ -94,10 +94,10 @@ Number of MPI processes.  Typically equal to the number of GPUs desired.  Defaul
 `PPN`::
 Processes-Per-Node.  Typically equal to the number of GPUs desired to use per-node. Defaults to 1.
 `WALLTIME`::
-Walltime specification string passed to the scheduler.  Defaults to "0:05:00".
+Walltime specification string passed to the scheduler.  Defaults to `0:05:00`.
 `PROJECT`::
-The scheduler project allocation name.  Swift/T will leave this empty if you do.
+The scheduler project allocation name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
 `QUEUE`::
-The scheduler queue name.  Swift/T will leave this empty if you do.
+The scheduler queue name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
 `TURBINE_OUTPUT`::
-The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.
+The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.  Defaults to a timestamp-based directory tree under `~/turbine-output`.
