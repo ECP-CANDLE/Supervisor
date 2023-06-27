@@ -17,7 +17,7 @@ In the image, blue components are those to be heavily edited by users, where the
 
 Supervisor executions starts with a Bash test script (shown as "test L"); these are intended to be rapidly copied, changed, and executed.  Supervisor workflow examples include cases named "test-1" or "test-nightly" that are the simplest cases to run.  These test scripts can override settings from the cfg files for quick tests.  The command-line arguments to the test script include the site name and the experiment directory name to use for the run, these can be extended.  The test script also specifies `MODEL_RETURN`, which is the value to be returned by the model run, typically `val_loss`, etc.
 
-The test script may be invoked directly or via the `supervisor` tool.
+The test script may be invoked directly or via the link:bin[`supervisor` tool].
 
 == Settings files
 
