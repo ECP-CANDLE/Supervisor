@@ -1,3 +1,4 @@
+
 # GA (genetic algorithm) based based hyperparameter optimization on CANDLE Benchmarks
 
 The GA workflow uses the Python deap package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
@@ -65,6 +66,33 @@ Scheduling scripts:
 test-1.sh -> cfg-sys-1.sh ->
       common/sh/<machine_name> - module, scheduling, langs .sh files
 ```
+
+## The supervisor interface
+
+Command line:
+```
+$ supervisor SITE WORKFLOW TEST_SCRIPT
+```
+
+Variables that must be set by the TEST_SCRIPT
+
+MODEL_NAME
+PARAM_SET_FILE
+NUM_ITERATIONS
+POPULATION_SIZE
+
+Options
+
+GA_STRATEGY
+SEED
+EXPID
+
+PROCS
+PPN
+WALLTIME
+PROJECT
+QUEUE
+BENCHMARK_TIMEOUT
 
 ## Making Changes <a name="making_changes"></a>
 
