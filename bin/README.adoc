@@ -20,4 +20,41 @@ To extend this case, you can add other environment settings known to GA, Supervi
 
 == Structuring experiments
 
-The `supervisor` tool.
+The `supervisor` tool is essentially a configuration file manager that passes data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
+
+`source_site`:: Find a site-specific configuration file
+`find_cfg`:: Find a configuration file and store its full path in `REPLY`
+`source_cfg`:: Find a configuration file and `source` it
+
+The `supervisor` tool searches for these files in `SUPERVISOR_PATH`, a normal list-like colon-separated environment variable.
+
+Users can manipulate `SUPERVISOR_PATH` directly or use:
+
+----
+sv_path_prepend DIRECTORY
+----
+
+to prepend a location for search.  `PWD` is automatically added to `SUPERVISOR_PATH`.
+
+In a typical case, when the user runs:
+
+----
+$ supervisor frontier GA test-1.sh
+----
+
+`supervisor` sources the user `test-1.sh` script for environment variable settings.  This script may contain calls to `source_cfg` or `find_cfg` to set environment variables from reusable test scripts.
+
+Then, `supervisor` invokes the selected workflow `GA`.
+
+The `GA/supervisor` interface script runs `workflow.sh`.  `workflow.sh` loads site-specific settings and defaults from Supervisor for site `frontier` via `source_site` if they are not already set.
+
+== Supervisor configuration variables
+
+Supervisor workflows accept many variables that are relevant to all of its subsystems, including:
+
+* Supervisor itself
+* Benchmarks or other external models
+* The Supervisor workflow
+* Singularity (if used)
+* Swift/T
+* The underlying system, including the scheduler
