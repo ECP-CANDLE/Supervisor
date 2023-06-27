@@ -1,4 +1,6 @@
 
+:toc:
+
 = The `supervisor` tool
 
 == Quickstart
