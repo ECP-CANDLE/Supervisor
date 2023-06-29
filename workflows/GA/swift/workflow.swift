@@ -25,7 +25,11 @@ string r_ranks[] = split(resident_work_ranks,",");
 string strategy = argv("strategy");
 string ga_params_file = argv("ga_params");
 // string init_params_file = argv("init_params", "");
-float mut_prob = string2float(argv("mutation_prob", "0.2"));
+float mut_prob = string2float(argv("mut_prob"));
+float cx_prob = string2float(argv("cx_prob"));
+float mut_indpb = string2float(argv("mut_indpb"));
+float cx_indpb = string2float(argv("cx_indpb"));
+int tournsize = string2int(argv("tournsize"));
 
 string exp_id = argv("exp_id");
 int benchmark_timeout = toint(argv("benchmark_timeout", "-1"));
@@ -95,8 +99,9 @@ string FRAMEWORK = "keras";
 (void o) start (int ME_rank, int iters, int pop, int seed) {
   location ME = locationFromRank(ME_rank);
   // (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file)
-  algo_params = "%d,%d,%d,'%s',%f, '%s', '%s'" %
-    (iters, pop, seed, strategy, mut_prob, ga_params_file, init_params_file);
+  // RW: Added cx_prob, mut_indpb, cx_indpb, tournsize
+  algo_params = "%d,%d,%d,'%s',%f,%f,%f,%f,%d,'%s','%s'" %
+    (iters, pop, seed, strategy, mut_prob, cx_prob, mut_indpb, cx_indpb, tournsize, ga_params_file, init_params_file);
     EQPy_init_package(ME, "deap_ga") =>
     EQPy_get(ME) =>
     EQPy_put(ME, algo_params) =>
