@@ -11,7 +11,7 @@ POPULATION_SIZE=${POPULATION_SIZE:-8}
 # the GA strategy: one of 'simple' or 'mu_plus_lambda'. See
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
-GA_STRATEGY=${STRATEGY:-simple}
+GA_STRATEGY=${STRATEGY:-mu_plus_lambda}
 
 # Set IGNORE_ERRORS=1 to ignore model errors and
 #     allow NaNs in model results:

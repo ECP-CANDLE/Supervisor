@@ -273,18 +273,16 @@ def run():
             verbose=True,
         )
     elif strategy == "mu_plus_lambda":
-        mu = int(math.floor(float(num_pop) * 0.5))
-        lam = int(math.floor(float(num_pop) * 0.5))
-        if mu + lam < num_pop:
-            mu += num_pop - (mu + lam)
+        mu = num_pop
+        lam = round(num_pop * 0.5)
 
         pop, log = algorithms.eaMuPlusLambda(
             pop,
             toolbox,
             mu=mu,
             lambda_=lam,
-            cxpb=0.5,
-            mutpb=mutpb,
+            cxpb=0,
+            mutpb=1,
             ngen=num_iter - 1,
             stats=stats,
             halloffame=hof,
