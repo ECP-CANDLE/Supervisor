@@ -224,8 +224,10 @@ def run():
     params = eqpy.IN_get()
 
     # Evaluate and log the params given by the workflow level:
-    (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file,
-     param_file) = eval("{}".format(params))
+    (num_iter, num_pop, seed, strategy, off_prop, mut_prob, cx_prob, mut_indpb,
+     cx_indpb, tournsize, ga_params_file, param_file) = eval(
+         "{}".format(params)
+     )  # RW: Add mut_indpb, cx_indpb, tournsize so that they're not hard-coded
     log_params(logger, num_iter, num_pop, seed)
 
     random.seed(seed)
@@ -240,10 +242,9 @@ def run():
 
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", obj_func)
-    toolbox.register("mate", cxUniform, indpb=0.5)
-    mutate_indpb = mut_prob
-    toolbox.register("mutate", custom_mutate, indpb=mutate_indpb)
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    toolbox.register("mate", cxUniform, indpb=cx_indpb)
+    toolbox.register("mutate", custom_mutate, indpb=mut_indpb)
+    toolbox.register("select", tools.selTournament, tournsize=tournsize)
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_pop)
@@ -259,32 +260,30 @@ def run():
     stats.register("ts", timestamp)
 
     # num_iter-1 generations since the initial population is evaluated once first
-    mutpb = mut_prob
 
     if strategy == "simple":
         pop, log = algorithms.eaSimple(
             pop,
             toolbox,
-            cxpb=0.5,
-            mutpb=mutpb,
+            cxpb=cx_prob,
+            mutpb=mut_prob,
             ngen=num_iter - 1,
             stats=stats,
             halloffame=hof,
             verbose=True,
         )
     elif strategy == "mu_plus_lambda":
-        mu = int(math.floor(float(num_pop) * 0.5))
-        lam = int(math.floor(float(num_pop) * 0.5))
-        if mu + lam < num_pop:
-            mu += num_pop - (mu + lam)
+        mu = num_pop
+        lam = round(off_prop * num_pop)
+        # Create offspring half the size of population in each generation
 
         pop, log = algorithms.eaMuPlusLambda(
             pop,
             toolbox,
             mu=mu,
             lambda_=lam,
-            cxpb=0.5,
-            mutpb=mutpb,
+            cxpb=cx_prob,
+            mutpb=mut_prob,
             ngen=num_iter - 1,
             stats=stats,
             halloffame=hof,

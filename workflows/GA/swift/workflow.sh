@@ -91,6 +91,12 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -ni=$NUM_ITERATIONS
                 -np=$POPULATION_SIZE
                 -strategy=$GA_STRATEGY
+		-off_prop=$OFFSPRING_PROPORTION
+                -mut_prob=$MUT_PROB
+                -cx_prob=$CX_PROB
+                -mut_indpb=$MUT_INDPB
+                -cx_indpb=$CX_INDPB
+                -tournsize=$TOURNSIZE
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
