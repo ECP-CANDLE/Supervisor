@@ -6,6 +6,8 @@
 #     and number of iterations
 
 SEED=${SEED:-1}
+# SEED=${SEED:-$$}
+
 # Total iterations
 NUM_ITERATIONS=${NUM_ITERATIONS:-5}
 # Size of GA population

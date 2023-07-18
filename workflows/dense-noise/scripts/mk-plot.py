@@ -15,8 +15,8 @@ args = parser.parse_args(sys.argv[1:])
 
 import pandas as pd
 
-df = pd.read_hdf(args.data, key="plot")
-df = -df
+df = pd.read_hdf(args.data, key="counts")
+# df = df
 m = df.median().median()
 print("median: %0.3f" % m)
 

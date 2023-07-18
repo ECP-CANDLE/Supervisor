@@ -191,16 +191,22 @@ def make_cmd(workflows, gParams):
 
 def make_env(workflows, gParams, result_file):
     env = {
+        # Configuration:
         "WORKFLOWS_ROOT": workflows,
-        "TURBINE_OUTPUT": gParams["output_dir"],
-        "EXPID": gParams["experiment_id"],
-        "SITE": os.getenv("SITE"),
-        "BENCHMARK_TIMEOUT": "120",
-        "MODEL_NAME": gParams["model_name"],
-        "MODEL_RETURN": "loss",
         "CANDLE_MODEL_TYPE": "SINGULARITY",
-        "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
-        "ADLB_RANK_OFFSET": "0",
+        # Settings:
+        "BENCHMARK_TIMEOUT": "120",
+        # gParams:
+        "TURBINE_OUTPUT": gParams["output_dir"],
+        "EXPID":          gParams["experiment_id"],
+        "MODEL_NAME":     gParams["model_name"],
+        # Simple env forwarding
+        "SITE":             os.getenv("SITE"),
+        "CANDLE_DATA_DIR":  os.getenv("CANDLE_DATA_DIR"),
+        "ADLB_RANK_SELF":   os.getenv("ADLB_RANK_SELF"),
+        "ADLB_RANK_OFFSET": os.getenv("ADLB_RANK_OFFSET"),
+        # Results:
+        "MODEL_RETURN": "loss",
         "RESULT_FILE": result_file
     }
     return env

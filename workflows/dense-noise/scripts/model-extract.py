@@ -25,6 +25,10 @@ values = {}
 #        data[layer][noise] = mean error
 data = {}
 
+# Nested dict where:
+#        data[layer][noise] = count = len([errors])
+counts = {}
+
 
 def extract_model_log(model_log):
     # print("extract: " + model_log)
@@ -56,12 +60,11 @@ def extract_model_log(model_log):
        error is None:
         print("missing data: noise=%r layer=%r error=%r : %s" %
               (noise, layer, error, model_log))
-    print("data: noise=%r layer=%r error=%r : %s" %
-          (noise, layer, error, model_log))
-    if (layer, noise) not in values:
-        values[(layer, noise)] = []
-    values[(layer, noise)].append(error)
-
+    # print("data: noise=%r layer=%r error=%r : %s" %
+    #      (noise, layer, error, model_log))
+    if (layer,noise) not in values:
+        values[(layer,noise)] = []
+    values[(layer,noise)].append(error)
 
 with open(args.models) as fp:
     for line in fp:
@@ -103,12 +106,14 @@ print(str(layer_buckets))
 
 # print(str(data))
 for layer in layer_buckets:
-    data[layer] = {}
+    data  [layer] = {}
+    counts[layer] = {}
     # print(str(data))
     for noise in noise_buckets:
-        data[layer][noise] = []
+        data  [layer][noise] = []
+        counts[layer][noise] = 0
 
-print(str(data))
+# print(str(data))
 
 # print("values: %i" % len(values))
 
@@ -133,7 +138,9 @@ for kv in values:
     noise = find_bucket(noise, noise_buckets)
     # print("data:  %4i %8i -> %3i" % (layer, noise, len(values[kv])))
     data[layer][noise] += values[kv]
-    count += 1
+    count += len(values[kv])
+
+print("data count: %i" % count)
 
 for layer in layer_buckets:
     for noise in noise_buckets:
@@ -141,25 +148,33 @@ for layer in layer_buckets:
         if len(L) == 0:
             data[layer][noise] = math.nan
             continue
-        v = sum(L) / len(L)
-        data[layer][noise] = v
+        n = len(L)
+        print(str(L))
+        v = sum(L) / n
+        data  [layer][noise] = v
+        counts[layer][noise] = n
 
-# pp(data)
 
 import pandas as pd
 
 df = pd.DataFrame(data)
+cf = pd.DataFrame(counts)
 
-# Sort the columns from left to right (layers):
-cols = df.columns.tolist()
-cols.sort()
-df = df[cols]
+def sort_df(df):
+    # Sort the columns from left to right (layers):
+    cols = df.columns.tolist()
+    cols.sort()
+    df = df[cols]
 
-# Sort the index (noises)
-df.sort_index(inplace=True, ascending=False)
-print(str(df))
+    # Sort the index (noises)
+    df.sort_index(inplace=True, ascending=False)
+    print(str(df))
+    return df
+
+df = sort_df(df)
+cf = sort_df(cf)
 
 # Save the data:
 df.to_hdf(args.data, key="plot")
+cf.to_hdf(args.data, key="counts")
 print("wrote: " + args.data)
-print("count: %i" % count)

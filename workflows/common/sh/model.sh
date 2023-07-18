@@ -92,6 +92,7 @@ log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
 log "HOST: $( hostname )"
+log "ADLB_RANK_SELF:   $ADLB_RANK_SELF"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
 log "MODEL_TYPE: $MODEL_TYPE"
 
