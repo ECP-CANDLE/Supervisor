@@ -95,9 +95,12 @@ log "HOST: $( hostname )"
 
 # ADLB variables are set by Swift/T/ADLB:
 # http://swift-lang.github.io/swift-t/guide.html#turbine_env2
+# CVD is CUDA_VISIBLE_DEVICES
+CVD=$(( $ADLB_RANK_OFFSET + ${CANDLE_CUDA_OFFSET:-0} ))
 log "ADLB_RANK_SELF:   $ADLB_RANK_SELF"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
-log "MODEL_TYPE: $MODEL_TYPE"
+log "CUDA DEVICE:      $CVD"
+log "MODEL_TYPE:       $MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -136,9 +139,6 @@ then
 
   # Remove --candle image flag and the second argument, assume it is the last argument
   export FLAGS="${FLAGS/ --candle_image*/}"
-
-  # CVD is CUDA_VISIBLE_DEVICES
-  CVD=$(( $ADLB_RANK_OFFSET + ${CANDLE_CUDA_OFFSET:-0} ))
 
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
