@@ -232,6 +232,7 @@ def run():
 
     random.seed(seed)
     global ga_params
+    logger.info("params_file: " + ga_params_file)
     ga_params = ga_utils.create_parameters(ga_params_file)
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
