@@ -14,29 +14,48 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "UNROLLED PARAMETER FILE: usage: workflow.sh SITE EXPID CFG_SYS UPF"
+  echo "UNROLLED PARAMETER FILE: usage:"
+  echo "workflow.sh SITE TEST_SCRIPT    _or_"
+  echo "workflow.sh SITE EXPID CFG_SYS UPF"
+  echo
+  echo "The 2-argument case is used by the supervisor tool."
+  echo "The 4-argument case is used for other test cases."
 }
 
-if (( ${#} != 4 ))
+if (( ${#} == 0 ))
 then
   usage
   exit 1
 fi
 
-if ! {
-  # Sets SITE
-  # Sets EXPID, TURBINE_OUTPUT
-  # Sets CFG_SYS
-  # UPF is the JSON hyperparameter file
-  get_site    $1               && \
-  get_expid   $2               && \
-  get_cfg_sys $3               && \
-  UPF=$4
- }
+get_site $1  # Sets SITE
+
+if   (( ${#} == 2 ))
 then
+  TEST_SCRIPT=$2
+  # Sets EXPID.  If EXPID=="" , applies -a
+  get_expid ${EXPID:--a}
+  source_cfg -v $TEST_SCRIPT
+elif (( ${#} == 4 ))
+then
+  get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
+  get_cfg_sys $3 # Sets CFG_SYS
+  UPF=$4         # The JSON hyperparameter file
+else
   usage
   exit 1
 fi
+
+if [[ ${UPF:-} == "" ]]
+then
+  echo "upf workflow.sh: set UPF!"
+  exit 1
+fi
+if ! find_cfg $UPF
+then
+  crash "Could not find UPF: $UPF"
+fi
+UPF=$REPLY
 
 source_site env   $SITE
 source_site sched $SITE
@@ -54,8 +73,12 @@ then
   OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
 fi
 
+# Miscellaneous defaults:
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
-export BENCHMARK_TIMEOUT
+: ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
+: ${MODEL_RETURN:=val_loss}
+export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
+export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
@@ -67,7 +90,10 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 # Copy settings to TURBINE_OUTPUT for provenance
-cp $CFG_SYS $TURBINE_OUTPUT
+if [[ ${CFG_SYS:-} != "" ]]
+then
+  cp $CFG_SYS $TURBINE_OUTPUT
+fi
 
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
