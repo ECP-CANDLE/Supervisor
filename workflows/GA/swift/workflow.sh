@@ -41,6 +41,7 @@ source_cfg -v $TEST_SCRIPT
 # Sets EXPID.  If EXPID=="" , applies -a
 get_expid ${EXPID:--a}
 
+: ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
@@ -87,7 +88,7 @@ fi
 : ${MUT_INDPB:=0.5} ${CX_INDPB:=0.5} ${TOURNSIZE:=4}
 # Miscellaneous defaults:
 : ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
-: ${MODEL_RETURN:=val_loss} ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+: ${MODEL_RETURN:=val_loss}
 export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
 export CANDLE_MODEL_TYPE
 
