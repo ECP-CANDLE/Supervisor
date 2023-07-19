@@ -62,9 +62,10 @@ def extract_model_log(model_log):
               (noise, layer, error, model_log))
     # print("data: noise=%r layer=%r error=%r : %s" %
     #      (noise, layer, error, model_log))
-    if (layer,noise) not in values:
-        values[(layer,noise)] = []
-    values[(layer,noise)].append(error)
+    if (layer, noise) not in values:
+        values[(layer, noise)] = []
+    values[(layer, noise)].append(error)
+
 
 with open(args.models) as fp:
     for line in fp:
@@ -106,11 +107,11 @@ print(str(layer_buckets))
 
 # print(str(data))
 for layer in layer_buckets:
-    data  [layer] = {}
+    data[layer] = {}
     counts[layer] = {}
     # print(str(data))
     for noise in noise_buckets:
-        data  [layer][noise] = []
+        data[layer][noise] = []
         counts[layer][noise] = 0
 
 # print(str(data))
@@ -151,14 +152,14 @@ for layer in layer_buckets:
         n = len(L)
         print(str(L))
         v = sum(L) / n
-        data  [layer][noise] = v
+        data[layer][noise] = v
         counts[layer][noise] = n
-
 
 import pandas as pd
 
 df = pd.DataFrame(data)
 cf = pd.DataFrame(counts)
+
 
 def sort_df(df):
     # Sort the columns from left to right (layers):
@@ -170,6 +171,7 @@ def sort_df(df):
     df.sort_index(inplace=True, ascending=False)
     print(str(df))
     return df
+
 
 df = sort_df(df)
 cf = sort_df(cf)

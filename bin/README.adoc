@@ -1,0 +1,118 @@
+
+:toc:
+
+= The `supervisor` tool
+
+== Quickstart
+
+----
+$ supervisor frontier GA test-1.sh
+----
+
+where `test-1.sh` contains:
+
+----
+export MODEL_NAME=nt3
+export PARAM_SET_FILE=random_param_space.json
+----
+
+will do a DEAP GA on CANDLE Benchmark NT3 with a parameter search defined in `random_param_space.json` .
+
+To extend this case, you can add other environment settings known to GA, Supervisor, or Swift/T to `test-1.sh`.  All controls are through this file.
+
+== Structuring experiments
+
+The `supervisor` tool is essentially a configuration file manager that passes data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
+
+`source_site`:: Find a site-specific configuration file.  These are formatted as `env-SITE.sh`, `sched-SITE.sh`, etc.
+`find_cfg`:: Find a configuration file and store its full path in `REPLY`
+`source_cfg`:: Find a configuration file and `source` it
+
+The `supervisor` tool searches for these files in `SUPERVISOR_PATH`, a normal list-like colon-separated environment variable.
+
+Users can manipulate `SUPERVISOR_PATH` directly or use:
+
+----
+sv_path_prepend DIRECTORY
+----
+
+to prepend a location for search.  `PWD` is automatically added to `SUPERVISOR_PATH`.
+
+In a typical case, when the user runs:
+
+----
+$ supervisor frontier GA test-1.sh
+----
+
+`supervisor` sources the user `test-1.sh` script for environment variable settings.  This script may contain calls to `source_cfg` or `find_cfg` to set environment variables from reusable test scripts.
+
+Then, `supervisor` invokes the selected workflow `GA`.
+
+The `GA/supervisor` interface script runs `workflow.sh`.  `workflow.sh` loads site-specific settings and defaults from Supervisor for site `frontier` via `source_site` if they are not already set.
+
+== Supervisor configuration variables
+
+Supervisor workflows accept many variables that are relevant to all of its subsystems, including:
+
+* Supervisor itself
+* Benchmarks or other external models
+* The Supervisor workflow
+* Singularity (if used)
+* Swift/T
+* The underlying system, including the scheduler
+
+=== Common Supervisor variables
+
+These are used by many Supervisor workflows
+
+`MODEL_NAME`::
+Either
++
+* The Benchmark model name as in `MODEL_NAME_baseline_FRAMEWORK.py` as found in `PYTHONPATH` or
+* The SIF container image file path `/path/to/model.sif`
++
+There is no default value.
+
+`MODEL_RETURN`::
+A string with the value to return from the model.  Defaults to `val_loss`.
+
+`BENCHMARK_TIMEOUT`::
+A timeout applied inside the Python benchmark.  Either an integer value in seconds or -1 to disable.  Defaults to -1.
+`SH_TIMEOUT`::
+A timeout applied in the shell wrapper `model.sh` around the Benchmark.  Either an integer value in seconds or -1 to disable.  Defaults to -1.
+`IGNORE_ERRORS`::
+Normally, errors in the called models such as uncaught Python exceptions will crash the workflow.  If this is set to 1, such errors will be reported and a default NaN value will be returned from the model.  Defaults to 0, which crashes the workflow.
+
+=== Supervisor workflow variables
+
+See the README in the relevant workflow directory for variable documentation.
+
+=== Swift/T variables
+
+The full set is documented http://swift-lang.github.io/swift-t/sites.html#variables[here].  The most commonly used variables are:
+
+`PROCS`::
+Number of MPI processes.  Typically equal to the number of GPUs desired.  Defaults to 2.
+`PPN`::
+Processes-Per-Node.  Typically equal to the number of GPUs desired to use per-node. Defaults to 1.
+`WALLTIME`::
+Walltime specification string passed to the scheduler.  Defaults to `0:05:00`.
+`PROJECT`::
+The scheduler project allocation name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
+`QUEUE`::
+The scheduler queue name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
+`TURBINE_OUTPUT`::
+The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.  Defaults to a timestamp-based directory tree under `~/turbine-output`.
+
+== Installation
+
+. Install Python
+. Install https://github.com/ECP-CANDLE/candle_lib[`candle_lib`]
+. Install Swift/T from Anaconda:
++
+----
+conda install -c swift-t swift-t
+----
++
+. Check out Supervisor
+. Run `supervisor`

@@ -24,10 +24,11 @@ cf = pd.read_hdf(args.data, key="counts")
 
 import seaborn as sns
 
-plot = sns.heatmap(df, # cmap="viridis")
-                   center=m,
-                   cmap=sns.diverging_palette(220, 20, as_cmap=True),
-                   annot=cf)
+plot = sns.heatmap(
+    df,  # cmap="viridis")
+    center=m,
+    cmap=sns.diverging_palette(220, 20, as_cmap=True),
+    annot=cf)
 
 # current_values = plot.gca().get_yticks()
 # plot.gca().set_yticklabels(['{:,.0f}'.format(x) for x in current_values])

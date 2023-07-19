@@ -9,7 +9,7 @@ abort()
   exit 1
 }
 
-is ()
+is()
 {
   if eval "${*}"
   then
@@ -20,6 +20,8 @@ is ()
 }
 
 check()
+# Try to run given command CMD,
+# if it fails, print extra error message MSG
 {
   if (( ${#} != 2 ))
   then
@@ -28,7 +30,7 @@ check()
   fi
   local CMD=$1
   local MSG=$2
-  if (( ! $( is $CMD ) ))
+  if $CMD
   then
     return
   fi
@@ -169,15 +171,15 @@ get_expid()
 {
   if (( ${#} != 1 ))
   then
-    echo "get_expid(): provide EXPID or '-a'"
+    log "get_expid(): provide EXPID or '-a'"
     return 1
   fi
 
   export EXPID=$1
 
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS} ${MODEL_NAME:=cmp}
-  echo "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
-  echo "get_expid(): MODEL_NAME=$MODEL_NAME"
+  log "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
+  log "get_expid(): MODEL_NAME=$MODEL_NAME"
 
   export EXPERIMENTS=""
 
@@ -306,15 +308,22 @@ source_site()
 # Succeeds with warning message if file is not found
 # SITE is exported in the environment
 {
+  local VERBOSE=0
+  while [[ $1 == "-v" ]]
+  do
+    (( ++ VERBOSE ))
+    shift
+  done
+
   if (( ${#} != 2 ))
   then
     echo "usage: source_site TOKEN SITE"
     echo "where TOKEN is env, sched, etc."
-    echo "  and SITE is titan, cori, theta, etc."
+    echo "  and SITE is frontier, summit, theta, etc."
     return 1
   fi
 
-  TOKEN=$1
+  local TOKEN=$1
   export SITE=$2
 
   if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -323,14 +332,121 @@ source_site()
     return 1
   fi
 
-  FILE=$WORKFLOWS_ROOT/common/sh/$TOKEN-$SITE.sh
-  if ! [[ -f $FILE ]]
+  local NAME=$TOKEN-$SITE.sh
+
+  if ! search_cfg $VERBOSE $NAME
   then
-    echo "source_site(): warning: no file: $FILE"
-    return 0
+    log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
+    return 1
   fi
-  echo "sourcing $FILE"
+  local FILE=$REPLY
+
+  log "source_site(): sourcing $FILE"
   source $FILE
+}
+
+source_cfg()
+# Source a test cfg file
+# Searches SUPERVISOR_PATH
+{
+  local VERBOSE=0
+  while [[ $1 == "-v" ]]
+  do
+    (( ++ VERBOSE ))
+    shift
+  done
+
+  if (( ${#} != 1 ))
+  then
+    echo "usage: source_cfg [-v]* NAME"
+    echo "       where NAME is the filename in SUPERVISOR_PATH"
+    echo "       or an absolute path"
+    echo "  -v : make more verbose"
+    echo "returns 1 if not found"
+    return 1
+  fi
+
+  local NAME=$1
+
+  if ! search_cfg $VERBOSE $NAME
+  then
+    log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
+    return 1
+  fi
+
+  local FILE=$REPLY
+  debug $VERBOSE "source_cfg(): sourcing file: $FILE"
+  source $FILE
+}
+
+find_cfg()
+# Find any file in SUPERVISOR_PATH
+{
+  local VERBOSE=0
+  while [[ $1 == "-v" ]]
+  do
+    (( ++ VERBOSE ))
+    shift
+  done
+
+  if (( ${#} != 1 ))
+  then
+    echo "usage: find_cfg [-v]* NAME"
+    echo "       where NAME is the filename in SUPERVISOR_PATH"
+    echo "       or an absolute path"
+    echo "  -v : make more verbose"
+    echo "the result goes into REPLY"
+    echo "returns 1 if not found"
+    return 1
+  fi
+
+  local NAME=$1
+
+  if ! search_cfg $VERBOSE $NAME
+  then
+    log "find_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
+    return 1
+  fi
+  # Result is in REPLY
+}
+
+search_cfg()
+# Find a configuration file in SUPERVISOR_PATH
+# Internal function
+# usage: search_cfg [0,1,2] NAME
+{
+  local VERBOSITY=$1 NAME=$2
+
+  # Check for absolute path:
+  if [[ ${NAME:0:1} == "/" ]]
+  then
+    if ! [[ -r $NAME ]]
+    then
+      log "find_cfg(): error: not found: '$NAME'"
+      return 1
+    fi
+    REPLY=$NAME
+    return
+  fi
+
+  # Ensure this is set:
+  : ${SUPERVISOR_PATH:=}
+
+  local DIR FILE
+  # Split on colon:
+  for DIR in ${SUPERVISOR_PATH//:/ }
+  do
+    FILE=$DIR/$NAME
+    trace $VERBOSE "find_cfg(): try file:      $FILE"
+    if [[ -r $FILE ]]
+    then
+      REPLY=$FILE
+      return
+    fi
+  done
+
+  # Not found:
+  return 1
 }
 
 queue_wait()
@@ -563,12 +679,71 @@ check_output()
   return 1
 }
 
+trace()
+# usage: trace VERBOSITY msg...
+{
+  log_if 2 $*
+}
 
-log_script() {
+debug()
+# usage: debug VERBOSITY msg...
+{
+  log_if 1 $*
+}
+
+log_if()
+# Log if verbosity is at least at limit
+# usage: log_if LIMIT VERBOSITY msg...
+{
+  local LIMIT=$1 VERBOSITY=$2
+  shift 2
+  if (( VERBOSITY < LIMIT ))
+  then
+    return
+  fi
+  log $*
+}
+
+log()
+# General-purpose log line
+# Set global LOG_LINE to insert a token
+{
+  local TOKEN=""
+  if [[ ${LOG_NAME:-} != "" ]]
+  then
+    TOKEN="${LOG_NAME}:"
+  fi
+  echo $( date "+%Y-%m-%d %H:%M:%S" ) $TOKEN $*
+}
+
+error()
+{
+  log "ERROR:" $*
+}
+
+crash()
+{
+  error $*
+  exit 1
+}
+
+sv_path_prepend()
+{
+  SUPERVISOR_PATH=$1${SUPERVISOR_PATH:+:}${SUPERVISOR_PATH:-}
+}
+
+sv_path_append()
+{
+  SUPERVISOR_PATH=${SUPERVISOR_PATH:-}${SUPERVISOR_PATH:+:}$1
+}
+
+log_script()
+# Provenance dump
+{
   SCRIPT_NAME=$(basename $0)
-  mkdir -p $TURBINE_OUTPUT
   LOG_NAME="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
   echo "### VARIABLES ###" > $LOG_NAME
+  # Ignore unset variables herein:
   set +u
   VARS=( "EMEWS_PROJECT_ROOT" "EXPID" "TURBINE_OUTPUT" \
     "PROCS" "QUEUE" "WALLTIME" "PPN" "TURBINE_JOBNAME" \
@@ -591,13 +766,6 @@ log_script() {
   echo "" >> $LOG_NAME
   echo "## SCRIPT ###" >> $LOG_NAME
   cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
-
-  # Andrew: Copy the CANDLE input file to the current experiments directory for reference
-  if [ -n "${CANDLE_INPUT_FILE-}" ]; then
-    if [ -f "$CANDLE_INPUT_FILE" ]; then
-      cp "$CANDLE_INPUT_FILE" "$TURBINE_OUTPUT"
-    fi
-  fi
 }
 
 check_directory_exists() {
