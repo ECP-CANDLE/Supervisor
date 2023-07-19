@@ -102,7 +102,7 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -ni=$NUM_ITERATIONS
                 -np=$POPULATION_SIZE
                 -strategy=$STRATEGY
-		            -off_prop=$OFFSPRING_PROPORTION
+                -off_prop=$OFFSPRING_PROPORTION
                 -mut_prob=$MUT_PROB
                 -cx_prob=$CX_PROB
                 -mut_indpb=$MUT_INDPB
