@@ -119,6 +119,7 @@ The relevant parameters for the GA algorithm are defined in `cfg-prm-*.sh` scrip
 - NUM_ITERATIONS: The number of iterations the GA should perform.
 - POPULATION_SIZE: The maximum number of hyperparameter sets to evaluate in each iteration.
 - GA_STRATEGY: The algorithm used by the GA. Can be one of "simple" or "mu_plus_lambda".
+- OFFSPRING_PROP: The offspring population size as a proportion of the population size (this is rounded) (specifically for the mu_plus_lambda strategy)
 - MUT_PROB: Probability an individual is mutated.
 - CX_PROB: Probability that mating happens in a selected pair.
 - MUT_INDPB: Probability for each gene to be mutated in a mutated individual.
@@ -132,7 +133,8 @@ The Genetic Algorithm is made to model evolution and natural selection by applyi
 
 In the "simple" strategy, offspring are created with crossover AND mutation, and the selection for the next population happens from ONLY the offspring. In
 the "mu_plus_lambda" strategy, offspring are created with crossover OR mutation, and the selection for the next population happens from BOTH the offpsring
-and parent generation.
+and parent generation. Also in the mu_plus_lambda strategy, the number of offspring in each generation is a chosen parameter, which can be controlled by the
+user through offspring_prop.
 
 Mutation intakes two parameters: mut_prob and mut_indpb. The parameter mut_prob represents the probability that an individual will be mutated. Then, once an
 individual is selected as mutated, mut_indpb is the probability that each gene is mutated. For example, if an individual is represented by the array
@@ -160,16 +162,18 @@ Notes:
   opposed to mutation AND crossover in the simple strategy.
 - GPUs can often sit waiting in most implementations of the Genetic Algorithm because the number of evaluations in each generation is usually variable. However,
   with a certain configuration, the number of evaluations per generation can be kept at a constant number of your choosing. By using mu_plus_lambda, the size
-  of the offspring population is the chosen parameter 'lambda'. Then, by choosing cx_prob and mut_prob such that cx_prob+mut_prob=1, every offspring is identified
-  as a 'crossed' or mutated individual and evaluated. Hence, the number of evaluations in each generation equals lambda. Note that an because of cx_indpb and mut_indpb,
-  an individual may be evaluated with actually having different hyperparameters. This also means that by adjusting mut_indpb and cx_indpb, the level of mutation and
-  crossover can be kept low despite cx_prob+mut_prob being high (if desired). Note that the number of evaluations per generation can be kept constant in the simple
-  strategy as well, but the number of evals has to be the population size.
+  of the offspring population is made through the chosen parameter of offspring_prop. Then, by choosing cx_prob and mut_prob such that cx_prob+mut_prob=1, every
+  offspring is identified as a 'crossed' or mutated individual and evaluated. Hence, the number of evaluations in each generation equals lambda. Note that because
+  of cx_indpb and mut_indpb, an individual may be evaluated with actually having different hyperparameters. This also means that by adjusting mut_indpb and cx_indpb,
+  the level of mutation and crossover can be kept low despite cx_prob+mut_prob being high (if desired). Note that the number of evaluations per generation can be 
+  kept constant in the simple strategy as well, but the number of evals has to be the population size.
 - Genetic Algorithms usually have mutation and crossover probabilites around 0.1. However, they also usually have population~500 and generations~100, which gives a lot
   of opportunity for mutation and crossover to happen. In the case of smaller populations and/or generations, it may be advantageous to increase mutation and crossover
   probabilites to larger than ordinary. In this case, the mu_plus_lambda strategy may be advantageous because of it's ability to select a parent for the next generation.
   Also, when there's a smaller number of generations (i.e. less number of times selection pressure is applied), it may be advantageous to increase tournament size (i.e.
   increase selection pressure strength) to compensate.
+- The default values are: NUM_ITERATIONS=5  |  POPULATION_SIZE=16  |  GA_STRATEGY=mu_plus_lambda  |  OFFSPRING_PROP=0.5  |  MUT_PROB=0.8  |  CX_PROB=0.2  |  
+                          MUT_INDPB=0.5  |  CX_INDPB=0.5  |  TOURNSIZE=4
 
 See https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms for more information.
 
