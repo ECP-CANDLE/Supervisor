@@ -51,6 +51,9 @@ string FRAMEWORK = "keras";
 // Entry point:
 main {
 
+  int random_seed = string2int(argv("seed", "0"));
+  int num_iter = string2int(argv("ni","5"));
+  int num_pop = string2int(argv("np","8"));
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
 
   // Ranks for the DEAP algorithm.
