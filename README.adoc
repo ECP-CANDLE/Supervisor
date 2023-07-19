@@ -53,4 +53,36 @@ To run an external model, that is, not one of the CANDLE Benchmarks, the user sh
 
 === Containerized models via IMPROVE
 
-TODO
+Containerized models are specified with `CANDLE_MODEL_TYPE=SINGULARITY`.  They are executed by `model.sh`, which simply runs the command
+
+----
+singularity exec SIF train.sh
+----
+
+instead of invoking `python` directly.  Output is gathered from stdout as in the normal Python case.
+
+Examples of IMPROVE Singularity container definitions may be found
+https://github.com/JDACS4C-IMPROVE/Singularity/tree/develop/definitions[here].
+
+== How to call your model
+
+These environment variable settings may be placed in any Supervisor configuration file.
+
+=== Models in plain Python
+
+Assuming your model is named MODEL:
+
+. Wrap your model in the CANDLE-compliant API
+. Name your module `MODEL_baseline_keras2.py`
+. Set `PYTHONPATH` to the location of your module
+. Set `export MODEL_NAME=MODEL`
+
+See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-1[this example].
+
+=== Models in Singularity containers
+
+. Package your container according to IMPROVE guidelines
+. `export MODEL_NAME=/path/to/model.sif`
+. `export CANDLE_MODEL_TYPE=SINGULARITY`
+
+See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-2[this example].
