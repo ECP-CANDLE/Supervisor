@@ -19,10 +19,10 @@ from scipy.special import comb
 
 ISO_TIMESTAMP = "seconds"  # timestamp to ISO string
 ISO_TIMESTAMP_ENCODE = "%Y-%m-%dT%H:%M:%S"  # ISO string to timestamp
-DEBUG_SQL = False # True
+DEBUG_SQL = False  # True
 
 conn = None
-csr  = None
+csr = None
 
 
 def isempty(path):
@@ -500,7 +500,6 @@ _delete_from_runhistory = """
     DELETE FROM runhist where plan_id = {}
     """
 
-
 # def log(msg):
 #     if DEBUG_SQL:
 #         with open("plangen_db.log", "a") as fp:
@@ -508,7 +507,6 @@ _delete_from_runhistory = """
 #             fp.flush()
 
 from log_tools import *
-
 
 logger = get_logger(logger, "PLANGEN", milliseconds=True)
 

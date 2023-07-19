@@ -92,8 +92,15 @@ log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
 log "HOST: $( hostname )"
+
+# ADLB variables are set by Swift/T/ADLB:
+# http://swift-lang.github.io/swift-t/guide.html#turbine_env2
+# CVD is CUDA_VISIBLE_DEVICES
+CVD=$(( $ADLB_RANK_OFFSET + ${CANDLE_CUDA_OFFSET:-0} ))
+log "ADLB_RANK_SELF:   $ADLB_RANK_SELF"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
-log "MODEL_TYPE: $MODEL_TYPE"
+log "CUDA DEVICE:      $CVD"
+log "MODEL_TYPE:       $MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -136,7 +143,7 @@ then
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
-              $MODEL_NAME ${MODEL_ACTION}.sh $ADLB_RANK_OFFSET
+              $MODEL_NAME ${MODEL_ACTION}.sh $CVD
               /candle_data_dir
               $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
               --experiment_id $EXPID

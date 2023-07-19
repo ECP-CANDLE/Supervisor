@@ -55,5 +55,6 @@ except Exception as e:
   string code = code_template % (outdir, params, model_name,
                                  expid, runid, benchmark_timeout);
   model_result = python_persist(code, "str(model_result)");
-  printf("model_py:candle_model_train(): model_result: '%s'", model_result);
+  printf("candle_model_train_py: result(%s): '%s'",
+         runid, model_result);
 }
