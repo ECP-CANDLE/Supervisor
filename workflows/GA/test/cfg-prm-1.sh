@@ -2,7 +2,8 @@
 
 # GA settings
 
-# RW: These setting are robust for many scenarios. Users are free to only adjust population size
+# RW: These setting are robust for many scenarios.
+#     Users are free to only adjust population size
 #     and number of iterations
 
 SEED=${SEED:-1}
