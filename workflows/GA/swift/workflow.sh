@@ -83,6 +83,8 @@ fi
 
 # Defaults for GA/DEAP:
 : ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=simple}
+: ${OFFSPRING_PROPORTION:=0.5} ${MUT_PROB:=0.8} ${CX_PROB:=0.2}
+: ${MUT_INDPB:=0.5} ${CX_INDPB:=0.5} ${TOURNSIZE:=4}
 # Miscellaneous defaults:
 : ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
 : ${MODEL_RETURN:=val_loss} ${CANDLE_MODEL_TYPE:=BENCHMARKS}
