@@ -198,12 +198,12 @@ def make_env(workflows, gParams, result_file):
         "BENCHMARK_TIMEOUT": "120",
         # gParams:
         "TURBINE_OUTPUT": gParams["output_dir"],
-        "EXPID":          gParams["experiment_id"],
-        "MODEL_NAME":     gParams["model_name"],
+        "EXPID": gParams["experiment_id"],
+        "MODEL_NAME": gParams["model_name"],
         # Simple env forwarding
-        "SITE":             os.getenv("SITE"),
-        "CANDLE_DATA_DIR":  os.getenv("CANDLE_DATA_DIR"),
-        "ADLB_RANK_SELF":   os.getenv("ADLB_RANK_SELF"),
+        "SITE": os.getenv("SITE"),
+        "CANDLE_DATA_DIR": os.getenv("CANDLE_DATA_DIR"),
+        "ADLB_RANK_SELF": os.getenv("ADLB_RANK_SELF"),
         "ADLB_RANK_OFFSET": os.getenv("ADLB_RANK_OFFSET"),
         # Results:
         "MODEL_RETURN": "loss",
