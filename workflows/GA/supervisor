@@ -17,6 +17,7 @@ fi
 SITE=$1
 TEST_SCRIPT=$2
 
-sv_path_prepend $THIS/data
+sv_path_append $THIS/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 $THIS/swift/workflow.sh $SITE $TEST_SCRIPT
