@@ -34,9 +34,10 @@ Users can manipulate `SUPERVISOR_PATH` directly or use:
 
 ----
 sv_path_prepend DIRECTORY
+sv_path_append DIRECTORY
 ----
 
-to prepend a location for search.  `PWD` is automatically added to `SUPERVISOR_PATH`.
+to prepend/append a location for search.  `PWD` is automatically added to `SUPERVISOR_PATH`, along with other Supervisor directories.  Normally, user directories should be prepended to `SUPERVISOR_PATH` so they are found first.
 
 In a typical case, when the user runs:
 
