@@ -24,22 +24,50 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "GA/workflow.sh: usage: workflow.sh SITE TEST_SCRIPT"
+  echo "GA/workflow.sh: usage:"
+  echo "workflow.sh SITE TEST_SCRIPT                      _or_"
+  echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME       _or_"
+  echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME CANDLE_MODEL_TYPE SIF"
+  echo
+  echo "The 2-argument case is used by the supervisor tool."
+  echo "The 5-argument case is best for plain Python cases."
+  echo "The 7-argument case is best for Singularity container cases."
 }
 
-if (( ${#} != 2 ))
+if (( ${#} == 0 ))
 then
   usage
   exit 1
 fi
-
-get_site    $1 # Sets SITE
-TEST_SCRIPT=$2
-
-source_cfg -v $TEST_SCRIPT
-
-# Sets EXPID.  If EXPID=="" , applies -a
-get_expid ${EXPID:--a}
+get_site $1 # Sets SITE
+if (( ${#} == 2 ))
+then
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+  : ${CANDLE_IMAGE:=NONE}
+  TEST_SCRIPT=$2
+  # Sets EXPID.  If EXPID=="" , applies -a
+  get_expid ${EXPID:--a}
+  source_cfg -v $TEST_SCRIPT
+elif (( ${#} == 5 ))
+then
+  get_expid   $2 # Sets EXPID
+  get_cfg_sys $3
+  get_cfg_prm $4
+  MODEL_NAME=$5
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+  : ${CANDLE_IMAGE:=NONE}
+elif (( ${#} == 7 ))
+then
+  get_expid   $2 # Sets EXPID
+  get_cfg_sys $3
+  get_cfg_prm $4
+  MODEL_NAME=$5
+  export CANDLE_MODEL_TYPE=$6
+  export CANDLE_IMAGE=$7
+else
+  usage
+  exit 1
+fi
 
 : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
