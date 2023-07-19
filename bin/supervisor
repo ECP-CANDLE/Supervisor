@@ -44,8 +44,8 @@ then
   crash "no such workflow: '$WORKFLOW'"
 fi
 
-sv_path_prepend $SUPERVISOR_HOME/workflows/$WORKFLOW/test
 sv_path_prepend $PWD
+sv_path_append $SUPERVISOR_HOME/workflows/$WORKFLOW/test
 
 export SUPERVISOR_PATH
 $SUPERVISOR_HOME/workflows/$WORKFLOW/supervisor $SITE $TEST_SCRIPT
