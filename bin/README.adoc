@@ -105,3 +105,7 @@ The scheduler project allocation name.  If unset, Swift/T will leave this empty,
 The scheduler queue name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
 `TURBINE_OUTPUT`::
 The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.  Defaults to a timestamp-based directory tree under `~/turbine-output`.
+
+== Tests
+
+See the https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool[`supervisor` tool tests].
