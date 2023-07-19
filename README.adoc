@@ -86,3 +86,24 @@ See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-1[this examp
 . `export CANDLE_MODEL_TYPE=SINGULARITY`
 
 See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-2[this example].
+
+== Installation
+
+=== Local Linux or Mac/ARM system:
+
+. Install Python 3.9
+. Install https://github.com/ECP-CANDLE/candle_lib[`candle_lib`]
+. Install Swift/T from Anaconda:
++
+----
+conda install -c conda-forge -c swift-t swift-t
+----
++
+. Check out Supervisor
+.. Switch to branch `develop`
+.. Add `Supervisor/bin` to `PATH`
+. Run `supervisor`
+
+=== Compute cluster or supercomputer
+
+Install as for local system but build Swift/T from source.
