@@ -69,7 +69,8 @@ These are used by many Supervisor workflows.  Workflows such as GA and dense-noi
 Either
 +
 * The Benchmark model name as in `MODEL_NAME_baseline_FRAMEWORK.py` as found in `PYTHONPATH` or
-* The SIF container image file path `/path/to/model.sif`
+* The SIF container image file path `/path/to/model.sif`.  +
+You must set `CANDLE_MODEL_TYPE="SINGULARITY"` .
 +
 There is no default value.
 
