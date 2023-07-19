@@ -63,7 +63,7 @@ Supervisor workflows accept many variables that are relevant to all of its subsy
 
 === Common Supervisor variables
 
-These are used by many Supervisor workflows
+These are used by many Supervisor workflows.  Workflows such as GA and dense-noise have other variables that control them, see the workflow-specific READMEs for more information.
 
 `MODEL_NAME`::
 Either
