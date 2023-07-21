@@ -20,7 +20,7 @@ via a test script.  Both approaches internally call the `workflow.sh` script for
 
 === The `supervisor` tool
 
-The `supervisor` tool allows the user to pass in Bash-formatted configuration files, which may be flat or structured.  These are loaded and then the workflow is run.
+The https://github.com/ECP-CANDLE/Supervisor/tree/develop/bin[`supervisor` tool] allows the user to pass in Bash-formatted configuration files, which may be flat or structured.  These are loaded and then the workflow is run.  Configuration scripts compatible with this tool are conventionally named `cfg-*.sh`
 
 === Test scripts
 
