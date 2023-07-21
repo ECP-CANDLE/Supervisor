@@ -168,14 +168,14 @@ Notes:
   of the offspring population is made through the chosen parameter of offspring_prop. Then, by choosing cx_prob and mut_prob such that cx_prob+mut_prob=1, every
   offspring is identified as a 'crossed' or mutated individual and evaluated. Hence, the number of evaluations in each generation equals lambda. Note that because
   of cx_indpb and mut_indpb, an individual may be evaluated with actually having different hyperparameters. This also means that by adjusting mut_indpb and cx_indpb,
-  the level of mutation and crossover can be kept low despite cx_prob+mut_prob being high (if desired). Note that the number of evaluations per generation can be 
+  the level of mutation and crossover can be kept low despite cx_prob+mut_prob being high (if desired). Note that the number of evaluations per generation can be
   kept constant in the simple strategy as well, but the number of evals has to be the population size.
 - Genetic Algorithms usually have mutation and crossover probabilites around 0.1. However, they also usually have population~500 and generations~100, which gives a lot
   of opportunity for mutation and crossover to happen. In the case of smaller populations and/or generations, it may be advantageous to increase mutation and crossover
   probabilites to larger than ordinary. In this case, the mu_plus_lambda strategy may be advantageous because of it's ability to select a parent for the next generation.
   Also, when there's a smaller number of generations (i.e. less number of times selection pressure is applied), it may be advantageous to increase tournament size (i.e.
   increase selection pressure strength) to compensate.
-- The default values are: NUM_ITERATIONS=5  |  POPULATION_SIZE=16  |  GA_STRATEGY=mu_plus_lambda  |  OFFSPRING_PROP=0.5  |  MUT_PROB=0.8  |  CX_PROB=0.2  |  
+- The default values are: NUM_ITERATIONS=5  |  POPULATION_SIZE=16  |  GA_STRATEGY=mu_plus_lambda  |  OFFSPRING_PROP=0.5  |  MUT_PROB=0.8  |  CX_PROB=0.2  |
                           MUT_INDPB=0.5  |  CX_INDPB=0.5  |  TOURNSIZE=4
 
 See https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms for more information.
