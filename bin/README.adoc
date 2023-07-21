@@ -22,11 +22,16 @@ To extend this case, you can add other environment settings known to GA, Supervi
 
 == Structuring experiments
 
-The `supervisor` tool is essentially a configuration file manager that passes data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
+The `supervisor` tool is essentially a configuration file manager that passes configuration data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
 
-`source_site`:: Find a site-specific configuration file.  These are formatted as `env-SITE.sh`, `sched-SITE.sh`, etc.
-`find_cfg`:: Find a configuration file and store its full path in `REPLY`
-`source_cfg`:: Find a configuration file and `source` it
+`source_site`::
+Find a site-specific configuration file.  These are formatted as `env-SITE.sh`, `sched-SITE.sh`, etc.
+
+`find_cfg`::
+Find a configuration file and store its full path in `REPLY`
+
+`source_cfg`::
+Find a configuration file and `source` it
 
 The `supervisor` tool searches for these files in `SUPERVISOR_PATH`, a normal list-like colon-separated environment variable.
 
@@ -50,6 +55,11 @@ $ supervisor frontier GA test-1.sh
 Then, `supervisor` invokes the selected workflow `GA`.
 
 The `GA/supervisor` interface script runs `workflow.sh`.  `workflow.sh` loads site-specific settings and defaults from Supervisor for site `frontier` via `source_site` if they are not already set.
+
+== Sites
+
+Site files are just a specific kind of configuration file known to Supervisor.
+Files `env-SITE.sh` and `sched-SITE.sh` will automatically be found and sourced.  If `langs-app-SITE.sh` exists, it will also be sourced by `model.sh`.  Many systems known to the CANDLE team already have site files in `Supervisor/workflows/common/sh`.
 
 == Supervisor configuration variables
 
