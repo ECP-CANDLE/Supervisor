@@ -101,7 +101,7 @@ BENCHMARK_TIMEOUT
 
 To create your own SITE files in workflows/common/sh/:
 
-- langs-SITE.sh
+- env-SITE.sh
 - langs-app-SITE.sh
 - modules-SITE.sh
 - sched-SITE.sh config
