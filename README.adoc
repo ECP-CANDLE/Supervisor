@@ -115,6 +115,7 @@ for run directories numbered `00R`.
 === Local Linux or Mac/ARM system:
 
 . Install Python 3.9
+.. Specific workflows such as GA may require certain Python libraries
 . Install https://github.com/ECP-CANDLE/candle_lib[`candle_lib`]
 . Install Swift/T from Anaconda:
 +
