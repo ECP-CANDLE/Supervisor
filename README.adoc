@@ -94,6 +94,22 @@ See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-1[this examp
 
 See https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool/user-case-2[this example].
 
+== Output directories
+
+For each workflow run, an experiment directory is created named:
+----
+EXPDIR=$CANDLE_DATA_DIR/WORKFLOW_NAME/EXP00X
+----
+by referencing `CANDLE_DATA_DIR`, the workflow name, and a unique number `00X`.
+
+Each rank `R` (worker process) of the workflow directs its `stdout` to `EXPDIR/out/out-R.txt`.
+
+When models are run (including under Singularity), their output is redirected to
+----
+$CANDLE_DATA_DIR/MODEL_NAME/Output/EXP00X/RUN00N
+----
+for run directories numbered `00R`.
+
 == Installation
 
 === Local Linux or Mac/ARM system:
