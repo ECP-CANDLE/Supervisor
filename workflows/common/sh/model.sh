@@ -180,13 +180,14 @@ else
   CODE=$?
 fi
 
+echo  # spacer
 log "$MODEL_TYPE: EXIT CODE: $CODE"
 if (( CODE == 0 ))
 then
   echo PWD: $( pwd -P )
   echo INSTANCE_DIRECTORY: $INSTANCE_DIRECTORY
   ls -ltrh
-  sleep 1  # Wait for initial output
+  sleep 1  # Wait for output
   # Get last results of the format "IMPROVE RESULT xxx" in model.log
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
   RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
@@ -200,7 +201,7 @@ then
   fi
 else
   echo # spacer
-  if (( $CODE == 124 ))
+  if (( CODE == 124 ))
   then
     log "TIMEOUT ERROR! (timeout=$SH_TIMEOUT)"
   else
@@ -218,7 +219,7 @@ fi
 
 log "END: SUCCESS"
 
-exit 0 # Success
+exit 0  # Success
 
 # Local Variables:
 # sh-basic-offset: 2
