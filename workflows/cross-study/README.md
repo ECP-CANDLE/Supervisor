@@ -11,7 +11,7 @@ This workflow runs a cross-study analysis for drug-reponse prediction problem fo
 
 ### File index
 
-- swift/workflow.{sh,swift}: Normal cross-study workflow 
+- swift/workflow.{sh,swift}: Normal cross-study workflow
 
 ## Use from the supervisor tool
 
