@@ -107,7 +107,12 @@ if [[ ${SEED:-} == "" ]]
 then
   # Auto-generate SEED based on clock (nanos) and PID
   # Use 10# to force value to decimal (cannot have leading 0s)
-  SEED=$(( ( 10#$(date +%N) + ${$}) % 1000000 ))
+  #SEED=$(( ( 10#$(date +%N) + ${$}) % 1000000 ))
+SEED=$(date +%s%N)
+SEED=${SEED%N}  # Remove trailing N
+SEED=$(($SEED + $$))
+SEED=$((SEED % 1000000))
+echo "SEED:", $SEED
 fi
 
 # Defaults for GA/DEAP:
