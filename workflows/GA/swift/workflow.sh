@@ -112,7 +112,6 @@ SEED=$(date +%s%N)
 SEED=${SEED%N}  # Remove trailing N
 SEED=$(($SEED + $$))
 SEED=$((SEED % 1000000))
-echo "SEED:", $SEED
 fi
 
 # Defaults for GA/DEAP:

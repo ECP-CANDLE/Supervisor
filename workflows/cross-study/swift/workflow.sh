@@ -98,6 +98,11 @@ fi
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+  CANDLE_MODEL_IMPL="container"
+fi
+
 cp -v $CS $TURBINE_OUTPUT
 
 # TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"

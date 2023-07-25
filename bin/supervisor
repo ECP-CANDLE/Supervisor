@@ -39,6 +39,8 @@ SITE=$1
 WORKFLOW=$2
 TEST_SCRIPT=$3
 
+echo "Running workflow: ", $WORKFLOW
+
 if ! [[ -d $SUPERVISOR_HOME/workflows/$WORKFLOW ]]
 then
   crash "no such workflow: '$WORKFLOW'"
