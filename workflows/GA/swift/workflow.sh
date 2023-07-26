@@ -170,11 +170,6 @@ then
   CANDLE_MODEL_IMPL="container"
 fi
 
-if [[ ${FRAMEWORK:-} == ""]]
-then 
-  FRAMEWORKS="keras"
-fi
-
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the candle_model_train_app function
