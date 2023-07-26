@@ -46,7 +46,7 @@ printf("TURBINE_OUTPUT: " + turbine_output);
 
 string restart_number = argv("restart_number", "1");
 
-string FRAMEWORK = "keras";
+string FRAMEWORK = getenv("FRAMEWORK");
 
 // Entry point:
 main {
