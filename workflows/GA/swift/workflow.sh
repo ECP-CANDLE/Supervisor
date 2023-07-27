@@ -8,7 +8,7 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-export BENCHMARK_TIMEOUT
+export BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 SCRIPT_NAME=$(basename $0)
 
@@ -33,6 +33,7 @@ usage()
   echo "The 5-argument case is best for plain Python cases."
   echo "The 7-argument case is best for Singularity container cases."
 }
+
 
 if (( ${#} == 0 ))
 then
@@ -68,7 +69,6 @@ else
   usage
   exit 1
 fi
-
 : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
@@ -115,7 +115,7 @@ SEED=$((SEED % 1000000))
 fi
 
 # Defaults for GA/DEAP:
-: ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=simple}
+: ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=mu_plus_lambda}
 : ${OFFSPRING_PROPORTION:=0.5} ${MUT_PROB:=0.8} ${CX_PROB:=0.2}
 : ${MUT_INDPB:=0.5} ${CX_INDPB:=0.5} ${TOURNSIZE:=4}
 # Miscellaneous defaults:
@@ -168,6 +168,7 @@ mkdir -pv $TURBINE_OUTPUT/run
 if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
   CANDLE_MODEL_IMPL="container"
+  BENCHMARKS_ROOT=""
 fi
 
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
