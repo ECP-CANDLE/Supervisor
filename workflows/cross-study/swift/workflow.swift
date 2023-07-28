@@ -49,33 +49,44 @@ string cs_lines[] = file_lines(cs);
 
 
 
-json_template = """
+json_template_train = """
 {
   "epochs"     : %2i,
   "source_dataset" : "%s",
-  "target_dataset" : "%s",
   "split"      : %2i
 }
 """;
 
 
+json_template_test = """
+{
+  "target_dataset" : "%s",
+  "split"      : %2i
+}
+""";
+
 foreach source_dataset in source_datasets
 {
   foreach split in split_nums
   {
+      runid_train = source_dataset+"_"+split;
+      // train the model
+      params_train = json_template_train % (epochs, source_dataset, split);
+        results = candle_model_train(params_train, expid, runid_train, model_name);
       // test sources for the trained model
       foreach target_dataset in target_datasets
       {
         if (target_dataset != source_dataset)
         {
-          runid = source_dataset+"_"+split+"_"+target_dataset;
+          runid_test = source_dataset+"_"+split+"/"+target_dataset;
           // make params to pass info about train_dataset, split, target_dataset
-          params = json_template %
-            (epochs, source_dataset, target_dataset, split);
-          printf("Running with:- train_source, target_dataset, split: %s, %s,%s, %i", runid, source_dataset, target_dataset, split);
-          results = candle_model_train(params, expid, runid, model_name);
+          params_test = json_template_test % (target_dataset, split);
+          printf("Running with:- train_source, target_dataset, split: %s, %s,%s, %i", runid_test, source_dataset, target_dataset, split);
+          // results = candle_model_test(params_test, expid, runid_test, model_name);
           // assert(results != "EXCEPTION", "exception in candle_model_train()!");
         }
       }
   }
 }
+
+
