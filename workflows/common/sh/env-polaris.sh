@@ -6,7 +6,8 @@ CANDLE_MODEL_IMPL=app
 
 CSC249=/lus/grand/projects/CSC249ADOA01
 ROOT=$CSC249/public/sfw/polaris
-SWIFT=$ROOT/swift-t/2023-06-05
+# SWIFT=$ROOT/swift-t/2023-06-05
+SWIFT=$ROOT/swift-t/2023-08-31
 
 if ! [[ -d $SWIFT ]]
 then
