@@ -730,11 +730,13 @@ crash()
 sv_path_prepend()
 {
   SUPERVISOR_PATH=$1${SUPERVISOR_PATH:+:}${SUPERVISOR_PATH:-}
+  export SUPERVISOR_PATH
 }
 
 sv_path_append()
 {
   SUPERVISOR_PATH=${SUPERVISOR_PATH:-}${SUPERVISOR_PATH:+:}$1
+  export SUPERVISOR_PATH
 }
 
 log_script()
