@@ -307,6 +307,7 @@ source_site()
 # Source a settings file for a specific SITE (titan, cori, theta)
 # Succeeds with warning message if file is not found
 # SITE is exported in the environment
+# May provide '-v' multiple times for verbosity
 {
   local VERBOSE=0
   while [[ $1 == "-v" ]]

@@ -147,7 +147,7 @@ then
               --bind $CANDLE_DATA_DIR:/candle_data_dir
               $MODEL_NAME ${MODEL_ACTION}.sh $CVD
               /candle_data_dir
-              $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
+              $FLAGS
               --experiment_id $EXPID
               --run_id $RUNID
             )
