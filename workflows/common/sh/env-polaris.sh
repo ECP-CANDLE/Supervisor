@@ -26,4 +26,6 @@ PATH=$PY/bin:$PATH
 R_HOME=$ROOT/R-4.2.2/lib64/R
 EQR=$ROOT/EQ-R
 
+module load PrgEnv-nvhpc
+
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}:$R_HOME/lib
