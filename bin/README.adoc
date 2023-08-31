@@ -113,6 +113,27 @@ The scheduler queue name.  If unset, Swift/T will leave this empty, which will f
 `TURBINE_OUTPUT`::
 The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.  Defaults to a timestamp-based directory tree under `~/turbine-output`.
 
-== Tests
+== Tests for the supervisor tool
 
 See the https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool[`supervisor` tool tests].
+
+== Tests without the supervisor tool
+
+When running Supervisor workflows without the `supervisor` tool, Supervisor scripts will still try to find configuration files via `source_site`, `find_cfg`, and `source_cfg`.  Thus, you will need to set the default search locations somewhere in your test scripts (`workflow.sh` or `test-*.sh`) with code like this:
+
+----
+# Self-configuration:
+THIS=$( cd $( dirname $0 ) && /bin/pwd )
+EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
+WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
+SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. && /bin/pwd )
+export EMEWS_PROJECT_ROOT
+
+# Bring in the shell script utilities:
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+
+# Add a per-workflow directory (e.g., HPO configurations)
+sv_path_append $THIS/data
+# Add the main Supervisor script directory
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
+----
