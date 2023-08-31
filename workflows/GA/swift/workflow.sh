@@ -72,7 +72,8 @@ fi
 : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  TOKEN=$( basename $MODEL_NAME .sif )
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
   printf "Running GA workflow with model %s and model type %s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE
 fi
