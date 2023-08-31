@@ -26,6 +26,7 @@ SITE=$2
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
+SUPERVISOR_HOME=$( cd $THIS/../../.. ; /bin/pwd )
 EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
 export EMEWS_PROJECT_ROOT
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
@@ -35,12 +36,14 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
 
+export PARAM_SET_FILE=cmp_param_space.json
+
 export MODEL_RETURN=val_loss
 
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
 
-CANDLE_MODEL_TYPE="BENCHMARKS"
+CANDLE_MODEL_TYPE=${CANDLE_MODEL_TYPE:-BENCHMARKS}
 # CANDLE_IMAGE=/software/improve/images/GraphDRP.sif # lambda
 CANDLE_IMAGE=None # Polaris
 
@@ -52,6 +55,9 @@ if [[ $SITE == "theta" ]]
 then
   export WAIT=1
 fi
+
+sv_path_append $THIS/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 # Submit job
 $EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $CFG_PRM $MODEL_NAME \

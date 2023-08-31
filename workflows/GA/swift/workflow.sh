@@ -8,6 +8,7 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+export SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. ; /bin/pwd )
 export BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 SCRIPT_NAME=$(basename $0)
@@ -46,8 +47,7 @@ then
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
-  # Sets EXPID.  If EXPID=="" , applies -a
-  get_expid ${EXPID:--a}
+  get_expid ${EXPID:--a}  # Sets EXPID
   source_cfg -v $TEST_SCRIPT
 elif (( ${#} == 5 ))
 then
@@ -78,6 +78,9 @@ then
          $MODEL_NAME $CANDLE_MODEL_TYPE
 fi
 mkdir -p $TURBINE_OUTPUT
+
+sv_path_append $EMEWS_PROJECT_ROOT/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 source_site env   $SITE
 source_site sched $SITE
@@ -149,6 +152,7 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -site=$SITE
               )
 
+# Reserve a rank for DEAP:
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
