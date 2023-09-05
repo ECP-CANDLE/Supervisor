@@ -19,13 +19,16 @@ echo "find in $PWD ..."
 START=$SECONDS
 FILE_LIST=log-tar.list
 find . -name python.log    -or \
-       -name predicted.tsv -or \
-       -name "summ*.txt" > $FILE_LIST
+       -name NO-DATA.txt       \
+        > $FILE_LIST
+#        -name predicted.tsv -or
+#        -name "summ*.txt"
 STOP=$SECONDS
 COUNT=$( wc -l < $FILE_LIST )
-
 DURATION=$(( STOP - START ))
-echo "found $COUNT files in $DURATION seconds."
+RATE_FPS=$(( COUNT / DURATION ))
+
+echo "found $COUNT files in $DURATION seconds at $RATE_FPS files/s"
 echo "running tar ..."
 
 START=$SECONDS
