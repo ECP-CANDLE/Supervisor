@@ -447,6 +447,7 @@ search_cfg()
   done
 
   # Not found:
+  log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
   return 1
 }
 

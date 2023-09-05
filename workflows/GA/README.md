@@ -74,12 +74,16 @@ Command line:
 $ supervisor SITE WORKFLOW TEST_SCRIPT
 ```
 
-Variables that can be set in the TEST_SCRIPT
+### Variables that must be set by the TEST_SCRIPT
 
 MODEL_NAME
 PARAM_SET_FILE
+NUM_ITERATIONS
+POPULATION_SIZE
+
+### Variables that may be set in the TEST_SCRIPT
+
 SEED
-EXPID
 NUM_ITERATIONS
 POPULATION_SIZE
 GA_STRATEGY
@@ -101,9 +105,8 @@ BENCHMARK_TIMEOUT
 
 To create your own SITE files in workflows/common/sh/:
 
-- langs-SITE.sh
+- env-SITE.sh
 - langs-app-SITE.sh
-- modules-SITE.sh
 - sched-SITE.sh config
 
 copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local-as.sh for an example).

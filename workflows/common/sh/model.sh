@@ -85,11 +85,6 @@ then
   TIMEOUT_CMD="timeout $SH_TIMEOUT"
 fi
 
-log()
-{
-  echo $( date "+%Y-%m-%d %H:%M:%S" ) "MODEL.SH:" $*
-}
-
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
@@ -110,6 +105,7 @@ then
   WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 fi
 source $WORKFLOWS_ROOT/common/sh/utils.sh
+LOG_NAME="MODEL.SH"
 source_site langs-app $SITE
 
 echo
