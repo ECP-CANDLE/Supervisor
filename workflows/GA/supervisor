@@ -1,0 +1,23 @@
+#!/bin/bash
+set -eu
+
+# GA SUPERVISOR
+# Externally-runnable workflow starter
+
+THIS=$( cd $( dirname $0 ) ; /bin/pwd )
+SUPERVISOR_HOME=$( cd $THIS/../.. ; /bin/pwd )
+source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
+LOG_NAME="supervisor/GA"
+
+if (( ${#} < 1 ))
+then
+  crash "insufficient arguments!"
+fi
+
+SITE=$1
+TEST_SCRIPT=$2
+
+sv_path_append $THIS/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
+
+$THIS/swift/workflow.sh $SITE $TEST_SCRIPT

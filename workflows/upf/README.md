@@ -63,3 +63,7 @@ $ ./upf-infer.sh cori upf-DATA.txt
 - mk-infer-upf.sh: Assembles the JSON fragments into the UPF
 - infer-template.json: M4 template for JSON fragments. Populated by environment variables set in mk-infer-upf.sh
 - swift/workflow.{sh,swift}: Normal UPF workflow but newly extracts id from JSON template. The id is used as the run output directory
+
+## Use from the supervisor tool
+
+Be sure to set environment variable UPF to the name of your UPF file.

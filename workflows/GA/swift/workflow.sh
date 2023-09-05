@@ -8,7 +8,8 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
-export BENCHMARK_TIMEOUT
+export SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. ; /bin/pwd )
+export BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 SCRIPT_NAME=$(basename $0)
 
@@ -24,47 +25,67 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 
 usage()
 {
-  echo "workflow.sh: usage: workflow.sh SITE EXPID CFG_SYS CFG_PRM MODEL_NAME" \
-       "[CANDLE_MODEL_TYPE] [CANDLE_IMAGE]"
+  echo "GA/workflow.sh: usage:"
+  echo "workflow.sh SITE TEST_SCRIPT                      _or_"
+  echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME       _or_"
+  echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME CANDLE_MODEL_TYPE SIF"
+  echo
+  echo "The 2-argument case is used by the supervisor tool."
+  echo "The 5-argument case is best for plain Python cases."
+  echo "The 7-argument case is best for Singularity container cases."
 }
 
-if (( ${#} != 7 )) && (( ${#} != 5 ))
+
+if (( ${#} == 0 ))
 then
   usage
   exit 1
 fi
-
-if (( ${#} == 7 ))
+get_site $1 # Sets SITE
+if (( ${#} == 2 ))
 then
-  export CANDLE_MODEL_TYPE=$6
-  export CANDLE_IMAGE=$7
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+  : ${CANDLE_IMAGE:=NONE}
+  TEST_SCRIPT=$2
+  get_expid ${EXPID:--a}  # Sets EXPID
+  source_cfg -v $TEST_SCRIPT
 elif (( ${#} == 5 ))
 then
-  CANDLE_MODEL_TYPE="BENCHMARKS"
-  CANDLE_IMAGE=NONE
+  get_expid   $2 # Sets EXPID
+  get_cfg_sys $3
+  get_cfg_prm $4
+  MODEL_NAME=$5
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+  : ${CANDLE_IMAGE:=NONE}
+elif (( ${#} == 7 ))
+then
+  get_expid   $2 # Sets EXPID
+  get_cfg_sys $3
+  get_cfg_prm $4
+  MODEL_NAME=$5
+  export CANDLE_MODEL_TYPE=$6
+  export CANDLE_IMAGE=$7
 else
   usage
   exit 1
 fi
-
-TURBINE_OUTPUT=""
+: ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
-  printf "Running mlrMBO workflow with model %s and image %s:%s\n" \
-         $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
+  TOKEN=$( basename $MODEL_NAME .sif )
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
+  printf "Running GA workflow with model %s and model type %s\n" \
+         $MODEL_NAME $CANDLE_MODEL_TYPE
 fi
+mkdir -p $TURBINE_OUTPUT
 
-get_site    $1 # Sets SITE
-get_expid   $2 # Sets EXPID
-get_cfg_sys $3
-get_cfg_prm $4
-MODEL_NAME=$5
+sv_path_append $EMEWS_PROJECT_ROOT/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 source_site env   $SITE
 source_site sched $SITE
 
-EQPY=${EQPY:-$WORKFLOWS_ROOT/common/ext/EQ-Py}
+: ${EQPY:=$WORKFLOWS_ROOT/common/ext/EQ-Py}
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
@@ -86,11 +107,44 @@ then
   RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
 fi
 
+if [[ ${SEED:-} == "" ]]
+then
+  # Auto-generate SEED based on clock (nanos) and PID
+  # Use 10# to force value to decimal (cannot have leading 0s)
+  #SEED=$(( ( 10#$(date +%N) + ${$}) % 1000000 ))
+SEED=$(date +%s%N)
+SEED=${SEED%N}  # Remove trailing N
+SEED=$(($SEED + $$))
+SEED=$((SEED % 1000000))
+fi
+
+# Defaults for GA/DEAP:
+: ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=mu_plus_lambda}
+: ${OFFSPRING_PROPORTION:=0.5} ${MUT_PROB:=0.8} ${CX_PROB:=0.2}
+: ${MUT_INDPB:=0.5} ${CX_INDPB:=0.5} ${TOURNSIZE:=4}
+# Miscellaneous defaults:
+: ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
+: ${MODEL_RETURN:=val_loss}
+export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
+export CANDLE_MODEL_TYPE
+
+if ! find_cfg $PARAM_SET_FILE
+then
+  crash "Could not find PARAM_SET_FILE: $PARAM_SET_FILE"
+fi
+PARAM_SET_FILE=$REPLY
+
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
                 -ni=$NUM_ITERATIONS
                 -np=$POPULATION_SIZE
-                -strategy=$GA_STRATEGY
+                -strategy=$STRATEGY
+                -off_prop=$OFFSPRING_PROPORTION
+                -mut_prob=$MUT_PROB
+                -cx_prob=$CX_PROB
+                -mut_indpb=$MUT_INDPB
+                -cx_indpb=$CX_INDPB
+                -tournsize=$TOURNSIZE
                 -model_sh=$EMEWS_PROJECT_ROOT/scripts/run_model.sh
                 -model_name=$MODEL_NAME
                 -exp_id=$EXPID
@@ -98,6 +152,9 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -site=$SITE
               )
 
+# Reserve a rank for DEAP:
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 if [[ ${INIT_PARAMS_FILE:-} != "" ]]
 then
@@ -108,8 +165,7 @@ USER_VARS=( $CMD_LINE_ARGS )
 log_script
 
 #Store scripts to provenance
-#copy the configuration files to TURBINE_OUTPUT
-cp $WORKFLOWS_ROOT/common/python/$GA_FILE $PARAM_SET_FILE $INIT_PARAMS_FILE  $CFG_SYS $CFG_PRM $TURBINE_OUTPUT
+cp $PARAM_SET_FILE ${INIT_PARAMS_FILE:-} $TURBINE_OUTPUT
 
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
@@ -117,7 +173,9 @@ mkdir -pv $TURBINE_OUTPUT/run
 if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
 then
   CANDLE_MODEL_IMPL="container"
+  BENCHMARKS_ROOT=""
 fi
+
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 # This is used by the candle_model_train_app function
@@ -131,19 +189,17 @@ then
 fi
 
 # Handle %-escapes in TURBINE_STDOUT
-if [ $SITE == "summit"  ] || \
-   [ $SITE == "biowulf" ] || \
-   [ $SITE == "polaris" ]
+if [[ $SITE == "summit"   ]] || \
+   [[ $SITE == "biowulf"  ]] || \
+   [[ $SITE == "polaris"  ]] || \
+   [[ $SITE == "frontier" ]]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
 fi
-
 mkdir -pv $TURBINE_OUTPUT/out
 
-#swift-t -n $PROCS \
-#        -o $TURBINE_OUTPUT/workflow.tic \
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
@@ -161,8 +217,7 @@ fi
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
-  echo "CANDLE_DATA_DIR is not set in the environment!  Exiting..."
-  exit 1
+  crash "CANDLE_DATA_DIR is not set in the environment!"
 fi
 
 (
@@ -192,7 +247,6 @@ fi
           -e IGNORE_ERRORS \
           -e CANDLE_DATA_DIR \
           -e CANDLE_MODEL_TYPE \
-          -e CANDLE_IMAGE \
           $WAIT_ARG \
           $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
 )
@@ -204,6 +258,3 @@ then
 fi
 
 echo "EXIT CODE: 0" | tee -a $STDOUT
-
-# Andrew: Needed this so that script to monitor job worked properly (queue_wait... function in utils.sh?)
-echo $TURBINE_OUTPUT > turbine-directory.txt

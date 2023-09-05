@@ -16,7 +16,7 @@ SIGNATURE -H "Provide an experiment DIR (e.g., .../experiments/X042)!" \
 
 if ! [[ -d $DIR ]]
 then
-  echo "Does not exist: $DIR"
+  echo "Directory does not exist: $DIR"
   exit 1
 fi
 

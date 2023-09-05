@@ -96,7 +96,7 @@ def write_params(params, hyper_parameter_map):
 
 
 def expand_params(params, hyper_parameter_map):
-    """ Expand dict of params into command-line flags """
+    """Expand dict of params into command-line flags."""
 
     parent_dir = (hyper_parameter_map["instance_directory"]
                   if "instance_directory" in hyper_parameter_map else ".")
@@ -153,6 +153,10 @@ def merge_params(defaults, params):
 
 
 def main():
+    if len(sys.argv) == 1:
+        print("runner_utils: write_params or expand_params")
+        exit(1)
+
     # Need argparse
     if sys.argv[1] == "write_params":
         # Merge params from the user-provided params file and

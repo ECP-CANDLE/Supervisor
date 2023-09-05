@@ -1,7 +1,5 @@
-"""
-SUPERVISOR MODEL RANDOM
-Simply returns a random number in [0,10) as val_loss
-"""
+"""SUPERVISOR MODEL RANDOM Simply returns a random number in [0,10) as
+val_loss."""
 
 import os
 
@@ -15,9 +13,11 @@ file_path = os.path.dirname(os.path.realpath(__file__))
 
 
 class BenchmarkRandom(candle.Benchmark):
-    """ Our subclass implementation of a CANDLE Benchmark """
+    """Our subclass implementation of a CANDLE Benchmark."""
+
     def set_locals(self):
         pass
+
 
 # In the initialize_parameters() method, we will instantiate the base
 # class, and finally build an argument parser to recognize your customized
@@ -43,7 +43,7 @@ def initialize_parameters():
 
 
 def model_implementation(params):
-    """ The implementation of the model w/o CANDLE conventions """
+    """The implementation of the model w/o CANDLE conventions."""
 
     from random import random
     if "crash_probability" in params:
@@ -56,9 +56,7 @@ def model_implementation(params):
 
 
 class FakeCrashException(Exception):
-    """
-    A dummy uncaught Exception to test error handling in Supervisor
-    """
+    """A dummy uncaught Exception to test error handling in Supervisor."""
     pass
 
 

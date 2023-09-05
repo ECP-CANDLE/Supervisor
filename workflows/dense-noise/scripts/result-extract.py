@@ -1,4 +1,3 @@
-
 # RESULT EXTRACT PY
 
 import argparse
@@ -7,10 +6,9 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("output",
-                    help="The workflow output file " +
-                         "(input to this script)")
-parser.add_argument("data", help="The extracted data " +
-                                 "(output from this script)")
+                    help="The workflow output file " + "(input to this script)")
+parser.add_argument("data",
+                    help="The extracted data " + "(output from this script)")
 args = parser.parse_args(sys.argv[1:])
 
 # Nested dict where:
@@ -22,7 +20,7 @@ with open(args.output) as fp:
     for line in fp:
         tokens = line.split(" ")
         if tokens[0] == "result:":
-            layer = int  (tokens[4])
+            layer = int(tokens[4])
             noise = float(tokens[6])
             value = float(tokens[8])
             if layer not in values.keys():
@@ -40,6 +38,7 @@ for layer in values.keys():
         values[layer][noise] = s / n
 
 import pandas as pd
+
 df = pd.DataFrame(values)
 
 # Sort the columns from left to right (layers):

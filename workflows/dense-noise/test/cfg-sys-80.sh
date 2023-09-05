@@ -5,7 +5,7 @@
 # Note that 1 processes is reserved for Swift
 # The default of 2 gives you 1 worker, i.e., 1 concurrent Python
 export PROCS=${PROCS:-80}
-# Polaris: procs 80, ppn 8 walltime 1hr debug-scaling --- debug - 2nodes, 
+# Polaris: procs 80, ppn 8 walltime 1hr debug-scaling --- debug - 2nodes,
 # MPI processes per node
 export PPN=${PPN:-8}
 

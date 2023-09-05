@@ -52,30 +52,32 @@ export MODEL_TYPE=$5
 export MODEL_NAME=$6
 export MODEL_ACTION=$7
 
-# Each model run, runs in its own "instance" directory
-# Set instance_directory to that and cd into it.
-# # TODO: rename INSTANCE_DIRECTORY to OUTPUT_DIR
-#set -x
+# Each model run runs in its own "run directory"
 if [[ $MODEL_TYPE = "SINGULARITY" ]]
 then
   # TODO: Rename "instance" to "run"
   MODEL_TOKEN=$( basename $MODEL_NAME .sif )
-  INSTANCE_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
-  INTERNAL_DIRECTORY=$MODEL_NAME/Output/$EXPID/$RUNID
+  # The container will create subdirectories based on
+  #               --experiment_id and --run_id
+  # This directory is bound inside the container:
+  export CANDLE_OUTPUT_DIR=/candle_data_dir/$MODEL_TOKEN/Output
+  # This directory is outside the container:
+  RUN_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
+  mkdir -pv $RUN_DIRECTORY
 else # "BENCHMARKS"
-  INSTANCE_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+  RUN_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+  mkdir -pv $RUN_DIRECTORY
+  export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
+                                       $RUN_DIRECTORY )
 fi
 
 # All stdout/stderr after this point goes into model.log !
-mkdir -pv $INSTANCE_DIRECTORY
-export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
-                                     $INSTANCE_DIRECTORY )
-LOG_FILE=$INSTANCE_DIRECTORY/model.log
-echo "redirecting to: LOG_FILE=$INSTANCE_DIRECTORY/model.log"
+LOG_FILE=$RUN_DIRECTORY/model.log
+echo "redirecting to: LOG_FILE=$LOG_FILE"
 set +x
 exec >> $LOG_FILE
 exec 2>&1
-cd $INSTANCE_DIRECTORY
+cd $RUN_DIRECTORY
 
 TIMEOUT_CMD=""
 if [[ ${SH_TIMEOUT:-} != "" ]] && [[ $SH_TIMEOUT != "-1" ]]
@@ -92,8 +94,15 @@ log "START"
 log "MODEL_NAME: $MODEL_NAME"
 log "RUNID: $RUNID"
 log "HOST: $( hostname )"
+
+# ADLB variables are set by Swift/T/ADLB:
+# http://swift-lang.github.io/swift-t/guide.html#turbine_env2
+# CVD is CUDA_VISIBLE_DEVICES
+CVD=$(( $ADLB_RANK_OFFSET + ${CANDLE_CUDA_OFFSET:-0} ))
+log "ADLB_RANK_SELF:   $ADLB_RANK_SELF"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
-log "MODEL_TYPE: $MODEL_TYPE"
+log "CUDA DEVICE:      $CVD"
+log "MODEL_TYPE:       $MODEL_TYPE"
 
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
@@ -136,9 +145,9 @@ then
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
               --bind $CANDLE_DATA_DIR:/candle_data_dir
-              $MODEL_NAME ${MODEL_ACTION}.sh $ADLB_RANK_OFFSET
+              $MODEL_NAME ${MODEL_ACTION}.sh $CVD
               /candle_data_dir
-              $FLAGS # $INTERNAL_DIRECTORY/parameters.txt
+              $FLAGS
               --experiment_id $EXPID
               --run_id $RUNID
             )
@@ -148,7 +157,7 @@ else # "BENCHMARKS"
   # The Python command line arguments:
   PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
            "$PARAMS"
-           "$INSTANCE_DIRECTORY"
+           "$RUN_DIRECTORY"
            "$FRAMEWORK"
            "$RUNID"
            "$BENCHMARK_TIMEOUT" )
@@ -177,16 +186,16 @@ log "$MODEL_TYPE: EXIT CODE: $CODE"
 if (( CODE == 0 ))
 then
   echo PWD: $( pwd -P )
-  echo INSTANCE_DIRECTORY: $INSTANCE_DIRECTORY
+  echo RUN_DIRECTORY: $RUN_DIRECTORY
   ls -ltrh
   sleep 1  # Wait for initial output
   # Get last results of the format "IMPROVE RESULT xxx" in model.log
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
   RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
-             $INSTANCE_DIRECTORY/model.log )
+             $RUN_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
   echo "IMPROVE RESULT: '$RESULT'"
-  echo $RESULT > $INSTANCE_DIRECTORY/result.txt
+  echo $RESULT > $RUN_DIRECTORY/result.txt
   if [[ ${RESULT_FILE:-} != "" ]]
   then
     echo $RESULT > $RESULT_FILE

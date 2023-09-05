@@ -10,15 +10,6 @@ export PROCS=${PROCS:-10}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-10}
 
-export WALLTIME=${WALLTIME:-01:00:00}
-
-#export PROJECT=Candle_ECP
-
-export PROJECT=candle_aesp
-# export QUEUE="debug"         # Up to  2 nodes
-# export QUEUE="debug-scaling" # Up to 10 nodes
-export QUEUE="prod"            # At least 10 nodes
-
 #  Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.
 # If set to -1 there is no timeout.

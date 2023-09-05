@@ -20,6 +20,8 @@ PYTHONPATH+=:$SUPERVISOR/models/Random
 PYTHONPATH+=:$SUPERVISOR/models/Comparator
 PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
+export APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
+
 # The remainder of this script sets up PYTHONPATHs
 #     for the CANDLE Benchmarks if they are found
 if ! [[ -d $SUPERVISOR/../Benchmarks ]]
@@ -48,8 +50,6 @@ PYTHONPATH+=:$BENCHMARKS_ROOT/Pilot1/NT3
 PYTHONPATH+=:$BENCHMARKS_ROOT/Pilot1/Uno
 PYTHONPATH+=:$BENCHMARKS_ROOT/examples/ADRP
 PYTHONPATH+=:$BENCHMARKS_ROOT/examples/xform-smiles
-
-export APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
 
 if [[ ${MODEL_PYTHON_DIR:-} != "" ]]
 then

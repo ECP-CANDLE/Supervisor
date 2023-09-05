@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -eu
 
-# UPF WORKFLOW SH
+# CROSS-STUDY WORKFLOW SH
 
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( realpath $( dirname $0 )/.. )
@@ -16,7 +16,7 @@ usage()
 {
   echo "UNROLLED PARAMETER FILE: usage:"
   echo "workflow.sh SITE TEST_SCRIPT    _or_"
-  echo "workflow.sh SITE EXPID CFG_SYS UPF"
+  echo "workflow.sh SITE EXPID CFG_SYS CROSS-STUDY"
   echo
   echo "The 2-argument case is used by the supervisor tool."
   echo "The 4-argument case is used for other test cases."
@@ -40,22 +40,22 @@ elif (( ${#} == 4 ))
 then
   get_expid   $2 # Sets EXPID, TURBINE_OUTPUT
   get_cfg_sys $3 # Sets CFG_SYS
-  UPF=$4         # The JSON hyperparameter file
+  CS=$4         # The JSON hyperparameter file
 else
   usage
   exit 1
 fi
 
-if [[ ${UPF:-} == "" ]]
+if [[ ${CS:-} == "" ]]
 then
-  echo "upf workflow.sh: set UPF!"
+  echo "CS workflow.sh: set CS!"
   exit 1
 fi
-if ! find_cfg $UPF
+if ! find_cfg $CS
 then
-  crash "Could not find UPF: $UPF"
+  crash "Could not find CS: $CS"
 fi
-UPF=$REPLY
+CS=$REPLY
 
 source_site env   $SITE
 source_site sched $SITE
@@ -82,7 +82,7 @@ export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT
 
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
-                -f=$UPF
+                -f=$CS
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -98,14 +98,19 @@ fi
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
 
-cp -v $UPF $TURBINE_OUTPUT
+if [[ ${CANDLE_MODEL_TYPE:-} == "SINGULARITY" ]]
+then
+  CANDLE_MODEL_IMPL="container"
+fi
+
+cp -v $CS $TURBINE_OUTPUT
 
 # TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
 TURBINE_STDOUT=
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
-  abort "upf/workflow.sh: Set CANDLE_DATA_DIR!"
+  abort "cross-study/workflow.sh: Set CANDLE_DATA_DIR!"
 fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}

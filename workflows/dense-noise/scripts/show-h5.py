@@ -1,4 +1,3 @@
-
 # SHOW H5 PY
 
 import argparse
@@ -8,9 +7,8 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument("data",
                     help="The extracted data " +
-                         "(output from ./plot-extract.py)")
-parser.add_argument("key",
-                    help="The H5 key to show")
+                    "(output from ./plot-extract.py)")
+parser.add_argument("key", help="The H5 key to show")
 
 args = parser.parse_args(sys.argv[1:])
 
@@ -21,6 +19,6 @@ print(str(df))
 
 med = df.median().median()
 df = -df
-mx  = df.max().max()
+mx = df.max().max()
 
 print("max: %r" % mx)

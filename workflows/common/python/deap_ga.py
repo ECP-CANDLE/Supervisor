@@ -1,5 +1,4 @@
-"""
-DEAP GA PY
+"""DEAP GA PY.
 
 EMEWS interface module for DEAP
 """
@@ -29,19 +28,17 @@ logger = log_tools.get_logger(None, "DEAP")
 
 
 def obj_func(x):
-    """
-    Just a stub for the DEAP framework
-    """
+    """Just a stub for the DEAP framework."""
     return 0
 
 
 def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
-    """
-    create string of semicolon-separated jsonified maps
-     Produces something like:
-       {"batch_size":512,"epochs":51,"activation":"softsign",
-        "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
-        "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
+    """create string of semicolon-separated jsonified maps Produces something
+    like:
+
+    {"batch_size":512,"epochs":51,"activation":"softsign",
+     "dense":"2000 1000 1000 500 100 50","optimizer":"adagrad","drop":0.1378,
+     "learning_rate":0.0301,"conv":"25 25 25 25 25 1"}
     """
     result = []
     global ga_params
@@ -60,8 +57,8 @@ def create_json_string(L, indent=None):
 
 
 def create_fitnesses(params_string):
-    """
-    return equivalent length tuple list.
+    """return equivalent length tuple list.
+
     :type params_string: str
     """
     params = params_string.split(";")
@@ -81,14 +78,14 @@ def make_floats(results):
     """
     global mean_last
     tokens = results.split(";")
-    NaNs   = []
+    NaNs = []
     values = []
     output = {}
     floats = []
     for i, token in enumerate(tokens):
         if len(token) == 0:
             msg = "received: 0-length token at: %i" % i
-            logger.info("ERROR: " + msg )
+            logger.info("ERROR: " + msg)
             logger.info("       tokens: " + str(tokens))
             raise Exception("make_floats(): " + msg)
         elif token.lower() == "nan":
@@ -98,8 +95,7 @@ def make_floats(results):
             f = float(token)
             output[i] = f
             values.append(f)
-    logger.info("RESULTS: values: %i NaNs: %i" %
-                (len(values), len(NaNs)))
+    logger.info("RESULTS: values: %i NaNs: %i" % (len(values), len(NaNs)))
     if len(values) > 0:
         mean = sum(values) / len(values)
         mean_last = mean
@@ -116,17 +112,16 @@ def make_floats(results):
 
 
 def queue_map(_f, pops):
-    """
-    Note that _f is not used, but is part of the DEAP framework
-    Formats model parameters that look like:
-      [[a,b,c,d],[e,f,g,h],...]
+    """Note that _f is not used, but is part of the DEAP framework Formats
+    model parameters that look like:
+
+    [[a,b,c,d],[e,f,g,h],...]
     """
     if not pops:
         return []
     global generation
     generation_start = time.time()
-    logger.info("GENERATION: %i START: pop: %i" %
-                (generation, len(pops)))
+    logger.info("GENERATION: %i START: pop: %i" % (generation, len(pops)))
     sys.stdout.flush()
     eqpy.OUT_put(create_list_of_json_strings(pops))
     results = eqpy.IN_get()
@@ -229,12 +224,15 @@ def run():
     params = eqpy.IN_get()
 
     # Evaluate and log the params given by the workflow level:
-    (num_iter, num_pop, seed, strategy, mut_prob, ga_params_file,
-     param_file) = eval("{}".format(params))
+    (num_iter, num_pop, seed, strategy, off_prop, mut_prob, cx_prob, mut_indpb,
+     cx_indpb, tournsize, ga_params_file, param_file) = eval(
+         "{}".format(params)
+     )  # RW: Add mut_indpb, cx_indpb, tournsize so that they're not hard-coded
     log_params(logger, num_iter, num_pop, seed)
 
     random.seed(seed)
     global ga_params
+    logger.info("params_file: " + ga_params_file)
     ga_params = ga_utils.create_parameters(ga_params_file)
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -245,10 +243,9 @@ def run():
 
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", obj_func)
-    toolbox.register("mate", cxUniform, indpb=0.5)
-    mutate_indpb = mut_prob
-    toolbox.register("mutate", custom_mutate, indpb=mutate_indpb)
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    toolbox.register("mate", cxUniform, indpb=cx_indpb)
+    toolbox.register("mutate", custom_mutate, indpb=mut_indpb)
+    toolbox.register("select", tools.selTournament, tournsize=tournsize)
     toolbox.register("map", queue_map)
 
     pop = toolbox.population(n=num_pop)
@@ -264,32 +261,30 @@ def run():
     stats.register("ts", timestamp)
 
     # num_iter-1 generations since the initial population is evaluated once first
-    mutpb = mut_prob
 
     if strategy == "simple":
         pop, log = algorithms.eaSimple(
             pop,
             toolbox,
-            cxpb=0.5,
-            mutpb=mutpb,
+            cxpb=cx_prob,
+            mutpb=mut_prob,
             ngen=num_iter - 1,
             stats=stats,
             halloffame=hof,
             verbose=True,
         )
     elif strategy == "mu_plus_lambda":
-        mu = int(math.floor(float(num_pop) * 0.5))
-        lam = int(math.floor(float(num_pop) * 0.5))
-        if mu + lam < num_pop:
-            mu += num_pop - (mu + lam)
+        mu = num_pop
+        lam = round(off_prop * num_pop)
+        # Create offspring half the size of population in each generation
 
         pop, log = algorithms.eaMuPlusLambda(
             pop,
             toolbox,
             mu=mu,
             lambda_=lam,
-            cxpb=0.5,
-            mutpb=mutpb,
+            cxpb=cx_prob,
+            mutpb=mut_prob,
             ngen=num_iter - 1,
             stats=stats,
             halloffame=hof,

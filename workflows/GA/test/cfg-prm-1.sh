@@ -2,16 +2,35 @@
 
 # GA settings
 
+# RW: These setting are robust for many scenarios.
+#     Users are free to only adjust population size
+#     and number of iterations
+
 SEED=${SEED:-1}
+# SEED=${SEED:-$$}
+
 # Total iterations
 NUM_ITERATIONS=${NUM_ITERATIONS:-5}
 # Size of GA population
 # (i.e. the number of parameter sets to evaluate per iteration)
-POPULATION_SIZE=${POPULATION_SIZE:-8}
+POPULATION_SIZE=${POPULATION_SIZE:-16}
 # the GA strategy: one of 'simple' or 'mu_plus_lambda'. See
 # https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms
 # for more info.
-GA_STRATEGY=${STRATEGY:-simple}
+GA_STRATEGY=${STRATEGY:-mu_plus_lambda}
+# RW: Proportion of offspring to population in each generation for mu_plus_lambda strategy
+OFFSPRING_PROPORTION=${OFF_PROP:-0.5}
+# RW: Probability that an individual is selected to mutate. Set to mut_prob + cx_prob = 1 to
+#     ensure consistent number of evals with mu_plus_lambda (make use of all waiting GPUs)
+MUT_PROB=${MUTATION_PROBABILITY:-0.8}
+# RW: Probability that a pair of individuals are selected to cross (mate)
+CX_PROB=${CROSSOVER_PROBABILITY:-0.2}
+# RW: Probability for each gene to be mutated in a mutated individual
+MUT_INDPB=${GENE_MUTATION_PROBABILITY:-0.5}
+# RW: Probability for each gene to be crossed in a mated pair
+CX_INDPB=${GENE_CROSSOVER_PROBABILITY:-0.5}
+# Size of tournaments
+TOURNSIZE=${TOURNAMENT_SIZE:-4}
 
 # Set IGNORE_ERRORS=1 to ignore model errors and
 #     allow NaNs in model results:
