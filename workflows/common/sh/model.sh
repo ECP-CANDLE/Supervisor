@@ -200,6 +200,21 @@ then
   then
     echo $RESULT > $RESULT_FILE
   fi
+  # Log hyperparameters and result
+  echo "${MODEL_CMD[@]}" > $RUN_DIRECTORY/run_command.txt # Store the model command
+  PARAMETERS=() # Initialize parameters
+  # Store parameters from MODEL_CMD except for nv, bind, and experiment_id
+  for i in "${!MODEL_CMD[@]}"; do 
+    if [[ ${MODEL_CMD[i]} == --nv || ${MODEL_CMD[i]} == --bind || ${MODEL_CMD[i]} == --experiment_id ]]; then
+      continue
+    fi
+    if [[ ${MODEL_CMD[i]} == --* ]]; then
+      PARAMETERS+=("${MODEL_CMD[((i+1))]}")
+    fi
+  done
+  PARAMETERS+=("$RESULT") # Add the result as well
+  # Print all values as comma-separated to the experiment directory output file
+  IFS=','; echo "${PARAMETERS[*]}" >> $RUN_DIRECTORY/../output.csv
 else
   echo # spacer
   if (( $CODE == 124 ))
