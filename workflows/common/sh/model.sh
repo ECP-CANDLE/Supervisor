@@ -79,11 +79,8 @@ exec >> $LOG_FILE
 exec 2>&1
 cd $RUN_DIRECTORY
 
-TIMEOUT_CMD=""
-if [[ ${SH_TIMEOUT:-} != "" ]] && [[ $SH_TIMEOUT != "-1" ]]
-then
-  TIMEOUT_CMD="timeout $SH_TIMEOUT"
-fi
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+LOG_NAME="MODEL.SH"
 
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
@@ -99,13 +96,18 @@ log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
 log "CUDA DEVICE:      $CVD"
 log "MODEL_TYPE:       $MODEL_TYPE"
 
+TIMEOUT_CMD=""
+if [[ ${SH_TIMEOUT:-} != "" ]] && [[ $SH_TIMEOUT != "-1" ]]
+then
+  TIMEOUT_CMD="timeout $SH_TIMEOUT"
+fi
+
 # Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
 then
   WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 fi
-source $WORKFLOWS_ROOT/common/sh/utils.sh
-LOG_NAME="MODEL.SH"
+
 source_site langs-app $SITE
 
 echo
