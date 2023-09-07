@@ -202,7 +202,7 @@ then
   echo "${MODEL_CMD[@]}" > $RUN_DIRECTORY/run_command.txt # Store the model command
   PARAMETERS=() # Initialize parameters
   # Store parameters from MODEL_CMD except for nv, bind, and experiment_id
-  for i in "${!MODEL_CMD[@]}"; do 
+  for i in "${!MODEL_CMD[@]}"; do
     if [[ ${MODEL_CMD[i]} == --nv || ${MODEL_CMD[i]} == --bind || ${MODEL_CMD[i]} == --experiment_id ]]; then
       continue
     fi
