@@ -26,6 +26,13 @@ show EXPID JOBID
 # Assume failure:
 SUCCESS=0
 
+grep   "SUBMITTED:" $DIR/turbine.log
+printf "STARTED:           "
+date "+%Y-%m-%d %H:%M" -d "$( stat -c %y $DIR/turbine-env.txt | cut -b 1-19  )"
+
+printf "STOPPED:           "
+date "+%Y-%m-%d %H:%M" -d "$( stat -c %y $DIR/output.txt | cut -b 1-19  )"
+
 if grep -q "User defined signal 2" $DIR/output.txt
 then
   # Summit time out
@@ -38,7 +45,7 @@ then
   echo "Job timed out normally."
   SUCCESS=1
 
-elif grep -q "EXIT CODE: 0" $DIR/output.txt
+elif grep -q "EXIT CODE: *0" $DIR/output.txt
 then
   echo "Job completed normally."
   grep "MPIEXEC TIME: " $DIR/output.txt
@@ -47,12 +54,14 @@ fi
 
 if (( ! SUCCESS ))
 then
-  set -x
   grep "START:" $DIR/output.txt
   # Find task that failed, e.g.:
+  grep "MPI_Abort" $DIR/output.txt || true
   # srun: error: frontier04081: task 1793: Exited with exit code 255
-  grep "error: .* exit code" $DIR/output.txt
+  grep "error: .* exit code" $DIR/output.txt || true
   # Find MPI Aborts on Frontier
+  grep "srun: error: .* Aborted" $DIR/output.txt || true
+  grep "slurmstepd: error:" $DIR/output.txt || true
   grep "MPICH .* Abort" $DIR/output.txt | \
     cut --delimiter ' ' --fields=1-12
 fi

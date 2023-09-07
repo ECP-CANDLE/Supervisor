@@ -19,23 +19,41 @@ echo "find in $PWD ..."
 START=$SECONDS
 FILE_LIST=log-tar.list
 find . -name python.log    -or \
-       -name predicted.tsv -or \
-       -name "summ*.txt" > $FILE_LIST
+       -name NO-DATA.txt       \
+        > $FILE_LIST
+#        -name predicted.tsv -or
+#        -name "summ*.txt"
 STOP=$SECONDS
 COUNT=$( wc -l < $FILE_LIST )
-
 DURATION=$(( STOP - START ))
-echo "found $COUNT files in $DURATION seconds."
+if (( DURATION == 0 ))
+then
+  DURATION=1  # Prevent DIV0
+fi
+RATE_FPS=$(( COUNT / DURATION ))
+
+echo "found $COUNT files in $DURATION seconds at $RATE_FPS files/s"
 echo "running tar ..."
 
 START=$SECONDS
 TGZ=logs.tgz  # PWD==DIR
+
+# Do the tar!
 nice -n 19 tar czf $TGZ -T $FILE_LIST
+
 STOP=$SECONDS
 DURATION=$(( STOP - START ))
+if (( DURATION == 0 ))
+then
+  DURATION=1  # Prevent DIV0
+fi
 SIZE=$( stat --format "%s" $TGZ )
 # MB/second:
-RATE_MBPS=$(( SIZE / DURATION / 1024 / 1024 ))
+RATE_MBPS=$( bc <<END
+scale = 2
+$SIZE / $DURATION / 1024 / 1024
+END
+)
 # Files/second:
 RATE_FPS=$(( COUNT / DURATION ))
 echo "tar time: $DURATION seconds at $RATE_MBPS MB/s , $RATE_FPS files/s"

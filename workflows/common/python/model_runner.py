@@ -292,13 +292,15 @@ def run_model(hyper_parameter_map):
         return ("SKIP", "STOP_MARKER")
     result = run_pre(hyper_parameter_map)
     if result == ModelResult.ERROR:
-        print("run_pre() returned ERROR!")
+        logger.error("model_runner: run_pre() returned ERROR ...")
+        logger.error("model_runner: EXIT CODE=1")
+        sys.stdout.flush()
+        # Allow time for other failures to finish writing:
+        time.sleep(60)
         exit(1)
     elif result == ModelResult.SKIP:
-        logger.info("run_pre() returned SKIP ...")
-        logger.info("model_runner: EXIT")
-        sys.stdout.flush()
-        time.sleep(10)
+        logger.info("model_runner: run_pre() returned SKIP ...")
+        logger.info("model_runner: returning SKIP.")
         return ("SKIP", "HISTORY_EMPTY")
     else:
         assert result == ModelResult.SUCCESS  # proceed...

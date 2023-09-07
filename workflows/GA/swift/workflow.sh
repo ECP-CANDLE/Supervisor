@@ -41,6 +41,7 @@ then
   usage
   exit 1
 fi
+
 get_site $1 # Sets SITE
 if (( ${#} == 2 ))
 then
@@ -160,6 +161,9 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
               )
 
 # Reserve a rank for DEAP:
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
+
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
