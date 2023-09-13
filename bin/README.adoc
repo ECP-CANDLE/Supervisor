@@ -61,6 +61,17 @@ The `GA/supervisor` interface script runs `workflow.sh`.  `workflow.sh` loads si
 Site files are just a specific kind of configuration file known to Supervisor.
 Files `env-SITE.sh` and `sched-SITE.sh` will automatically be found and sourced.  If `langs-app-SITE.sh` exists, it will also be sourced by `model.sh`.  Many systems known to the CANDLE team already have site files in `Supervisor/workflows/common/sh`.
 
+=== Adding a site
+
+In short:
+
+. Duplicate an existing `env-SITE.sh` and `sched-SITE.sh`.  You may:
+.. keep these in the original Supervisor directory `common/sh` or
+.. put them in your own directory.  In this case, the directory must be `PWD` or you must add it to `SUPERVISOR_PATH`.
+. Run as usual specifying that site on the command line.
+
+Simple SITEs to duplicate include site `local`, which is intended for a simple local Linux system.
+
 == Supervisor configuration variables
 
 Supervisor workflows accept many variables that are relevant to all of its subsystems, including:
