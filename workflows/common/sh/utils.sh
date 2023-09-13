@@ -696,10 +696,15 @@ debug()
 log_if()
 # Log if verbosity is at least at limit
 # usage: log_if LIMIT VERBOSITY msg...
+# If VERBOSITY is higher in the environment, that value is used
 {
-  local LIMIT=$1 VERBOSITY=$2
+  local LIMIT=$1 V=$2
   shift 2
-  if (( VERBOSITY < LIMIT ))
+  if (( VERBOSITY > V ))
+  then
+    V=$VERBOSITY
+  fi
+  if (( V < LIMIT ))
   then
     return
   fi
