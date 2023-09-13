@@ -212,7 +212,7 @@ then
   done
   PARAMETERS+=("$RESULT") # Add the result as well
   # Print all values as comma-separated to the experiment directory output file
-  IFS=','; echo "${PARAMETERS[*]}" >> $RUN_DIRECTORY/../output.csv; unset IFS
+  IFS=','; echo "${PARAMETERS[*]}" >> $RUN_DIRECTORY/../output.csv
 else
   echo # spacer
   if (( $CODE == 124 ))
