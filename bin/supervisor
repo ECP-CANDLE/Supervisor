@@ -14,13 +14,18 @@ usage()
   log "usage:   $ supervisor <SITE> <WORKFLOW> <TEST_SCRIPT>"
 }
 
-while getopts "h" OPT
+export VERBOSITY=${VERBOSITY:-0}
+
+while getopts "hv" OPT
 do
   case $OPT in
     h)
       usage
       exit
        ;;
+    v)
+      (( ++VERBOSITY ))
+      ;;
     *)
       # Bash prints an error
       exit 1
@@ -50,4 +55,6 @@ sv_path_prepend $PWD
 sv_path_append $SUPERVISOR_HOME/workflows/$WORKFLOW/test
 
 export SUPERVISOR_PATH
-$SUPERVISOR_HOME/workflows/$WORKFLOW/supervisor $SITE $TEST_SCRIPT
+SUBTOOL=$SUPERVISOR_HOME/workflows/$WORKFLOW/supervisor
+debug $VERBOSITY "Running $SUBTOOL ..."
+$SUBTOOL $SITE $TEST_SCRIPT
