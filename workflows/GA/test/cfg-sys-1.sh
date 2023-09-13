@@ -10,15 +10,6 @@ export PROCS=${PROCS:-10}
 # Cori has 32 cores per node, 128GB per node
 export PPN=${PPN:-10}
 
-export WALLTIME=${WALLTIME:-01:00:00}
-
-#export PROJECT=Candle_ECP
-
-export PROJECT=candle_aesp
-# export QUEUE="debug"         # Up to  2 nodes
-# export QUEUE="debug-scaling" # Up to 10 nodes
-export QUEUE="prod"            # At least 10 nodes
-
 #  Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.
 # If set to -1 there is no timeout.
@@ -43,8 +34,6 @@ export IGNORE_ERRORS=0
 # it may be ncessary to include its location in the PYTHONPATH
 # export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # for running locally, edit as necessary
 # export PYTHONHOME=$HOME/anaconda3

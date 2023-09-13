@@ -136,7 +136,7 @@ then
     PRIORS=( $TURBINE_OUTPUT/output.txt
              $TURBINE_OUTPUT/out
              $TURBINE_OUTPUT/turbine*
-             $TURBINE_OUTPUT/jobid.txt
+             $TURBINE_OUTPUT/jobid.txt*
              $TURBINE_OUTPUT/plangen_db.log* )
     mv ${PRIORS[@]} $PRIOR_RUN
     cp $TURBINE_OUTPUT/cplo.db $PRIOR_RUN
@@ -228,6 +228,7 @@ ENVS=(
   BENCHMARKS_ROOT
   # The top-level directory for this workflow:
   EMEWS_PROJECT_ROOT
+  PYTHONPATH=/home/wozniak/.local/lib/python3.9/site-packages
   # This will be pre-pended into PYTHONPATH if model.sh is used:
   APP_PYTHONPATH
   # Tell Python to auto-flush stdout:
@@ -260,6 +261,7 @@ ENV_ARG="-e $( echo ${ENVS[@]} | sed 's/  */ -e /g' )"
 
 export TURBINE_LOG=0
 
+module list
 swift-t -O 0 -n $PROCS \
         ${MACHINE:-} \
         -p \

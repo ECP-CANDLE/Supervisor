@@ -307,6 +307,7 @@ source_site()
 # Source a settings file for a specific SITE (titan, cori, theta)
 # Succeeds with warning message if file is not found
 # SITE is exported in the environment
+# May provide '-v' multiple times for verbosity
 {
   local VERBOSE=0
   while [[ $1 == "-v" ]]
@@ -446,6 +447,7 @@ search_cfg()
   done
 
   # Not found:
+  log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
   return 1
 }
 
@@ -730,11 +732,13 @@ crash()
 sv_path_prepend()
 {
   SUPERVISOR_PATH=$1${SUPERVISOR_PATH:+:}${SUPERVISOR_PATH:-}
+  export SUPERVISOR_PATH
 }
 
 sv_path_append()
 {
   SUPERVISOR_PATH=${SUPERVISOR_PATH:-}${SUPERVISOR_PATH:+:}$1
+  export SUPERVISOR_PATH
 }
 
 log_script()

@@ -1,5 +1,5 @@
-#
-# COMBO CFG SYS 1
+
+# CFG SYS POLARIS 1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
@@ -12,7 +12,14 @@ export PPN=${PPN:-1}
 export QUEUE=${QUEUE:-debug-scaling}
 export WALLTIME=${WALLTIME:-00:59:00}
 
-#export PROJECT=Candle_ECP
+export WALLTIME=${WALLTIME:-01:00:00}
+
+# export PROJECT=Candle_ECP
+# export PROJECT=candle_aesp
+export PROJECT=CSC249ADOA01
+export QUEUE="debug"         # Up to  2 nodes
+# export QUEUE="debug-scaling" # Up to 10 nodes
+# export QUEUE="prod"            # At least 10 nodes
 
 #  Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.

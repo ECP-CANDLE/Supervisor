@@ -153,6 +153,10 @@ def merge_params(defaults, params):
 
 
 def main():
+    if len(sys.argv) == 1:
+        print("runner_utils: write_params or expand_params")
+        exit(1)
+
     # Need argparse
     if sys.argv[1] == "write_params":
         # Merge params from the user-provided params file and

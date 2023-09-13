@@ -8,6 +8,7 @@ set -eu
 # Autodetect this workflow directory
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
+export SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. ; /bin/pwd )
 export BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 SCRIPT_NAME=$(basename $0)
@@ -40,14 +41,14 @@ then
   usage
   exit 1
 fi
+
 get_site $1 # Sets SITE
 if (( ${#} == 2 ))
 then
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
-  # Sets EXPID.  If EXPID=="" , applies -a
-  get_expid ${EXPID:--a}
+  get_expid ${EXPID:--a}  # Sets EXPID
   source_cfg -v $TEST_SCRIPT
 elif (( ${#} == 5 ))
 then
@@ -72,11 +73,22 @@ fi
 : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output
+  TOKEN=$( basename $MODEL_NAME .sif )
+  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
   printf "Running GA workflow with model %s and model type %s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE
 fi
 mkdir -p $TURBINE_OUTPUT
+# Store hyperparameters and make output.csv file with columns
+EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
+mkdir -pv $EXP_DIR
+touch $EXP_DIR/output.csv # output file
+grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
+echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
+cp $PARAM_SET_FILE $EXP_DIR # copy hyperparameter space file
+
+sv_path_append $EMEWS_PROJECT_ROOT/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 source_site env   $SITE
 source_site sched $SITE
@@ -147,6 +159,10 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -site=$SITE
               )
+
+# Reserve a rank for DEAP:
+export TURBINE_RESIDENT_WORK_WORKERS=1
+export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
