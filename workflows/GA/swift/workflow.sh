@@ -35,6 +35,7 @@ usage()
   echo "The 7-argument case is best for Singularity container cases."
 }
 
+export VERBOSITY=${VERBOSITY:-0}
 
 if (( ${#} == 0 ))
 then
