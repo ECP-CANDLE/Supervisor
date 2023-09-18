@@ -79,6 +79,9 @@ then
 else
   TOKEN=$MODEL_NAME
 fi
+
+log "EXPERIMENT OUTPUT DIRECTORY:" $TURBINE_OUTPUT
+
 mkdir -p $TURBINE_OUTPUT
 # Store hyperparameters and make output.csv file with columns
 EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
