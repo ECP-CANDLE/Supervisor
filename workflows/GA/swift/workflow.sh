@@ -47,8 +47,8 @@ then
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
-  get_expid ${EXPID:--a}  # Sets EXPID
   source_cfg -v $TEST_SCRIPT
+  get_expid ${EXPID:--a}  # Sets EXPID
 elif (( ${#} == 5 ))
 then
   get_expid   $2 # Sets EXPID
