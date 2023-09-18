@@ -242,7 +242,7 @@ fi
           -p -I $EQPY -r $EQPY \
           -I $SWIFT_LIBS_DIR \
           -i $SWIFT_MODULE \
-          -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+          -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
           -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
           -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
           -e BENCHMARKS_ROOT \
