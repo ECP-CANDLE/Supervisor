@@ -76,6 +76,8 @@ then
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
   printf "Running GA workflow with model %s and model type %s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE
+else
+  TOKEN=$MODEL_NAME
 fi
 mkdir -p $TURBINE_OUTPUT
 # Store hyperparameters and make output.csv file with columns
