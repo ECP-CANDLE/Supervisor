@@ -101,7 +101,7 @@ main {
     {
       // Algorithm has terminated with a final result.
       string finals =  EQPy_get(ME);
-      string fname = "%s/final_result_%i" % (turbine_output, ME_rank);
+      string fname = "%s/final_result_%i.txt" % (turbine_output, ME_rank);
       file results_file <fname> = write(finals) =>
         printf("Writing final result to %s", fname) =>
         // printf("Results: %s", finals) =>
