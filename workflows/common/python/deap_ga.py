@@ -308,7 +308,7 @@ def run():
             best_i = i
             best_fitness = f
     logger.info("BEST: %s == ...\n%s" %
-                (best_fitness, create_json_string(pop[i], indent=2)))
+                (best_fitness, create_json_string(pop[best_i], indent=2)))
     sys.stdout.flush()
 
     eqpy.OUT_put("DONE")
