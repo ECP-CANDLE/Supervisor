@@ -305,8 +305,8 @@ You will also get messages about `TURBINE_OUTPUT`.  This is what Swift/T calls y
 The output from each rank is redirected into `TURBINE_OUTPUT/out/out-*.txt`.  Note that:
 
 - The highest rank is the ADLB server and is not used for model runs
-- The 2nd highest rank is used for the GA algorithm.
-- The remaining ranks are used for model runs.
+- The 2nd highest rank is used for the GA algorithm
+- The remaining ranks are used for model runs
 
 The output from the GA algorithm includes a log of algorithm parameters, per-generation statistics, timing information, and a final message about the best hyperparameter combination and its loss value.
 
