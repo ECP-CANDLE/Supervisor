@@ -115,7 +115,8 @@ log "PARAMS:"
 echo $PARAMS | print_json
 
 echo
-log "USING PYTHON:" $( which python3 )
+log "USING PYTHON: $( which python3 )"
+log "VERSION:      $( python3 --version )"
 echo
 
 # Cf. utils.sh
@@ -172,7 +173,7 @@ echo
 $TIMEOUT_CMD "${MODEL_CMD[@]}" &
 PID=$!
 
-# Use if block to suppress errors:
+# Use if block to suppress but capture errors:
 if wait $PID
 then
   CODE=0
