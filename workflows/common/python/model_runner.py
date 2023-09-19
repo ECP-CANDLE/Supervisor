@@ -38,32 +38,34 @@ print("")
 
 
 def import_pkg(framework, model_name):
-    # The model_name is the short form of the Benchmark: e.g., 'nt3'
-    # The module_name is the name of the Python module:
-    #     e.g., 'nt3_baseline_keras2'
-    print("model_name: ", model_name)
+    """
+    The model_name is the short form of the Benchmark: e.g., "nt3"
+    The module_name is the name of the Python module:
+        e.g., 'nt3_baseline_keras2'
+    """
+    log("model_name:  " + model_name)
     module_name = os.getenv("MODEL_PYTHON_SCRIPT")
     if framework == "keras":
-        if module_name is None or module_name == "":
-            module_name = "{}_baseline_keras2".format(model_name)
-        print("module_name: " + module_name)
-        pkg = importlib.import_module(module_name)
+        framework = framework + "2"
     elif framework == "pytorch":
         import torch  # noqa: F401
-
-        if module_name is None or module_name == "":
-            module_name = "{}_baseline_pytorch".format(model_name)
-            print("module_name: " + module_name)
-        pkg = importlib.import_module(module_name)
     else:
-        raise ValueError('Framework must either be "keras" or "pytorch" ' +
-                         'got: "{}"'.format(framework))
+        raise ValueError("Framework must either be 'keras' or 'pytorch' " +
+                         "got: '{}'".format(framework))
 
+    if module_name is None or module_name == "":
+        module_name = model_name + "_baseline_keras2"
+    log("module_name: " + module_name)
+    pkg = importlib.import_module(module_name)
     return pkg
 
 
-# TODO: Separate INFO and DEBUG messages
 def log(msg):
+    global logger
+    logger.info(msg)
+
+
+def debug(msg):
     global logger
     logger.debug(msg)
 
@@ -133,8 +135,7 @@ def run(hyper_parameter_map, model_return):
     global logger
     logger = get_logger(logger, "MODEL RUNNER")
 
-    logger.info("run(): START:")
-    # sys.stdout.flush()
+    logger.debug("run(): START:")
 
     directory = hyper_parameter_map[
         "instance_directory"]  # should be output_dir
@@ -144,8 +145,7 @@ def run(hyper_parameter_map, model_return):
         fp.write(str(os.getenv("ADLB_RANK_SELF")) + "\n")
 
     framework = hyper_parameter_map['framework']
-    print("framework: " + str(framework))
-    # sys.stdout.flush()
+    log("framework:   " + str(framework))
     model_name = hyper_parameter_map['model_name']
     pkg = import_pkg(framework, model_name)
 

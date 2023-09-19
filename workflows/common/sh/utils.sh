@@ -177,7 +177,12 @@ get_expid()
 
   export EXPID=$1
 
-  : ${CANDLE_MODEL_TYPE:=BENCHMARKS} ${MODEL_NAME:=cmp}
+  if [[ ${MODEL_NAME:-} == "" ]]
+  then
+    log "get_expid(): MODEL_NAME is unset!"
+    return 1
+  fi
+  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   log "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
   log "get_expid(): MODEL_NAME=$MODEL_NAME"
 

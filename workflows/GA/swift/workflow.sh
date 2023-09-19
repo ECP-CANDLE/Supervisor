@@ -16,9 +16,7 @@ SCRIPT_NAME=$(basename $0)
 # Source some utility functions used by EMEWS in this script
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
-#source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh" - moved to utils.sh
-
-# Uncomment to turn on Swift/T logging. Can also set TURBINE_LOG,
+# Uncomment to allow Swift/T logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
 # Do not commit with logging enabled, users have run out of disk space
 # export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
@@ -49,8 +47,8 @@ then
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
-  get_expid ${EXPID:--a}  # Sets EXPID
   source_cfg -v $TEST_SCRIPT
+  get_expid ${EXPID:--a}  # Sets EXPID
 elif (( ${#} == 5 ))
 then
   get_expid   $2 # Sets EXPID
@@ -78,7 +76,12 @@ then
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
   printf "Running GA workflow with model %s and model type %s\n" \
          $MODEL_NAME $CANDLE_MODEL_TYPE
+else
+  TOKEN=$MODEL_NAME
 fi
+
+log "EXPERIMENT OUTPUT DIRECTORY:" $TURBINE_OUTPUT
+
 mkdir -p $TURBINE_OUTPUT
 # Store hyperparameters and make output.csv file with columns
 EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
@@ -239,7 +242,7 @@ fi
           -p -I $EQPY -r $EQPY \
           -I $SWIFT_LIBS_DIR \
           -i $SWIFT_MODULE \
-          -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+          -e LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-} \
           -e TURBINE_RESIDENT_WORK_WORKERS=$TURBINE_RESIDENT_WORK_WORKERS \
           -e RESIDENT_WORK_RANKS=$RESIDENT_WORK_RANKS \
           -e BENCHMARKS_ROOT \
