@@ -111,7 +111,7 @@ To create your own SITE files in workflows/common/sh/:
 
 copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local-as.sh for an example).
 
-### Structure <a name="structure"></a>###
+### Structure <a name="structure"></a>
 
 The point of the script structure is that it is easy to make copy and modify the `test-*.sh` script, and the `cfg-*.sh` scripts. These can be checked back
 into the repo for use by others. The `test-*.sh` script and the `cfg-*.sh` scripts should simply contain environment variables that control how `workflow.sh`
@@ -183,7 +183,7 @@ Notes:
 
 See https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms for more information.
 
-### Hyperparameter Configuration File <a name="config"></a>###
+### Hyperparameter Configuration File <a name="config"></a>
 
 The GA workflow uses a json format file for defining the hyperparameter space. The GA workflow comes with 4 sample hyperparameter spaces in the `GA/data` directory, one each for the combo, nt3, p1b1 and tc1 benchmarkts.
 
