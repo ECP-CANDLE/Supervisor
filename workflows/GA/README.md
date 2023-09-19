@@ -1,7 +1,7 @@
 
-# GA (genetic algorithm) based based hyperparameter optimization on CANDLE Benchmarks
+# Hyperparameter Optimization (HPO) via Genetic Algorithm (GA)
 
-The GA workflow uses the Python deap package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
+The GA workflow uses the Python DEAP package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
 
 ## Running
 
