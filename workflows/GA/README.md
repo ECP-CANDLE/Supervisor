@@ -289,12 +289,59 @@ contain a `comment` entry that contains additional information about that hyperp
 
 This includes error output.
 
-When you run the test script, you will get a message about `TURBINE_OUTPUT` . This will be the main output directory for your run.
+When you run the test script, you should get a message like:
+```
+2023-09-19 15:23:22 EXPERIMENT OUTPUT DIRECTORY: /software/improve/data_dir/output/GraphDRP/EXP001
+```
+This will be the main output directory for your run.
+
+This directory is constructed by Supervisor from `CANDLE_OUTPUT_DIR` or, if that is not set, `CANDLE_DATA_DIR`.
+
+You will also get messages about `TURBINE_OUTPUT`.  This is what Swift/T calls your workflow run directory.
 
 - On a local system, stdout/stderr for the workflow will go to your terminal.
 - On a scheduled system, stdout/stderr for the workflow will go to `TURBINE_OUTPUT/output.txt`
 
-The individual objective function (model) runs stdout/stderr go into directories of the form:
+The output from each rank is redirected into `TURBINE_OUTPUT/out/out-*.txt`.  Note that:
+
+- The highest rank is the ADLB server and is not used for model runs
+- The 2nd highest rank is used for the GA algorithm.
+- The remaining ranks are used for model runs.
+
+The output from the GA algorithm includes a log of algorithm parameters, per-generation statistics, timing information, and a final message about the best hyperparameter combination and its loss value.
+
+Example DEAP output:
+```
+2023-09-19 15:23:24 DEAP INFO  OPTIMIZATION START
+2023-09-19 15:23:24 DEAP INFO  HPO PARAMS START
+2023-09-19 15:23:24 DEAP INFO  num_iter:    3
+2023-09-19 15:23:24 DEAP INFO  num_pop:     2
+2023-09-19 15:23:24 DEAP INFO  seed:     330869
+2023-09-19 15:23:24 DEAP INFO  HPO PARAMS STOP
+2023-09-19 15:23:24 DEAP INFO  params_file: /homes/woz/proj/HPO/tests/GraphDRP/hpo-parameter-space.json
+2023-09-19 15:23:24 DEAP INFO  GENERATION: 1 START: pop: 2
+2023-09-19 15:25:27 DEAP INFO  GENERATION: 1 STOP.  duration: 122.994
+2023-09-19 15:25:27 DEAP INFO  RESULTS: values: 2 NaNs: 0
+gen     nevals  avg             std             min             max             ts
+0       2       0.00227436      0.000906472     0.00136789      0.00318083      1695155127.2026558
+2023-09-19 15:25:27 DEAP INFO  GENERATION: 2 START: pop: 1
+2023-09-19 15:27:16 DEAP INFO  GENERATION: 2 STOP.  duration: 109.549
+2023-09-19 15:27:16 DEAP INFO  RESULTS: values: 1 NaNs: 0
+1       1       0.00133154      0               0.00133154      0.00133154      1695155236.7527497
+2023-09-19 15:27:16 DEAP INFO  GENERATION: 3 START: pop: 1
+2023-09-19 15:29:17 DEAP INFO  GENERATION: 3 STOP.  duration: 120.397
+2023-09-19 15:29:17 DEAP INFO  RESULTS: values: 1 NaNs: 0
+2       1       0.00130987      2.16663e-05     0.00128821      0.00133154      1695155357.1513412
+2023-09-19 15:29:17 DEAP INFO  OPTIMIZATION STOP
+2023-09-19 15:29:17 DEAP INFO  BEST: 0.0012882065493613482 == ...
+{
+  "learning_rate": 0.0001,
+  "batch_size": 512,
+  "epochs": 5
+}
+```
+
+The stdout/stderr from individual model runs are redirected into directories of the form:
 
 `TURBINE_OUTPUT/EXPID/run/RUNID/model.log`
 
