@@ -14,7 +14,7 @@ R=$SFW/R-4.1.0
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$PY/bin:$PATH
 
-# We only need this for R:
+# We only need this for R (including if Swift/T was compiled with R):
 export LD_LIBRARY_PATH=$R/lib/R/lib:${LD_LIBRARY_PATH:-}
 
 # How to run CANDLE models:
