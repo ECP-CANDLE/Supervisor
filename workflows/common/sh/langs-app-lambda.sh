@@ -10,6 +10,8 @@ PY=$SFW/Miniconda-2023-09-18
 
 PATH=$PY/bin:$PATH
 
+export CONDA_PREFIX=$PY
+
 source $PY/etc/profile.d/conda.sh
 source $PY/etc/conda/activate.d/env_vars.sh
 
