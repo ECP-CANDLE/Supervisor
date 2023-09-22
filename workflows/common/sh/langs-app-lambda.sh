@@ -1,5 +1,6 @@
 
 # LANGS APP LAMBDA
+# Note that Lambda7 is on a different FS and has its own scripts
 
 echo "langs-app-lambda ..."
 
