@@ -87,8 +87,8 @@ mkdir -p $TURBINE_OUTPUT
 EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
 mkdir -pv $EXP_DIR
 touch $EXP_DIR/output.csv # output file
-grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
-echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
+grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | grep -v "epochs" | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
+echo "run_id,IMPROVE_RESULT" >> $EXP_DIR/output.csv # add run_id and IMPROVE_RESULT to csv file columns
 cp $PARAM_SET_FILE $EXP_DIR # copy hyperparameter space file
 
 sv_path_append $EMEWS_PROJECT_ROOT/data

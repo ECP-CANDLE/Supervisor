@@ -205,7 +205,7 @@ then
   PARAMETERS=() # Initialize parameters
   # Store parameters from MODEL_CMD except for nv, bind, and experiment_id
   for i in "${!MODEL_CMD[@]}"; do
-    if [[ ${MODEL_CMD[i]} == --nv || ${MODEL_CMD[i]} == --bind || ${MODEL_CMD[i]} == --experiment_id ]]; then
+    if [[ ${MODEL_CMD[i]} == --nv || ${MODEL_CMD[i]} == --bind || ${MODEL_CMD[i]} == --experiment_id || ${MODEL_CMD[i]} == --epochs ]]; then
       continue
     fi
     if [[ ${MODEL_CMD[i]} == --* ]]; then
