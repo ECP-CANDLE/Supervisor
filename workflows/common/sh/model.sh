@@ -189,12 +189,13 @@ then
   echo RUN_DIRECTORY: $RUN_DIRECTORY
   ls -ltrh
   sleep 1  # Wait for output
-  # Get last results of the format "IMPROVE RESULT xxx" in model.log
+  # Get last results of the format "IMPROVE_RESULT LABEL 123.456" in model.log
+  # The LABEL is optional, only the numeric substring will be extracted
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
   RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
              $RUN_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
-  echo "IMPROVE RESULT: '$RESULT'"
+  echo "IMPROVE_RESULT: '$RESULT'"
   echo $RESULT > $RUN_DIRECTORY/result.txt
   if [[ ${RESULT_FILE:-} != "" ]]
   then

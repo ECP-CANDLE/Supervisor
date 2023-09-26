@@ -311,15 +311,15 @@ def run():
                 (best_fitness, create_json_string(pop[best_i], indent=2)))
     sys.stdout.flush()
 
+    # Stop the workflow and post the final outputs
     eqpy.OUT_put("DONE")
-    # return the final population
-    eqpy.OUT_put("{}\n{}\n{}\n{}\n{}\n".format(
-        create_list_of_json_strings(pop),
-        ";".join(fitnesses),
-        start_time,
-        log,
-        end_time,
-    ))
+    best = create_json_string(pop[best_i], indent=2)
+    eqpy.OUT_put(best)
+    eqpy.OUT_put(str(best_fitness))
+    pop_string = create_list_of_json_strings(pop)
+    eqpy.OUT_put(pop_string)
+    eqpy.OUT_put(";".join(fitnesses))
+    eqpy.OUT_put(str(log))
 
 
 def log_params(logger, num_iter, num_pop, seed):

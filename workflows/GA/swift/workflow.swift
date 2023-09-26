@@ -99,13 +99,8 @@ main {
 
     if (params == "DONE")
     {
-      // Algorithm has terminated with a final result.
-      string finals =  EQPy_get(ME);
-      string fname = "%s/final_result_%i.txt" % (turbine_output, ME_rank);
-      file results_file <fname> = write(finals) =>
-        printf("Writing final result to %s", fname) =>
-        // printf("Results: %s", finals) =>
-        v = make_void() =>
+      // Algorithm has terminated with final results.
+      v = get_results(ME, ME_rank) =>
         c = false;
     }
     else if (params == "EQPY_ABORT")
@@ -137,6 +132,43 @@ main {
   }
 }
 
+(void v)
+get_results(location ME, int ME_rank)
+{
+  printf("Writing final results to %s", turbine_output);
+
+  // Retrieve results from algorithm:
+  string best, fitness, population, fitnesses, deap_log;
+  best         = EQPy_get(ME) =>
+    fitness    = EQPy_get(ME) =>
+    population = EQPy_get(ME) =>
+    fitnesses  = EQPy_get(ME) =>
+    deap_log   = EQPy_get(ME);
+
+  // Construct filenames
+  string filename_best =
+    "%s/best-%i.json" % (turbine_output, ME_rank);
+  string filename_fitness =
+    "%s/fitness-%i.txt" % (turbine_output, ME_rank);
+  string filename_population =
+    "%s/population-%i.txt" % (turbine_output, ME_rank);
+  string filename_fitnesses =
+    "%s/fitnesses-%i.txt" % (turbine_output, ME_rank);
+  string filename_deap_log =
+    "%s/deap-%i.log" % (turbine_output, ME_rank);
+
+  // Write the files (in parallel).
+  // We append newlines to simple Python strings so files look normal.
+  file file_best       <filename_best>        = write(best       + "\n");
+  file file_fitness    <filename_fitness>     = write(fitness    + "\n");
+  file file_population <filename_population>  = write(population + "\n");
+  file file_fitnesses  <filename_fitnesses>   = write(fitnesses  + "\n");
+  file file_deap_log   <filename_deap_log>    = write(deap_log   + "\n");
+
+  // Wait for all files to be written:
+  v = propagate(file_best, file_fitness, file_population,
+                file_fitnesses, file_deap_log);
+}
 
 // Local Variables:
 // c-basic-offset: 2
