@@ -175,3 +175,8 @@ MPI_Abort() ... process N , rank N
 +
 These vary on different MPI implementations.  However, they usually indicate
 that a model run failed.  See the `out-*.txt` file for rank `N`, and the output redirected from that rank to a `model.log`.
+
+== Support
+
+For questions and discussion about CANDLE and IMPROVE software, visit:
+https://lists.cels.anl.gov/mailman/listinfo/improve-support
