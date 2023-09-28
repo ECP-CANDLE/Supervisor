@@ -158,3 +158,20 @@ sv_path_append $THIS/data
 # Add the main Supervisor script directory
 sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 ----
+
+== Troubleshooting
+
+* See the README for your workflow for notes about that specific workflow
+* See the output files:
+** The main output stream and/or `TURBINE_OUTPUT/output.txt`
+** The per-rank outputs in `TURBINE_OUTPUT/out/out-*.txt`
+** The per-model outputs in `TURBINE_OUTPUT/EXPID/run/RUNID/model.log`
+* Errors from MPI could indicate that Swift/T was not installed correctly for your system (missing libraries, etc.)
+* Errors of the form:
++
+----
+MPI_Abort() ... process N , rank N
+---
++
+These vary on different MPI implementations.  However, they usually indicate
+that a model run failed.  See the `out-*.txt` file for rank `N`, and the output redirected from that rank to a `model.log`.
