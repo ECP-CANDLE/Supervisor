@@ -1,6 +1,8 @@
 
 # ENV Lambda
 # Environment settings for Lambdas 1-6 - not 7, 11, 12
+# Note that Lambda7 is on a different FS and has its own scripts
+# Lambdas 11 & 12 have a different OS
 # (Swift, Python, R, Tcl, etc.)
 
 # Everything is installed in here:
