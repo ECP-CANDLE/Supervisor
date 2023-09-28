@@ -1,6 +1,7 @@
 
 # ENV Lambda
-# Environment settings for Lambda (Swift, Python, R, Tcl, etc.)
+# Environment settings for Lambdas 1-6 - not 7, 11, 12
+# (Swift, Python, R, Tcl, etc.)
 
 # Everything is installed in here:
 SFW=/homes/woz/Public/sfw
