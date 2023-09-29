@@ -17,7 +17,7 @@
 ### Running the specific example at workflows/cmp-cv/test
 
 - Clone Supervisor from https://github.com/ECP-CANDLE/Supervisor
-- Clone the DrugCell and SWnet model directories from https://github.com/gihanpanapitiya/DrugCell/tree/to_candle and https://github.com/gihanpanapitiya/SWnet/tree/to_candle
+- Clone the DrugCell and SWnet model directories from the IMPROVE project space: https://github.com/JDACS4C-IMPROVE/ <DrugCell> and <SWnet>
     - Checkout to_candle branches and create the Singularity containers (.sif files) using the command,
 
     ```
