@@ -2,9 +2,9 @@
 # ENV SUMMIT LOGIN
 # Environment settings for Summit login node (Swift, Python, R, Tcl, etc.)
 
-SWIFT_IMPL=echo
-# SWIFT_IMPL=app
-# SWIFT_IMPL=py
+CANDLE_MODEL_IMPL=echo
+# CANDLE_MODEL_IMPL=app
+# CANDLE_MODEL_IMPL=py
 
 # Load basic LD_LIBRARY_PATH before changing it:
 # module load gcc/7.4.0

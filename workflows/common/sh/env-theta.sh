@@ -58,7 +58,7 @@ fi
 # Selects the *.swift files to include
 # If "app", use app functions
 # If "py", use in-memory Python functions
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # Log settings to output
 echo "Programs:"

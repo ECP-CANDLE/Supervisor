@@ -1,6 +1,7 @@
-# GA (genetic algorithm) based based hyperparameter optimization on CANDLE Benchmarks
 
-The GA workflow uses the Python deap package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
+# Hyperparameter Optimization (HPO) via Genetic Algorithm (GA)
+
+The GA workflow uses the Python DEAP package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
 
 ## Running
 
@@ -66,18 +67,51 @@ test-1.sh -> cfg-sys-1.sh ->
       common/sh/<machine_name> - module, scheduling, langs .sh files
 ```
 
+## The supervisor interface
+
+Command line:
+```
+$ supervisor SITE WORKFLOW TEST_SCRIPT
+```
+
+### Variables that must be set by the TEST_SCRIPT
+
+MODEL_NAME
+PARAM_SET_FILE
+NUM_ITERATIONS
+POPULATION_SIZE
+
+### Variables that may be set in the TEST_SCRIPT
+
+SEED
+NUM_ITERATIONS
+POPULATION_SIZE
+GA_STRATEGY
+OFFSPRING_PROP
+MUT_PROB
+CX_PROB
+MUT_INDPB
+CX_INDPB
+TOURNSIZE
+
+PROCS
+PPN
+WALLTIME
+PROJECT
+QUEUE
+BENCHMARK_TIMEOUT
+
 ## Making Changes <a name="making_changes"></a>
 
 To create your own SITE files in workflows/common/sh/:
 
-- langs-SITE.sh
+- env-SITE.sh
 - langs-app-SITE.sh
-- modules-SITE.sh
 - sched-SITE.sh config
 
 copy existing ones but modify the langs-SITE.sh file to define the EQPy location (see workflows/common/sh/langs-local-as.sh for an example).
 
-### Structure <a name="structure"></a>###
+### Structure <a name="structure"></a>
 
 The point of the script structure is that it is easy to make copy and modify the `test-*.sh` script, and the `cfg-*.sh` scripts. These can be checked back
 into the repo for use by others. The `test-*.sh` script and the `cfg-*.sh` scripts should simply contain environment variables that control how `workflow.sh`
@@ -90,9 +124,66 @@ The relevant parameters for the GA algorithm are defined in `cfg-prm-*.sh` scrip
 - SEED: The random seed used by deap in the GA.
 - NUM_ITERATIONS: The number of iterations the GA should perform.
 - POPULATION_SIZE: The maximum number of hyperparameter sets to evaluate in each iteration.
-  GA_STRATEGY: The algorithm used by the GA. Can be one of "simple" or "mu_plus_lambda". See eaSimple and eaMuPlusLambda at https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms for more information.
+- GA_STRATEGY: The algorithm used by the GA. Can be one of "simple" or "mu_plus_lambda".
+- OFFSPRING_PROP: The offspring population size as a proportion of the population size (this is rounded) (specifically for the mu_plus_lambda strategy)
+- MUT_PROB: Probability an individual is mutated.
+- CX_PROB: Probability that mating happens in a selected pair.
+- MUT_INDPB: Probability for each gene to be mutated in a mutated individual.
+- CX_INDPB: Probability for each gene to be swapped in a selected pair.
+- TOURNSIZE: Size of tournaments in selection process.
 
-### Hyperparameter Configuration File <a name="config"></a>###
+### Genetic Algorithm
+
+The Genetic Algorithm is made to model evolution and natural selection by applying crossover (mating), mutation, and selection to a population in many iterations
+(generations).
+
+In the "simple" strategy, offspring are created with crossover AND mutation, and the selection for the next population happens from ONLY the offspring. In
+the "mu_plus_lambda" strategy, offspring are created with crossover OR mutation, and the selection for the next population happens from BOTH the offpsring
+and parent generation. Also in the mu_plus_lambda strategy, the number of offspring in each generation is a chosen parameter, which can be controlled by the
+user through offspring_prop.
+
+Mutation intakes two parameters: mut_prob and mut_indpb. The parameter mut_prob represents the probability that an individual will be mutated. Then, once an
+individual is selected as mutated, mut_indpb is the probability that each gene is mutated. For example, if an individual is represented by the array
+[11.4, 7.6, 8.1] where mut_prob=1 and mut_indpb=0.5, there's a 50 percent chance that 11.4 will be mutated, a 50 percent chance that 7.6 will be mutated,
+and a 50 percent chance that 8.1 will be mutated. Also, if either of mut_prob or mut_indpb equal 0, no mutations will happen. The type of mutation we apply
+depends on the data type because we want to preserve data type under mutation and 'closeness' may or may not represent similarity. For example, gaussian
+mutation is rounded for integers to preserve their data type, and mutation is a random draw for categorical variables because being close in a list doesn't
+equate to similarity.
+
+Crossover intake two parameters: cx_prob and cx_indpb, which operate much in the same way as cx_prob and cx_indpb. For example, given two individuals
+represented by the arrays [1, 2, 3] and [4, 5, 6] where cx_prob=1 and cx_indpb=0.5, there's a 50% chance that 1 and 4 will be 'crossed', a 50% chance that
+2 and 5 will be 'crossed', and a 50% chance that 3 and 6 will be 'crossed'. Also, if either mut_prov or mut_indpb equal 0, no crossover will happen. The definition
+of 'crossed' depends on the crossover function, which must be chosen carefully to protect data types. We use cx_Uniform, which swaps values such that [4, 2, 3],
+[1, 5, 6] is a possible result from crossing the previously defined individuals. One example of a crossover function which doesn't preserve data types would be
+cx_Blend, which averages values.
+
+Selection has various customizations, with tournaments being our implementation. In tournament selection, 'tournsize' individuals are chosen, and the individual
+with the best fitness score is selected. This repeats until the desired number of individuals are selected. Note that choosing individuals is done with replacement,
+which introduces some randomness to who is selected. Although unlikely, it's possible for one individual to be the entire next population. It's also possible for
+the best individual to not be selected as long as tournsize is smaller than the population. However, it is guaranteed that the worst 'tournsize-1' individuals are
+not selected for the next generation. Tournsize can be thought of as the selection pressure on the population.
+
+Notes:
+- In the mu_plus_lambda strategy, cx_prob+mut_prob must be less than or equal to 1. This stems from how mutation OR crossover is applied in mu_plus_lambda, as
+  opposed to mutation AND crossover in the simple strategy.
+- GPUs can often sit waiting in most implementations of the Genetic Algorithm because the number of evaluations in each generation is usually variable. However,
+  with a certain configuration, the number of evaluations per generation can be kept at a constant number of your choosing. By using mu_plus_lambda, the size
+  of the offspring population is made through the chosen parameter of offspring_prop. Then, by choosing cx_prob and mut_prob such that cx_prob+mut_prob=1, every
+  offspring is identified as a 'crossed' or mutated individual and evaluated. Hence, the number of evaluations in each generation equals lambda. Note that because
+  of cx_indpb and mut_indpb, an individual may be evaluated with actually having different hyperparameters. This also means that by adjusting mut_indpb and cx_indpb,
+  the level of mutation and crossover can be kept low despite cx_prob+mut_prob being high (if desired). Note that the number of evaluations per generation can be
+  kept constant in the simple strategy as well, but the number of evals has to be the population size.
+- Genetic Algorithms usually have mutation and crossover probabilites around 0.1. However, they also usually have population~500 and generations~100, which gives a lot
+  of opportunity for mutation and crossover to happen. In the case of smaller populations and/or generations, it may be advantageous to increase mutation and crossover
+  probabilites to larger than ordinary. In this case, the mu_plus_lambda strategy may be advantageous because of it's ability to select a parent for the next generation.
+  Also, when there's a smaller number of generations (i.e. less number of times selection pressure is applied), it may be advantageous to increase tournament size (i.e.
+  increase selection pressure strength) to compensate.
+- The default values are: NUM_ITERATIONS=5  |  POPULATION_SIZE=16  |  GA_STRATEGY=mu_plus_lambda  |  OFFSPRING_PROP=0.5  |  MUT_PROB=0.8  |  CX_PROB=0.2  |
+                          MUT_INDPB=0.5  |  CX_INDPB=0.5  |  TOURNSIZE=4
+
+See https://deap.readthedocs.io/en/master/api/algo.html?highlight=eaSimple#module-deap.algorithms for more information.
+
+### Hyperparameter Configuration File <a name="config"></a>
 
 The GA workflow uses a json format file for defining the hyperparameter space. The GA workflow comes with 4 sample hyperparameter spaces in the `GA/data` directory, one each for the combo, nt3, p1b1 and tc1 benchmarkts.
 
@@ -198,18 +289,65 @@ contain a `comment` entry that contains additional information about that hyperp
 
 This includes error output.
 
-When you run the test script, you will get a message about `TURBINE_OUTPUT` . This will be the main output directory for your run.
+When you run the test script, you should get a message like:
+```
+2023-09-19 15:23:22 EXPERIMENT OUTPUT DIRECTORY: /software/improve/data_dir/output/GraphDRP/EXP001
+```
+This will be the main output directory for your run.
+
+This directory is constructed by Supervisor from `CANDLE_OUTPUT_DIR` or, if that is not set, `CANDLE_DATA_DIR`.
+
+You will also get messages about `TURBINE_OUTPUT`.  This is what Swift/T calls your workflow run directory.
 
 - On a local system, stdout/stderr for the workflow will go to your terminal.
 - On a scheduled system, stdout/stderr for the workflow will go to `TURBINE_OUTPUT/output.txt`
 
-The individual objective function (model) runs stdout/stderr go into directories of the form:
+The output from each rank is redirected into `TURBINE_OUTPUT/out/out-*.txt`.  Note that:
+
+- The highest rank is the ADLB server and is not used for model runs
+- The 2nd highest rank is used for the GA algorithm
+- The remaining ranks are used for model runs
+
+The output from the GA algorithm includes a log of algorithm parameters, per-generation statistics, timing information, and a final message about the best hyperparameter combination and its loss value.
+
+Example DEAP output:
+```
+2023-09-19 15:23:24 DEAP INFO  OPTIMIZATION START
+2023-09-19 15:23:24 DEAP INFO  HPO PARAMS START
+2023-09-19 15:23:24 DEAP INFO  num_iter:    3
+2023-09-19 15:23:24 DEAP INFO  num_pop:     2
+2023-09-19 15:23:24 DEAP INFO  seed:     330869
+2023-09-19 15:23:24 DEAP INFO  HPO PARAMS STOP
+2023-09-19 15:23:24 DEAP INFO  params_file: /homes/woz/proj/HPO/tests/GraphDRP/hpo-parameter-space.json
+2023-09-19 15:23:24 DEAP INFO  GENERATION: 1 START: pop: 2
+2023-09-19 15:25:27 DEAP INFO  GENERATION: 1 STOP.  duration: 122.994
+2023-09-19 15:25:27 DEAP INFO  RESULTS: values: 2 NaNs: 0
+gen     nevals  avg             std             min             max             ts
+0       2       0.00227436      0.000906472     0.00136789      0.00318083      1695155127.2026558
+2023-09-19 15:25:27 DEAP INFO  GENERATION: 2 START: pop: 1
+2023-09-19 15:27:16 DEAP INFO  GENERATION: 2 STOP.  duration: 109.549
+2023-09-19 15:27:16 DEAP INFO  RESULTS: values: 1 NaNs: 0
+1       1       0.00133154      0               0.00133154      0.00133154      1695155236.7527497
+2023-09-19 15:27:16 DEAP INFO  GENERATION: 3 START: pop: 1
+2023-09-19 15:29:17 DEAP INFO  GENERATION: 3 STOP.  duration: 120.397
+2023-09-19 15:29:17 DEAP INFO  RESULTS: values: 1 NaNs: 0
+2       1       0.00130987      2.16663e-05     0.00128821      0.00133154      1695155357.1513412
+2023-09-19 15:29:17 DEAP INFO  OPTIMIZATION STOP
+2023-09-19 15:29:17 DEAP INFO  BEST: 0.0012882065493613482 == ...
+{
+  "learning_rate": 0.0001,
+  "batch_size": 512,
+  "epochs": 5
+}
+```
+
+The stdout/stderr from individual model runs are redirected into directories of the form:
 
 `TURBINE_OUTPUT/EXPID/run/RUNID/model.log`
 
 where `EXPID` is the user-provided experiment ID, and `RUNID` are the various model runs generated by async-search, one per parameter set, of the form `R_I_J` where `R` is the restart number, `I` is the iteration number, and `J` is the sample within the iteration.
 
-Each successful run of the workflow will produce a `final_results_2` file. The first line of the file contains the GA's final population, that is, the final hyperparameter sets. The second line contains the final score (e.g. val loss) for each parameter set. The remainder of the file reports the GA's per iteration statistics. The columns are:
+Each successful run of the workflow will produce a `final_result_N.txt` file, where `N` is the rank of the algorithm.  (The rank `N` is part of the name because it is possible to run multiple GAs inside the same workflow.)  The first line of the file contains the GA's final population, that is, the final hyperparameter sets. The second line contains the final score (e.g. val loss) for each parameter set. The remainder of the file reports the GA's per iteration statistics. The columns are:
 
 - gen: the generation / iteration
 - nevals: the number of evaluations performed in this generation. In generations after the first, this may be less the total population size as some combinations will already have been evaluated.

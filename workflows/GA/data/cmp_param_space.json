@@ -1,0 +1,17 @@
+[
+  {
+    "name": "noise",
+    "type": "float",
+    "lower":   0.0,
+    "upper":  55,
+    "sigma":  10
+  },
+
+  {
+    "name":  "layer_force",
+    "type":  "int",
+    "lower":  500,
+    "upper": 1000,
+    "sigma":   10
+  }
+]

@@ -1,5 +1,6 @@
 import json
 import os
+import os.path
 import sys
 import configparser
 
@@ -95,6 +96,8 @@ def write_params(params, hyper_parameter_map):
 
 
 def expand_params(params, hyper_parameter_map):
+    """Expand dict of params into command-line flags."""
+
     parent_dir = (hyper_parameter_map["instance_directory"]
                   if "instance_directory" in hyper_parameter_map else ".")
     result = ""
@@ -102,9 +105,11 @@ def expand_params(params, hyper_parameter_map):
         if type(v) in DATA_TYPES:
             v = DATA_TYPES[type(v)]
         if isinstance(v, basestring):
-            v = "'{}'".format(v)
+            v = "{}".format(v)
+        if k == "model_name" and v.endswith(".sif"):
+            # Replace with base filename without suffix:
+            v = os.path.basename(v)[:-4]
         if k == "solr_root" or k == "timeout" or k == "id":
-            # this must written at the end
             pass  # Not a command-line parameter
         else:
             result += "--{} {} ".format(k, v)
@@ -117,7 +122,6 @@ def keras_clear_session(framework):
         # https://github.com/tensorflow/tensorflow/issues/3388
         try:
             from tensorflow.keras import backend as K
-
             K.clear_session()
         except AttributeError:  # theano does not have this function
             pass
@@ -149,6 +153,10 @@ def merge_params(defaults, params):
 
 
 def main():
+    if len(sys.argv) == 1:
+        print("runner_utils: write_params or expand_params")
+        exit(1)
+
     # Need argparse
     if sys.argv[1] == "write_params":
         # Merge params from the user-provided params file and

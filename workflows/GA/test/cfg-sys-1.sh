@@ -1,18 +1,14 @@
 #
-# COMBO CFG SYS 1
+# GA CFG SYS 1
 
 # The number of MPI processes
 # Note that 2 processes are reserved for Swift/EMEMS
 # The default of 4 gives you 2 workers, i.e., 2 concurrent Keras runs
-export PROCS=${PROCS:-3}
+export PROCS=${PROCS:-10}
 
 # MPI processes per node
 # Cori has 32 cores per node, 128GB per node
-export PPN=${PPN:-1}
-
-export WALLTIME=${WALLTIME:-01:00:00}
-
-#export PROJECT=Candle_ECP
+export PPN=${PPN:-10}
 
 #  Benchmark run timeout: benchmark run will timeout
 # after the specified number of seconds.
@@ -38,8 +34,6 @@ export IGNORE_ERRORS=0
 # it may be ncessary to include its location in the PYTHONPATH
 # export PYTHONPATH=/global/u1/n/ncollier/.local/cori/deeplearning2.7/lib/python2.7/site-packages
 
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
 # for running locally, edit as necessary
 # export PYTHONHOME=$HOME/anaconda3

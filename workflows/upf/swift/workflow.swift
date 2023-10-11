@@ -17,8 +17,8 @@ report_env();
 string FRAMEWORK = "keras";
 
 // Scan command line
-file   upf = input(argv("f"));
-int    benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
+file upf = input(argv("f"));
+int  benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
 string model_name     = getenv("MODEL_NAME");
 string expid          = getenv("EXPID");
@@ -39,8 +39,8 @@ foreach params,i in upf_lines
 {
   printf("params: %s", params);
   runid = json_get(params, "id");
-  results[i] = obj(params, expid, runid);
-  assert(results[i] != "EXCEPTION", "exception in obj()!");
+  results[i] = candle_model_train(params, expid, runid, model_name);
+  assert(results[i] != "EXCEPTION", "exception in candle_model_train()!");
 }
 
 // Join all result values into one big semicolon-delimited string

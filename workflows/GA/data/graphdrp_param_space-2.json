@@ -44,6 +44,6 @@
   {
     "name": "epochs",
     "type": "constant",
-    "value": 2
+    "value": 5
   }
 ]

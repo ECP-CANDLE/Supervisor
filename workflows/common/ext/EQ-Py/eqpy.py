@@ -66,8 +66,8 @@ def output_q_get():
         except q.Empty:
             pass
     else:
-        # if we haven't yet set the abort flag then
-        # return that, otherwise return the formated exception
+        # if we haven't yet set the abort flag then return that,
+        # otherwise return the formatted exception
         if aborted:
             result = p.exc
         else:

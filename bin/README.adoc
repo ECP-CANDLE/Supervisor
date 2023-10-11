@@ -1,0 +1,182 @@
+
+:toc:
+
+= The `supervisor` tool
+
+== Quickstart
+
+----
+$ supervisor frontier GA cfg-1.sh
+----
+
+where `cfg-1.sh` contains:
+
+----
+export MODEL_NAME=nt3
+export PARAM_SET_FILE=random_param_space.json
+----
+
+will do a DEAP GA on CANDLE Benchmark NT3 with a parameter search defined in `random_param_space.json` .
+
+To extend this case, you can add other environment settings known to GA, Supervisor, or Swift/T to `cfg-1.sh`.  All controls are through this file.
+
+== Structuring experiments
+
+The `supervisor` tool is essentially a configuration file manager that passes configuration data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
+
+`source_site`::
+Find a site-specific configuration file.  These are formatted as `env-SITE.sh`, `sched-SITE.sh`, etc.
+
+`find_cfg`::
+Find a configuration file and store its full path in `REPLY`
+
+`source_cfg`::
+Find a configuration file and `source` it
+
+The `supervisor` tool searches for these files in `SUPERVISOR_PATH`, a normal list-like colon-separated environment variable.
+
+Users can manipulate `SUPERVISOR_PATH` directly or use:
+
+----
+sv_path_prepend DIRECTORY
+sv_path_append DIRECTORY
+----
+
+to prepend/append a location for search.  `PWD` is automatically added to `SUPERVISOR_PATH`, along with other Supervisor directories.  Normally, user directories should be prepended to `SUPERVISOR_PATH` so they are found first.
+
+In a typical case, when the user runs:
+
+----
+$ supervisor frontier GA test-1.sh
+----
+
+`supervisor` sources the user `test-1.sh` script for environment variable settings.  This script may contain calls to `source_cfg` or `find_cfg` to set environment variables from reusable test scripts.
+
+Then, `supervisor` invokes the selected workflow `GA`.
+
+The `GA/supervisor` interface script runs `workflow.sh`.  `workflow.sh` loads site-specific settings and defaults from Supervisor for site `frontier` via `source_site` if they are not already set.
+
+== Sites
+
+Site files are just a specific kind of configuration file known to Supervisor.
+Files `env-SITE.sh` and `sched-SITE.sh` will automatically be found and sourced.  If `langs-app-SITE.sh` exists, it will also be sourced by `model.sh`.  Many systems known to the CANDLE team already have site files in `Supervisor/workflows/common/sh`.
+
+=== Adding a site
+
+In short:
+
+. Duplicate an existing `env-SITE.sh` and `sched-SITE.sh`.  You may:
+.. keep these in the original Supervisor directory `common/sh` or
+.. put them in your own directory.  In this case, the directory must be `PWD` or you must add it to `SUPERVISOR_PATH`.
+. Run as usual specifying that site on the command line.
+
+Simple SITEs to duplicate include site `local`, which is intended for a simple local Linux system.
+
+== Supervisor configuration variables
+
+Supervisor workflows accept many variables that are relevant to all of its subsystems, including:
+
+* Supervisor itself
+* Benchmarks or other external models
+* The Supervisor workflow
+* Singularity (if used)
+* Swift/T
+* The underlying system, including the scheduler
+
+=== Common Supervisor variables
+
+These are used by many Supervisor workflows.  Workflows such as GA and dense-noise have other variables that control them, see the workflow-specific READMEs for more information.
+
+`MODEL_NAME`::
+Either
++
+* The Benchmark model name as in `MODEL_NAME_baseline_FRAMEWORK.py` as found in `PYTHONPATH` or
+* The SIF container image file path `/path/to/model.sif`.  +
+You must set `CANDLE_MODEL_TYPE="SINGULARITY"` .
++
+There is no default value.
+
+`MODEL_RETURN`::
+A string with the value to return from the model.  Defaults to `val_loss`.
+
+`BENCHMARK_TIMEOUT`::
+A timeout applied inside the Python benchmark.  Either an integer value in seconds or -1 to disable.  Defaults to -1.
+
+`SH_TIMEOUT`::
+A timeout applied in the shell wrapper `model.sh` around the Benchmark.  Either an integer value in seconds or -1 to disable.  Defaults to -1.
+
+`IGNORE_ERRORS`::
+Normally, errors in the called models such as uncaught Python exceptions will crash the workflow.  If this is set to 1, such errors will be reported and a default NaN value will be returned from the model.  Defaults to 0, which crashes the workflow.
+
+=== Supervisor workflow variables
+
+See the README in the relevant workflow directory for variable documentation.
+
+=== Swift/T variables
+
+The full set is documented http://swift-lang.github.io/swift-t/sites.html#variables[here].  The most commonly used variables are:
+
+`PROCS`::
+Number of MPI processes.  Typically equal to the number of GPUs desired.  Defaults to 2.
+
+`PPN`::
+Processes-Per-Node.  Typically equal to the number of GPUs desired to use per-node. Defaults to 1.
+
+`WALLTIME`::
+Walltime specification string passed to the scheduler.  Defaults to `0:05:00`.
+
+`PROJECT`::
+The scheduler project allocation name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
+
+`QUEUE`::
+The scheduler queue name.  If unset, Swift/T will leave this empty, which will fall back on the system default for your account.
+
+`TURBINE_OUTPUT`::
+The Swift/T run directory.  Supervisor workflows set this up with everything for the run, and Swift/T also leaves logs here.  Defaults to a timestamp-based directory tree under `~/turbine-output`.
+
+== Tests for the supervisor tool
+
+See the https://github.com/ECP-CANDLE/Tests/tree/main/sv-tool[`supervisor` tool tests].
+
+== Tests without the supervisor tool
+
+When running Supervisor workflows without the `supervisor` tool, Supervisor scripts will still try to find configuration files via `source_site`, `find_cfg`, and `source_cfg`.  Thus, you will need to set the default search locations somewhere in your test scripts (`workflow.sh` or `test-*.sh`) with code like this:
+
+----
+# Self-configuration:
+THIS=$( cd $( dirname $0 ) && /bin/pwd )
+EMEWS_PROJECT_ROOT=$( cd $THIS/.. && /bin/pwd )
+WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
+SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. && /bin/pwd )
+export EMEWS_PROJECT_ROOT
+
+# Bring in the shell script utilities:
+source $WORKFLOWS_ROOT/common/sh/utils.sh
+
+# Add a per-workflow directory (e.g., HPO configurations)
+sv_path_append $THIS/data
+# Add the main Supervisor script directory
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
+----
+
+== Troubleshooting
+
+* See the README for your workflow for notes about that specific workflow
+* See the output files:
+** The main output stream and/or `TURBINE_OUTPUT/output.txt`
+** The per-rank outputs in `TURBINE_OUTPUT/out/out-*.txt`
+** The per-model outputs in `TURBINE_OUTPUT/EXPID/run/RUNID/model.log`
+* Errors from MPI could indicate that Swift/T was not installed correctly for your system (missing libraries, etc.)
+* Errors of the form:
++
+----
+MPI_Abort() ... process N , rank N
+----
++
+These vary on different MPI implementations.  However, they usually indicate
+that a model run failed.  See the `out-*.txt` file for rank `N`, and the output redirected from that rank to a `model.log`.
+
+== Support
+
+For questions and discussion about CANDLE and IMPROVE software, visit:
+https://lists.cels.anl.gov/mailman/listinfo/improve-support

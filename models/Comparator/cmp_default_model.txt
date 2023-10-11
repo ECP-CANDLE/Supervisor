@@ -1,6 +1,19 @@
 [Global_Params]
+model_name = 'cmp'
 
-model_name = 'graphdrp'
+cmp_model_name = '/tmp/woz/Uno.sif'
+# cmp_model_name = '/home/rjain/Uno.sif'
 
-model1 = 'graphdrp'
-model2 = 'graphdrp'  # 'graphdrp2'
+cmp_config_file = '/candle_data_dir/uno_auc_model.txt'
+
+cmp_0_train_sources = 'CCLE'
+cmp_1_train_sources = 'gCSI'
+
+cmp_0_run_id = 'M0'
+cmp_1_run_id = 'M1'
+
+epochs = 10
+
+# Local Variables:
+# mode: conf;
+# End:

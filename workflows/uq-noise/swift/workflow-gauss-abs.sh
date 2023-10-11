@@ -108,8 +108,8 @@ mkdir -pv $TURBINE_OUTPUT/hpo_log
 
 # Allow the user to set an objective function
 OBJ_DIR=${OBJ_DIR:-$WORKFLOWS_ROOT/common/swift}
-SWIFT_IMPL="py"
-OBJ_MODULE=${OBJ_MODULE:-obj_abstention_$SWIFT_IMPL}
+CANDLE_MODEL_IMPL="py"
+OBJ_MODULE=${OBJ_MODULE:-obj_abstention_$CANDLE_MODEL_IMPL}
 # This is used by the obj_app objective function
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model_abstention.sh
 
@@ -182,7 +182,7 @@ swift-t -n $PROCS \
         -e SH_TIMEOUT \
         -e IGNORE_ERRORS \
         $WAIT_ARG \
-        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} |& \
+        $EMEWS_PROJECT_ROOT/swift/$WORKFLOW_SWIFT ${CMD_LINE_ARGS[@]} 2>&1 \
   tee $STDOUT
 
 

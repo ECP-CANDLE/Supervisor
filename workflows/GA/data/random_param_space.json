@@ -1,0 +1,30 @@
+[
+  {
+    "name": "learning_rate",
+    "type": "float",
+    "lower": 0.000001,
+    "upper": 0.1,
+    "sigma": 0.01
+  },
+
+  {
+    "name": "batch_size",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [32, 64, 128, 256, 512, 1024, 2048],
+    "sigma": 1
+  },
+
+  {
+    "name": "epochs",
+    "type": "constant",
+    "value": 5
+  },
+
+  {
+    "name": "crash_probability",
+    "type": "constant",
+    "value": 0.25
+  }
+
+]

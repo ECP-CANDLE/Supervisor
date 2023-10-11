@@ -2,8 +2,8 @@
 # ENV Summit - TF 2.4.1
 # Environment settings for Summit (Swift, Python, R, Tcl, etc.)
 
-# SWIFT_IMPL=echo
-SWIFT_IMPL=py
+# CANDLE_MODEL_IMPL=echo
+CANDLE_MODEL_IMPL=py
 
 # Let modules initialize LD_LIBRARY_PATH before changing it:
 set +eu # modules create errors outside our control

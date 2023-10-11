@@ -16,7 +16,7 @@ SWIFT=/global/homes/w/wozniak/Public/sfw/compute/swift-t-2018-06-05
 export PATH=$SWIFT/stc/bin:$PATH
 # On Cori, we have a good Swift/T Python embedded interpreter,
 # but we use app anyway
-SWIFT_IMPL="app"
+CANDLE_MODEL_IMPL="app"
 
 # Python
 PYTHON=/global/common/cori/software/python/2.7-anaconda/envs/deeplearning

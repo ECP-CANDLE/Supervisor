@@ -3,6 +3,7 @@ set -eu
 
 # EPOCH COUNT SH
 # Report run progress in number of completed epochs
+# Requires python.logs
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 CPLO=$( readlink --canonicalize $THIS/.. )
@@ -20,7 +21,12 @@ then
 fi
 
 EXPID=$( basename $DIR )
-JOBID=$( cat $DIR/jobid.txt )
+if [[ -r $DIR/jobid.txt ]]
+then
+  JOBID=$( cat $DIR/jobid.txt )
+else
+  JOBID="local"
+fi
 show EXPID JOBID
 
 # Must use TMPFILE to avoid subshell for shell variables

@@ -1,4 +1,3 @@
-
 # CLEAN TOP21
 # Cleans the top21 file so only LINCS records are present
 # File names are hard-coded but easy to change
@@ -9,8 +8,7 @@ logger = logging.getLogger("clean-top21")
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s %(message)s",
-                              datefmt="%H:%M:%S")
+formatter = logging.Formatter("%(asctime)s %(message)s", datefmt="%H:%M:%S")
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.info("Start")
@@ -23,7 +21,7 @@ SCRATCH = "/gpfs/alpine/med106/scratch/wozniak"
 CANDLE_DATA = SCRATCH + "/CANDLE-Data/ChallengeProblem"
 
 # The original data from Yoo:
-original  = CANDLE_DATA + "/top21_2020Jul/top21.h5"
+original = CANDLE_DATA + "/top21_2020Jul/top21.h5"
 lincs1000 = CANDLE_DATA + "/top21_2020Jul/lincs1000"
 
 # The file we are creating here:
@@ -34,7 +32,8 @@ lincs = []
 with open(lincs1000, "r") as fp:
     while True:
         line = fp.readline()
-        if len(line) == 0: break
+        if len(line) == 0:
+            break
         lincs.append(line.strip())
 
 logger.info("lincs length: %i" % len(lincs))
@@ -50,10 +49,10 @@ logger.info("df columns original: %i" % len(columns))
 # List of dataframe column names to delete:
 delete_these = []
 
-count_key   = 0
-count_GE_N  = 0
-count_GE_Y  = 0
-count_DD    = 0
+count_key = 0
+count_GE_N = 0
+count_GE_Y = 0
+count_DD = 0
 count_other = 0
 for column in columns:
     if column.startswith("GE_"):

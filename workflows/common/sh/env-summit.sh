@@ -1,8 +1,8 @@
 
 # ENV Summit
 
-# SWIFT_IMPL=echo
-SWIFT_IMPL=py
+# CANDLE_MODEL_IMPL=echo
+CANDLE_MODEL_IMPL=py
 
 # Let modules initialize LD_LIBRARY_PATH before changing it:
 set +eu # modules create errors outside our control

@@ -5,7 +5,7 @@
 
 export PYTHONPATH=${EMEWS_PROJECT_ROOT}/python:${PYTHONPATH:-}
 
-SWIFT_IMPL=app
+CANDLE_MODEL_IMPL=app
 
 # Resident task workers and ranks
 if [ -z ${TURBINE_RESIDENT_WORK_WORKERS+x} ]

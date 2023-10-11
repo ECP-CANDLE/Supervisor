@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# MLRMBO TEST NIGHTLY
+# GA TEST GRAPHDRP LAMBDA
 
 usage()
 {
@@ -31,28 +31,25 @@ export EMEWS_PROJECT_ROOT
 WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. && /bin/pwd )
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 
-
 # Select configurations
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
+export PARAM_SET_FILE=graphdrp_param_space_ga.json
 
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
 
 # What to return from the objective function (Keras model)
 # val_loss (default) and val_corr are supported
-export OBJ_RETURN="val_loss"
-
-if [[ $SITE == "theta" ]]
-then
-  export WAIT=1
-fi
+export MODEL_RETURN="val_loss"
 
 export CANDLE_MODEL_TYPE="SINGULARITY"
 export CANDLE_IMAGE="/software/improve/images/GraphDRP.sif"
 
 # Submit job
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM $MODEL_NAME $CANDLE_MODEL_TYPE $CANDLE_IMAGE
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE $RUN_DIR $CFG_SYS $CFG_PRM \
+                                      $MODEL_NAME \
+                                      $CANDLE_MODEL_TYPE $CANDLE_IMAGE
 
 # Check job output
 TURBINE_OUTPUT=$( readlink turbine-output )

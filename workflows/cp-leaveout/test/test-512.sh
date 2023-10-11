@@ -47,18 +47,20 @@ SCRATCH=/gpfs/alpine/med106/scratch/wozniak
 # SCRATCH=/usb2/wozniak
 # CANDLE_DATA=$SCRATCH/CANDLE-Data/Milestone-13
 CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem/top21_2020Jul
+CANDLE_DATA=$CANDLE_DATA_DIR/ChallengeProblem/top21_2020Jul
 # CANDLE_DATA=$SCRATCH/CANDLE-Data/ChallengeProblem/old
 # PLAN_JSON=$CANDLE_DATA/plangen_cell1593-p4_drug1779-p1.json
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.csv
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.feather
 # DATAFRAME_CSV=$CANDLE_DATA/top_21.res_reg.cf_rnaseq.dd_dragon7.labled.hdf5
-if (( ! ${BIG_PLAN:-0} ))
-then
-PLAN_JSON=$CANDLE_DATA/plangen_cell703-p4_drug1492-p1-u.json # 2022-07
-# PLAN_JSON=$CANDLE_DATA/plangen_CELL2917-p4_DRUG2148-p4.json # 2023-02
-else
-PLAN_JSON=/gpfs/alpine/med106/proj-shared/brettin/Supervisor/workflows/cp-leaveout/plangen_CELL2917-p4_DRUG2148-p4.json
-fi
+# if (( ! ${BIG_PLAN:-0} ))
+# then
+# PLAN_JSON=$CANDLE_DATA/plangen_cell703-p4_drug1492-p1-u.json # 2022-07
+# # PLAN_JSON=$CANDLE_DATA/plangen_CELL2917-p4_DRUG2148-p4.json # 2023-02
+# else
+# PLAN_JSON=/gpfs/alpine/med106/proj-shared/brettin/Supervisor/workflows/cp-leaveout/plangen_CELL2917-p4_DRUG2148-p4.json
+# fi
+PLAN_JSON=$CANDLE_DATA/plangen_CELL703-p4_DRUG1492-p4.json
 # DATAFRAME_CSV=$CANDLE_DATA/top21.h5  # 2022-07
 DATAFRAME_CSV=$CANDLE_DATA/top21-cleaned-dd.h5  # NEW 2022-10
 # BENCHMARK_DATA=$SCRATCH/proj/Benchmarks/Pilot1/Uno

@@ -9,6 +9,12 @@ from pathlib import Path
 
 import topN_to_uno
 from runner_utils import ModelResult
+from log_tools import *
+
+logger = get_logger(logger, "DATA SETUP")
+
+logger.info("LOAD:")
+sys.stdout.flush()
 
 
 class TopN_Args:
@@ -24,65 +30,76 @@ class TopN_Args:
         self.output = output
 
 
-def setup_nvm(params):
+def setup_local_fs(params):
+    global logger
     # username = os.environ['USER']  # No longer works on Summit 2021-10-13
     username = params["user"]
-    nvme_enabled = Path("/mnt/bb/{}".format(username)).exists()
-    # nvme_enabled = True
-    print("NVMe: %r" % nvme_enabled)
+    userdir = Path("/mnt/bb/%s" % username)
+    nvme_enabled = userdir.exists()
+    logger.info("NVMe: %r" % nvme_enabled)
     if not nvme_enabled:
         return params
-    # copy original datafrom to NVMe disk space
+    # The training data directory for this workflow node:
+    nodedir = userdir / params["node"]
+    os.makedirs(nodedir, exist_ok=True)
+    # copy original datafrom to NVMe
     try:
         src = Path(params["dataframe_from"])
-        dest = Path("/mnt/bb/{}/{}".format(username, src.name))
+        local_orig = userdir / src.name
+        local_train = nodedir / Path("topN.uno.h5")
+        dest = Path(local_orig)
         if not dest.exists():
             start = time.time()
             count = dest.write_bytes(src.read_bytes())
             stop = time.time()
             duration = stop - start
             rate = count / duration / (1024 * 1024)
-            print("File copy completed. Original dataframe " +
-                  "copied to NVM in %0.1f seconds (%0.1f MB/s)." %
-                  (duration, rate))
+            logger.info("Original dataframe copied to NVM in " +
+                        "%0.1f seconds (%0.1f MB/s)." % (duration, rate))
         else:
-            print("File copy skipped. " +
-                  "Original dataframe already exists in NVM.")
+            # Report file size:
+            stats = os.stat(local_orig)
+            logger.info("Original dataframe already exists in NVM: size=%i" %
+                        stats.st_size)
     except Exception as e:
         print("Error occurred in copying original dataframe\n" + str(e))
+        sys.stdout.flush()
         traceback.print_exc()
+        sys.stdout.flush()
         return ModelResult.ERROR
     params["dataframe_from"] = dest.resolve()
-    # Do not do this: it changes the location of the training data
-    # params["use_exported_data"] = "/mnt/bb/{}/{}".format(username, params["use_exported_data"])
+    # WARNING: this changes the location of the training data:
+    params["dataframe_from"] = local_orig
+    params["use_exported_data"] = local_train
+    params["plan"] = str(userdir / Path(params["plan"]).name)
+    logger.info("Using plan file: " + params["plan"])
     return params
 
 
 def pre_run(params):
-    import sys
-    import time
+    global logger
 
-    print("data_setup.pre_run(): node: '%s' ..." % params["node"])
-    sys.stdout.flush()
+    logger.info("PRE_RUN node: %s ..." % params["node"])
 
     # softlink to cache & config file
     # build node specific training/validation dataset
+
+    params = setup_local_fs(params)
 
     args = TopN_Args(
         params["dataframe_from"],
         params["node"],
         params["plan"],
-        params["use_exported_data"],
+        output=params["use_exported_data"],
     )
-    print("TopN_Args: " + str(args))
 
     data = params["benchmark_data"]
     try:
         for filename in ["uno_auc_model.txt"]:  # "cache",
             if not os.path.islink(filename):
                 src = f"{data}/{filename}"
-                print("data_setup: src:  (%s)" % src)
-                print("data_setup: dest: (%s)" % filename)
+                logger.info("data_setup: src:  (%s)" % src)
+                logger.info("data_setup: dest: (%s)" % filename)
                 os.symlink(src, filename)
     except Exception as e:
         print("data_setup: error making symlink:")
@@ -90,33 +107,32 @@ def pre_run(params):
         print("data_setup: src:  (%s)" % src)
         print("data_setup: dest: (%s)" % filename)
         print(str(e))
+        sys.stdout.flush()
         return ModelResult.ERROR
 
     try:
-        print("data_setup: build_dataframe(output=%s) ..." % args.output)
+        logger.info("build_dataframe(output=%s) ..." % args.output)
         sys.stdout.flush()
         if not os.path.exists(args.output):
-            params = setup_nvm(params)
             out_orig = args.output
-            args.output = out_orig + ".part"
+            args.output = Path(str(out_orig) + ".part")
             start = time.time()
             topN_to_uno.build_dataframe(args)
             stop = time.time()
             duration = stop - start
-            print("data_setup: build_dataframe() OK : " +
-                  "%0.1f seconds." % duration)
-            sys.stdout.flush()
+            logger.info("build_dataframe() OK : " + "%0.1f seconds." % duration)
+            # sys.stdout.flush()
             os.rename(args.output, out_orig)
-            print("data_setup: rename() OK")
-            sys.stdout.flush()
+            logger.info("rename() OK")
+            # sys.stdout.flush()
             args.output = out_orig
         else:
-            print("data_setup: dataframe exists: %s" %
-                  os.path.realpath(args.output))
+            logger.info("data_setup: dataframe exists: %s" %
+                        os.path.realpath(args.output))
     except topN_to_uno.topN_NoDataException:
-        print("data_setup: caught topN_NoDataException: SKIP " +
-              "for node: '%s'" % params["node"])
-        sys.stdout.flush()
+        logger.info("data_setup: topN_NoDataException: SKIP " +
+                    "node: %s" % params["node"])
+        # sys.stdout.flush()
         directory = params["instance_directory"]
         with open(directory + "/NO-DATA.txt", "a") as fp:
             ts = datetime.datetime.now()
@@ -134,19 +150,22 @@ def pre_run(params):
         traceback.print_exc(file=sys.stdout)
         sys.stdout.flush()
         return ModelResult.ERROR
-    print("data_setup.pre_run() done.")
-    sys.stdout.flush()
+    logger.info("PRE_RUN done.")
+    # sys.stdout.flush()
     return ModelResult.SUCCESS
 
 
 def post_run(params, output_dict):
-    print("data_setup(): post_run")
-    sys.stdout.flush()
+    global logger
+    # logger.info("post_run")
+    # sys.stdout.flush()
     if "use_exported_data" in params:
         try:
-            os.remove(params["use_exported_data"])
+            # os.remove(params["use_exported_data"])
+            pass
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
     else:
-        print("use_exported_data not in params")
+        # print("use_exported_data not in params")
+        pass
     return ModelResult.SUCCESS

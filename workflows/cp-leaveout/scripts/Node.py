@@ -58,16 +58,18 @@ class Node:
         self.ckpt_writes = {}
         # Did EarlyStopping stop this node?
         self.stopped_early = False
+        # Did the topN module find data for this Node?
+        self.has_data = True
         # Did training complete for this node?
         self.complete = False
         # Can disable logging here:
         self.verbose = True
-        self.debug(logger, "START: " + str(self))
+        # self.debug(logger, "START: " + str(self))
 
     def set_id(self, id, logger=None):
         self.id = id
         self.stage = (len(self.id) - 1) // 2
-        self.debug(logger, "SET ID: " + id)
+        # self.debug(logger, "SET ID: " + id)
 
     def new_segment(self):
         self.segment += 1
@@ -82,10 +84,13 @@ class Node:
 
     def __str__(self):
         special = ""
-        if not self.complete:
-            special = " INCOMPLETE!"
-        if self.stopped_early:
-            special = " EARLY STOP!"
+        if not self.has_data:
+            special = "NO DATA!"
+        else:
+            if not self.complete:
+                special = " INCOMPLETE!"
+            if self.stopped_early:
+                special = " EARLY STOP!"
         return "Node [%s]: %s (epochs=%i/%s, loss=%s, val_loss=%s)%s" % (
             Node.maybe_str_integer(self.stage),
             self.id,
@@ -99,17 +104,19 @@ class Node:
     def str_table(self):
         """Like str() but uses fixed-width fields."""
         special = ""
+        if not self.has_data:
+            return "%-13s : %i NO-DATA" % (self.id, self.stage)
         if not self.complete:
             special = " INCOMPLETE!"
         if self.stopped_early:
             special = " EARLY STOP!"
-        return "%-13s : %i : %2i / %2i : %s - %s : %s : %s" % (
+        return "%-13s : %i : %2s / %2s : %s - %s : %s : %s" % (
             self.id,
             self.stage,
-            self.epochs_actual,
-            self.epochs_planned,
-            self.date_start,
-            self.date_stop,
+            Node.maybe_str_integer(self.epochs_actual),
+            Node.maybe_str_integer(self.epochs_planned),
+            str(self.date_start),
+            str(self.date_stop),
             self.str_errors(),
             special,
         )
@@ -176,7 +183,7 @@ class Node:
 
     def stop_early(self, logger=None):
         self.stopped_early = True
-        self.debug(logger, "STOP EARLY")
+        self.trace(logger, "STOP EARLY")
 
     def parse_date_start(self, line):
         tokens = line.split()
@@ -186,11 +193,11 @@ class Node:
         tokens = line.split()
         self.date_stop = tokens[0] + " " + tokens[1]
         if self.epochs_planned is None:
-            self.debug(logger, "STOP : epochs_planned=None")
+            self.trace(logger, "STOP : epochs_planned=None")
             return
         if self.epochs_actual == self.epochs_planned or self.stopped_early:
             self.complete = True
-            self.debug(logger, "COMPLETE")
+            self.trace(logger, "COMPLETE")
 
     def parse_training_done(self, line, logger=None):
         # The current epoch should already be set
@@ -231,10 +238,8 @@ class Node:
             self.val_data = int(value_string)
 
     def parse_python_log(self, fp):
-        """
-        fp is the file pointer to save/python.log
-        If lines are not found, node.mse, etc., will remain None
-        """
+        """fp is the file pointer to save/python.log If lines are not found,
+        node.mse, etc., will remain None."""
         marker = "Comparing y_true "
         # The marker is just after the date:
         # We search this way for speed.

@@ -17,7 +17,7 @@ usage()
   echo "CMP-CV: usage: workflow.sh SITE EXPID CFG_SYS PLAN"
 }
 
-if (( ${#} != 4 ))
+if (( ${#} != 5 ))
 then
   usage
   exit 1
@@ -32,6 +32,7 @@ if ! {
   get_expid   $2               && \
   get_cfg_sys $3               && \
   UPF=$4
+  MODELS=$5
  }
 then
   usage
@@ -44,16 +45,19 @@ source_site sched $SITE
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
+export PYTHONPATH="${PYTHONPATH}:$WORKFLOWS_ROOT/cmp-cv/py"
 log_path PYTHONPATH
 
 export TURBINE_JOBNAME="CMP_${EXPID}"
 
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
-export BENCHMARK_TIMEOUT
-
-CMD_LINE_ARGS=( --expid=$EXPID
-                --benchmark_timeout=$BENCHMARK_TIMEOUT
-                --plan=$PLAN
+export BENCHMARK_TIMEOUT=${BENCHMARK_TIMEOUT:-21600}  # 6 hours
+PLAN="PLAN_NOT_DEFINED"
+CMD_LINE_ARGS=( -expid=$EXPID
+                -benchmark_timeout=$BENCHMARK_TIMEOUT
+                -plan=$PLAN
+                -models=$MODELS
+                -gparams=$UPF
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -68,8 +72,8 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 cp -v $UPF $TURBINE_OUTPUT
 
-# TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
-TURBINE_STDOUT=
+TURBINE_STDOUT="$TURBINE_OUTPUT/out-%%r.txt"
+# TURBINE_STDOUT=
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
@@ -78,6 +82,8 @@ fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
+export CANDLE_MODEL_IMPL=container
+
 which swift-t
 
 swift-t -n $PROCS \
@@ -85,7 +91,7 @@ swift-t -n $PROCS \
         ${MACHINE:-} \
         -p \
         -I $WORKFLOWS_ROOT/common/swift \
-        -i obj_$SWIFT_IMPL \
+        -i model_$CANDLE_MODEL_IMPL \
         -e BENCHMARKS_ROOT \
         -e CANDLE_PROJECT_ROOT \
         -e MODEL_SH \
@@ -93,7 +99,7 @@ swift-t -n $PROCS \
         -e SITE \
         -e BENCHMARK_TIMEOUT \
         -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \
-        -e OBJ_RETURN \
+        -e MODEL_RETURN \
         -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
         -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
         $( python_envs ) \

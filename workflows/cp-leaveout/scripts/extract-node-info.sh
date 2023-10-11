@@ -36,10 +36,10 @@ $SUPERVISOR/scripts/shrink-logs.sh $DIR
 {
   for RESTART in ${RESTARTS[@]}
   do
-    echo $RESTART/out/summary-*.txt
+    find $RESTART/out -name summary-
   done
-  echo $DIR/out/summary-*.txt
-} | fmt -w 1 > $LOG_LIST
+  find $DIR/out -name summary-
+} > $LOG_LIST # | fmt -w 1
 
 export PYTHONPATH+=:$SUPERVISOR/workflows/common/python
 
