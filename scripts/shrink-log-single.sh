@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 # SHRINK LOG SINGLE SH
@@ -12,13 +12,13 @@ NAME=$( basename --suffix=.txt $INPUT )
 # Temp file for tr output:
 T=$( mktemp --tmpdir=$TMP_SHRINK --suffix .txt tr-XXX )
 
-if [ $INPUT == $T ]
+if [[ $INPUT == $T ]]
 then
   echo "shrink-log-single.sh: ERROR: INPUT is wrong."
   exit 1
 fi
 
-if [ "${THIS:-}" == "" ]
+if [[ "${THIS:-}" == "" ]]
 then
   THIS=$( readlink --canonicalize $( dirname $0 ) )
 fi
