@@ -41,6 +41,8 @@ fi
 
 source_site env   $SITE
 source_site sched $SITE
+TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$EXPID
+mkdir -p $TURBINE_OUTPUT
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
