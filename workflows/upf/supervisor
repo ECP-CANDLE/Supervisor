@@ -2,7 +2,7 @@
 set -eu
 
 # UPF SUPERVISOR
-# Externally-runnable workflow starter
+# This should be called by Supervisor/bin/supervisor
 
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 SUPERVISOR_HOME=$( cd $THIS/../.. ; /bin/pwd )
@@ -19,5 +19,7 @@ TEST_SCRIPT=$2
 
 sv_path_append $THIS/data
 sv_path_append $SUPERVISOR_HOME/workflows/common/sh
+
+source_cfg $TEST_SCRIPT
 
 $THIS/swift/workflow.sh $SITE $TEST_SCRIPT
