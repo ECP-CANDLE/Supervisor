@@ -4,4 +4,4 @@
 # Slurm settings will go here
 
 # Tell Swift/T to use Slurm
-MACHINE="slurm"
+MACHINE="-m slurm"
