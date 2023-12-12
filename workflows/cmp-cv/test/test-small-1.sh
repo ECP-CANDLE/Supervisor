@@ -20,7 +20,6 @@ SUPERVISOR_HOME=$(    cd $THIS/../../..  ; /bin/pwd )
 export EMEWS_PROJECT_ROOT
 
 export MODEL_RETURN="val_loss"
-CFG_SYS=$THIS/cfg-sys-1.sh
 
 # export MODEL_NAME="DrugCell"
 # export CANDLE_IMAGE=/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif
@@ -29,4 +28,9 @@ export CANDLE_MODEL_TYPE="SINGULARITY"
 source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
 sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
-$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $THIS/upf-1.txt $THIS/models-1.txt
+export CFG_SYS=$THIS/cfg-sys-1.sh
+export UPF=$THIS/upf-1.txt
+export MODEL_NAME="CMP-CV"
+
+
+$EMEWS_PROJECT_ROOT/swift/workflow.sh $SITE -a $CFG_SYS $UPF $THIS/models-1.txt
