@@ -4,7 +4,7 @@
 
 echo "langs-app-lambda ..."
 
-SFW=/home/woz/Public/sfw
+SFW=~woz/Public/sfw
 
 PY=$SFW/Miniconda-2023-09-18
 
