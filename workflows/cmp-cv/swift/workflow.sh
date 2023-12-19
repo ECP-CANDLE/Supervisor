@@ -31,8 +31,8 @@ if ! {
   get_site    $1               && \
   get_expid   $2               && \
   get_cfg_sys $3               && \
-  UPF=$4
-  MODELS=$5
+  UPF=$4 && \
+  MODELS=$5 
  }
 then
   usage
@@ -41,6 +41,8 @@ fi
 
 source_site env   $SITE
 source_site sched $SITE
+TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$EXPID
+mkdir -p $TURBINE_OUTPUT
 
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh

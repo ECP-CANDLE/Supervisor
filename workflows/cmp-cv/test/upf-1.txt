@@ -1,27 +1,2 @@
 
-{"id": "RUN001", "epochs": 1, "model_name": "DrugCell", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/DrugCell.sif"}
-{"id": "RUN002", "epochs": 2, "model_name": "DrugCell", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/DrugCell.sif"}
-{"id": "RUN003", "epochs": 1, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-{"id": "RUN004", "epochs": 2, "model_name": "SWnet", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-
-#GraphDRP
-#{"id": "RUN004", "training_data" : "path/to/dir,
-#   "testing_data": "path/to/dir",
-#   "infer_data" : [ path/to/dir ],
-#   "model_params": name_of_model_params_output_of_training,
-#    "epochs": 50,
-#    "model_name": "GraphDRP",
-#    "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-#{"id": "RUN004", "epochs": 50, "model_name": "GraphDRP", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-#{"id": "RUN004", "epochs": 50, "model_name": "GraphDRP", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-#{"id": "RUN004", "epochs": 50, "model_name": "GraphDRP", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-#{"id": "RUN004", "epochs": 50, "model_name": "DeepTTC", "candle_image": "/lambda_stor/homes/ac.knutson/ccmg-mtg/Singularity/build/SWnet.sif"}
-#DeepTTC
-
-# # NOTE: Everything after "candle_image" is stripped!
-# #       Insert new parameters before "candle_image"
-# {"id": "RUN000", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-# {"id": "RUN001", "epochs": 1, "model_name": "DrugCell", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/DrugCell.sif"}
-# {"id": "RUN002", "epochs": 1, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
-# {"id": "RUN003", "epochs": 1, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
-# {"id": "RUN004", "epochs": 1, "model_name": "GraphDRP", "candle_image": "/software/improve/images/GraphDRP.sif"}
+{"id": "RUN001", "epochs": 1, "model_name": "SWnet", "candle_image": "/homes/ac.gpanapitiya/ccmg-mtg/Singularity/SWnet.sif"}
