@@ -1,0 +1,8 @@
+
+== graphdrp_param_space-1
+
+This is a small 5-epoch case over _float_ `learning_rate` and _int_ `batch_size`.
+
+== graphdrp_param_space-2
+
+This is a 5-epoch case over 4 hyperparameters: _categorical_ `activation`, _categorical_ `optimizer`, _float_ `dropout`, and _int_ `batch_size`.
