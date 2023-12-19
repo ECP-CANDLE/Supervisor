@@ -5,24 +5,23 @@ set -eu
 
 usage()
 {
-  echo "Usage: test BENCHMARK_NAME SITE RUN_DIR(optional)"
+  echo "Usage: test SITE [RUN_DIR]"
   echo "       RUN_DIR is optional, use -a for automatic"
 }
 
-RUN_DIR=""
-if (( ${#} == 3 ))
+if (( ${#} == 2 ))
 then
-	RUN_DIR=$3
-elif (( ${#} == 2 )) # test-all uses this
+  RUN_DIR=$2
+elif (( ${#} == 1 )) # test-all uses this
 then
-	RUN_DIR="-a"
+  RUN_DIR="-a"
 else
-        usage
-        exit 1
+  usage
+  exit 1
 fi
+SITE=$1
 
-export MODEL_NAME=$1
-SITE=$2
+export MODEL_NAME=/software/improve/images/GraphDRP.sif
 
 # Self-configure
 THIS=$( cd $( dirname $0 ) && /bin/pwd )
@@ -34,7 +33,7 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # Select configurations
 export CFG_SYS=$THIS/cfg-sys-1.sh
 export CFG_PRM=$THIS/cfg-prm-1.sh
-export PARAM_SET_FILE=graphdrp_param_space_ga.json
+export PARAM_SET_FILE=graphdrp_param_space-1.json
 
 # The python GA model exploration algorithm
 export GA_FILE=deap_ga.py
