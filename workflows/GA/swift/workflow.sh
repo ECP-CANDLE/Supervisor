@@ -21,6 +21,8 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # Do not commit with logging enabled, users have run out of disk space
 # export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
+log "GA WORKFLOW.SH ..."
+
 usage()
 {
   echo "GA/workflow.sh: usage:"
@@ -74,12 +76,12 @@ if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
 then
   TOKEN=$( basename $MODEL_NAME .sif )
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
-  printf "Running GA workflow with model %s and model type %s\n" \
-         $MODEL_NAME $CANDLE_MODEL_TYPE
 else
   TOKEN=$MODEL_NAME
 fi
 
+log "MODEL_TYPE:" $CANDLE_MODEL_TYPE
+log "MODEL_NAME:" $MODEL_NAME
 log "EXPERIMENT OUTPUT DIRECTORY:" $TURBINE_OUTPUT
 
 mkdir -p $TURBINE_OUTPUT
