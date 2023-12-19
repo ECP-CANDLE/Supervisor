@@ -84,6 +84,12 @@ log "MODEL_TYPE:" $CANDLE_MODEL_TYPE
 log "MODEL_NAME:" $MODEL_NAME
 log "EXPERIMENT OUTPUT DIRECTORY:" $TURBINE_OUTPUT
 
+if ! [[ -f $PARAM_SET_FILE ]]
+then
+  echo "workflow.sh: could not find $PARAM_SET_FILE"
+  exit 1
+fi
+
 mkdir -p $TURBINE_OUTPUT
 # Store hyperparameters and make output.csv file with columns
 EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
