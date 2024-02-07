@@ -65,18 +65,34 @@ class IntParameter(NumericParameter):
 
 class FloatParameter(NumericParameter):
 
-    def __init__(self, name, lower, upper, sigma):
+    def __init__(self, name, lower, upper, sigma, use_log_scale=False):
         super(FloatParameter, self).__init__(name, lower, upper, sigma)
+        self.use_log_scale = use_log_scale
         self.uni_rand_func = random.uniform
 
     def mutate(self, x, mu, indpb):
         if random.random() <= indpb:
-            x += random.gauss(mu, self.sigma)
-            x = max(self.lower, min(self.upper, x))
+            if self.use_log_scale:
+                # Convert to log scale for mutation
+                x_log = math.log10(x)
+                x_log += random.gauss(mu, self.sigma)
+                x = 10 ** x_log
+                x = max(self.lower, min(self.upper, x))
+            else:
+                x += random.gauss(mu, self.sigma)
+                x = max(self.lower, min(self.upper, x))
         return x
 
     def parse(self, s):
         return float(s)
+    
+    def randomDraw(self):
+        if self.use_log_scale:
+            log_lower = math.log10(self.lower)
+            log_upper = math.log10(self.upper)
+            return self.log_uniform(log_lower, log_upper)
+        else:
+            return super(FloatParameter, self).randomDraw()
 
 
 # import logging
