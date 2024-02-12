@@ -163,20 +163,16 @@ class OrderedParameter(ListParameter):
         i = random.randint(0, len(self.categories) - 1)
         return self.categories[i]
 
-    def drawIndex(self, i):
-        n = random.randint(1, self.sigma)
-        n = i + (n if random.random() < 0.5 else -n)
-        n = max(0, min(len(self.categories) - 1, n))
-        return n
-
     def mutate(self, x, mu, indpb):
         if random.random() <= indpb:
+            # Find the index of the current value
             i = self.categories.index(x)
-            n = self.drawIndex(i)
-            while n == i:
-                n = self.drawIndex(i)
-
-            x = self.categories[n]
+            # Apply Gaussian perturbation to the index
+            i_new = i + random.gauss(mu, self.sigma)
+            # Round and bound the resulting index within the valid range
+            i_new = int(max(0, min(len(self.categories) - 1, round(i_new))))
+            # Update the value based on the new index
+            x = self.categories[i_new]
         return x
 
 
