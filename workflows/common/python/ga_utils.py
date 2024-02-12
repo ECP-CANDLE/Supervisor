@@ -90,7 +90,10 @@ class FloatParameter(NumericParameter):
         if self.use_log_scale:
             log_lower = math.log10(self.lower)
             log_upper = math.log10(self.upper)
-            return self.log_uniform(log_lower, log_upper)
+            # Generate a random value in log scale
+            random_log_value = self.log_uniform(log_lower, log_upper)
+            # Convert it back to the original scale
+            return 10 ** random_log_value
         else:
             return super(FloatParameter, self).randomDraw()
 
