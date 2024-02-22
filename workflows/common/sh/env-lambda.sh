@@ -27,7 +27,7 @@ CANDLE_MODEL_IMPL="app"
 
 # Log settings to output
 echo "Programs:"
-which python swift-t | nl
+which python swift-t
 # Cf. utils.sh
 show     PYTHONHOME
 log_path LD_LIBRARY_PATH
