@@ -40,47 +40,47 @@ def is_number(s):
         return False
     
 # Create parameters from JSON file (main functionality)
-def create_parameters(param_file, ignore_sigma=False):
+def create_parameters(param_file):
     with open(param_file) as json_file:
         data = json.load(json_file)
 
     params = []
     for item in data:
         name = item["name"]
-        t = item["type"]
-        if ignore_sigma:
-            sigma = float("nan")
-        if t == "int" or t == "float":
-            lower = item["lower"]
-            upper = item["upper"]
-            if not ignore_sigma:
-                sigma = item["sigma"]
+        type = item["type"]
 
-            if t == "int":
-                params.append(
-                    IntParameter(name, int(lower), int(upper), int(sigma)))
-            else:
-                params.append(
-                    FloatParameter(name, float(lower), float(upper),
-                                   float(sigma)))
+        if type == "int":
+            lower = int(item["lower"])
+            upper = int(item["upper"])
+            # Allow for optional sigma
+            sigma = None if "sigma" not in item else int(item["sigma"])
+            params.append(IntParameter(name, lower, upper, sigma))
 
-        elif t == "categorical":
-            vs = item["values"]
+        elif type == "float":
+            lower = float(item["lower"])
+            upper = float(item["upper"])
+            # Allow for optional sigma
+            sigma = None if "sigma" not in item else float(item["sigma"])
+            params.append(FloatParameter(name, lower, upper, sigma))
+
+        elif type == "categorical":
+            values = item["values"]
             element_type = item["element_type"]
-            params.append(CategoricalParameter(name, vs, element_type))
+            params.append(CategoricalParameter(name, values, element_type))
 
-        elif t == "logical":
+        elif type == "ordered":
+            values = item["values"]
+            element_type = item["element_type"]
+            # Allow for optional sigma
+            sigma = None if "sigma" not in item else item["sigma"]
+            params.append(OrderedParameter(name, values, sigma, element_type))
+
+        elif type == "logical":
             params.append(LogicalParameter(name))
 
-        elif t == "ordered":
-            vs = item["values"]
-            if not ignore_sigma:
-                sigma = item["sigma"]
-            element_type = item["element_type"]
-            params.append(OrderedParameter(name, vs, sigma, element_type))
-        elif t == "constant":
-            vs = item["value"]
-            params.append(ConstantParameter(name, vs))
+        elif type == "constant":
+            values = item["value"]
+            params.append(ConstantParameter(name, values))
 
     return params
 
