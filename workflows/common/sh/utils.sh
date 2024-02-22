@@ -79,18 +79,25 @@ log_path()
 }
 
 which_check()
+# Both Bash which and /bin/which do not produce error messages
+# if program is not found
+# Use this function instead of raw which!
 {
-  if [[ ${#} != 1 ]]
+  if (( ${#} == 0 ))
   then
-    echo "Provide a PROGRAM!"
+    echo "which_check(): Provide PROGRAMs!"
     exit 1
   fi
-  PROGRAM=$1
-  if ! which $PROGRAM
-  then
-    echo "Could not find $PROGRAM"
-    exit 1
-  fi
+  while (( ${#} > 0 ))
+  do
+    local PROGRAM=$1
+    if ! which $PROGRAM
+    then
+      echo "which_check(): could not find $PROGRAM"
+      exit 1
+    fi
+    shift
+  done
 }
 
 python_envs()
