@@ -1,5 +1,5 @@
 
-#
+# CFG UNO TEST
 
 export MODEL_NAME=uno
 export PARAM_SET_FILE=random_param_space.json
