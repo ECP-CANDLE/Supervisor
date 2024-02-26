@@ -3,6 +3,19 @@
 
 The GA workflow uses the Python DEAP package (http://deap.readthedocs.io/en/master) to optimize hyperparameters using a genetic algorithm.
 
+## Quick example
+
+```
+$ supervisor dunedin GA cfg-uno-1.sh
+```
+
+This:
+
+1. sources `cfg-uno-1.sh` for settings
+2. uses the GA search parameters in `random_param_space.json` (as specified by `cfg-uno-1.sh`)
+3. Uses `env-dunedin.sh`, a typical local system
+4. Runs the workflow
+
 ## Running
 
 1. cd into the **Supervisor/workflows/GA/test** directory
