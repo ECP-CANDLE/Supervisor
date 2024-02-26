@@ -84,6 +84,12 @@ log "MODEL_TYPE:" $CANDLE_MODEL_TYPE
 log "MODEL_NAME:" $MODEL_NAME
 log "EXPERIMENT OUTPUT DIRECTORY:" $TURBINE_OUTPUT
 
+sv_path_append $EMEWS_PROJECT_ROOT/data
+sv_path_append $SUPERVISOR_HOME/workflows/common/sh
+
+find_cfg $PARAM_SET_FILE
+PARAM_SET_FILE=$REPLY
+
 if ! [[ -f $PARAM_SET_FILE ]]
 then
   echo "workflow.sh: could not find $PARAM_SET_FILE"
@@ -98,9 +104,6 @@ touch $EXP_DIR/output.csv # output file
 grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
 echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
 cp $PARAM_SET_FILE $EXP_DIR # copy hyperparameter space file
-
-sv_path_append $EMEWS_PROJECT_ROOT/data
-sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
 source_site env   $SITE
 source_site sched $SITE
