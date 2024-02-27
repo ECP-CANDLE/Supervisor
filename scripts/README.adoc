@@ -1,0 +1,42 @@
+
+== HPO Table
+
+Creates a CSV file from a collection of `model.log`s.
+
+=== Data format
+
+Supervisor creates an output directory such as `/path/to/Output/EXP002`.
+
+Inside `EXP002`, there are subdirectories `run_I_J_K` where `I` is the optimizer run, `J` is the optimization iteration number, and `K` is the sample number within that iteration.
+
+Inside each `run_I_J_K`, there is a `model.log` that is the `stdout` of Supervisor's `model_runner.py`.  It contains run metadata, hyperparameters, timing, and output metrics.  When running in Singularity, `stdout` from the model is redirected elsewhere.  In a non-Singularity run, the model output is captured here as well.
+
+Additionally, `stdout` from the workflow on a per-rank basis may be found in `/path/to/Output/EXP002/out/out-*.txt`.  Any output from `workflow.swift` (e.g., output from Swift/T's `printf()`)is found in these per-rank files.  A summary from DEAP is reported in the 2nd-highest-rank `out-*.txt`.
+
+The output CSV has the format:
+
+----
+run,<HYPERPARAMETERS>,time,metric,result
+01_004_0019,0.5078028941991862,0.05934342170023779,0,val_loss,0.004793303039973075
+01_004_0013,0.3909062232395444,0.001,0,val_loss,0.009289366700281949
+01_001_0025,0.36348591567990074,0.11126075719341949,0,val_loss,0.004971494715817875
+----
+
+=== Usage
+
+If `E` is the experiment directory (`EXP002` above), and `hpo.csv` is the desired output file, run:
+
+----
+$ ./hpo_table.py $E hpo.csv
+----
+
+See also:
+
+----
+$ ./hpo_table.py -h
+----
+
+=== Limitations
+
+. The hyperparameter list is currently hard-coded.
+. The timing field is not yet implemented.
