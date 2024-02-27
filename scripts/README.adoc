@@ -1,7 +1,7 @@
 
 == HPO Table
 
-Creates a CSV file from a collection of `model.log`s.
+Creates a CSV file from a collection of `model.log` files.
 
 === Data format
 
