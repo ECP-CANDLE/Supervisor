@@ -11,7 +11,7 @@ Inside `EXP002`, there are subdirectories `run_I_J_K` where `I` is the optimizer
 
 Inside each `run_I_J_K`, there is a `model.log` that is the `stdout` of Supervisor's `model_runner.py`.  It contains run metadata, hyperparameters, timing, and output metrics.  When running in Singularity, `stdout` from the model is redirected elsewhere.  In a non-Singularity run, the model output is captured here as well.
 
-Additionally, `stdout` from the workflow on a per-rank basis may be found in `/path/to/Output/EXP002/out/out-\*.txt`.  Any output from `workflow.swift` (e.g., output from Swift/T's `printf()`)is found in these per-rank files.  A summary from DEAP is reported in the 2nd-highest-rank `out-\*.txt`.
+Additionally, `stdout` from the workflow on a per-rank basis may be found in `/path/to/Output/EXP002/out/out-\*.txt`.  Any output from `workflow.swift` (e.g., output from Swift/T's `printf()`)is found in these per-rank files.  A summary from DEAP is reported in the 2nd-highest-rank `out-*.txt`.
 
 The output CSV has the format:
 
