@@ -68,7 +68,7 @@ def write_table(table, output_csv):
     row = []
     row += ["run"]
     row += hyperparameters
-    row += ["time", "metric", "result"]
+    row += ["walltime", "metric", "result"]
     with open(output_csv, "w") as fp:
         writer = csv.writer(fp, delimiter=",")
         # Write the header
