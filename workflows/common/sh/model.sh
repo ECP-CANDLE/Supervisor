@@ -64,11 +64,15 @@ then
   # This directory is outside the container:
   RUN_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
   mkdir -pv $RUN_DIRECTORY
-else # "BENCHMARKS"
+elif [[ $MODEL_TYPE == "BENCHMARKS" ]]
+then
   RUN_DIRECTORY=$TURBINE_OUTPUT/$RUNID
   mkdir -pv $RUN_DIRECTORY
   export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
                                        $RUN_DIRECTORY )
+else
+  echo "model.sh: Unknown model type: '$MODEL_TYPE'"
+  exit 1
 fi
 
 # All stdout/stderr after this point goes into model.log !
@@ -129,7 +133,7 @@ show     PYTHONHOME
 export PYTHONPATH=${APP_PYTHONPATH:-}:${PYTHONPATH:-}
 
 # Construct the desired model command MODEL_CMD based on MODEL_TYPE:
-if [[ ${MODEL_TYPE:-} == "SINGULARITY" ]]
+if [[ $MODEL_TYPE == "SINGULARITY" ]]
 then
 
   # No model_runner, need to write parameters.txt explicitly:
