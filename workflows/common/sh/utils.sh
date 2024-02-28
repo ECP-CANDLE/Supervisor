@@ -321,12 +321,17 @@ source_site()
 # SITE is exported in the environment
 # May provide '-v' multiple times for verbosity
 {
-  local VERBOSE=0
-  while [[ $1 == "-v" ]]
+  local OPT OPTIONAL="" VERBOSE=0
+
+  while getopts "ov" OPT
   do
-    (( ++ VERBOSE ))
-    shift
+    case $OPT in
+      o) OPTIONAL="-o"  ;;
+      v) (( ++VERBOSE )) ;;
+      *) return 1 ;;  # Bash prints an error
+    esac
   done
+  shift $(( OPTIND - 1 ))
 
   if (( ${#} != 2 ))
   then
@@ -347,7 +352,7 @@ source_site()
 
   local NAME=$TOKEN-$SITE.sh
 
-  if ! search_cfg $VERBOSE $NAME
+  if ! search_cfg $OPTIONAL $VERBOSE $NAME
   then
     log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
     return 1
@@ -428,7 +433,7 @@ search_cfg()
 # Internal function
 # usage: search_cfg [0,1,2] NAME
 {
-  local VERBOSITY=$1 NAME=$2
+  local VERBOSE=$1 NAME=$2
 
   # Check for absolute path:
   if [[ ${NAME:0:1} == "/" ]]
@@ -706,20 +711,27 @@ debug()
 }
 
 log_if()
-# Log if verbosity is at least at limit
-# usage: log_if LIMIT VERBOSITY msg...
-# If VERBOSITY is higher in the environment, that value is used
+# Log if verbosity V is at least at LIMIT
+# usage: log_if LIMIT V msg...
+# If environment/global VERBOSITY is higher,
+#    VERBOSITY is used for V
 {
+  if (( ${#} < 3 ))
+  then
+    echo "log_if(): bad arguments: ${*}"
+    exit 1
+  fi
   local LIMIT=$1 V=$2
-  shift 2
-  if (( VERBOSITY > V ))
+  if (( ${VERBOSITY:-0} > V ))
   then
     V=$VERBOSITY
   fi
   if (( V < LIMIT ))
   then
+    # Verbosity is not high enough for this message:
     return
   fi
+  shift 2
   log $*
 }
 

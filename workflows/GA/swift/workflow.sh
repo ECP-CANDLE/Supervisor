@@ -105,8 +105,8 @@ grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_D
 echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
 cp $PARAM_SET_FILE $EXP_DIR # copy hyperparameter space file
 
-source_site env   $SITE
-source_site sched $SITE
+source_site -vv env   $SITE
+source_site -o  sched $SITE
 
 : ${EQPY:=$WORKFLOWS_ROOT/common/ext/EQ-Py}
 
