@@ -4,6 +4,8 @@
 HPO TABLE
 
 Extract a CSV table from HPO results model.logs
+Input:  A directory containing run_* directories from the GA workflow
+Output: A CSV file containing run statistics
 """
 
 
