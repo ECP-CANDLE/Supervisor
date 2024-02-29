@@ -47,7 +47,9 @@ def parse_args(logger):
     parser = argparse.ArgumentParser(prog="HPO Table")
     parser.add_argument("experiment_directory")
     parser.add_argument("output_csv")
-    parser.add_argument("-p", "--hyperparameter", action="append")
+    parser.add_argument("-p", "--hyperparameter", action="append",
+                        help="may be provided multiple times or " +
+                        "comma-separated")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
     return args
@@ -61,7 +63,18 @@ def crash(message):
 def handle_args(logger, args):
     if args.verbose:
         logger.setLevel(logging.DEBUG)
-    logger.debug(str(args))
+    logger.debug("args: " + str(args))
+    # Split up any comma-separated hyperparameters:
+    delete = []
+    for hp in args.hyperparameter:
+        if "," in hp:
+            delete.append(hp)
+            tokens = hp.split(",")
+            for token in tokens:
+                args.hyperparameter.append(token)
+    for d in delete:
+        args.hyperparameter.remove(d)
+    logger.debug("hyperparameters: " + str(args.hyperparameter))
 
 
 def find_runs(logger, experiment_directory):
@@ -99,11 +112,25 @@ def add_stats(logger, hyperparameters, run, table):
                     values[hp] = tokens[1]
                     break
             if len(tokens) < 4: continue
+            if tokens[3] == "START":
+                values["start"] = parse_time(tokens[0], tokens[1])
+            if tokens[3] == "END:":
+                values["stop"] = parse_time(tokens[0], tokens[1])
             if tokens[3] == "RUNID:":
                 values["run_id"] = tokens[4][4:]
                 continue
     table.append(values)
 
+
+def parse_time(d, t):
+    """
+    d: date as string "YYYY-MM-DD"
+    t: time as string "HH:MM:SS"
+    returns: a datetime
+    """
+    import datetime
+    v = datetime.datetime.fromisoformat(d + " " + t)
+    return v
 
 def write_table(logger, hyperparameters, table, output_csv):
     import csv
@@ -111,7 +138,7 @@ def write_table(logger, hyperparameters, table, output_csv):
     row = []
     row += ["iteration", "sample"]
     row += hyperparameters
-    row += ["walltime", "metric", "result"]
+    row += ["metric", "result", "walltime"]
     logger.debug("writing: " + output_csv)
     with open(output_csv, "w") as fp:
         writer = csv.writer(fp, delimiter=",")
@@ -131,6 +158,8 @@ def write_table(logger, hyperparameters, table, output_csv):
             row.append(0)
             row.append(values["metric"])
             row.append(values["result"])
+            td = values["stop"] - values["start"]  # a timedelta
+            row.append(int(td.total_seconds()))
             writer.writerow(row)
     logger.debug("wrote: " + output_csv)
 
