@@ -32,9 +32,15 @@ def parse_args():
     return args
 
 
+def crash(message):
+    print("hpo_table: ERROR: " + message)
+    exit(1)
+
 def find_runs(experiment_directory):
     import glob
     L = glob.glob(experiment_directory + "/run*")
+    if len(L) == 0:
+        crash("Found 0 run directories!")
     return L
 
 
