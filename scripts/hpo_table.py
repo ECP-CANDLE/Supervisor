@@ -8,6 +8,8 @@ Input:  A directory containing run_* directories from the GA workflow
 Output: A CSV file containing run statistics
 """
 
+import os
+
 
 hyperparameters = [ "learning_rate", "dropout" ]
 hyperparameters.sort()
@@ -38,7 +40,10 @@ def crash(message):
 
 def find_runs(experiment_directory):
     import glob
-    L = glob.glob(experiment_directory + "/run*")
+    if not os.path.exists(experiment_directory):
+        crash("Experiment directory does not exist: '%s'" %
+              experiment_directory)
+    L = glob.glob(experiment_directory + "/run_*")
     if len(L) == 0:
         crash("Found 0 run directories!")
     return L
@@ -47,6 +52,8 @@ def find_runs(experiment_directory):
 def add_stats(run, table):
     values = {}
     model_log = run + "/model.log"
+    if not os.path.exists(model_log):
+        crash("Model log does not exist: '%s'" % model_log)
     with open(model_log, "r") as fp:
         while True:
             line = fp.readline()
