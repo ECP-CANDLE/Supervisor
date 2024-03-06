@@ -161,7 +161,7 @@ def write_table(logger, hyperparameters, table, output_csv):
             td = values["stop"] - values["start"]  # a timedelta
             row.append(int(td.total_seconds()))
             writer.writerow(row)
-    logger.debug("wrote: " + output_csv)
+    logger.debug("wrote:   " + output_csv)
 
 
 main()
