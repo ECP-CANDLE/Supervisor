@@ -11,6 +11,9 @@ Output: A CSV file containing run statistics
 import logging, os, sys
 
 
+LOGGING_TRACE = 5
+
+
 def main():
     logger = get_logger(None, "hpo_table")
     args = parse_args(logger)
@@ -61,9 +64,10 @@ def crash(message):
 
 
 def handle_args(logger, args):
+    global LOGGING_TRACE
     if args.verbose:
         logger.setLevel(logging.DEBUG)
-    logger.debug("args: " + str(args))
+    logger.log(level=LOGGING_TRACE, msg="args: " + str(args))
     # Split up any comma-separated hyperparameters:
     delete = []
     for hp in args.hyperparameter:
@@ -134,12 +138,13 @@ def parse_time(d, t):
 
 def write_table(logger, hyperparameters, table, output_csv):
     import csv
+    global LOGGING_TRACE
     # Create the header
     row = []
     row += ["iteration", "sample"]
     row += hyperparameters
     row += ["metric", "result", "walltime"]
-    logger.debug("writing: " + output_csv)
+    logger.log(level=LOGGING_TRACE, msg="writing: " + output_csv)
     with open(output_csv, "w") as fp:
         writer = csv.writer(fp, delimiter=",")
         # Write the header
