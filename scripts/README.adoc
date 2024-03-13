@@ -52,3 +52,37 @@ See also:
 ----
 $ ./hpo_table.py -h
 ----
+
+== HPO Grab
+
+Copies HPO outputs into the Hall of Fame
+
+----
+$ hpo-grab.sh HOF MODEL SIZE PARAMS D1 D2 DATASET RANK
+----
+
+HOF::
+The HallOfFame clone
+
+MODEL::
+The model name, e.g., `GraphDRP`
+
+SIZE::
+The size from the Hall of Fame standard, e.g., `SMALL`
+
+PARAMS::
+The HPO params to extract for `hpo.csv`, e.g., `batch_size,learning_rate`
+
+D1::
+The Supervisor output directory, e.g.,
+`CANDLE_DATA_DIR/output/GraphDRP/EXP039`
+
+D2::
+The Singularity output directory, e.g.,
+`CANDLE_DATA_DIR/GraphDRP/Output/EXP039`
+
+DATASET::
+The dataset name, e.g., `CCLE`
+
+RANK::
+The DEAP rank, which is the 2nd highest rank.  E.g. if `PROCS` is 16 then `RANK` is 14.
