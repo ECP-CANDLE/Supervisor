@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+# Install LGBM in non-container mode
+
 which python pip
 echo
 echo "Install LGBM dependencies?  Hit enter or Ctrl-C to cancel."
@@ -15,4 +17,4 @@ PKGS=(
   lightgbm==3.1.1
 )
 
-pip install ${A[@]}
+pip install ${PKGS[@]}
