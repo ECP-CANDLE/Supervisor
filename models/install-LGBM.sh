@@ -2,9 +2,8 @@
 set -eu
 
 which python pip
-
-printf "Install LGBM dependencies?  Ctrl-C to cancel."
-
+echo
+echo "Install LGBM dependencies?  Hit enter or Ctrl-C to cancel."
 read -t 10 _
 
 PKGS=(
