@@ -15,4 +15,4 @@ export WALLTIME=${WALLTIME:-00:10:00}
 # https://www.alcf.anl.gov/support/user-guides/polaris/hardware-overview/machine-overview
 # http://swift-lang.github.io/swift-t/sites.html#_polaris
 export TURBINE_POLARIS=1
-export TURBINE_DIRECTIVE='#PBS -l filesystems=home:grand'
+export TURBINE_DIRECTIVE='#PBS -l filesystems=home:grand:eagle'
