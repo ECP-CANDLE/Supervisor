@@ -1,0 +1,38 @@
+[
+  {
+    "name": "learning_rate",
+    "type": "float",
+    "lower": 0.00000001,
+    "upper": 0.00001,
+    "sigma": 0.01
+  },
+
+  {
+    "name": "batch_size",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [16, 32, 64, 128, 256, 512, 1024, 2048],
+    "sigma": 1
+  },
+
+  {
+    "name": "epochs",
+    "type": "constant",
+    "value": 200
+  },
+  {
+    "name" : "train_ml_data_dir",
+    "type" : "constant" ,
+    "value": "/candle_data_dir/HPO/Uno_Improve/CCLE"
+  },
+  {
+    "name" : "val_ml_data_dir",
+    "type" : "constant" ,
+    "value": "/candle_data_dir/HPO/Uno_Improve/CCLE"
+  },
+  {
+    "name" : "test_ml_data_dir",
+    "type" : "constant" ,
+    "value" : "/candle_data_dir/HPO/Uno_Improve/CCLE"
+  }
+]
