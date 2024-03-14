@@ -62,6 +62,7 @@ def shrink(fp_in, fp_out):
         fp_out.write(Q.popleft())
 
 
+# Get human readable file size
 # From https://www.codegrepper.com/code-examples/python/python+get+human+readable+file+size
 def hsize(size, decimal_places=2):
     if size < 1024:
