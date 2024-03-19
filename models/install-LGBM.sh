@@ -7,6 +7,7 @@ which python pip
 echo
 echo "Install LGBM dependencies?  Hit enter or Ctrl-C to cancel."
 read -t 10 _
+echo "Installing..."
 
 PKGS=(
   git+https://github.com/ECP-CANDLE/candle_lib@develop
