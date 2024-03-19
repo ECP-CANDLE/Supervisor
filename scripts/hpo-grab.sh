@@ -45,6 +45,7 @@ FILES=( best-$RANK.json
         deap-$RANK.log
         fitness-$RANK.txt
         fitnesses-$RANK.txt
+        *param_space*.json
       )
 if ! cp -uv --backup=numbered ${FILES[@]} $OUTPUT
 then
