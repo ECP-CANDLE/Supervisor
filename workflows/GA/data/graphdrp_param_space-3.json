@@ -1,0 +1,40 @@
+[
+  {
+    "name": "learning_rate",
+    "type": "float",
+    "lower": 0.000001,
+    "upper": 0.1,
+    "sigma": 0.01
+  },
+
+  {
+    "name": "batch_size",
+    "type": "ordered",
+    "element_type": "int",
+    "values": [16, 32, 64, 128, 256, 512, 1024],
+    "sigma": 1
+  },
+
+  {
+    "name": "epochs",
+    "type": "constant",
+    "value": 100
+  },
+
+  {
+    "name" : "train_ml_data_dir",
+    "type" : "constant" ,
+    "value": "/candle_data_dir/HPO/GraphDRP/GDSCv2"
+  },
+  {
+    "name" : "val_ml_data_dir",
+    "type" : "constant" ,
+    "value": "/candle_data_dir/HPO/GraphDRP/GDSCv2"
+  },
+  {
+    "name" : "test_ml_data_dir",
+    "type" : "constant" ,
+    "value" : "/candle_data_dir/HPO/GraphDRP/GDSCv2"
+  }
+
+]
