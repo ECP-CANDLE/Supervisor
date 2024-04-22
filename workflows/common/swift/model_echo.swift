@@ -21,8 +21,8 @@
 
   string outdir = "%s/run/%s" % (turbine_output, run_id);
   params = replace_all(params_in, "\n", "", 0);
-  //                                              1       2       3
-  printf("bash model.sh %s %s %s in: %s", FRAMEWORK, params, run_id,
+  //                                   1       2
+  printf("bash model.sh %s %s in: %s", params, run_id,
          turbine_output) =>
     model_result = "ECHO SUCCESS";
 }

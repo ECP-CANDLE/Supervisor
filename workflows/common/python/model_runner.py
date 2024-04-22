@@ -60,9 +60,8 @@ def import_pkg(framework, model_name):
         # Default to train_improve as of 2024-04-02
         suffix = "_train_improve"
         if os.getenv("CANDLE_NAMING") == "1":
-            suffix = "_baseline_keras2"
+            suffix = "_baseline_" + framework
         module_name = model_name + suffix
-
     log("module_name: " + module_name)
     pkg = importlib.import_module(module_name)
     return pkg

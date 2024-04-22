@@ -21,6 +21,12 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # Do not commit with logging enabled, users have run out of disk space
 # export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 
+# Environment Variables
+# See the swift-t -e K=V arguments for the list of relevant
+# environment variables.  These are forwarded into the Swift/T
+# execution environment.  Other environment variables are usually not
+# be forwarded, depending on the system scheduler.
+
 log "GA WORKFLOW.SH ..."
 
 usage()

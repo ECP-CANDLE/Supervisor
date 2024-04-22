@@ -21,7 +21,7 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID MODEL_TYPE MODEL_NAME MODEL_ACTION"
+  echo "Usage: model.sh PARAMS EXPID RUNID MODEL_TYPE MODEL_NAME MODEL_ACTION"
   echo "MODEL_TYPE is BENCHMARK or SINGULARITY"
   echo "MODEL_NAME is the CANDLE Benchmark name (e.g., 'uno')"
   echo "           or a /path/to/image.sif"
@@ -34,7 +34,7 @@ usage()
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 7 ))
+if (( ${#} != 6 ))
 then
   echo
   echo "model.sh: Wrong number of arguments: received ${#} , required: 7"
@@ -43,14 +43,13 @@ then
   exit 1
 fi
 
-FRAMEWORK=$1 # Usually "keras" or "pytorch"
 # JSON string of parameters:
-PARAMS="$2"
-export EXPID=$3
-export RUNID=$4
-export MODEL_TYPE=$5
-export MODEL_NAME=$6
-export MODEL_ACTION=$7
+PARAMS="$1"
+export EXPID=$2
+export RUNID=$3
+export MODEL_TYPE=$4
+export MODEL_NAME=$5
+export MODEL_ACTION=$6
 
 # Each model run runs in its own "run directory"
 if [[ $MODEL_TYPE = "SINGULARITY" ]]
@@ -161,7 +160,7 @@ else # "BENCHMARKS"
   PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
            "$PARAMS"
            "$RUN_DIRECTORY"
-           "$FRAMEWORK"
+           "$CANDLE_FRAMEWORK"
            "$RUNID"
            "$BENCHMARK_TIMEOUT" )
 
