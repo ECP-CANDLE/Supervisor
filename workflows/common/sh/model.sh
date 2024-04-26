@@ -139,7 +139,7 @@ then
   FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
                    "$PARAMS" )
   FLAGS+=" --model_outdir $CANDLE_OUTPUT_DIRECTORY"
-  FLAGS+=" --ckpt_directory" ${CANDLE_OUTPUT_DIRECTORY}/ckpts/"
+  FLAGS+=" --ckpt_directory ${CANDLE_OUTPUT_DIRECTORY}/ckpts/"
 
   # Remove --candle image flag and the second argument, assume it is the last argument
   export FLAGS="${FLAGS/ --candle_image*/}"
