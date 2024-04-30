@@ -21,7 +21,7 @@ set -eu
 
 usage()
 {
-  echo "Usage: model.sh FRAMEWORK PARAMS EXPID RUNID MODEL_TYPE MODEL_NAME MODEL_ACTION"
+  echo "Usage: model.sh PARAMS EXPID RUNID MODEL_TYPE MODEL_NAME MODEL_ACTION"
   echo "MODEL_TYPE is BENCHMARK or SINGULARITY"
   echo "MODEL_NAME is the CANDLE Benchmark name (e.g., 'uno')"
   echo "           or a /path/to/image.sif"
@@ -34,7 +34,7 @@ usage()
   echo "If SH_TIMEOUT is set, we run under the shell command timeout"
 }
 
-if (( ${#} != 7 ))
+if (( ${#} != 6 ))
 then
   echo
   echo "model.sh: Wrong number of arguments: received ${#} , required: 7"
@@ -43,14 +43,13 @@ then
   exit 1
 fi
 
-FRAMEWORK=$1 # Usually "keras" or "pytorch"
 # JSON string of parameters:
-PARAMS="$2"
-export EXPID=$3
-export RUNID=$4
-export MODEL_TYPE=$5
-export MODEL_NAME=$6
-export MODEL_ACTION=$7
+PARAMS="$1"
+export EXPID=$2
+export RUNID=$3
+export MODEL_TYPE=$4
+export MODEL_NAME=$5
+export MODEL_ACTION=$6
 
 # Each model run runs in its own "run directory"
 if [[ $MODEL_TYPE = "SINGULARITY" ]]
@@ -59,29 +58,27 @@ then
   MODEL_TOKEN=$( basename $MODEL_NAME .sif )
   # The container will create subdirectories based on
   #               --experiment_id and --run_id
-  # This directory is bound inside the container:
-  export CANDLE_OUTPUT_DIR=/candle_data_dir/$MODEL_TOKEN/Output
   # This directory is outside the container:
-  RUN_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
-  mkdir -pv $RUN_DIRECTORY
+  CANDLE_OUTPUT_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
+  mkdir -pv $CANDLE_OUTPUT_DIRECTORY
 elif [[ $MODEL_TYPE == "BENCHMARKS" ]]
 then
-  RUN_DIRECTORY=$TURBINE_OUTPUT/$RUNID
-  mkdir -pv $RUN_DIRECTORY
+  CANDLE_OUTPUT_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+  mkdir -pv $CANDLE_OUTPUT_DIRECTORY
   export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
-                                       $RUN_DIRECTORY )
+                                       $CANDLE_OUTPUT_DIRECTORY )
 else
   echo "model.sh: Unknown model type: '$MODEL_TYPE'"
   exit 1
 fi
 
 # All stdout/stderr after this point goes into model.log !
-LOG_FILE=$RUN_DIRECTORY/model.log
+LOG_FILE=$CANDLE_OUTPUT_DIRECTORY/model.log
 echo "redirecting to: LOG_FILE=$LOG_FILE"
 set +x
 exec >> $LOG_FILE
 exec 2>&1
-cd $RUN_DIRECTORY
+cd $CANDLE_OUTPUT_DIRECTORY
 
 source $WORKFLOWS_ROOT/common/sh/utils.sh
 LOG_NAME="MODEL.SH"
@@ -141,18 +138,21 @@ then
 
   FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
                    "$PARAMS" )
+  FLAGS+=" --model_outdir $CANDLE_OUTPUT_DIRECTORY"
+  FLAGS+=" --ckpt_directory ${CANDLE_OUTPUT_DIRECTORY}/ckpts/"
 
   # Remove --candle image flag and the second argument, assume it is the last argument
   export FLAGS="${FLAGS/ --candle_image*/}"
 
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
-              --bind $CANDLE_DATA_DIR:/candle_data_dir
-              $MODEL_NAME ${MODEL_ACTION}.sh $CVD
-              /candle_data_dir
+              --bind $CANDLE_DATA_DIR
+	      --bind $CANDLE_DATA_DIR:/candle_data_dir
+              --bind $CANDLE_OUTPUT_DIRECTORY
+              $MODEL_NAME ${MODEL_ACTION}.sh
+              $CVD
+              $CANDLE_DATA_DIR
               $FLAGS
-              --experiment_id $EXPID
-              --run_id $RUNID
             )
 
 else # "BENCHMARKS"
@@ -160,8 +160,8 @@ else # "BENCHMARKS"
   # The Python command line arguments:
   PY_CMD=( "$WORKFLOWS_ROOT/common/python/model_runner.py"
            "$PARAMS"
-           "$RUN_DIRECTORY"
-           "$FRAMEWORK"
+           "$CANDLE_OUTPUT_DIRECTORY"
+           "$CANDLE_FRAMEWORK"
            "$RUNID"
            "$BENCHMARK_TIMEOUT" )
 
@@ -190,23 +190,23 @@ log "$MODEL_TYPE: EXIT CODE: $CODE"
 if (( CODE == 0 ))
 then
   echo PWD: $( pwd -P )
-  echo RUN_DIRECTORY: $RUN_DIRECTORY
+  echo CANDLE_OUTPUT_DIRECTORY: $CANDLE_OUTPUT_DIRECTORY
   ls -ltrh
   sleep 1  # Wait for output
   # Get last results of the format "IMPROVE_RESULT LABEL 123.456" in model.log
   # The LABEL is optional, only the numeric substring will be extracted
   # NOTE: Enabling set -x will break the following (token CANDLE_RESULT)
   RES=$( awk -v FS="IMPROVE_RESULT" 'NF>1 {x=$2} END {print x}' \
-             $RUN_DIRECTORY/model.log )
+             $CANDLE_OUTPUT_DIRECTORY/model.log )
   RESULT="$(echo $RES | grep -Eo '[+-]?[0-9]+([.][0-9]+)?')" || true
   echo "IMPROVE_RESULT: '$RESULT'"
-  echo $RESULT > $RUN_DIRECTORY/result.txt
+  echo $RESULT > $CANDLE_OUTPUT_DIRECTORY/result.txt
   if [[ ${RESULT_FILE:-} != "" ]]
   then
     echo $RESULT > $RESULT_FILE
   fi
   # Log hyperparameters and result
-  echo "${MODEL_CMD[@]}" > $RUN_DIRECTORY/run_command.txt # Store the model command
+  echo "${MODEL_CMD[@]}" > $CANDLE_OUTPUT_DIRECTORY/run_command.txt # Store the model command
   PARAMETERS=() # Initialize parameters
   # Store parameters from MODEL_CMD except for nv, bind, and experiment_id
   for i in "${!MODEL_CMD[@]}"; do
@@ -219,7 +219,7 @@ then
   done
   PARAMETERS+=("$RESULT") # Add the result as well
   # Print all values as comma-separated to the experiment directory output file
-  IFS=','; echo "${PARAMETERS[*]}" >> $RUN_DIRECTORY/../output.csv; unset IFS
+  IFS=','; echo "${PARAMETERS[*]}" >> $CANDLE_OUTPUT_DIRECTORY/../output.csv; unset IFS
 else
   echo # spacer
   if (( CODE == 124 ))

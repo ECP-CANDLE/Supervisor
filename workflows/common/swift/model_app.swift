@@ -45,8 +45,8 @@
 app (void o) run_model (string model_sh, string params,
                         string expid, string runid)
 {
-  //                  1       2      3     4        5          6         7
-  "bash" model_sh FRAMEWORK params expid runid "BENCHMARKS" model_name "train";
+  //              1      2     3     4            5          6
+  "bash" model_sh params expid runid "BENCHMARKS" model_name "train";
 }
 
 /**

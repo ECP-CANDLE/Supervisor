@@ -20,7 +20,15 @@ PYTHONPATH+=:$SUPERVISOR/models/Random
 PYTHONPATH+=:$SUPERVISOR/models/Comparator
 PYTHONPATH+=:$SUPERVISOR/workflows/common/ext/EQ-Py
 
-export APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
+if [[ $CANDLE_MODEL_IMPL == "app" ]]
+then
+  # APP_PYTHONPATH is only used when using the model shell
+  #                w/o containers
+  export APP_PYTHONPATH=${APP_PYTHONPATH:-$PYTHONPATH}
+else
+  # Reduce environment usage:
+  export APP_PYTHONPATH=""
+fi
 
 # The remainder of this script sets up PYTHONPATHs
 #     for the CANDLE Benchmarks if they are found

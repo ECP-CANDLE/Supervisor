@@ -9,7 +9,6 @@ set -eu
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 export WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 export SUPERVISOR_HOME=$( cd $WORKFLOWS_ROOT/.. ; /bin/pwd )
-export BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 SCRIPT_NAME=$(basename $0)
 
@@ -20,6 +19,12 @@ source $WORKFLOWS_ROOT/common/sh/utils.sh
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging.
 # Do not commit with logging enabled, users have run out of disk space
 # export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+
+# Environment Variables
+# See the swift-t -e K=V arguments for the list of relevant
+# environment variables.  These are forwarded into the Swift/T
+# execution environment.  Other environment variables are usually not
+# be forwarded, depending on the system scheduler.
 
 log "GA WORKFLOW.SH ..."
 
@@ -43,9 +48,14 @@ then
   exit 1
 fi
 
+# TODO: CANDLE_IMAGE is unused.
+#       We construct the SIF name from MODEL_NAME in model.sh
+#       Remove it.  --Justin 2024-04-25
+
 get_site $1 # Sets SITE
 if (( ${#} == 2 ))
 then
+  # This is used by bin/supervisor
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
@@ -65,14 +75,14 @@ then
   get_cfg_sys $3
   get_cfg_prm $4
   MODEL_NAME=$5
-  export CANDLE_MODEL_TYPE=$6
+  CANDLE_MODEL_TYPE=$6
   export CANDLE_IMAGE=$7
 else
   usage
   exit 1
 fi
-: ${CANDLE_MODEL_TYPE:=BENCHMARKS}
-if [[ $CANDLE_MODEL_TYPE = "SINGULARITY" ]]
+
+if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
 then
   TOKEN=$( basename $MODEL_NAME .sif )
   TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
@@ -145,11 +155,16 @@ fi
 : ${NUM_ITERATIONS:=3} ${POPULATION_SIZE:=3} ${STRATEGY:=mu_plus_lambda}
 : ${OFFSPRING_PROPORTION:=0.5} ${MUT_PROB:=0.8} ${CX_PROB:=0.2}
 : ${MUT_INDPB:=0.5} ${CX_INDPB:=0.5} ${TOURNSIZE:=4}
-# Miscellaneous defaults:
+# Model execution defaults:
 : ${BENCHMARK_TIMEOUT:=-1} ${SH_TIMEOUT:=-1} ${IGNORE_ERRORS:=0}
+: ${BENCHMARKS_ROOT:=}
+: ${MODEL_PYTHON_SCRIPT:=} ${MODEL_PYTHON_DIR:=}
 : ${MODEL_RETURN:=val_loss}
-export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
-export CANDLE_MODEL_TYPE
+
+export BENCHMARK_TIMEOUT SH_TIMEOUT IGNORE_ERRORS \
+       BENCHMARKS_ROOT \
+       MODEL_NAME MODEL_PYTHON_SCRIPT MODEL_PYTHON_DIR MODEL_RETURN \
+       CANDLE_MODEL_TYPE
 
 if ! find_cfg $PARAM_SET_FILE
 then
@@ -203,7 +218,8 @@ fi
 
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
-# This is used by the candle_model_train_app function
+
+# This is used by the Swift/T function candle_model_train():
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 
 WAIT_ARG=""
@@ -213,11 +229,12 @@ then
   echo "Turbine will wait for job completion."
 fi
 
+# Some systems have issues with %-escapes
 # Handle %-escapes in TURBINE_STDOUT
-if [[ $SITE == "summit"   ]] || \
-   [[ $SITE == "biowulf"  ]] || \
-   [[ $SITE == "polaris"  ]] || \
-   [[ $SITE == "frontier" ]]
+if [[ $SITE == "summit"       ]] || \
+   [[ $SITE == "biowulf"      ]] || \
+   [[ $SITE == "frontier"     ]] || \
+   [[ "$MACHINE"  == "-m pbs" ]]
 then
   export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
 else
@@ -261,10 +278,10 @@ fi
           -e APP_PYTHONPATH \
           -e TURBINE_OUTPUT=$TURBINE_OUTPUT \
           -e MODEL_RETURN \
-          -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-          -e MODEL_PYTHON_DIR=${MODEL_PYTHON_DIR:-} \
-          -e MODEL_SH \
+          -e MODEL_PYTHON_SCRIPT \
+          -e MODEL_PYTHON_DIR \
           -e MODEL_NAME \
+          -e MODEL_SH \
           -e SITE \
           -e BENCHMARK_TIMEOUT \
           -e SH_TIMEOUT \
