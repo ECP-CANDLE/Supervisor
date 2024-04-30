@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# HPO GRAB CONTAINER SH
+# HPO GRAB PY SH
 # Copy key outputs into Hall of Fame
 # See README.adoc
 
@@ -12,9 +12,9 @@ export THIS
 source $SUPERVISOR/workflows/common/sh/utils.sh
 
 SIGNATURE -H "See README.adoc" \
-          HOF MODEL SIZE PARAMS D1 D2 DATASET RANK - ${*}
+          HOF MODEL SIZE PARAMS D DATASET RANK - ${*}
 
-for V in HOF D1 D2
+for V in HOF D
 do
   if [[ ! -d ${!V} ]]
   then
@@ -32,15 +32,15 @@ mkdir -pv $OUTPUT
   echo "USER=$USER"
   printf "HOSTNAME="
   hostname
-  show MODEL SIZE PARAMS D1 D2 DATASET RANK
+  show MODEL SIZE PARAMS D DATASET RANK
 } > $OUTPUT/metadata.txt
 
 grep -h "num_iter:\|num_pop:" $D1/out/out-*.txt
 
-$THIS/hpo_table_container.py -v -p $PARAMS $D2 $D2/hpo.csv
-cp -v $D2/hpo.csv $OUTPUT
+$THIS/hpo_table_py.py -v -p $PARAMS $D $D/hpo.csv
+cp -v $D/hpo.csv $OUTPUT
 
-pushd $D1 > /dev/null
+pushd $D > /dev/null
 FILES=( best-$RANK.json
         deap-$RANK.log
         fitness-$RANK.txt
