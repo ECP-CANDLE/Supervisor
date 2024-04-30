@@ -35,9 +35,9 @@ mkdir -pv $OUTPUT
   show MODEL SIZE PARAMS D DATASET RANK
 } > $OUTPUT/metadata.txt
 
-grep -h "num_iter:\|num_pop:" $D1/out/out-*.txt
+grep -h "num_iter:\|num_pop:" $D/out/out-*.txt
 
-$THIS/hpo_table_py.py -v -p $PARAMS $D $D/hpo.csv
+$THIS/hpo_table_py.py -p $PARAMS $D $D/hpo.csv
 cp -v $D/hpo.csv $OUTPUT
 
 pushd $D > /dev/null

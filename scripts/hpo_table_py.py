@@ -88,7 +88,6 @@ def add_stats(logger, hyperparameters, output_file, table):
             if len(tokens) < 3: continue
             # E.g. "IMPROVE_RESULT val_loss:        0.05259979888796806"
             if len(tokens) == 3 and tokens[0] == "IMPROVE_RESULT":
-                print("line: " + line)
                 values["metric"] = tokens[1][:-1]
                 values["result"] = tokens[2]
                 continue
@@ -149,7 +148,6 @@ def write_table(logger, hyperparameters, table, output_csv):
         writer.writerow(row)
         for values in table:
             row.clear()
-            print(str(values))
             tokens = values["run_id"].split("_")
             iteration, sample = tokens[1:3]
             row += [iteration, sample]
