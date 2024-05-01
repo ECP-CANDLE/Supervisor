@@ -9,7 +9,7 @@ CANDLE_MODEL_IMPL=py
 
 CANDLE_ECP=/eagle/Candle_ECP
 ROOT=$CANDLE_ECP/sfw
-SWIFT=$ROOT/swift-t/2024-04-03
+SWIFT=$ROOT/swift-t/2024-04-29
 
 if ! [[ -d $SWIFT ]]
 then
@@ -21,8 +21,11 @@ export TURBINE_HOME=$SWIFT/turbine
 PATH=$SWIFT/stc/bin:$PATH
 PATH=$SWIFT/turbine/bin:$PATH
 
-PY=$CANDLE_ECP/conda/2024-04-03
+module use /soft/modulefiles
+module load conda
+conda activate
 
-PATH=$PY/bin:$PATH
+# PATH=$PY/bin:$PATH
 
-module load PrgEnv-nvhpc
+# module load PrgEnv-nvhpc
+module load PrgEnv-gnu
