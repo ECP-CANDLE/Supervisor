@@ -366,6 +366,7 @@ source_site()
 source_cfg()
 # Source a test cfg file
 # Searches SUPERVISOR_PATH
+# Sets REPLY to the actual file path
 {
   local VERBOSE=0
   while [[ $1 == "-v" ]]
@@ -395,6 +396,8 @@ source_cfg()
   local FILE=$REPLY
   debug $VERBOSE "source_cfg(): sourcing file: $FILE"
   source $FILE
+  # REPLY may be modified by source FILE; set it again here:
+  REPLY=$FILE
 }
 
 find_cfg()
