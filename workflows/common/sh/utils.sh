@@ -777,8 +777,8 @@ log_script()
 # Provenance dump
 {
   SCRIPT_NAME=$(basename $0)
-  LOG_NAME="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
-  echo "### VARIABLES ###" > $LOG_NAME
+  local LOG_FILE="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
+  echo "### VARIABLES ###" > $LOG_FILE
   # Ignore unset variables herein:
   set +u
   VARS=( "EMEWS_PROJECT_ROOT" "EXPID" "TURBINE_OUTPUT" \
@@ -789,19 +789,19 @@ log_script()
   for i in "${VARS[@]}"
   do
       v=\$$i
-      echo "$i=`eval echo $v`" >> $LOG_NAME
+      echo "$i=`eval echo $v`" >> $LOG_FILE
   done
 
   for i in "${USER_VARS[@]}"
   do
       v=\$$i
-      echo "$i=`eval echo $v`" >> $LOG_NAME
+      echo "$i=`eval echo $v`" >> $LOG_FILE
   done
   set -u
 
-  echo "" >> $LOG_NAME
-  echo "## SCRIPT ###" >> $LOG_NAME
-  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+  echo "" >> $LOG_FILE
+  echo "## SCRIPT ###" >> $LOG_FILE
+  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_FILE
 }
 
 check_directory_exists() {
