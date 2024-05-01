@@ -22,7 +22,7 @@ def main():
     handle_args(logger, args)
     args.hyperparameter.sort()
     model_outs = find_outs(logger, args.experiment_directory)
-    # A list of dict.  The dict contains the stats for the run
+    # A list of dict.  The dict contains the stats for the run:
     table = []
     for run in model_outs:
         add_stats(logger, args.hyperparameter, run, table)
@@ -102,7 +102,11 @@ def add_stats(logger, hyperparameters, output_file, table):
                 return
             # E.g. "2024-04-27 20:15:45 MODEL RUNNER DEBUG run_id = run_01_001_0026"
             if tokens[5] == "run_id":
+                # The run id contains the iteration and sample numbers:
                 values["run_id"] = tokens[7][4:]
+                tokens = values["run_id"].split("_")
+                values["iteration"] = tokens[1]
+                values["sample"]    = tokens[2]
                 continue
             if len(tokens) < 7: continue
             # E.g. "2024-04-27 20:11:57 MODEL RUNNER DEBUG run(): START:"
@@ -118,8 +122,10 @@ def add_stats(logger, hyperparameters, output_file, table):
                 if label == hp:
                     values[hp] = tokens[7]
                     break
+    # If the output file is empty, no problem:
+    if len(values) == 0: return
     validate(logger, output_file, values)
-    # Insert output_file for debugging
+    # Insert output_file for debugging:
     values["output_file"] = output_file
     table.append(values)
 
@@ -133,7 +139,26 @@ def validate(logger, output_file, values):
             exit(1)
 
 
+class RunComparator(dict):
+    """
+    Sort by iteration number
+    If in same iteration, use result value reversed,
+    so that better runs (lower errors) appear later in the sorted list
+    Thus the resulting is sorted by iteration from 1->NUM_ITERATIONS,
+    and within each iteration, progresses from high errors to low errors
+    """
+    def __lt__(self, other):
+        if self["iteration"] == other["iteration"]:
+            return self["result"] > other["result"]
+        return self["iteration"] < other["iteration"]
+
+
 def write_table(logger, hyperparameters, table, output_csv):
+    """
+    hyperparameters: list of string: the user hyperparameter
+    table: list of dict: each dict has the collected data
+    output_csv: The output file name
+    """
     import csv
     global LOGGING_TRACE
     # Create the header
@@ -142,15 +167,15 @@ def write_table(logger, hyperparameters, table, output_csv):
     row += hyperparameters
     row += ["metric", "result", "walltime"]
     logger.log(level=LOGGING_TRACE, msg="writing: " + output_csv)
+    # Sort table by iteration and result value
+    table.sort(key=RunComparator)
     with open(output_csv, "w") as fp:
         writer = csv.writer(fp, delimiter=",")
         # Write the header
         writer.writerow(row)
         for values in table:
             row.clear()
-            tokens = values["run_id"].split("_")
-            iteration, sample = tokens[1:3]
-            row += [iteration, sample]
+            row += [values["iteration"], values["sample"]]
             for hp in hyperparameters:
                 try:
                     row.append(values[hp])
