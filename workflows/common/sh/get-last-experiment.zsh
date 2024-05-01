@@ -3,17 +3,21 @@
 # A couple handy interactive functions
 
 D()
-# Find the latest experiment directory, assign to environment variable D
+# Find the latest experiment directory, assign to global variable D
 {
-   D=( experiments/*(om[1]) ) ; d D
-   local _D
-   _D=$D
-   unset D
-   export D=$_D
+  local R=""
+  if (( ${#*} )) R=$1/
+  D=( ${R}experiments/*(om[1]) )
+  local _D
+  _D=$D
+  unset D
+  D=$_D
+  print "D=$D"
 }
 
 E()
-# Inspect the outputs in $D
+# Inspect the outputs in $D ,
+# assign to global variable E
 {
-   e $D/output.txt $D/out/out-*.txt
+  E=( $D/output.txt $D/out/out-*.txt )
 }
