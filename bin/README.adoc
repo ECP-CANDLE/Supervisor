@@ -20,6 +20,10 @@ will do a DEAP GA on CANDLE Benchmark NT3 with a parameter search defined in `ra
 
 To extend this case, you can add other environment settings known to GA, Supervisor, or Swift/T to `cfg-1.sh`.  All controls are through this file.
 
+If your model is in a container, set `MODEL_NAME=/path/to/image.sif`
+
+If your model is in a non-Benchmark location, set `MODEL_PYTHON_DIR=/path/to/model`.  This path will be added to `PYTHONPATH`.
+
 == Structuring experiments
 
 The `supervisor` tool is essentially a configuration file manager that passes configuration data down to the underlying workflow.  Its main feature set is the ability to find configuration files from user or Supervisor directories via a few Bash functions that are automatically loaded and available inside any provided Bash file, for example, `test-1.sh` above.  These include:
@@ -90,11 +94,14 @@ These are used by many Supervisor workflows.  Workflows such as GA and dense-noi
 `MODEL_NAME`::
 Either
 +
-* The Benchmark model name as in `MODEL_NAME_baseline_FRAMEWORK.py` as found in `PYTHONPATH` or
+* The Benchmark model name as in `MODEL_NAME_train_improve.py` as found in `PYTHONPATH` or
 * The SIF container image file path `/path/to/model.sif`.  +
 You must set `CANDLE_MODEL_TYPE="SINGULARITY"` .
 +
 There is no default value.
+
+`MODEL_PYTHON_DIR`::
+This entry will be added to `PYTHONPATH` to support user models.
 
 `MODEL_RETURN`::
 A string with the value to return from the model.  Defaults to `val_loss`.
