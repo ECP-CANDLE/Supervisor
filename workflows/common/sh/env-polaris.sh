@@ -1,15 +1,14 @@
 
 # ENV Polaris
 
-# Polaris has a fork() bug- must use python(): 2024-04-02
-# https://docs.alcf.anl.gov/polaris/known-issues
 # CANDLE_MODEL_IMPL=echo
 # CANDLE_MODEL_IMPL=app
-CANDLE_MODEL_IMPL=py
+# CANDLE_MODEL_IMPL=py
+CANDLE_MODEL_IMPL=container
 
 CANDLE_ECP=/eagle/Candle_ECP
 ROOT=$CANDLE_ECP/sfw
-SWIFT=$ROOT/swift-t/2024-04-29
+SWIFT=$ROOT/swift-t/2024-05-02
 
 if ! [[ -d $SWIFT ]]
 then
@@ -27,5 +26,4 @@ conda activate
 
 # PATH=$PY/bin:$PATH
 
-# module load PrgEnv-nvhpc
 module load PrgEnv-gnu

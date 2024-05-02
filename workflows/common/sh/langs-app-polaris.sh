@@ -2,11 +2,10 @@
 # LANGS APP Polaris
 
 set +eu
-source /etc/profile
-module load singularity
+module use /soft/spack/gcc/0.6.1/install/modulefiles/Core
+module load apptainer
+apptainer version
 set -eu
-
-PATH=/eagle/Candle_ECP/conda/2024-03-13-LGBM/bin:$PATH
 
 export HTTP_PROXY=http://proxy.alcf.anl.gov:3128
 export HTTPS_PROXY=http://proxy.alcf.anl.gov:3128
