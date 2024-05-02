@@ -550,24 +550,26 @@ queue_wait_site()
   SITE=$1
   JOBID=$2
 
-  site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+  # Remove any text after a hyphen in SITE
+  # This allows for devel site names like polaris-test2
+  SITE=${SITE%-*}
 
-  if [[ $site2 == "cori" ]]
+  if [[ $SITE == "cori" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "theta" ]]
+  elif [[ $SITE == "theta" ]]
   then
     queue_wait_cobalt $JOBID
-  elif [[ $site2 =~ summit* ]]
+  elif [[ $SITE =~ summit* ]]
   then
     queue_wait_lsf $JOBID
-  elif [[ $site2 == "spock" ]]
+  elif [[ $SITE == "spock" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "pascal" ]]
+  elif [[ $SITE == "pascal" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "biowulf" ]]
+  elif [[ $SITE == "biowulf" ]]
   then
     queue_wait_slurm $JOBID
   else
