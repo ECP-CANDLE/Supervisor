@@ -103,13 +103,14 @@ then
   TIMEOUT_CMD="timeout $SH_TIMEOUT"
 fi
 
-# Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
 then
   WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 fi
 
-source_site langs-app $SITE
+# Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
+# This file is optional - no error if not found
+source_site -v -o langs-app $SITE
 
 echo
 log "PARAMS:"
