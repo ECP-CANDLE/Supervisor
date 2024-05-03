@@ -77,7 +77,8 @@ def add_stats(logger, hyperparameters, output_file, table):
     """
     Note that the token length checks increase monotonically
     """
-    values = {}
+    # The values collected from the file so far:
+    values = { "output_file" : output_file}
     logger.debug("Open: '%s' ..." % output_file)
     with open(output_file, "r") as fp:
         while True:
@@ -114,28 +115,32 @@ def add_stats(logger, hyperparameters, output_file, table):
                 values["start"] = parse_time(tokens[0], tokens[1])
             if len(tokens) < 8: continue
             # E.g. "2024-04-27 20:52:23 MODEL RUNNER INFO  PKG RUN STOP"
-            if tokens[7] == "STOP":
+            if tokens[6] == "RUN" and tokens[7] == "STOP":
                 values["stop"] = parse_time(tokens[0], tokens[1])
+                # Run done.  Add this stat and restart loop:
+                add_stat(logger, table, values, output_file)
             # E.g. "2024-04-27 20:17:06 MODEL RUNNER DEBUG batch_size = 16"
             label = tokens[5]
             for hp in hyperparameters:
                 if label == hp:
                     values[hp] = tokens[7]
                     break
-    # If the output file is empty, no problem:
-    if len(values) == 0: return
-    validate(logger, output_file, values)
+
+
+def add_stat(logger, table, values, output_file):
+    validate(logger, values)
     # Insert output_file for debugging:
-    values["output_file"] = output_file
     table.append(values)
+    # Reset the record for reuse:
+    values = { "output_file" : output_file}
 
 
-def validate(logger, output_file, values):
+def validate(logger, values):
     required = ["metric", "result", "run_id", "start", "stop"]
     for key in required:
         if key not in values:
             logger.fatal("missing key: '%s'"  % key)
-            logger.fatal("output file: " + output_file)
+            logger.fatal("output file: " + values["output_file"])
             exit(1)
 
 
