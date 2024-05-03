@@ -98,7 +98,7 @@ Either
 * The SIF container image file path `/path/to/model.sif`.  +
 You must set `CANDLE_MODEL_TYPE="SINGULARITY"` .
 +
-There is no default value.
+There is no default value, you must set this value.
 
 `MODEL_PYTHON_DIR`::
 This entry will be added to `PYTHONPATH` to support user models.
