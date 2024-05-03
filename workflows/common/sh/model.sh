@@ -51,26 +51,9 @@ export MODEL_TYPE=$4
 export MODEL_NAME=$5
 export MODEL_ACTION=$6
 
-# Each model run runs in its own "run directory"
-if [[ $MODEL_TYPE = "SINGULARITY" ]]
-then
-  # TODO: Rename "instance" to "run"
-  MODEL_TOKEN=$( basename $MODEL_NAME .sif )
-  # The container will create subdirectories based on
-  #               --experiment_id and --run_id
-  # This directory is outside the container:
-  CANDLE_OUTPUT_DIRECTORY=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output/$EXPID/$RUNID
-  mkdir -pv $CANDLE_OUTPUT_DIRECTORY
-elif [[ $MODEL_TYPE == "BENCHMARKS" ]]
-then
-  CANDLE_OUTPUT_DIRECTORY=$TURBINE_OUTPUT/$RUNID
-  mkdir -pv $CANDLE_OUTPUT_DIRECTORY
-  export CANDLE_OUTPUT_DIR=$( realpath --canonicalize-existing \
-                                       $CANDLE_OUTPUT_DIRECTORY )
-else
-  echo "model.sh: Unknown model type: '$MODEL_TYPE'"
-  exit 1
-fi
+# The output directory for this model run
+CANDLE_OUTPUT_DIRECTORY=$TURBINE_OUTPUT/$RUNID
+mkdir -pv $CANDLE_OUTPUT_DIRECTORY
 
 # All stdout/stderr after this point goes into model.log !
 LOG_FILE=$CANDLE_OUTPUT_DIRECTORY/model.log

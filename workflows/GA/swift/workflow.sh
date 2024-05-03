@@ -48,47 +48,35 @@ then
   exit 1
 fi
 
-# TODO: CANDLE_IMAGE is unused.
-#       We construct the SIF name from MODEL_NAME in model.sh
-#       Remove it.  --Justin 2024-04-25
-
 get_site $1 # Sets SITE
 if (( ${#} == 2 ))
 then
   # This is used by bin/supervisor
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
-  : ${CANDLE_IMAGE:=NONE}
+  # : ${CANDLE_IMAGE:=NONE} Unused?
   TEST_SCRIPT=$2
   source_cfg -v $TEST_SCRIPT
   TEST_SCRIPT=$REPLY
-  get_expid ${EXPID:--a}  # Sets EXPID
-elif (( ${#} == 5 ))
-then
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
-  : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
-  : ${CANDLE_IMAGE:=NONE}
-elif (( ${#} == 7 ))
-then
-  get_expid   $2 # Sets EXPID
-  get_cfg_sys $3
-  get_cfg_prm $4
-  MODEL_NAME=$5
-  CANDLE_MODEL_TYPE=$6
-  export CANDLE_IMAGE=$7
+  get_expid ${EXPID:--a} # Sets EXPID and TURBINE_OUTPUT
+# elif (( ${#} == 5 ))
+# then
+#   get_expid   $2 # Sets EXPID
+#   get_cfg_sys $3
+#   get_cfg_prm $4
+#   MODEL_NAME=$5
+#   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+#   : ${CANDLE_IMAGE:=NONE}
+# elif (( ${#} == 7 ))
+# then
+#   get_expid   $2 # Sets EXPID
+#   get_cfg_sys $3
+#   get_cfg_prm $4
+#   MODEL_NAME=$5
+#   CANDLE_MODEL_TYPE=$6
+#   export CANDLE_IMAGE=$7
 else
   usage
   exit 1
-fi
-
-if [[ $CANDLE_MODEL_TYPE == "SINGULARITY" ]]
-then
-  TOKEN=$( basename $MODEL_NAME .sif )
-  TURBINE_OUTPUT=$CANDLE_DATA_DIR/output/$TOKEN/$EXPID
-else
-  TOKEN=$MODEL_NAME
 fi
 
 log "MODEL_TYPE:" $CANDLE_MODEL_TYPE
@@ -107,19 +95,18 @@ then
   exit 1
 fi
 
-mkdir -p $TURBINE_OUTPUT
+mkdir -pv $TURBINE_OUTPUT
+
 # Store hyperparameters and make output.csv file with columns
-EXP_DIR=$CANDLE_DATA_DIR/$TOKEN/Output/$EXPID # Establishing where to put
-mkdir -pv $EXP_DIR
-touch $EXP_DIR/output.csv # output file
-grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
-echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
+touch $TURBINE_OUTPUT/output.csv # output file
+grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $TURBINE_OUTPUT/output.csv # get hyperparams for csv file columns
+echo "run_id,val_loss" >> $TURBINE_OUTPUT/output.csv # add run_id and val_loss to csv file columns
 
 # Copy configuration to experiment directory:
-cp $PARAM_SET_FILE $TEST_SCRIPT $EXP_DIR
-# Use PARAM_SET_FILE from EXP_DIR (for concurrent workflows)
+cp $PARAM_SET_FILE $TEST_SCRIPT $TURBINE_OUTPUT
+# Use PARAM_SET_FILE from TURBINE_OUTPUT (for concurrent workflows)
 PARAM_SET_FN=$( basename $PARAM_SET_FILE )
-PARAM_SET_FILE=$EXP_DIR/$PARAM_SET_FN
+PARAM_SET_FILE=$TURBINE_OUTPUT/$PARAM_SET_FN
 
 source_site -vv env   $SITE
 source_site -o  sched $SITE

@@ -191,6 +191,7 @@ get_expid()
     return 1
   fi
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
+
   log "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
   log "get_expid(): MODEL_NAME=$MODEL_NAME"
 
@@ -200,10 +201,10 @@ get_expid()
   then
     # Keep this directory in sync with model.sh RUN_DIRECTORY
     MODEL_TOKEN=$( basename $MODEL_NAME .sif )
-    EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
-  else # "BENCHMARKS"
-    EXPERIMENTS=${EXPERIMENTS:-$EMEWS_PROJECT_ROOT/experiments}
+  else
+    MODEL_TOKEN=$MODEL_NAME
   fi
+  EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
 
   local i=0 EXPS E TO
 
