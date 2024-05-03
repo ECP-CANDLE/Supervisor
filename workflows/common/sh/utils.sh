@@ -1,6 +1,7 @@
 
 # SH UTILS
 # Misc. Bash shell functionality
+# Note: We use getopts repeatedly so must reset OPTIND=1
 
 abort()
 # Shut it down
@@ -323,10 +324,11 @@ source_site()
 {
   local OPT OPTIONAL="" VERBOSE=0
 
+  OPTIND=1
   while getopts "ov" OPT
   do
     case $OPT in
-      o) OPTIONAL="-o"  ;;
+      o) OPTIONAL="-o"   ;;
       v) (( ++VERBOSE )) ;;
       *) return 1 ;;  # Bash prints an error
     esac
@@ -335,9 +337,11 @@ source_site()
 
   if (( ${#} != 2 ))
   then
-    echo "usage: source_site TOKEN SITE"
+    echo "usage: source_site [-o] [-v]* TOKEN SITE"
     echo "where TOKEN is env, sched, etc."
     echo "  and SITE is frontier, summit, theta, etc."
+    echo "  -v : make more verbose"
+    echo "  -o : optional - no error if not found"
     return 1
   fi
 
@@ -352,13 +356,19 @@ source_site()
 
   local NAME=$TOKEN-$SITE.sh
 
+  debug $VERBOSE "source_site(): search for $NAME"
+
   if ! search_cfg $OPTIONAL $VERBOSE $NAME
   then
-    log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
+    if (( ${#OPTIONAL} ))
+    then
+      return
+    fi
+    log "source_site(): error: not found in SUPERVISOR_PATH: '$NAME'"
     return 1
   fi
-  local FILE=$REPLY
 
+  local FILE=$REPLY
   log "source_site(): sourcing $FILE"
   source $FILE
 }
@@ -366,19 +376,27 @@ source_site()
 source_cfg()
 # Source a test cfg file
 # Searches SUPERVISOR_PATH
+# Sets REPLY to the actual file path
 {
-  local VERBOSE=0
-  while [[ $1 == "-v" ]]
+  local VERBOSE=0 OPTIONAL=""
+
+  OPTIND=1
+  while getopts "ov" OPT
   do
-    (( ++ VERBOSE ))
-    shift
+    case $OPT in
+      o) OPTIONAL="-o"  ;;
+      v) (( ++VERBOSE )) ;;
+      *) return 1 ;;  # Bash prints an error
+    esac
   done
+  shift $(( OPTIND - 1 ))
 
   if (( ${#} != 1 ))
   then
-    echo "usage: source_cfg [-v]* NAME"
+    echo "usage: source_cfg [-o] [-v]* NAME"
     echo "       where NAME is the filename in SUPERVISOR_PATH"
     echo "       or an absolute path"
+    echo "  -o : optional - no error if not found"
     echo "  -v : make more verbose"
     echo "returns 1 if not found"
     return 1
@@ -386,8 +404,12 @@ source_cfg()
 
   local NAME=$1
 
-  if ! search_cfg $VERBOSE $NAME
+  if ! search_cfg $VERBOSE $OPTIONAL $NAME
   then
+    if (( ${#OPTIONAL} ))
+    then
+      return
+    fi
     log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
     return 1
   fi
@@ -395,6 +417,8 @@ source_cfg()
   local FILE=$REPLY
   debug $VERBOSE "source_cfg(): sourcing file: $FILE"
   source $FILE
+  # REPLY may be modified by source FILE; set it again here:
+  REPLY=$FILE
 }
 
 find_cfg()
@@ -419,7 +443,6 @@ find_cfg()
   fi
 
   local NAME=$1
-
   if ! search_cfg $VERBOSE $NAME
   then
     log "find_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
@@ -431,8 +454,20 @@ find_cfg()
 search_cfg()
 # Find a configuration file in SUPERVISOR_PATH
 # Internal function
-# usage: search_cfg [0,1,2] NAME
+# usage: search_cfg [-o] 0|1|2 NAME
 {
+  local OPTIONAL=0
+
+  OPTIND=1
+  while getopts "o" OPT
+  do
+    case $OPT in
+      o) OPTIONAL=1      ;;
+      *) return 1 ;;  # Bash prints an error
+    esac
+  done
+  shift $(( OPTIND - 1 ))
+
   local VERBOSE=$1 NAME=$2
 
   # Check for absolute path:
@@ -440,12 +475,14 @@ search_cfg()
   then
     if ! [[ -r $NAME ]]
     then
-      log "find_cfg(): error: not found: '$NAME'"
+      log "search_cfg(): error: not found: '$NAME'"
       return 1
     fi
     REPLY=$NAME
     return
   fi
+
+  # Not absolute path- do search...
 
   # Ensure this is set:
   : ${SUPERVISOR_PATH:=}
@@ -464,7 +501,12 @@ search_cfg()
   done
 
   # Not found:
-  log "source_cfg(): error: not found in SUPERVISOR_PATH: '$NAME'"
+  local SEVERITY="error"
+  if (( OPTIONAL ))
+  then
+    SEVERITY="warning"
+  fi
+  log "search_cfg(): $SEVERITY: not found in SUPERVISOR_PATH: '$NAME'"
   return 1
 }
 
@@ -508,24 +550,26 @@ queue_wait_site()
   SITE=$1
   JOBID=$2
 
-  site2=$(echo $SITE | awk -v FS="-" '{print $1}') # ALW 2020-11-15: allow $SITEs to have hyphens in them as Justin implemented for Summit on 2020-10-29, e.g., summit-tf1
+  # Remove any text after a hyphen in SITE
+  # This allows for devel site names like polaris-test2
+  SITE=${SITE%-*}
 
-  if [[ $site2 == "cori" ]]
+  if [[ $SITE == "cori" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "theta" ]]
+  elif [[ $SITE == "theta" ]]
   then
     queue_wait_cobalt $JOBID
-  elif [[ $site2 =~ summit* ]]
+  elif [[ $SITE =~ summit* ]]
   then
     queue_wait_lsf $JOBID
-  elif [[ $site2 == "spock" ]]
+  elif [[ $SITE == "spock" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "pascal" ]]
+  elif [[ $SITE == "pascal" ]]
   then
     queue_wait_slurm $JOBID
-  elif [[ $site2 == "biowulf" ]]
+  elif [[ $SITE == "biowulf" ]]
   then
     queue_wait_slurm $JOBID
   else
@@ -713,8 +757,7 @@ debug()
 log_if()
 # Log if verbosity V is at least at LIMIT
 # usage: log_if LIMIT V msg...
-# If environment/global VERBOSITY is higher,
-#    VERBOSITY is used for V
+# If environment/global VERBOSITY is higher, VERBOSITY is used for V
 {
   if (( ${#} < 3 ))
   then
@@ -731,6 +774,7 @@ log_if()
     # Verbosity is not high enough for this message:
     return
   fi
+  # Print it!
   shift 2
   log $*
 }
@@ -774,8 +818,8 @@ log_script()
 # Provenance dump
 {
   SCRIPT_NAME=$(basename $0)
-  LOG_NAME="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
-  echo "### VARIABLES ###" > $LOG_NAME
+  local LOG_FILE="${TURBINE_OUTPUT}/${SCRIPT_NAME}.log"
+  echo "### VARIABLES ###" > $LOG_FILE
   # Ignore unset variables herein:
   set +u
   VARS=( "EMEWS_PROJECT_ROOT" "EXPID" "TURBINE_OUTPUT" \
@@ -786,19 +830,19 @@ log_script()
   for i in "${VARS[@]}"
   do
       v=\$$i
-      echo "$i=`eval echo $v`" >> $LOG_NAME
+      echo "$i=`eval echo $v`" >> $LOG_FILE
   done
 
   for i in "${USER_VARS[@]}"
   do
       v=\$$i
-      echo "$i=`eval echo $v`" >> $LOG_NAME
+      echo "$i=`eval echo $v`" >> $LOG_FILE
   done
   set -u
 
-  echo "" >> $LOG_NAME
-  echo "## SCRIPT ###" >> $LOG_NAME
-  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_NAME
+  echo "" >> $LOG_FILE
+  echo "## SCRIPT ###" >> $LOG_FILE
+  cat $EMEWS_PROJECT_ROOT/swift/$SCRIPT_NAME >> $LOG_FILE
 }
 
 check_directory_exists() {
@@ -851,6 +895,7 @@ signature()
   local SELF=$1 HELP="" VERBOSE=0
   local NL="\n"
   shift
+  OPTIND=1
   while getopts "H:v" OPT
   do
     case $OPT in

@@ -1,0 +1,54 @@
+#!/bin/bash
+set -eu
+
+# HPO GRAB PY SH
+# Copy key outputs into Hall of Fame
+# See README.adoc
+
+THIS=$(       realpath $( dirname $0 ) )
+SUPERVISOR=$( realpath $THIS/.. )
+export THIS
+
+source $SUPERVISOR/workflows/common/sh/utils.sh
+
+SIGNATURE -H "See README.adoc" \
+          HOF MODEL SIZE PARAMS D DATASET RANK - ${*}
+
+for V in HOF D
+do
+  if [[ ! -d ${!V} ]]
+  then
+    abort "Does not exist: ${V}=${!V}"
+  fi
+done
+
+OUTPUT=$HOF/$MODEL/$DATASET/$SIZE
+mkdir -pv $OUTPUT
+
+{
+  echo "METADATA"
+  printf "DATE="
+  date "+%Y-%m-%d %H:%M"
+  echo "USER=$USER"
+  printf "HOSTNAME="
+  hostname
+  show MODEL SIZE PARAMS D DATASET RANK
+} > $OUTPUT/metadata.txt
+
+grep -h "num_iter:\|num_pop:" $D/out/out-*.txt
+
+$THIS/hpo_table_py.py -p $PARAMS $D $D/hpo.csv
+cp -v $D/hpo.csv $OUTPUT
+
+pushd $D > /dev/null
+FILES=( best-$RANK.json
+        deap-$RANK.log
+        fitness-$RANK.txt
+        fitnesses-$RANK.txt
+        *param_space*.json
+      )
+if ! cp -uv --backup=numbered ${FILES[@]} $OUTPUT
+then
+  abort "Could not copy files from $PWD"
+fi
+popd > /dev/null

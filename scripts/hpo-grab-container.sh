@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-# HPO GRAB SH
+# HPO GRAB CONTAINER SH
 # Copy key outputs into Hall of Fame
 # See README.adoc
 
@@ -37,7 +37,7 @@ mkdir -pv $OUTPUT
 
 grep -h "num_iter:\|num_pop:" $D1/out/out-*.txt
 
-hpo_table.py -v -p $PARAMS $D2 $D2/hpo.csv
+$THIS/hpo_table_container.py -v -p $PARAMS $D2 $D2/hpo.csv
 cp -v $D2/hpo.csv $OUTPUT
 
 pushd $D1 > /dev/null

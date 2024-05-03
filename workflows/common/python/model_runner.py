@@ -311,7 +311,9 @@ def run_wrapper(hyper_parameter_map):
     if os.path.exists("stop.marker"):
         logger.info("stop.marker exists!")
         return ("SKIP", "STOP_MARKER")
+
     result = run_pre(hyper_parameter_map)
+
     if result == ModelResult.ERROR:
         logger.error("model_runner: run_pre() returned ERROR ...")
         logger.error("model_runner: EXIT CODE=1")
@@ -338,8 +340,14 @@ def run_wrapper(hyper_parameter_map):
     runner_utils.write_output(
         json.dumps(history, cls=runner_utils.FromNPEncoder), directory,
         "history.txt")
+
     run_post(hyper_parameter_map, {})
+
     logger.info("RUN STOP")
+    log("")
+    log("")
+    sys.stdout.flush()
+
     return (result, history)
 
 
@@ -409,7 +417,7 @@ def get_results(history, model_return, epochs_expected):
         logger.warning("get_results(): returning NaN")
         result = math.nan
 
-    print("result: " + model_return + ": " + str(result))
+    logger.info("RESULT: " + model_return + ": " + str(result))
     print("IMPROVE_RESULT " + str(result))
     history_result = history.history.copy()
     return result, history_result

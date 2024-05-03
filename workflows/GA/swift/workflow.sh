@@ -60,6 +60,7 @@ then
   : ${CANDLE_IMAGE:=NONE}
   TEST_SCRIPT=$2
   source_cfg -v $TEST_SCRIPT
+  TEST_SCRIPT=$REPLY
   get_expid ${EXPID:--a}  # Sets EXPID
 elif (( ${#} == 5 ))
 then
@@ -113,42 +114,29 @@ mkdir -pv $EXP_DIR
 touch $EXP_DIR/output.csv # output file
 grep -oP '"name": "\K[^"]*' $PARAM_SET_FILE | awk '{printf "%s,", $0}' >> $EXP_DIR/output.csv # get hyperparams for csv file columns
 echo "run_id,val_loss" >> $EXP_DIR/output.csv # add run_id and val_loss to csv file columns
-cp $PARAM_SET_FILE $EXP_DIR # copy hyperparameter space file
+
+# Copy configuration to experiment directory:
+cp $PARAM_SET_FILE $TEST_SCRIPT $EXP_DIR
+# Use PARAM_SET_FILE from EXP_DIR (for concurrent workflows)
+PARAM_SET_FN=$( basename $PARAM_SET_FILE )
+PARAM_SET_FILE=$EXP_DIR/$PARAM_SET_FN
 
 source_site -vv env   $SITE
 source_site -o  sched $SITE
 
-: ${EQPY:=$WORKFLOWS_ROOT/common/ext/EQ-Py}
-
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
-# Set PYTHONPATH for BENCHMARK related stuff
-PYTHONPATH+=:$EQPY
-PYTHONPATH+=:$WORKFLOWS_ROOT/common/python
-
+# Set job name for scheduler
 export TURBINE_JOBNAME=$EXPID
-RESTART_FILE_ARG=""
-if [[ ${RESTART_FILE:-} != "" ]]
-then
-  RESTART_FILE_ARG="--restart_file=$RESTART_FILE"
-fi
-
-RESTART_NUMBER_ARG=""
-if [[ ${RESTART_NUMBER:-} != "" ]]
-then
-  RESTART_NUMBER_ARG="--restart_number=$RESTART_NUMBER"
-fi
 
 if [[ ${SEED:-} == "" ]]
 then
   # Auto-generate SEED based on clock (nanos) and PID
-  # Use 10# to force value to decimal (cannot have leading 0s)
-  #SEED=$(( ( 10#$(date +%N) + ${$}) % 1000000 ))
-SEED=$(date +%s%N)
-SEED=${SEED%N}  # Remove trailing N
-SEED=$(($SEED + $$))
-SEED=$((SEED % 1000000))
+  SEED=$(date +%s%N)
+  SEED=${SEED%N}  # Remove trailing N
+  SEED=$(($SEED + $$))
+  SEED=$((SEED % 1000000))
 fi
 
 # Defaults for GA/DEAP:
@@ -165,12 +153,6 @@ export BENCHMARK_TIMEOUT SH_TIMEOUT IGNORE_ERRORS \
        BENCHMARKS_ROOT \
        MODEL_NAME MODEL_PYTHON_SCRIPT MODEL_PYTHON_DIR MODEL_RETURN \
        CANDLE_MODEL_TYPE
-
-if ! find_cfg $PARAM_SET_FILE
-then
-  crash "Could not find PARAM_SET_FILE: $PARAM_SET_FILE"
-fi
-PARAM_SET_FILE=$REPLY
 
 CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
                 -seed=$SEED
@@ -193,9 +175,6 @@ CMD_LINE_ARGS=( -ga_params=$PARAM_SET_FILE
 export TURBINE_RESIDENT_WORK_WORKERS=1
 export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
 
-export TURBINE_RESIDENT_WORK_WORKERS=1
-export RESIDENT_WORK_RANKS=$(( PROCS - 2 ))
-
 if [[ ${INIT_PARAMS_FILE:-} != "" ]]
 then
   CMD_LINE_ARGS+="-init_params=$INIT_PARAMS_FILE"
@@ -203,9 +182,6 @@ fi
 USER_VARS=( $CMD_LINE_ARGS )
 # log variables and script to to TURBINE_OUTPUT directory
 log_script
-
-#Store scripts to provenance
-cp $PARAM_SET_FILE ${INIT_PARAMS_FILE:-} $TURBINE_OUTPUT
 
 # Make run directory in advance to reduce contention
 mkdir -pv $TURBINE_OUTPUT/run
@@ -216,6 +192,10 @@ then
   BENCHMARKS_ROOT=""
 fi
 
+# Needed for EQPy.swift
+: ${EQPY:=$WORKFLOWS_ROOT/common/ext/EQ-Py}
+
+# Set up Swift/T imports:
 SWIFT_LIBS_DIR=${SWIFT_LIBS_DIR:-$WORKFLOWS_ROOT/common/swift}
 SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 
@@ -296,8 +276,8 @@ fi
 
 if (( ${PIPESTATUS[0]} ))
 then
-  echo "workflow.sh: swift-t exited with error!"
+  log "GA WORKFLOW.SH: swift-t exited with error!"
   exit 1
 fi
 
-echo "EXIT CODE: 0" | tee -a $STDOUT
+log "GA WORKFLOW.SH: DONE." | tee -a $STDOUT

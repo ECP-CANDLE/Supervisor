@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
 """
-HPO TABLE
+HPO TABLE CONTAINER
 
+For Singularity container runs
 Extract a CSV table from HPO results model.logs
 Input:  A directory containing run_* directories from the GA workflow
 Output: A CSV file containing run statistics
 """
 
 import logging, os, sys
+from hpo_table_utils import crash, get_logger, parse_time
 
 
 LOGGING_TRACE = 5
@@ -27,24 +29,6 @@ def main():
     write_table(logger, args.hyperparameter, table, args.output_csv)
 
 
-def get_logger(logger, name, stream=sys.stdout):
-    """
-    Set up logging if necessary
-    If the caller's logger already exists, just return it.
-    """
-    if logger is not None:
-        return logger
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    h = logging.StreamHandler(stream=stream)
-    fmtr = logging.Formatter(
-        "%(asctime)s %(name)s %(levelname)-5s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S")
-    h.setFormatter(fmtr)
-    logger.addHandler(h)
-    return logger
-
-
 def parse_args(logger):
     import argparse
     parser = argparse.ArgumentParser(prog="HPO Table")
@@ -56,11 +40,6 @@ def parse_args(logger):
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
     return args
-
-
-def crash(message):
-    print("hpo_table: ERROR: " + message)
-    exit(1)
 
 
 def handle_args(logger, args):
@@ -125,16 +104,6 @@ def add_stats(logger, hyperparameters, run, table):
                 continue
     table.append(values)
 
-
-def parse_time(d, t):
-    """
-    d: date as string "YYYY-MM-DD"
-    t: time as string "HH:MM:SS"
-    returns: a datetime
-    """
-    import datetime
-    v = datetime.datetime.fromisoformat(d + " " + t)
-    return v
 
 def write_table(logger, hyperparameters, table, output_csv):
     import csv

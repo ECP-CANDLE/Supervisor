@@ -55,10 +55,12 @@ $ ./hpo_table.py -h
 
 == HPO Grab
 
-Copies HPO outputs into the Hall of Fame
+Copies HPO outputs into the Hall of Fame.  Use one of these depending on whether you are using `CANDLE_MODEL_IMPL=container` (Singularity) or `CANDLE_MODEL_IMPL=py` (plain Python).
 
 ----
-$ hpo-grab.sh HOF MODEL SIZE PARAMS D1 D2 DATASET RANK
+$ hpo-grab-container.sh HOF MODEL SIZE PARAMS D1 D2 DATASET RANK
+# or
+$ hpo-grab-py.sh HOF MODEL SIZE PARAMS D DATASET RANK
 ----
 
 HOF::
@@ -74,12 +76,13 @@ PARAMS::
 The HPO params to extract for `hpo.csv`, e.g., `batch_size,learning_rate`
 
 D1::
-The Supervisor output directory, e.g.,
-`CANDLE_DATA_DIR/output/GraphDRP/EXP039`
+The Supervisor output directory, e.g., `CANDLE_DATA_DIR/output/GraphDRP/EXP039`
 
 D2::
-The Singularity output directory, e.g.,
-`CANDLE_DATA_DIR/GraphDRP/Output/EXP039`
+The Singularity output directory, e.g., `CANDLE_DATA_DIR/GraphDRP/Output/EXP039`
+
+D::
+The main output directory, e.g., `experiments/EXP079`
 
 DATASET::
 The dataset name, e.g., `CCLE`

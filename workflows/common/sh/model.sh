@@ -103,13 +103,14 @@ then
   TIMEOUT_CMD="timeout $SH_TIMEOUT"
 fi
 
-# Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
 if [[ ${WORKFLOWS_ROOT:-} == "" ]]
 then
   WORKFLOWS_ROOT=$( cd $EMEWS_PROJECT_ROOT/.. ; /bin/pwd )
 fi
 
-source_site langs-app $SITE
+# Source langs-app-{SITE} from workflow/common/sh/ (cf. utils.sh)
+# This file is optional - no error if not found
+source_site -v -o langs-app $SITE
 
 echo
 log "PARAMS:"
@@ -139,16 +140,19 @@ then
   FLAGS=$( python3 $WORKFLOWS_ROOT/common/python/runner_utils.py expand_params \
                    "$PARAMS" )
   FLAGS+=" --model_outdir $CANDLE_OUTPUT_DIRECTORY"
+  FLAGS+=" --ckpt_directory ${CANDLE_OUTPUT_DIRECTORY}/ckpts/"
+
   # Remove --candle image flag and the second argument, assume it is the last argument
   export FLAGS="${FLAGS/ --candle_image*/}"
 
   # The Singularity command line arguments:
   MODEL_CMD=( singularity exec --nv
-              --bind $CANDLE_DATA_DIR:/candle_data_dir
+              --bind $CANDLE_DATA_DIR
+	      --bind $CANDLE_DATA_DIR:/candle_data_dir
               --bind $CANDLE_OUTPUT_DIRECTORY
               $MODEL_NAME ${MODEL_ACTION}.sh
               $CVD
-              /candle_data_dir
+              $CANDLE_DATA_DIR
               $FLAGS
             )
 
