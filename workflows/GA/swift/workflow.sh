@@ -35,9 +35,7 @@ usage()
   echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME       _or_"
   echo "workflow.sh SITE CFG_SYS CFG_PRM MODEL_NAME CANDLE_MODEL_TYPE SIF"
   echo
-  echo "The 2-argument case is used by the supervisor tool."
-  echo "The 5-argument case is best for plain Python cases."
-  echo "The 7-argument case is best for Singularity container cases."
+  echo "This script is normally invoked via the supervisor tool."
 }
 
 export VERBOSITY=${VERBOSITY:-0}
@@ -58,22 +56,6 @@ then
   source_cfg -v $TEST_SCRIPT
   TEST_SCRIPT=$REPLY
   get_expid ${EXPID:--a} # Sets EXPID and TURBINE_OUTPUT
-# elif (( ${#} == 5 ))
-# then
-#   get_expid   $2 # Sets EXPID
-#   get_cfg_sys $3
-#   get_cfg_prm $4
-#   MODEL_NAME=$5
-#   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
-#   : ${CANDLE_IMAGE:=NONE}
-# elif (( ${#} == 7 ))
-# then
-#   get_expid   $2 # Sets EXPID
-#   get_cfg_sys $3
-#   get_cfg_prm $4
-#   MODEL_NAME=$5
-#   CANDLE_MODEL_TYPE=$6
-#   export CANDLE_IMAGE=$7
 else
   usage
   exit 1
