@@ -5,32 +5,40 @@
 D()
 # Find the latest experiment directory, assign to global variable D
 {
-<<<<<<< HEAD
-
-  D=( experiments/*(om[1]) ) ; d D
   local _D
-  _D=$D
-  unset D
+  case ${#*} {
+    0) _D=( experiments/EXP*(om[1]) )
+       if (( ${#_D} == 0 )) {
+         print "D(): Nothing found!"
+         return 1
+       }
+       ;;
+    1) _D=$1
+       if [[ ! -d $_D ]] {
+         print "D(): Does not exist: $_D"
+         return 1
+       }
+       ;;
+    *) print "D(): Too many args!"
+       return 1
+       ;;
+  }
+  D=""
   export D=$_D
-=======
-  local R=""
-  if (( ${#*} )) R=$1/
-  D=( ${R}experiments/*(om[1]) )
-  local _D
-  _D=$D
-  unset D
-  D=$_D
-  print "D=$D"
->>>>>>> ab33ab742faac840aa5fbcb2a938842243c466fe
+  d D
 }
 
 E()
 # Inspect the outputs in $D ,
 # assign to global variable E
 {
-<<<<<<< HEAD
-  e $D/output.txt $D/out/out-*.txt
-=======
   E=( $D/output.txt $D/out/out-*.txt )
->>>>>>> ab33ab742faac840aa5fbcb2a938842243c466fe
+}
+
+deap()
+# Report filename for the DEAP log, the 2nd-highest rank
+{
+  local DIR=$1
+  local A=( $DIR/out/out-*.txt )
+  print ${A[-2]}
 }
