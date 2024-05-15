@@ -1,16 +1,16 @@
-#!/bin/bash -norc
+#!/bin/bash
 set -eu
 
 # Install GraphDRP in non-container mode
 
-THIS=${0:h:A}
+THIS=$( cd $( dirname $0 ) ; pwd -P )
 source $THIS/../workflows/common/sh/utils.sh
 
-signature SYSTEM -- ${*}
+SIGNATURE SYSTEM - ${*}
 
 which python
 echo
-echo -n "Install GraphDRP dependencies for $SYSTEM? "
+echo -n "Install GraphDRP dependencies for SYSTEM=$SYSTEM? "
 echo -n "Hit enter or Ctrl-C to cancel."
 read -t 10 _
 echo
@@ -39,6 +39,9 @@ case $SYSTEM in
   Anaconda)
     SPECS=(
       "-c pytorch pytorch"
+      # Installing pyg may install torch w/o GPU!
+      # After installing pyg, install this:
+      # pytorch                   2.2.2           py3.11_cuda11.8_cudnn8.7.0_0    pytorch
       "-c pyg -c conda-forge pyg" # 2.1.0
       "-c bioconda pubchempy"
       # "-c rdkit rdkit" # hangs
@@ -53,16 +56,15 @@ esac
 timestamp()
 {
   # Prevent newline:
-  echo -n $( date +"%Y-%m-%d %H:%M:%S" )
+  echo -n $( date +"%Y-%m-%d %H:%M:%S" ) " "
 }
 
-LIST=$SPECS_$SYSTEM
-for SPEC in
+for SPEC in "${SPECS[@]}"
 do
   timestamp
   echo "CONDA:" $SPEC
   echo
-  conda install --yes $=SPEC
+  conda install --yes $SPEC
   echo
 done
 
