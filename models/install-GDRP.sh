@@ -38,10 +38,12 @@ case $SYSTEM in
 
   Anaconda)
     SPECS=(
-      "-c pytorch pytorch"
       # Installing pyg may install torch w/o GPU!
       # After installing pyg, install this:
       # pytorch                   2.2.2           py3.11_cuda11.8_cudnn8.7.0_0    pytorch
+
+      # "-c pytorch -c nvidia pytorch-cuda"
+      "-c pytorch -c nvidia pytorch torchvision torchaudio pytorch-cuda=11.8"
       "-c pyg -c conda-forge pyg" # 2.1.0
       "-c bioconda pubchempy"
       # "-c rdkit rdkit" # hangs
