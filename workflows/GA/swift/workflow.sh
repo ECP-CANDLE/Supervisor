@@ -173,6 +173,13 @@ export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
 export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
+WAIT_ARG=""
+if (( ${WAIT:-0} ))
+then
+  WAIT_ARG="-t w"
+  echo "Turbine will wait for job completion."
+fi
+
 if [[ ${MACHINE:-} == "" ]]
 then
   STDOUT=$TURBINE_OUTPUT/output.txt
