@@ -131,15 +131,7 @@ then
   echo "Turbine will wait for job completion."
 fi
 
-# Handle %-escapes in TURBINE_STDOUT
-if [ $SITE == "summit"  ] || \
-   [ $SITE == "biowulf" ] || \
-   [ $SITE == "polaris" ]
-then
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-else
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-fi
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
 
 mkdir -pv $TURBINE_OUTPUT/out
 

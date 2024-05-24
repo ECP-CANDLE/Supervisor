@@ -170,25 +170,7 @@ SWIFT_MODULE=${SWIFT_MODULE:-model_$CANDLE_MODEL_IMPL}
 
 # This is used by the Swift/T function candle_model_train():
 export MODEL_SH=$WORKFLOWS_ROOT/common/sh/model.sh
-
-WAIT_ARG=""
-if (( ${WAIT:-0} ))
-then
-  WAIT_ARG="-t w"
-  echo "Turbine will wait for job completion."
-fi
-
-# Some systems have issues with %-escapes
-# Handle %-escapes in TURBINE_STDOUT
-if [[ $SITE == "summit"       ]] || \
-   [[ $SITE == "biowulf"      ]] || \
-   [[ $SITE == "frontier"     ]] || \
-   [[ "$MACHINE"  == "-m pbs" ]]
-then
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-else
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-fi
+export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
 mkdir -pv $TURBINE_OUTPUT/out
 
 if [[ ${MACHINE:-} == "" ]]
