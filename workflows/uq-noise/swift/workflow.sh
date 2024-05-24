@@ -132,30 +132,7 @@ then
 fi
 
 export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
-
 mkdir -pv $TURBINE_OUTPUT/out
-
-if [[ ${MACHINE:-} == "" ]]
-then
-  STDOUT=$TURBINE_OUTPUT/output.txt
-  # The turbine-output link is only created on scheduled systems,
-  # so if running locally, we create it here so the test*.sh wrappers
-  # can find it
-  [[ -L turbine-output ]] && rm turbine-output
-  ln -s $TURBINE_OUTPUT turbine-output
-else
-  # When running on a scheduled system, Swift/T automatically redirects
-  # stdout to the turbine-output directory.  This will just be for
-  # warnings or unusual messages
-  # use for summit (slurm needs two %)
-  export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%%r.txt"
-
-  #export TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-%r.txt"
-  mkdir -pv $TURBINE_OUTPUT/out
-  STDOUT=""
-fi
-
-#echo ${CMD_LINE_ARGS[@]}
 
 cd $TURBINE_OUTPUT
 cp $CFG_SYS $CFG_PRM $WORKFLOWS_ROOT/uq-noise/swift/workflow.swift $TURBINE_OUTPUT
@@ -164,7 +141,6 @@ if [[ ${SITE} == "summit" ]]
 then
   export TURBINE_LAUNCH_OPTIONS="-g6 -c42 -a1 -b packed:42"
 fi
-
 
 export TURBINE_DIRECTIVE="#BSUB -q batch-hm"
 TURBINE_RESIDENT_WORK_WORKERS=1
