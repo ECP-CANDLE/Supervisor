@@ -6,7 +6,7 @@
 MACHINE="-m pbs"
 
 # Default PROJECT for CANDLE
-export PROJECT=${PROJECT:-IMPROVE}
+export PROJECT=${PROJECT:-IMPROVE_Aim1}
 export QUEUE=${QUEUE:-debug}
 export WALLTIME=${WALLTIME:-00:10:00}
 
