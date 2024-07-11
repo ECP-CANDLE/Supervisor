@@ -25,7 +25,7 @@ A=( --bind $CANDLE_DATA_DIR:/candle_data_dir
     --train_split_file ${DATA_SOURCE}_split_0_train.txt
     --val_split_file   ${DATA_SOURCE}_split_0_val.txt
     --test_split_file  ${DATA_SOURCE}_split_0_test.txt
-    --ml_data_outdir   $OUTDIR
+    --ml_data_outdir   $OUTDIR/${DATA_SOURCE}
   )
 
 renice --priority 19 $$
