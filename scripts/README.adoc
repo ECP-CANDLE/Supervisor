@@ -94,15 +94,17 @@ The DEAP rank, which is the 2nd highest rank.  E.g. if `PROCS` is 16 then `RANK`
 
 Simple wrapper around IMPROVE containerized `preprocess.sh`.
 
-. Set `CANDLE_DATA_DIR`.
-. Provide the SIF and a data source:
+. Set environment variable `CANDLE_DATA_DIR` - this will be bound in the container to `candle_data_dir`
+. Provide the SIF, a model name, the data source, and an output directory in the container under `/candle_data_dir`
 +
 ----
-$ scripts/preprocess.sh <model> <data_source>
+$ scripts/preprocess.sh <SIF> <model> <data_source> <outdir>
 ----
 +
 For example,
 +
 ----
-$ scripts/preprocess.sh /path/to/Uno.sif GDSCv1
+$ scripts/preprocess.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno/GDSCv1
 ----
+
+You can get a helpful reminder with no arguments: `scripts/preprocess.sh`
