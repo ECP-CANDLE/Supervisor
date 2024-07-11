@@ -96,6 +96,7 @@ Simple wrapper around IMPROVE containerized `preprocess.sh`.
 
 . Set environment variable `CANDLE_DATA_DIR` - this will be bound in the container to `candle_data_dir`
 . Provide the SIF, a model name, the data source, and an output directory in the container under `/candle_data_dir`
+. The data source name will be appended to the output directory
 +
 ----
 $ scripts/preprocess.sh <SIF> <model> <data_source> <outdir>
@@ -104,7 +105,9 @@ $ scripts/preprocess.sh <SIF> <model> <data_source> <outdir>
 For example,
 +
 ----
-$ scripts/preprocess.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno/GDSCv1
+$ scripts/preprocess.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno
 ----
++
+will put the preprocessed data in `/candle_data_dir/HPO/Uno/GDSCv1`
 
 You can get a helpful reminder with no arguments: `scripts/preprocess.sh`
