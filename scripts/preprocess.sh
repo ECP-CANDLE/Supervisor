@@ -11,21 +11,21 @@ export THIS
 source $SUPERVISOR/workflows/common/sh/utils.sh
 
 SIGNATURE -H "See README.adoc" \
-          IMG DATA_SOURCE - ${*}
+          SIF MODEL DATA_SOURCE OUTDIR - ${*}
+
+# OUTDIR must be under /candle_data_dir
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
   abort "Set CANDLE_DATA_DIR!"
 fi
 
-RAW_DATA_DIR=$CANDLE_DATA_DIR
-
-A=( --bind ${RAW_DATA_DIR}:/candle_data_dir
-    ${IMG} preprocess.sh /candle_data_dir
+A=( --bind $CANDLE_DATA_DIR:/candle_data_dir
+    $SIF preprocess.sh /candle_data_dir
     --train_split_file ${DATA_SOURCE}_split_0_train.txt
     --val_split_file   ${DATA_SOURCE}_split_0_val.txt
     --test_split_file  ${DATA_SOURCE}_split_0_test.txt
-    --ml_data_outdir   /candle_data_dir/HPO/$IMG/$DATA_SOURCE
+    --ml_data_outdir   $OUTDIR
   )
 
 renice --priority 19 $$
