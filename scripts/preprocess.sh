@@ -18,11 +18,10 @@ then
   abort "Set CANDLE_DATA_DIR!"
 fi
 
-IMAGE=/software/improve/images/$IMG.sif
 RAW_DATA_DIR=$CANDLE_DATA_DIR
 
 A=( --bind ${RAW_DATA_DIR}:/candle_data_dir
-    ${IMAGE} preprocess.sh /candle_data_dir
+    ${IMG} preprocess.sh /candle_data_dir
     --train_split_file ${DATA_SOURCE}_split_0_train.txt
     --val_split_file   ${DATA_SOURCE}_split_0_val.txt
     --test_split_file  ${DATA_SOURCE}_split_0_test.txt
