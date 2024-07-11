@@ -13,11 +13,14 @@ source $SUPERVISOR/workflows/common/sh/utils.sh
 SIGNATURE -H "See README.adoc" \
           SIF MODEL DATA_SOURCE OUTDIR - ${*}
 
-# OUTDIR must be under /candle_data_dir
-
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
   abort "Set CANDLE_DATA_DIR!"
+fi
+if ! [[ $OUTDIR == /candle_data_dir* ]]
+then
+  abort "OUTDIR is in the container- " \
+        "it must be under /candle_data_dir"
 fi
 
 A=( --bind $CANDLE_DATA_DIR:/candle_data_dir
@@ -25,7 +28,7 @@ A=( --bind $CANDLE_DATA_DIR:/candle_data_dir
     --train_split_file ${DATA_SOURCE}_split_0_train.txt
     --val_split_file   ${DATA_SOURCE}_split_0_val.txt
     --test_split_file  ${DATA_SOURCE}_split_0_test.txt
-    --ml_data_outdir   $OUTDIR/${DATA_SOURCE}
+    --ml_data_outdir   $OUTDIR/$DATA_SOURCE
   )
 
 renice --priority 19 $$
