@@ -26,10 +26,10 @@ computeStats(string resultsFile)
 }
 
 // call this to create any required directories
-app (void o) make_dir(string dirname) {
+app (void o) make_dir(string dirname)
+{
   "mkdir" "-p" dirname;
 }
-
 
 printf("PYTHONPATH: %s", getenv("PYTHONPATH"));
 printf("PYTHONHOME: %s", getenv("PYTHONHOME"));
@@ -53,10 +53,10 @@ parameters = split(parametersString, ":");
 // Run experiments in parallel, passing each a different parameter set
 foreach param in parameters
 {
-	string rName = turbine_output+"/result-"+param+".txt";
-	printf(rName);
-    file resultFile<rName> = evaluateOne(param);
-    results[param] = string2float(read(resultFile));
+  string rName = turbine_output+"/result-"+param+".txt";
+  printf(rName);
+  file resultFile<rName> = evaluateOne(param);
+  results[param] = string2float(read(resultFile));
 }
 
 // Compute stats of this array of results
