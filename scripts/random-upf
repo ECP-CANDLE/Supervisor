@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eu
+
+# Self-configure
+THIS=$(               cd $( dirname $0 ) && /bin/pwd )
+SUPERVISOR_HOME=$(    cd $THIS/..        && /bin/pwd )
+source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
+
+SV_PY=$SUPERVISOR_HOME/workflows/common/python
+EQ_PY=$SUPERVISOR_HOME/workflows/common/ext/EQ-Py
+
+export PYTHONPATH=${PYTHONPATH:-}:$SV_PY:$EQ_PY
+
+python $THIS/random-upf2.py ${*}
