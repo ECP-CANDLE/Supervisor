@@ -3,6 +3,10 @@ import files;
 import io;
 import sys;
 
+string model_name     = getenv("MODEL_NAME");
+string exp_id         = argv("exp_id");
+string param_set_file = argv("param_set_file");
+
 // ===== Interface definitions for the programs that we call ======
 // Random values are created from bounds specified in data/settings.json file
 app (file f)
@@ -36,27 +40,25 @@ printf("PYTHONHOME: %s", getenv("PYTHONHOME"));
 
 // ===== The program proper ==============================================
 string turbine_output = getenv("TURBINE_OUTPUT");
-string emews_root = getenv("EMEWS_PROJECT_ROOT");
-
-float results[string];
+string emews_root     = getenv("EMEWS_PROJECT_ROOT");
 
 //make the experiments dir
 make_dir(turbine_output);
 
 // Get parameters
 settingsFilename = argv("settings");
-string sweepParamFile = turbine_output+"/sweep-parameters.txt";
-file parametersFile<sweepParamFile> = determineParameters(settingsFilename);
+sweepParamFile = turbine_output + "/sweep-file.txt";
+file parametersFile<sweepParamFile> = determineParameters(param_set_file);
 parametersString = read(parametersFile);
 parameters = split(parametersString, ":");
 
 // Run experiments in parallel, passing each a different parameter set
-foreach param in parameters
+string results[];
+foreach param,i in parameters
 {
-  string rName = turbine_output+"/result-"+param+".txt";
-  printf(rName);
-  file resultFile<rName> = evaluateOne(param);
-  results[param] = string2float(read(resultFile));
+  run_id = "run_%03i" % i;
+  results[i] =
+    candle_model_train(param, exp_id, run_id, model_name);
 }
 
 // Compute stats of this array of results
