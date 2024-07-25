@@ -8,12 +8,12 @@ import traceback
 
 """
 This script contains the hyperparameter parsing, mutation, and random draw logic for the genetic algorithm
-(GA) hyperparameter optimization using deap. The params list are created, then the Hyperparemeters are 
-parsed from a JSON file based on their class. Default sigma values for mutation are given but can be 
+(GA) hyperparameter optimization using deap. The params list are created, then the Hyperparemeters are
+parsed from a JSON file based on their class. Default sigma values for mutation are given but can be
 provided in the JSON file. The mutation function is defined specially for each parameter type to not corrupt
 data types. The float parameter also offers a log 10 random draw and mutation functionality.
 
-Note that there are both parameter types and element types, which are not always the same. For example,There 
+Note that there are both parameter types and element types, which are not always the same. For example,There
 could be floats in a categorical parameter.
 """
 
@@ -39,7 +39,7 @@ def is_number(s):
         return True
     except ValueError:
         return False
-    
+
 # Create parameters from JSON file (main functionality)
 def create_parameters(param_file):
     try:
@@ -139,7 +139,7 @@ class NumericParameter(object):
         else:
             x = random.uniform(self.lower, self.upper)
         return x
-    
+
     # General mutation function (returns float)
     def mut_float(self, x, mu, indpb):
         if random.random() <= indpb:
@@ -153,7 +153,7 @@ class NumericParameter(object):
                 x += random.gauss(mu, self.sigma)
                 x = max(self.lower, min(self.upper, x))
         return x
-        
+
 
 # Integer parameter class
 class IntParameter(NumericParameter):
@@ -165,7 +165,7 @@ class IntParameter(NumericParameter):
 
     def randomDraw(self):
         return int(round(self.draw_float()))
-    
+
     def mutate(self, x, mu, indpb):
         return int(round(self.mut_float(x, mu, indpb)))
 
@@ -215,7 +215,7 @@ class ListParameter(object):
     def randomDraw(self):
         i = random.randint(0, len(self.elements) - 1)
         return self.elements[i]
-    
+
     def calculate_default_sigma(self):
         default_sigma = (len(self.elements)) / 10
         return default_sigma
