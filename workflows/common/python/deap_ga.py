@@ -48,11 +48,16 @@ def create_list_of_json_strings(list_of_lists, super_delimiter=";"):
     return super_delimiter.join(result)
 
 
-def create_json_string(L, indent=None):
+def create_json_string(values, indent=None):
+    global ga_params
+    return create_json_string_values(ga_params, values, indent=indent)
+
+
+def create_json_string_values(params, values, indent=None):
     json_dict = {}
-    for i, p in enumerate(ga_params):
-        json_dict[p.name] = L[i]
-    result = json.dumps(json_dict, indent=indent)
+    for i, p in enumerate(params):
+        json_dict[p.name] = values[i]
+    result = json.dumps(json_dict)
     return result
 
 
@@ -142,11 +147,13 @@ def queue_map(_f, pops):
 def make_random_params():
     """Performs initial random draw on each parameter."""
     global ga_params
+    return draw_random(ga_params)
 
+
+def draw_random(params):
     draws = []
-    for p in ga_params:
+    for p in params:
         draws.append(p.randomDraw())
-
     return draws
 
 

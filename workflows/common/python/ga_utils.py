@@ -161,6 +161,9 @@ class IntParameter(NumericParameter):
     def __init__(self, name, lower, upper, sigma=None, use_log_scale=False):
         super(IntParameter, self).__init__(name, lower, upper, sigma, use_log_scale)
 
+    def __str__(self):
+        return "IntParameter(%i,%i)" % (self.lower, self.upper)
+
     # Round the float and explicitly set as int for random draw and mutation
 
     def randomDraw(self):
@@ -179,6 +182,9 @@ class FloatParameter(NumericParameter):
     def __init__(self, name, lower, upper, sigma=None, use_log_scale=False):
         super(FloatParameter, self).__init__(name, lower, upper, sigma, use_log_scale)
 
+    def __repr__(self):
+        return "Float(%s∈(%.3f,%.3f)" % (self.name, self.lower, self.upper)
+
     def randomDraw(self):
         return self.draw_float()
 
@@ -195,8 +201,9 @@ class FloatParameter(NumericParameter):
 class ListParameter(object):
 
     def __init__(self, name, elements, element_type):
-        self.name = name
-        self.elements = elements
+        self.name         = name
+        self.elements     = elements
+        self.element_type = element_type
 
         # Determine element type within parameter type
         if element_type == "float":
@@ -211,6 +218,10 @@ class ListParameter(object):
             raise ValueError(
                 "Invalid type: {} - must be one of 'float', 'int', 'string', or 'logical'"
             )
+
+    def __repr__(self):
+        return "List(%s of %i %ss)" % \
+            (self.name, len(self.elements), self.element_type)
 
     def randomDraw(self):
         i = random.randint(0, len(self.elements) - 1)
@@ -257,12 +268,17 @@ class OrderedParameter(ListParameter):
 
 """Other Parameters:"""
 
-# Constant parameter class (usually foe epochs or pathing parameters not related to the HPO process)
+# Constant parameter class
+# Usually for epochs or other parameters that are fixed
+#         during the HPO process
 class ConstantParameter(object):
 
     def __init__(self, name, value):
         self.name = name
         self.value = value
+
+    def __repr__(self):
+        return "Constant(%s=%s)" % (self.name, self.value)
 
     def randomDraw(self):
         return self.value
