@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eu
 
+# RANDOM UPF
+# See random-upf.py for usage
+
 # Self-configure
 THIS=$(               cd $( dirname $0 ) && /bin/pwd )
 SUPERVISOR_HOME=$(    cd $THIS/..        && /bin/pwd )

@@ -111,3 +111,48 @@ $ scripts/preprocess.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno
 will put the preprocessed data in `/candle_data_dir/HPO/Uno/GDSCv1`
 
 You can get a helpful reminder with no arguments: `scripts/preprocess.sh`
+
+== Random UPF
+
+----
+random-upf
+----
+
+Creates a random UPF of any size for the UPF workflow.
+
+----
+$ ./random-upf -h
+2024-08-01 14:53:12 random_upf INFO  RANDOM UPF
+usage: random_upf [-h] [-s SEED] count param_set_file output
+
+Makes a random UPF file.
+
+positional arguments:
+  count                 number of rows to generate
+  param_set_file        the DEAP parameter set file
+  output                The output JSON file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SEED, --seed SEED  random seed
+----
+
+You can specify `output` as `/dev/stdout` for debugging.
+
+Usage example:
+
+----
+SV/scripts$ ./random-upf -s 32 3 ../workflows/GA/data/uno_param_space-1.json /dev/stdout
+2024-08-01 14:50:23 random_upf INFO  RANDOM UPF
+2024-08-01 14:50:23 random_upf INFO  SEED: 32
+2024-08-01 14:50:23 random_upf INFO  PARAM: 1: Float(learning_rate∈(0.000,0.000)
+2024-08-01 14:50:23 random_upf INFO  PARAM: 2: List(batch_size of 8 ints)
+2024-08-01 14:50:23 random_upf INFO  PARAM: 3: Constant(epochs=200)
+2024-08-01 14:50:23 random_upf INFO  PARAM: 4: Constant(train_ml_data_dir=/candle_data_dir/HPO/Uno_Improve/CCLE)
+2024-08-01 14:50:23 random_upf INFO  PARAM: 5: Constant(val_ml_data_dir=/candle_data_dir/HPO/Uno_Improve/CCLE)
+2024-08-01 14:50:23 random_upf INFO  PARAM: 6: Constant(test_ml_data_dir=/candle_data_dir/HPO/Uno_Improve/CCLE)
+2024-08-01 14:50:23 random_upf INFO  write: /dev/stdout
+{"learning_rate": 7.834436206945082e-07, "batch_size": 128, "epochs": 200, "train_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "val_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "test_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE"}
+{"learning_rate": 1.45500422260353e-06, "batch_size": 128, "epochs": 200, "train_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "val_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "test_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE"}
+{"learning_rate": 4.9675623975915665e-06, "batch_size": 16, "epochs": 200, "train_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "val_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE", "test_ml_data_dir": "/candle_data_dir/HPO/Uno_Improve/CCLE"}
+----
