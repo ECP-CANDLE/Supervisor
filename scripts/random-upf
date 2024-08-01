@@ -14,4 +14,4 @@ EQ_PY=$SUPERVISOR_HOME/workflows/common/ext/EQ-Py
 
 export PYTHONPATH=${PYTHONPATH:-}:$SV_PY:$EQ_PY
 
-python $THIS/random-upf2.py ${*}
+python $THIS/random-upf.py ${*}

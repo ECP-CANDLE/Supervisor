@@ -1,69 +1,98 @@
-import json
-import os
+
+"""
+RANDOM UPF
+See README or --help for usage
+"""
+
+import logging
+import random
 import sys
-from random import randint, uniform
 
-# ===== Definitions =========================================================
+import deap_ga
+import ga_utils
 
 
-def loadSettings(settingsFilename):
-    print("Reading settings: %s" % settingsFilename)
+def main():
+    """ Outline of program """
+    logger = logging.getLogger("random_upf")
+    setup_logger(logger)
+    logger.info("RANDOM UPF")
+    args = parse_args()
     try:
-        with open(settingsFilename) as fp:
-            settings = json.load(fp)
-    except IOError as e:
-        print("Could not open: %s" % settingsFilename)
-        print("PWD is: '%s'" % os.getcwd())
-        sys.exit(1)
-    try:
-        epochs = settings["parameters"]["epochs"]
-        batch_size = settings["parameters"]["batch_size"]
-        N1 = settings["parameters"]["N1"]
-        NE = settings["parameters"]["NE"]
-        latent_dim = settings["parameters"]["latent_dim"]
-        learning_rate = settings["parameters"]["learning_rate"]
+        make_upf(logger, args)
+    except UserError as e:
+        print("random_upf: user error: " + " ".join(e.args))
+        exit(1)
 
-    except KeyError as e:
-        print("Settings file (%s) does not contain key: %s" %
-              (settingsFilename, str(e)))
-        sys.exit(1)
-    try:
-        samples = settings["samples"]["num"]
-    except KeyError as e:
-        print("Settings file (%s) does not contain key: %s" %
-              (settingsFilename, str(e)))
-        sys.exit(1)
-    return (epochs, batch_size, N1, NE, latent_dim, learning_rate, samples)
+def parse_args():
+    """ Use argparse to handle command line """
+    import argparse
+    parser = argparse.ArgumentParser(
+        prog="random_upf",
+        description="Makes a random UPF file.")
+    parser.add_argument("-s", "--seed",
+                        action="store",
+                        type=int,
+                        default=42,
+                        help="random seed")
+    parser.add_argument("count",
+                        type=int,
+                        help="number of rows to generate")
+    parser.add_argument("param_set_file",
+                        help="the DEAP parameter set file")
+    parser.add_argument("output",
+                        help="The output JSON file")
+    args = parser.parse_args()
+    return args
 
 
-# ===== Main program ========================================================
+class UserError(Exception):
+    """ Generic user error for the program. """
+    pass
 
-if len(sys.argv) < 3:
-    print("requires arg1=settingsFilename and arg2=paramsFilename")
-    sys.exit(1)
 
-settingsFilename = sys.argv[1]
-paramsFilename = sys.argv[2]
+def setup_logger(logger):
+    """ Set up the logger for development use """
+    logger.setLevel(logging.INFO)
+    h = logging.StreamHandler(stream=sys.stdout)
+    fmtr = logging.Formatter(
+            "%(asctime)s %(name)s %(levelname)-5s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S")
+    h.setFormatter(fmtr)
+    logger.addHandler(h)
+    return logger
 
-print(settingsFilename)
-print(paramsFilename)
 
-epochs, batch_size, N1, NE, latent_dim, learning_rate, samples = loadSettings(
-    settingsFilename)
-result = ""
+def make_upf(logger, args):
+    logger.info("SEED: %i" % args.seed)
+    random.seed(args.seed)
+    ga_params = ga_utils.create_parameters(args.param_set_file)
+    for i, param in enumerate(ga_params):
+        logger.info("PARAM: %i: %s" % (i+1, repr(param)))
+    entries = []
+    for i in range(0, args.count):
+        entry = get_entry(logger, args, ga_params)
+        entries.append(entry)
+    write_upf(logger, args, entries)
 
-# select '#samples' random numbers between the range provided in settings.json file
-for s in range(samples[0]):
-    t_epoch = randint(epochs[0], epochs[1])
-    t_batch_size = randint(batch_size[0], batch_size[1])
-    t_N1 = randint(N1[0], N1[1])
-    t_NE = randint(NE[0], NE[1])
-    t_ld = randint(latent_dim[0], latent_dim[1])
-    t_lr = uniform(learning_rate[0], learning_rate[1])
-    result += (str(t_epoch) + "," + str(t_batch_size) + "," + str(t_N1) + "," +
-               str(t_NE) + "," + str(t_ld) + "," + str(t_lr))
-    if s < (samples[0] - 1):
-        result += ":"
 
-with open(paramsFilename, "w") as the_file:
-    the_file.write(result)
+def get_entry(logger, args, params):
+    values = deap_ga.draw_random(params)
+    # print("choice: " + str(values))
+    result = \
+        deap_ga.create_json_string_values(params, values, indent=2)
+    # print("result: " + result)
+    return result
+
+
+def write_upf(logger, args, entries):
+    filename = args.output
+    logger.info("write: " + filename)
+    with open(filename, "w") as fp:
+        for entry in entries:
+            fp.write(entry)
+            fp.write("\n")
+
+
+if __name__ == "__main__":
+    main()
