@@ -23,8 +23,18 @@ then
         "it must be under /candle_data_dir"
 fi
 
-A=( --bind $CANDLE_DATA_DIR:/candle_data_dir
-    $SIF preprocess.sh /candle_data_dir
+if [[ ${IMG:0:1} != "/" ]]
+then
+  IMAGE=/software/improve/images/$IMG.sif
+else
+  IMAGE=$IMG
+  IMG=$( basename $IMAGE .sif )
+fi
+
+show IMG IMAGE
+
+A=( --bind ${CANDLE_DATA_DIR}:/candle_data_dir
+    ${IMAGE} preprocess.sh /candle_data_dir
     --train_split_file ${DATA_SOURCE}_split_0_train.txt
     --val_split_file   ${DATA_SOURCE}_split_0_val.txt
     --test_split_file  ${DATA_SOURCE}_split_0_test.txt
