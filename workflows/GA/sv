@@ -3,15 +3,16 @@ set -eu
 
 # GA SUPERVISOR
 # Externally-runnable workflow starter
+# This should be called by Supervisor/bin/supervisor
 
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 SUPERVISOR_HOME=$( cd $THIS/../.. ; /bin/pwd )
 source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
-LOG_NAME="supervisor/GA"
+LOG_NAME="GA/sv"
 
 usage()
 {
-  echo "usage: GA/supervisor [-wv] <SITE> <TEST_SCRIPT>"
+  echo "usage: GA/sv [-wv] <SITE> <TEST_SCRIPT>"
 }
 
 # Defaults:

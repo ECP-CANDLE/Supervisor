@@ -7,7 +7,7 @@ set -eu
 THIS=$( cd $( dirname $0 ) ; /bin/pwd )
 SUPERVISOR_HOME=$( cd $THIS/../.. ; /bin/pwd )
 source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
-LOG_NAME="supervisor/UPF"
+LOG_NAME="UPF/sv"
 
 if (( ${#} < 1 ))
 then
