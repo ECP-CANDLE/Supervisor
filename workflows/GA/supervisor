@@ -9,7 +9,36 @@ SUPERVISOR_HOME=$( cd $THIS/../.. ; /bin/pwd )
 source $SUPERVISOR_HOME/workflows/common/sh/utils.sh
 LOG_NAME="supervisor/GA"
 
-if (( ${#} < 1 ))
+usage()
+{
+  echo "usage: GA/supervisor [-wv] <SITE> <TEST_SCRIPT>"
+}
+
+# Defaults:
+WAIT=""
+VERBOSITY=0
+
+while getopts "hwv" OPT
+do
+  case $OPT in
+    h)
+      usage
+      exit
+       ;;
+    w)
+      WAIT="-w"
+      ;;
+    v)
+      (( ++VERBOSITY ))
+      ;;
+    *)
+      # Bash prints an error
+      exit 1
+  esac
+done
+shift $(( OPTIND - 1))
+
+if (( ${#} < 2 ))
 then
   crash "insufficient arguments!"
 fi
@@ -18,6 +47,5 @@ SITE=$1
 TEST_SCRIPT=$2
 
 sv_path_append $THIS/data
-sv_path_append $SUPERVISOR_HOME/workflows/common/sh
 
-$THIS/swift/workflow.sh $SITE $TEST_SCRIPT
+$THIS/swift/workflow.sh $WAIT $SITE $TEST_SCRIPT
