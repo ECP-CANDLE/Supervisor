@@ -90,7 +90,7 @@ The dataset name, e.g., `CCLE`
 RANK::
 The DEAP rank, which is the 2nd highest rank.  E.g. if `PROCS` is 16 then `RANK` is 14.
 
-== preprocess.sh
+== prep.sh
 
 Simple wrapper around IMPROVE containerized `preprocess.sh`.
 
@@ -99,18 +99,18 @@ Simple wrapper around IMPROVE containerized `preprocess.sh`.
 . The data source name will be appended to the output directory
 +
 ----
-$ scripts/preprocess.sh <SIF> <model> <data_source> <outdir>
+$ scripts/prep.sh <SIF> <model> <data_source> <outdir>
 ----
 +
 For example,
 +
 ----
-$ scripts/preprocess.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno
+$ scripts/prep.sh /path/to/Uno.sif Uno GDSCv1 /candle_data_dir/HPO/Uno
 ----
 +
 will put the preprocessed data in `/candle_data_dir/HPO/Uno/GDSCv1`
 
-You can get a helpful reminder with no arguments: `scripts/preprocess.sh`
+You can get a helpful reminder with no arguments: `scripts/prep.sh`
 
 == Random UPF
 
