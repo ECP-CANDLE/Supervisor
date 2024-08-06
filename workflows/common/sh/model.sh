@@ -68,8 +68,8 @@ LOG_NAME="MODEL.SH"
 
 log "START"
 log "MODEL_NAME: $MODEL_NAME"
-log "RUNID: $RUNID"
-log "HOST: $( hostname )"
+log "RUNID:      $RUNID"
+log "HOST:       $( hostname )"
 
 # ADLB variables are set by Swift/T/ADLB:
 # http://swift-lang.github.io/swift-t/guide.html#turbine_env2
@@ -78,7 +78,10 @@ CVD=$(( $ADLB_RANK_OFFSET + ${CANDLE_CUDA_OFFSET:-0} ))
 log "ADLB_RANK_SELF:   $ADLB_RANK_SELF"
 log "ADLB_RANK_OFFSET: $ADLB_RANK_OFFSET"
 log "CUDA DEVICE:      $CVD"
-log "MODEL_TYPE:       $MODEL_TYPE"
+
+log "MODEL_TYPE:         $MODEL_TYPE"
+log "CANDLE_DATA_DIR:    $CANDLE_DATA_DIR"
+log "CANDLE_OUTPUT_DIR:  ${CANDLE_OUTPUT_DIR:-(UNSET)}"
 
 TIMEOUT_CMD=""
 if [[ ${SH_TIMEOUT:-} != "" ]] && [[ $SH_TIMEOUT != "-1" ]]
