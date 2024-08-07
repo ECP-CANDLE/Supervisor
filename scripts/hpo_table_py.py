@@ -187,7 +187,6 @@ def write_table(logger, hyperparameters, table, output_csv):
                 except:
                     crash("missing hyperparameter '%s' in run %s" %
                           (hp, values["run_id"]))
-            row.append(0)
             row.append(values["metric"])
             row.append(values["result"])
             td = values["stop"] - values["start"]  # a timedelta
