@@ -79,17 +79,20 @@ def add_stats(logger, hyperparameters, run, table):
     if not os.path.exists(model_log):
         crash("Model log does not exist: '%s'" % model_log)
     with open(model_log, "r") as fp:
+        values["result"] = None
         while True:
             line = fp.readline()
             # Try until we find something:
             if len(line) == 0: break
             tokens = line.split()
             if len(tokens) < 2: continue
-            prefix = tokens[0]
-            if prefix == "IMPROVE_RESULT":
-                values["metric"] = tokens[1][:-1]
-                values["result"] = tokens[2]
-                continue
+            # Find only the first IMPROVE_RESULT in the file
+            if values["result"] is None:
+                prefix = tokens[0]
+                if prefix == "IMPROVE_RESULT":
+                    values["metric"] = tokens[1][:-1]
+                    values["result"] = tokens[2]
+                    continue
             for hp in hyperparameters:
                 if prefix == hp:
                     values[hp] = tokens[1]
