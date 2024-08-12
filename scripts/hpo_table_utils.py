@@ -1,8 +1,4 @@
-
-"""
-HPO TABLE UTILS PY
-"""
-
+"""HPO TABLE UTILS PY."""
 
 import logging, sys
 
@@ -13,18 +9,15 @@ def crash(message):
 
 
 def get_logger(logger, name, stream=sys.stdout):
-    """
-    Set up logging if necessary
-    If the caller's logger already exists, just return it.
-    """
+    """Set up logging if necessary If the caller's logger already exists, just
+    return it."""
     if logger is not None:
         return logger
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     h = logging.StreamHandler(stream=stream)
-    fmtr = logging.Formatter(
-        "%(asctime)s %(name)s %(levelname)-5s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S")
+    fmtr = logging.Formatter("%(asctime)s %(name)s %(levelname)-5s %(message)s",
+                             datefmt="%Y-%m-%d %H:%M:%S")
     h.setFormatter(fmtr)
     logger.addHandler(h)
     return logger

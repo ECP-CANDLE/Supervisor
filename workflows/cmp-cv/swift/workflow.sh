@@ -32,7 +32,7 @@ if ! {
   get_expid   $2               && \
   get_cfg_sys $3               && \
   UPF=$4 && \
-  MODELS=$5 
+  MODELS=$5
  }
 then
   usage

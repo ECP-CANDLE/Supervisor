@@ -41,10 +41,10 @@ print("")
 
 
 def import_pkg(framework, model_name):
-    """
-    The model_name is the short form of the Benchmark: e.g., "nt3"
-    The module_name is the name of the Python module:
-        e.g., 'nt3_baseline_keras2'
+    """The model_name is the short form of the Benchmark: e.g., "nt3" The
+    module_name is the name of the Python module:
+
+    e.g., 'nt3_baseline_keras2'
     """
     log("model_name:  " + model_name)
     if framework == "keras":
@@ -142,10 +142,8 @@ def stop_perf(Ps):
 
 
 def run_model(hyper_parameter_map, model_return):
-    """
-    This run level does timing, handles model parameters,
-    and dispatches to the user model.
-    """
+    """This run level does timing, handles model parameters, and dispatches to
+    the user model."""
     start = time.time()
     global logger
     logger = get_logger(logger, "MODEL RUNNER")
@@ -292,10 +290,8 @@ def run_post(hyper_parameter_map, output_map):
 
 
 def run_wrapper(hyper_parameter_map):
-    """
-    This run level writes to the run directory before and after
-    the run, invokes the pre/post methods, and invokes run_model()
-    """
+    """This run level writes to the run directory before and after the run,
+    invokes the pre/post methods, and invokes run_model()"""
     # In-memory Python runs may not create sys.argv
     if "argv" not in dir(sys):
         # This is needed for CANDLE Benchmarks finalize_parameters():
@@ -354,7 +350,7 @@ def run_wrapper(hyper_parameter_map):
 def setup_params(pkg, hyper_parameter_map, params_arg):
     params = pkg.initialize_parameters(**params_arg)
     # If model developer forgets to 'return params', we get None:
-    assert(params is not None)
+    assert (params is not None)
     logger.debug("PARAM UPDATE START")
     for k, v in hyper_parameter_map.items():
         if k == "dense" or k == "dense_feature_layers":
@@ -370,7 +366,7 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
     logger.debug("PARAM UPDATE STOP")
 
     if ("CANDLE_MODEL_IMPL" in environ and
-        environ["CANDLE_MODEL_IMPL"] == "py"):
+            environ["CANDLE_MODEL_IMPL"] == "py"):
         environ["CUDA_VISIBLE_DEVICES"] = environ["ADLB_RANK_OFFSET"]
         print("CVD: " + str(os.getenv("CUDA_VISIBLE_DEVICES")))
 

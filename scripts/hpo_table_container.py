@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
-"""
-HPO TABLE CONTAINER
+"""HPO TABLE CONTAINER.
 
 For Singularity container runs
 Extract a CSV table from HPO results model.logs
@@ -11,7 +9,6 @@ Output: A CSV file containing run statistics
 
 import logging, os, sys
 from hpo_table_utils import crash, get_logger, parse_time
-
 
 LOGGING_TRACE = 5
 
@@ -34,7 +31,9 @@ def parse_args(logger):
     parser = argparse.ArgumentParser(prog="HPO Table")
     parser.add_argument("experiment_directory")
     parser.add_argument("output_csv")
-    parser.add_argument("-p", "--hyperparameter", action="append",
+    parser.add_argument("-p",
+                        "--hyperparameter",
+                        action="append",
                         help="may be provided multiple times or " +
                         "comma-separated")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -83,9 +82,11 @@ def add_stats(logger, hyperparameters, run, table):
         while True:
             line = fp.readline()
             # Try until we find something:
-            if len(line) == 0: break
+            if len(line) == 0:
+                break
             tokens = line.split()
-            if len(tokens) < 2: continue
+            if len(tokens) < 2:
+                continue
             # Find only the first IMPROVE_RESULT in the file
             if values["result"] is None:
                 prefix = tokens[0]
@@ -97,7 +98,8 @@ def add_stats(logger, hyperparameters, run, table):
                 if prefix == hp:
                     values[hp] = tokens[1]
                     break
-            if len(tokens) < 4: continue
+            if len(tokens) < 4:
+                continue
             if tokens[3] == "START":
                 values["start"] = parse_time(tokens[0], tokens[1])
             if tokens[3] == "END:":

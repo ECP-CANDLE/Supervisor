@@ -6,24 +6,22 @@ import random
 import sys
 import traceback
 
-"""
-This script contains the hyperparameter parsing, mutation, and random draw logic for the genetic algorithm
-(GA) hyperparameter optimization using deap. The params list are created, then the Hyperparemeters are
-parsed from a JSON file based on their class. Default sigma values for mutation are given but can be
-provided in the JSON file. The mutation function is defined specially for each parameter type to not corrupt
-data types. The float parameter also offers a log 10 random draw and mutation functionality.
+# This script contains the hyperparameter parsing, mutation, and random draw logic for the genetic algorithm
+# (GA) hyperparameter optimization using deap. The params list are created, then the Hyperparemeters are
+# parsed from a JSON file based on their class. Default sigma values for mutation are given but can be
+# provided in the JSON file. The mutation function is defined specially for each parameter type to not corrupt
+# data types. The float parameter also offers a log 10 random draw and mutation functionality.
 
-Note that there are both parameter types and element types, which are not always the same. For example,There
-could be floats in a categorical parameter.
-"""
+# Note that there are both parameter types and element types, which are not always the same. For example,There
+# could be floats in a categorical parameter.
 
-
-"""Setup:"""
+# Setup:
 
 # import logging
 # logging.basicConfig()
 # log = logging.getLogger("a")
 # global log
+
 
 # Functionality for boolean hyperparameters
 def str_to_bool(s):
@@ -32,6 +30,7 @@ def str_to_bool(s):
     else:
         return False
 
+
 # Parse function to determine if something is a number
 def is_number(s):
     try:
@@ -39,6 +38,7 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
 
 # Create parameters from JSON file (main functionality)
 def create_parameters(param_file):
@@ -95,8 +95,6 @@ def create_parameters(param_file):
     return params
 
 
-"""Numeric Parameters:"""
-
 # Numeric parameter superclass (int or float)
 class NumericParameter(object):
 
@@ -112,7 +110,8 @@ class NumericParameter(object):
         self.upper = upper
         self.use_log_scale = use_log_scale
         # Calculate default sigma if not provided
-        self.sigma = sigma if sigma is not None else self.calculate_default_sigma()
+        self.sigma = sigma if sigma is not None else self.calculate_default_sigma(
+        )
 
     # Default sigma calculation
     def calculate_default_sigma(self):
@@ -135,7 +134,7 @@ class NumericParameter(object):
             log_lower = math.log10(self.lower)
             log_upper = math.log10(self.upper)
             x_log = random.uniform(log_lower, log_upper)
-            x = 10 ** x_log
+            x = 10**x_log
         else:
             x = random.uniform(self.lower, self.upper)
         return x
@@ -147,7 +146,7 @@ class NumericParameter(object):
                 # Convert to log scale for mutation and then back
                 x_log = math.log10(x)
                 x_log += random.gauss(mu, self.sigma)
-                x = 10 ** x_log
+                x = 10**x_log
                 x = max(self.lower, min(self.upper, x))
             else:
                 x += random.gauss(mu, self.sigma)
@@ -159,7 +158,8 @@ class NumericParameter(object):
 class IntParameter(NumericParameter):
 
     def __init__(self, name, lower, upper, sigma=None, use_log_scale=False):
-        super(IntParameter, self).__init__(name, lower, upper, sigma, use_log_scale)
+        super(IntParameter, self).__init__(name, lower, upper, sigma,
+                                           use_log_scale)
 
     def __str__(self):
         return "IntParameter(%i,%i)" % (self.lower, self.upper)
@@ -180,7 +180,8 @@ class IntParameter(NumericParameter):
 class FloatParameter(NumericParameter):
 
     def __init__(self, name, lower, upper, sigma=None, use_log_scale=False):
-        super(FloatParameter, self).__init__(name, lower, upper, sigma, use_log_scale)
+        super(FloatParameter, self).__init__(name, lower, upper, sigma,
+                                             use_log_scale)
 
     def __repr__(self):
         return "Float(%s∈(%.3f,%.3f)" % (self.name, self.lower, self.upper)
@@ -195,14 +196,12 @@ class FloatParameter(NumericParameter):
         return float(s)
 
 
-"""List Parameters:"""
-
 # List parameter superclass (categorical, ordered, or logical)
 class ListParameter(object):
 
     def __init__(self, name, elements, element_type):
-        self.name         = name
-        self.elements     = elements
+        self.name = name
+        self.elements = elements
         self.element_type = element_type
 
         # Determine element type within parameter type
@@ -234,6 +233,7 @@ class ListParameter(object):
     def parse(self, s):
         return self.parse_func(s)
 
+
 # Categorical parameter class
 class CategoricalParameter(ListParameter):
 
@@ -242,19 +242,23 @@ class CategoricalParameter(ListParameter):
 
     # Mutation picks randomly from the elements while avoiding the same value
     def mutate(self, x, mu, indpb):
-        if random.random() <= indpb and len(self.elements) > 1:  # Avoid mutation forever loop if only one category
+        if random.random() <= indpb and len(
+                self.elements
+        ) > 1:  # Avoid mutation forever loop if only one category
             a = self.randomDraw()
             while x == a:
                 a = self.randomDraw()
             x = a
         return x
 
+
 # Ordered parameter class
 class OrderedParameter(ListParameter):
 
     def __init__(self, name, elements, sigma, element_type):
         super(OrderedParameter, self).__init__(name, elements, element_type)
-        self.sigma = sigma if sigma is not None else self.calculate_default_sigma()
+        self.sigma = sigma if sigma is not None else self.calculate_default_sigma(
+        )
 
     # Gaussian mutation is applied to the index and rounded/bounded
     def mutate(self, x, mu, indpb):
@@ -265,8 +269,6 @@ class OrderedParameter(ListParameter):
             x = self.elements[i_new]
         return x
 
-
-"""Other Parameters:"""
 
 # Constant parameter class
 # Usually for epochs or other parameters that are fixed
@@ -292,6 +294,7 @@ class ConstantParameter(object):
                 return float(s)
             return int(s)
         return s
+
 
 # Logical parameter class
 class LogicalParameter:

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
-"""
-HPO TABLE PY PY
+"""HPO TABLE PY PY.
 
 For plain Python runs
 Extract a CSV table from HPO results out-*.txt
@@ -11,7 +9,6 @@ Output: A CSV file containing run statistics
 
 import logging, os, sys
 from hpo_table_utils import crash, get_logger, parse_time
-
 
 LOGGING_TRACE = 5
 
@@ -34,7 +31,10 @@ def parse_args(logger):
     parser = argparse.ArgumentParser(prog="HPO Table")
     parser.add_argument("experiment_directory")
     parser.add_argument("output_csv")
-    parser.add_argument("-p", "--hyperparameter", action="append", default=[],
+    parser.add_argument("-p",
+                        "--hyperparameter",
+                        action="append",
+                        default=[],
                         help="may be provided multiple times or " +
                         "comma-separated")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -74,19 +74,19 @@ def find_outs(logger, experiment_directory):
 
 
 def add_stats(logger, hyperparameters, output_file, table):
-    """
-    Note that the token length checks increase monotonically
-    """
+    """Note that the token length checks increase monotonically."""
     # The values collected from the file so far:
-    values = { "output_file" : output_file}
+    values = {"output_file": output_file}
     logger.debug("Open: '%s' ..." % output_file)
     with open(output_file, "r") as fp:
         while True:
             line = fp.readline()
             # Try until we find something:
-            if len(line) == 0: break
+            if len(line) == 0:
+                break
             tokens = line.split()
-            if len(tokens) < 3: continue
+            if len(tokens) < 3:
+                continue
             # E.g. "IMPROVE_RESULT val_loss:        0.05259979888796806"
             if len(tokens) == 3 and tokens[0] == "IMPROVE_RESULT":
                 values["metric"] = tokens[1][:-1]
@@ -96,7 +96,8 @@ def add_stats(logger, hyperparameters, output_file, table):
                 logger.debug("\t This is a server.")
                 # This is a server rank - no data
                 return
-            if len(tokens) < 6: continue
+            if len(tokens) < 6:
+                continue
             if tokens[2] == "DEAP":
                 logger.debug("\t This is DEAP.")
                 # This is a DEAP - no data
@@ -107,13 +108,15 @@ def add_stats(logger, hyperparameters, output_file, table):
                 values["run_id"] = tokens[7][4:]
                 tokens = values["run_id"].split("_")
                 values["iteration"] = tokens[1]
-                values["sample"]    = tokens[2]
+                values["sample"] = tokens[2]
                 continue
-            if len(tokens) < 7: continue
+            if len(tokens) < 7:
+                continue
             # E.g. "2024-04-27 20:11:57 MODEL RUNNER DEBUG run(): START:"
             if tokens[6] == "START":
                 values["start"] = parse_time(tokens[0], tokens[1])
-            if len(tokens) < 8: continue
+            if len(tokens) < 8:
+                continue
             # E.g. "2024-04-27 20:52:23 MODEL RUNNER INFO  PKG RUN STOP"
             if tokens[6] == "RUN" and tokens[7] == "STOP":
                 values["stop"] = parse_time(tokens[0], tokens[1])
@@ -132,26 +135,24 @@ def add_stat(logger, table, values, output_file):
     # Insert output_file for debugging:
     table.append(values)
     # Reset the record for reuse:
-    values = { "output_file" : output_file}
+    values = {"output_file": output_file}
 
 
 def validate(logger, values):
     required = ["metric", "result", "run_id", "start", "stop"]
     for key in required:
         if key not in values:
-            logger.fatal("missing key: '%s'"  % key)
+            logger.fatal("missing key: '%s'" % key)
             logger.fatal("output file: " + values["output_file"])
             exit(1)
 
 
 class RunComparator(dict):
-    """
-    Sort by iteration number
-    If in same iteration, use result value reversed,
-    so that better runs (lower errors) appear later in the sorted list
-    Thus the resulting is sorted by iteration from 1->NUM_ITERATIONS,
-    and within each iteration, progresses from high errors to low errors
-    """
+    """Sort by iteration number If in same iteration, use result value
+    reversed, so that better runs (lower errors) appear later in the sorted
+    list Thus the resulting is sorted by iteration from 1->NUM_ITERATIONS, and
+    within each iteration, progresses from high errors to low errors."""
+
     def __lt__(self, other):
         if self["iteration"] == other["iteration"]:
             return self["result"] > other["result"]
