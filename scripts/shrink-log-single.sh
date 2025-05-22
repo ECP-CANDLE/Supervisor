@@ -7,6 +7,8 @@ set -eu
 INPUT=$1
 OUTPUT=$2
 
+TMP_SHRINK=${TMP_SHRINK:-/tmp/$USER}
+
 NAME=$( basename --suffix=.txt $INPUT )
 
 # Temp file for tr output:

@@ -31,7 +31,7 @@ def shrink(fp_in, fp_out):
         if len(line) == 1:
             continue  # Blank line
         line = line.replace("\b", "")
-        if "batch:" in line or "Current" in line:
+        if "batch:" in line or "Current" in line or "ETA:" in line:
             # Found a training line
             line = re.sub("- batch: .* 32.0000 -", "", line)
             line = line.replace("Current", "\nCurrent")
@@ -94,6 +94,7 @@ print("shrink:                       %11s                 %s" % (h0, file_out))
 with open(file_in, "r") as fp_in:
     with open(file_out, "w") as fp_out:
         shrink(fp_in, fp_out)
+        fp_out.write("\n")
 
 s1 = os.stat(file_out)
 t1 = time.time()
