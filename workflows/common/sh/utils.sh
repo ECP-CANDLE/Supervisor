@@ -169,6 +169,7 @@ get_expid()
 #          a new EXPID under the experiments directory,
 #        If EXP_SUFFIX is set in the environment, the resulting
 #          EXPID will have that suffix.
+# MODEL_NAME: The short name of the model, e.g., "uno"
 # CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
 #        Defaults to "BENCHMARKS"
 #        This variable affects the experiment directory structure

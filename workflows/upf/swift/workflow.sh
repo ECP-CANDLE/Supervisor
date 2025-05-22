@@ -19,6 +19,7 @@ usage()
   echo "workflow.sh SITE EXPID CFG_SYS UPF"
   echo
   echo "The 2-argument case is used by the supervisor tool."
+  echo "               The user must set UPF!"
   echo "The 4-argument case is used for other test cases."
 }
 
