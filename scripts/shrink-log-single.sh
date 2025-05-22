@@ -3,9 +3,23 @@ set -eu
 
 # SHRINK LOG SINGLE SH
 # Called by shrink-logs.mk
+# or
+# Call interactively: shrink-log-single.sh INPUT.log OUTPUT.log
+#      where OUTPUT.log may be /dev/stdout or - (meaning stdout)
+
+if (( ${#} != 2 ))
+then
+  echo "shrink-log-single.sh: provide INPUT OUTPUT"
+  exit 1
+fi
 
 INPUT=$1
 OUTPUT=$2
+
+if [[ $OUTPUT == "-" ]]
+then
+  OUTPUT=/dev/stdout
+fi
 
 TMP_SHRINK=${TMP_SHRINK:-/tmp/$USER}
 
