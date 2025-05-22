@@ -63,7 +63,10 @@ def import_pkg(framework, model_name):
             suffix = "_baseline_" + framework
         module_name = model_name + suffix
     log("module_name: " + module_name)
-    pkg = importlib.import_module(module_name)
+    try:
+        pkg = importlib.import_module(module_name)
+    except ModuleNotFoundError as e:
+        fatal(str(e))
     return pkg
 
 
@@ -80,6 +83,11 @@ def debug(msg):
     if logFlush:
         sys.stdout.flush()
 
+def fatal(msg):
+    global logger
+    logger.fatal("ABORT: " + msg)
+    sys.stdout.flush()
+    exit(1)
 
 def timestamp():
     from datetime import datetime
@@ -193,7 +201,9 @@ def run_model(hyper_parameter_map, model_return):
                 run_pytorch(params, pkg, epochs, model_return)
         # Other values of framework are caught in import_pkg()
     except Exception as e:
-        # Handle exceptions in model codes here:
+        # Handle exceptions in user model codes here.
+        # Somewhat redundant due to possible errors/misconfigurations,
+        #          this message must get to the user!
         logger.info("RUN EXCEPTION: " + str(e))
         print("RUN EXCEPTION: " + str(e))
         info = sys.exc_info()
@@ -267,6 +277,7 @@ def load_pre_post(hyper_parameter_map, key):
     module = None
     if key in hyper_parameter_map:
         module_name = hyper_parameter_map[key]
+        logger.debug("LOAD_PRE_POST: '%s'" % module_name)
         module = importlib.import_module(module_name)
     return module
 
@@ -433,10 +444,15 @@ if __name__ == "__main__":
         benchmark_timeout,
     ) = sys.argv
 
-    hyper_parameter_map = runner_utils.init(param_string,
-                                            instance_directory,
-                                            framework,
-                                            out_dir_key="save")
+    try:
+        hyper_parameter_map = runner_utils.init(param_string,
+                                                instance_directory,
+                                                framework,
+                                                out_dir_key="save")
+    except json.decoder.JSONDecodeError as e:
+        print("Bad JSON: '%s'" % param_string)
+        raise(e)
+
     hyper_parameter_map["model_name"] = os.getenv("MODEL_NAME")
     if hyper_parameter_map["model_name"] is None:
         raise Exception("No MODEL_NAME was in the environment!")
