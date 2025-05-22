@@ -17,7 +17,8 @@ report_env();
 string FRAMEWORK = "keras";
 
 // Scan command line
-file upf = input(argv("f"));
+file   upf   = input(argv("f"));
+string dflts = argv("d", "");
 int  benchmark_timeout = string2int(argv("benchmark_timeout", "-1"));
 
 string model_name     = getenv("MODEL_NAME");
@@ -27,6 +28,14 @@ string turbine_output = getenv("TURBINE_OUTPUT");
 // Report some key facts:
 printf("UPF: %s", filename(upf));
 system1("date \"+%Y-%m-%d %H:%M\"");
+
+string dflt_json;
+if (dflts != "") {
+  printf("UPF: dflts: '%s'", dflts);
+  dflt_json = read(input(dflts));
+} else {
+  dflt_json = "{}";
+}
 
 // Read unrolled parameter file
 string upf_lines[] = file_lines(upf);
@@ -39,7 +48,8 @@ foreach params,i in upf_lines
 {
   printf("params: %s", params);
   runid = json_get(params, "id");
-  results[i] = candle_model_train(params, expid, runid, model_name);
+  params_joined = json_join(dflt_json, params);
+  results[i] = candle_model_train(params_joined, expid, runid, model_name);
   assert(results[i] != "EXCEPTION", "exception in candle_model_train()!");
 }
 

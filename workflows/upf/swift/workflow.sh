@@ -80,9 +80,15 @@ export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
 export MODEL_NAME MODEL_RETURN SH_TIMEOUT IGNORE_ERRORS
 export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT
 
+if [[ ${UPF_DFLTS:-} != "" ]]
+then
+  UPF_DFLTS_FLAG=" -d=$UPF_DFLTS"
+fi
+
 CMD_LINE_ARGS=( -expid=$EXPID
                 -benchmark_timeout=$BENCHMARK_TIMEOUT
                 -f=$UPF
+                ${UPF_DFLTS_FLAG:-}
               )
 
 USER_VARS=( $CMD_LINE_ARGS )
@@ -109,6 +115,7 @@ then
 fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
+
 
 which swift-t
 
