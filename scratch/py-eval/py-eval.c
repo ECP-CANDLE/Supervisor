@@ -81,17 +81,19 @@ python_init()
   initialized = true;
 
   // long val = 43;
-  char* val = "MY VALUE!";
+  // Apparently this must be a PyObject now (Python 3.12):
+  // char* val = "MY VALUE!";
+  // PyObject* val = PyUnicode_FromString("MY VALUE!");
   // if (PyDict_SetItemString(main_dict, "myvar", PyLong_FromLong(val))) {
-  if (PyDict_SetItemString(main_dict, "myvar", val)) {
-    assert(false);
-  }
+  /* if (PyDict_SetItemString(main_dict, "myvar", val)) { */
+  /*   assert(false); */
+  /* } */
 
-  char* result;
-  PyObject* po = PyDict_GetItemString(main_dict, "myvar");
-  int pc = PyArg_Parse(po, "s", &result);
-  if (pc != 1) return handle_python_non_string(po);
-  printf("result: %s\n", result);
+  /* char* result; */
+  /* PyObject* po = PyDict_GetItemString(main_dict, "myvar"); */
+  /* int pc = PyArg_Parse(po, "s", &result); */
+  /* if (pc != 1) return handle_python_non_string(po); */
+  /* printf("result: %s\n", result); */
 
   return true;
 }
