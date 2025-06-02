@@ -7,7 +7,8 @@ The program is called `py-eval` .  Its arguments are:
 
 1. Zero or more Python scripts that are executed with no return value.
 2. Any number of hyphen tokens `-` , which provides a _New Python Interpreter_ at each point.
-3. The last argument must be:
+3. Any number of sequences `env: K=V`, which sets environment variable `K` to `V` at that point.  Note that you must reset the interpreter with `-` for this to have an effect in Python.
+4. The last argument must be:
 .. Exactly one Python script that returns a string, which is printed, +
    or
 .. the token `0` (zero), which does nothing.
@@ -79,4 +80,10 @@ Importing modules:
 
 ----
 $ ./py-eval py/import-numpy.py 0
+----
+
+Setting environment variables:
+
+----
+$ ./py-eval -v env: K=3 - py/env_K.py 0
 ----

@@ -26,10 +26,8 @@ static char* usage =
 static void mpi_init(void);
 static void mpi_finalize(void);
 
-static void do_python_code(char* code_file);
-static void do_python_eval(char* expr_file);
-
 static void options(int argc, char* argv[]);
+static void do_commands(int argc, char** argv);
 
 int
 main(int argc, char* argv[])
@@ -40,21 +38,8 @@ main(int argc, char* argv[])
   mpi_init();
   python_init();
 
-  // Execute files
-  int cf; // current file
-  for (cf = optind; cf < argc-1; cf++)
-  {
-    char* code_file = argv[cf];
-    if (strcmp(code_file, "-") == 0)
-    {
-      verbose("reset");
-      python_reset();
-      continue;
-    }
-    do_python_code(code_file);
-  }
-
-  do_python_eval(argv[cf]);
+  // Do the commands!
+  do_commands(argc, argv);
 
   // Clean up
   verbose("clean up...");
@@ -80,7 +65,7 @@ mpi_init()
   char s[32];
   sprintf(s, "%i", comm);
   verbose("Set COMM: %s", s);
-  setenv("COMM", s, 1);
+  setenv("COMM", s, true);
   #endif
 }
 
@@ -104,6 +89,50 @@ options(int argc, char* argv[])
       case 'v': set_verbose(1); break;
       default: crash("option processing");
     }
+}
+
+static void do_python_code(char* code_file);
+static void do_python_eval(char* expr_file);
+static void do_env(int argc, char** argv, int cw);
+
+static void
+do_commands(int argc, char** argv)
+{
+  // Execute command words
+  int cw; // current word
+  for (cw = optind; cw < argc-1; cw++)
+  {
+    char* word = argv[cw];
+    if (strcmp(word, "-") == 0)
+    {
+      verbose("reset");
+      python_reset();
+      continue;
+    }
+    if (strcmp(word, "env:") == 0)
+    {
+      cw++;
+      do_env(argc, argv, cw);
+      continue;
+    }
+    do_python_code(word);
+  }
+
+  do_python_eval(argv[cw]);
+}
+
+static void
+do_env(int argc, char** argv, int cw)
+{
+  if (cw >= argc-1) crash("bad env: token!");
+  char* word  = argv[cw];
+  char* key   = strtok(word, "=");
+  if (key == NULL) crash("bad env: token!");
+  printf("key: %s\n", key);
+  char* value = strtok(NULL, "=");
+  if (value == NULL) value = "";
+  verbose("setenv: %s=%s", key, value);
+  setenv(key, value, true);
 }
 
 static void
