@@ -42,7 +42,7 @@ verbose(char* fmt, ...)
 void
 crash(char* fmt, ...)
 {
-  printf("py-eval: abort: ");
+  printf("py-eval: crash: ");
   va_list ap;
   va_start(ap, fmt);
   vprintf(fmt, ap);
