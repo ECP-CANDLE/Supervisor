@@ -89,7 +89,7 @@ options(int argc, char* argv[])
     {
       case 'h':
         puts(usage);
-        exit(0);
+        exit(EXIT_SUCCESS);
         break;
       case 'v':
         set_verbose(1);
