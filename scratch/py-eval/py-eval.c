@@ -78,8 +78,12 @@ bool
 python_code(const char* code)
 {
   // Execute code:
-  verbose("python: code:");
-  verbose("%s", code);
+  if (get_verbose())
+  {
+    verbose("code:");
+    // code has been chomped:
+    printf("%s\n", code);
+  }
   PyRun_String(code, Py_file_input, main_dict, local_dict);
   if (PyErr_Occurred()) return handle_python_exception();
   return true;
