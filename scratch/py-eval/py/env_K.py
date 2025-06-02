@@ -1,2 +1,2 @@
 import os
-print("K: " + str(os.getenv("K")))
+print("getenv K=" + str(os.getenv("K")))

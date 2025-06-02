@@ -18,10 +18,11 @@
 #include "util.h"
 
 static char* usage =
-"usage: py-eval [code_files]* expr_file\n"
-"use - to reset the interpreter\n"
-"use 0 for expr_file to print nothing\n"
-"see the README\n";
+"usage: py-eval [code_files]* expr_file  \n"
+"use -   to reset the interpreter        \n"
+"use K=V to set an environment variable  \n"
+"use 0   for expr_file to print nothing  \n"
+"see the README                          \n";
 
 static void mpi_init(void);
 static void mpi_finalize(void);
@@ -83,17 +84,23 @@ static void
 options(int argc, char* argv[])
 {
   int option;
-  while ((option = getopt(argc, argv, "v")) != -1)
+  while ((option = getopt(argc, argv, "hv")) != -1)
     switch (option)
     {
-      case 'v': set_verbose(1); break;
+      case 'h':
+        puts(usage);
+        exit(0);
+        break;
+      case 'v':
+        set_verbose(1);
+        break;
       default: crash("option processing");
     }
 }
 
 static void do_python_code(char* code_file);
 static void do_python_eval(char* expr_file);
-static void do_env(int argc, char** argv, int cw);
+static void do_env(char* word);
 
 static void
 do_commands(int argc, char** argv)
@@ -109,10 +116,9 @@ do_commands(int argc, char** argv)
       python_reset();
       continue;
     }
-    if (strcmp(word, "env:") == 0)
+    if (strchr(word, '=') != NULL)
     {
-      cw++;
-      do_env(argc, argv, cw);
+      do_env(word);
       continue;
     }
     do_python_code(word);
@@ -122,13 +128,10 @@ do_commands(int argc, char** argv)
 }
 
 static void
-do_env(int argc, char** argv, int cw)
+do_env(char* word)
 {
-  if (cw >= argc-1) crash("bad env: token!");
-  char* word  = argv[cw];
   char* key   = strtok(word, "=");
   if (key == NULL) crash("bad env: token!");
-  printf("key: %s\n", key);
   char* value = strtok(NULL, "=");
   if (value == NULL) value = "";
   verbose("setenv: %s=%s", key, value);
