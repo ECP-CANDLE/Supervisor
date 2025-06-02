@@ -9,12 +9,19 @@
 
 #include "util.h"
 
+// verbosity==0 means be silent
 static int verbosity = 0;
 
 void
 set_verbose(int level)
 {
   verbosity = level;
+}
+
+int
+get_verbose()
+{
+  return verbosity;
 }
 
 void
