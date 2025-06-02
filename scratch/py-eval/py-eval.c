@@ -13,53 +13,20 @@
 #include "py-eval.h"
 #include "util.h"
 
-static bool
-handle_python_exception(void)
-{
-  printf("\n");
-  printf("PYTHON EXCEPTION:\n");
-
-  #if PYTHON_VERSION_MAJOR >= 3
-
-  PyObject *exc,*val,*tb;
-  PyErr_Fetch(&exc,&val,&tb);
-  PyObject_Print(exc, stdout, Py_PRINT_RAW);
-  printf("\n");
-  PyObject_Print(val, stdout, Py_PRINT_RAW);
-  printf("\n");
-
-  #else // Python 2
-
-  PyErr_Print();
-
-  #endif
-
-  return false;
-}
-
-static bool
-handle_python_non_string(PyObject* o)
-{
-  printf("python: expression did not return a string!\n");
-  fflush(stdout);
-  printf("python: expression evaluated to: ");
-  PyObject_Print(o, stdout, 0);
-  printf("\n");
-  return false;
-}
-
 static PyObject* main_module = NULL;
 static PyObject* main_dict   = NULL;
 static PyObject* local_dict  = NULL;
 
 static bool initialized = false;
 
+static bool handle_python_exception(void);
+static bool handle_python_non_string(PyObject* o);
+
 bool
 python_init()
 {
   if (initialized) return true;
   verbose("python: initializing...");
-
 
   char str_python_lib[32];
 #ifdef _WIN32
@@ -111,7 +78,8 @@ bool
 python_code(const char* code)
 {
   // Execute code:
-  verbose("python: code: %s", code);
+  verbose("python: code:");
+  verbose("%s", code);
   PyRun_String(code, Py_file_input, main_dict, local_dict);
   if (PyErr_Occurred()) return handle_python_exception();
   return true;
@@ -154,4 +122,39 @@ python_finalize()
 {
   Py_Finalize();
   initialized = false;
+}
+
+static bool
+handle_python_exception()
+{
+  printf("\n");
+  printf("PYTHON EXCEPTION:\n");
+
+  #if PYTHON_VERSION_MAJOR >= 3
+
+  PyObject *exc,*val,*tb;
+  PyErr_Fetch(&exc,&val,&tb);
+  PyObject_Print(exc, stdout, Py_PRINT_RAW);
+  printf("\n");
+  PyObject_Print(val, stdout, Py_PRINT_RAW);
+  printf("\n");
+
+  #else // Python 2
+
+  PyErr_Print();
+
+  #endif
+
+  return false;
+}
+
+static bool
+handle_python_non_string(PyObject* o)
+{
+  printf("python: expression did not return a string!\n");
+  fflush(stdout);
+  printf("python: expression evaluated to: ");
+  PyObject_Print(o, stdout, 0);
+  printf("\n");
+  return false;
 }
