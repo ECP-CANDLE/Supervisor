@@ -8,9 +8,13 @@ The program is called py-eval.  Its arguments are:
 3. The last argument must be:
 .. Exactly one Python script that returns a string, which is printed, +
    or
-.. the token "0" (zero), which prints nothing.
+.. the token "0" (zero), which does nothing.
 
-This has been tested with Python 2.7.10 and Python 3.6m.
+This has been tested with Python versions:
+
+* 2.7.10
+* 3.6m
+* 3.12
 
 For more verbose output, provide -v .
 
