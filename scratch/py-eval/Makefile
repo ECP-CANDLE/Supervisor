@@ -46,6 +46,7 @@ CC = gcc
 # PYTHON_VERSION_MINOR = 7
 # PYTHON_VERSION_SUFFIX =
 
+# Typical Miniconda:
 PYTHON_HOME = /tmp/woz/Miniconda/312-py-eval-0
 PYTHON_VERSION_MAJOR = 3
 PYTHON_VERSION_MINOR = 12

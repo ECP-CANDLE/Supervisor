@@ -27,7 +27,7 @@ To enable MPI, edit the Makefile to set `MPI=1` .
 Transcript:
 
 ----
-# edit Makefile for Python installation settings
+# edit Makefile for "Python installation settings"
 $ make
 $ export PYTHONHOME=...
 $ ./py-eval py/import-io.py py/hello.py
