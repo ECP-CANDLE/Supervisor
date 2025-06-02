@@ -109,7 +109,7 @@ options(int argc, char* argv[])
 static void
 do_python_code(char* code_file)
 {
-  verbose("code: %s", code_file);
+  verbose("file:code: %s", code_file);
 
   // Read Python code file
   char* code = slurp(code_file);
@@ -125,7 +125,7 @@ do_python_code(char* code_file)
 static void
 do_python_eval(char* expr_file)
 {
-  verbose("eval: %s", expr_file);
+  verbose("file:eval: %s", expr_file);
 
   // Handle exceptional cases
   if (strcmp(expr_file, "-") == 0)
