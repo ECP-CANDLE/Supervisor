@@ -116,12 +116,15 @@ do_commands(int argc, char** argv)
       python_reset();
       continue;
     }
-    if (strchr(word, '=') != NULL)
+    else if (strchr(word, '=') != NULL)
     {
       do_env(word);
       continue;
     }
-    do_python_code(word);
+    else
+    {
+      do_python_code(word);
+    }
   }
 
   do_python_eval(argv[cw]);
