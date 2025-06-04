@@ -10,7 +10,6 @@ from os import environ
 import sys
 import time
 import traceback
-import importlib
 import runner_utils
 from log_tools import *
 from runner_utils import ModelResult
