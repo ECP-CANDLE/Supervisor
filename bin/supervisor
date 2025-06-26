@@ -12,6 +12,7 @@ LOG_NAME="supervisor"
 usage()
 {
   log "usage:   $ supervisor <SITE> <WORKFLOW> <TEST_SCRIPT>"
+  log "         $ supervisor -H # to print SUPERVISOR_HOME"
 }
 
 WAIT=""
