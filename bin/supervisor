@@ -17,13 +17,17 @@ usage()
 WAIT=""
 export VERBOSITY=${VERBOSITY:-0}
 
-while getopts "hwv" OPT
+while getopts "hHwv" OPT
 do
   case $OPT in
     h)
       usage
       exit
-       ;;
+      ;;
+    H)
+      echo $SUPERVISOR_HOME
+      exit
+      ;;
     w)
       WAIT="-w"
       ;;
