@@ -26,8 +26,8 @@ string expid          = getenv("EXPID");
 string turbine_output = getenv("TURBINE_OUTPUT");
 
 // Report some key facts:
-printf("UPF: %s", filename(upf));
-system1("date \"+%Y-%m-%d %H:%M\"");
+date, code = system1("date \"+%Y-%m-%d %H:%M\"");
+printf("UPF START: %s %s", date, filename(upf));
 
 string dflt_json;
 if (dflts != "") {
@@ -44,16 +44,20 @@ string upf_lines[] = file_lines(upf);
 string results[];
 
 // Evaluate each parameter set
-foreach params,i in upf_lines
+foreach params, i in upf_lines
 {
-  printf("params: %s", params);
+  // printf("params: %s", params);
   runid = json_get(params, "id");
+  // printf("runid: %s", runid);
   params_joined = json_join(dflt_json, params);
-  results[i] = candle_model_train(params_joined, expid, runid, model_name);
-  assert(results[i] != "EXCEPTION", "exception in candle_model_train()!");
+  // printf("params_joined: %s", params_joined);
+  results[i] =
+    candle_model_train(params_joined, expid, runid, model_name);
+  assert(results[i] != "EXCEPTION",
+         "exception in candle_model_train()!");
 }
 
-// Join all result values into one big semicolon-delimited string
-string result = join(results, ";");
-// and print it
-printf("WORKFLOW RESULT: " + result);
+// // Join all result values into one big semicolon-delimited string
+// string result = join(results, ";");
+// // and print it
+// printf("WORKFLOW RESULT: " + result);
