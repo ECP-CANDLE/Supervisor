@@ -942,3 +942,21 @@ signature()
 
 shopt -s expand_aliases
 alias SIGNATURE='signature $0'
+
+assert-exists()
+{
+  local MODE="-e" t
+  for t in ${*}
+  do
+    if [[ $t == -* ]]
+    then
+      MODE=${t}
+      continue
+    fi
+    if ! test $MODE $t
+    then
+      log "not found: [test $MODE] $t"
+      return 1
+    fi
+  done
+}
