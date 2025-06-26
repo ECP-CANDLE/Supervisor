@@ -236,7 +236,7 @@ def run_model(hyper_parameter_map, model_return):
 
 def run_tensorflow(params, pkg, epochs, model_return):
     log("run_tensorflow(): ...")
-    print_envs()
+    print_tf_envs()
     
     log("run_tensorflow(): pkg.run() ...")
     # Run the model!
@@ -273,7 +273,7 @@ def run_pytorch(params, pkg, epochs, model_return):
     return (result, history_result)
 
 
-def print_envs():
+def print_tf_envs():
 
     envs = [ "ADLB_RANK_OFFSET",
              "ZE_AFFINITY_MASK",
@@ -282,8 +282,11 @@ def print_envs():
              "TF_ENABLE_LAYOUT_OPT",
              "TF_NUM_INTEROP_THREADS"
             ]
+
+    print("print_tf_envs() START")
     for v in envs:
         print("%s=%s" % (v, str(os.getenv(v))))
+    print("print_tf_envs() STOP")
 
 
 def get_model_return():
@@ -340,7 +343,7 @@ def run_wrapper(hyper_parameter_map):
     os.chdir(instance_directory)
 
     global logger
-    logger = get_logger(logger, "MODEL RUNNER")
+    logger = get_logger(logger, "RUNNER")
     debug("run_wrapper() ...")
 
     if os.path.exists("stop.marker"):
