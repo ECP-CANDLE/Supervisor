@@ -4,6 +4,7 @@ set -eu
 # UPF WORKFLOW SH
 
 # Autodetect this workflow directory
+export THIS=$( realpath $( dirname $0 ) )
 export EMEWS_PROJECT_ROOT=$( realpath $( dirname $0 )/.. )
 export WORKFLOWS_ROOT=$(     realpath $EMEWS_PROJECT_ROOT/..  )
 
@@ -64,6 +65,7 @@ source_site sched $SITE
 # Set up PYTHONPATH for model
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
+LOG_NAME="workflow.sh"
 log_path PYTHONPATH
 
 export TURBINE_JOBNAME="${EXPID}"
@@ -84,6 +86,28 @@ export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 if [[ ${UPF_DFLTS:-} != "" ]]
 then
   UPF_DFLTS_FLAG=" -d=$UPF_DFLTS"
+  cp $UPF_DFLTS $TURBINE_OUTPUT
+fi
+
+if [[ ${RESTART:-} != "" ]]
+then
+  RESTART_FROM=$TURBINE_OUTPUT/../$RESTART
+  RESTART_FROM=$( realpath $RESTART_FROM )
+  if [[ ! -d $RESTART_FROM ]]
+  then
+    abort "workflow.sh: restart does not exist: $RESTART_FROM"
+  fi
+
+  log "restarting from: $RESTART_FROM"
+  for DIR in markers run
+  do
+    if [[ -d $RESTART_FROM/$DIR ]]
+    then
+      LS=( $RESTART_FROM/$DIR/* )
+      log "restart: $DIR: ${#LS[@]}"
+      cp -r $RESTART_FROM/$DIR $TURBINE_OUTPUT
+    fi
+  done
 fi
 
 CMD_LINE_ARGS=( -expid=$EXPID
@@ -107,8 +131,8 @@ mkdir -pv $TURBINE_OUTPUT/run
 
 cp -v $UPF $TURBINE_OUTPUT
 
-# TURBINE_STDOUT="$TURBINE_OUTPUT/out-@r.txt"
-TURBINE_STDOUT=
+TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
+mkdir -pv $TURBINE_OUTPUT/out
 
 if [[ ${CANDLE_DATA_DIR:-} == "" ]]
 then
@@ -117,34 +141,43 @@ fi
 
 export CANDLE_IMAGE=${CANDLE_IMAGE:-}
 
+ENVS=(
+  -e BENCHMARKS_ROOT
+  -e EMEWS_PROJECT_ROOT
+  -e MODEL_SH
+  -e FI_MR_CACHE_MAX_COUNT=0
+  -e SITE
+  -e BENCHMARK_TIMEOUT
+  -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL}
+  -e OBJ_RETURN
+  -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-}
+  -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1}
+  $( python_envs )
+  -e TURBINE_STDOUT=$TURBINE_STDOUT
+  -e "TURBINE_LEADER_HOOK_STARTUP=${TURBINE_LEADER_HOOK_STARTUP:-}"
+  -e CANDLE_MODEL_TYPE
+  -e CANDLE_IMAGE
+  # level 20 == INFO
+  -e IMPROVE_LOG_LEVEL=${IMPROVE_LOG_LEVEL:-}
+  -e ADLB_DEBUG_RANKS
+  -e ADLB_DEBUG_HOSTMAP
+  -e DATA_SOURCE
+
+  # Can provide this to debug Python settings:
+  #        -e PYTHONVERBOSE=1
+  # Can provide this if needed for debugging crashes:
+  #        -e PYTHONUNBUFFERED=1
+  # Can provide this if needed to reset PATH:
+  #        -e PATH=$PATH
+)
 
 which swift-t
 
-swift-t -n $PROCS \
-        -o $TURBINE_OUTPUT/workflow.tic \
+swift-t -u -n $PROCS \
+        -o $THIS/workflow.tic \
         ${MACHINE:-} \
-        -p \
+        -p -l \
         -I $WORKFLOWS_ROOT/common/swift \
         -i model_$CANDLE_MODEL_IMPL \
-        -e BENCHMARKS_ROOT \
-        -e EMEWS_PROJECT_ROOT \
-        -e MODEL_SH \
-        -e FI_MR_CACHE_MAX_COUNT=0 \
-        -e SITE \
-        -e BENCHMARK_TIMEOUT \
-        -e MODEL_NAME=${MODEL_NAME:-MODEL_NULL} \
-        -e OBJ_RETURN \
-        -e MODEL_PYTHON_SCRIPT=${MODEL_PYTHON_SCRIPT:-} \
-        -e TURBINE_MPI_THREAD=${TURBINE_MPI_THREAD:-1} \
-        $( python_envs ) \
-        -e TURBINE_STDOUT=$TURBINE_STDOUT \
-        -e CANDLE_MODEL_TYPE \
-        -e CANDLE_IMAGE \
+        "${ENVS[@]}" \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
-
-# Can provide this to debug Python settings:
-#        -e PYTHONVERBOSE=1
-# Can provide this if needed for debugging crashes:
-#        -e PYTHONUNBUFFERED=1
-# Can provide this if needed to reset PATH:
-#        -e PATH=$PATH
