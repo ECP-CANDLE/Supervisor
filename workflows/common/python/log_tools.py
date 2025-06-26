@@ -1,6 +1,8 @@
-# LOG TOOLS
 
-# Standardize some Python logging techniques
+"""
+LOG TOOLS
+Standardize some Python logging techniques
+"""
 
 import sys
 
@@ -33,21 +35,6 @@ def get_logger(logger, name, stream=sys.stdout, milliseconds=False):
     h.setFormatter(fmtr)
     logger.addHandler(h)
     return logger
-
-
-# def log(msg):
-#     global logger
-#     logger.info(msg)
-
-# def log_info(msg):
-#     global logger
-#     logger = get_logger(logger)
-#     logger.info(msg)
-
-# def debug(msg):
-#     global logger
-#     logger = get_logger(logger)
-#     logger.debug(msg)
 
 
 def timestamp():
