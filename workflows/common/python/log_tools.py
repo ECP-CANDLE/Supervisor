@@ -8,12 +8,16 @@ logger = None
 
 
 def get_logger(logger, name, stream=sys.stdout, milliseconds=False):
-    """Set up logging if necessary If the caller's logger already exists, just
-    return it."""
-    if logger is not None:
-        return logger
-    import logging
 
+    """
+    Set up logging if necessary
+    If the caller's logger already exists, just return it.
+    """
+
+    if logger is not None: return logger
+    
+    import logging
+    
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     h = logging.StreamHandler(stream=stream)
