@@ -1,6 +1,12 @@
-# MODEL RUNNER PY
 
-# See __main__ section for usage
+"""
+MODEL RUNNER PY
+
+See __main__ section for usage
+
+The main entry point from Swift/T is
+run_wrapper() , which calls run_model()
+"""
 
 import importlib
 import json
@@ -16,7 +22,7 @@ from runner_utils import ModelResult
 
 logger = None
 # Use True for debugging, False for performance:
-logFlush = False
+logFlush = True
 
 print("MODEL RUNNER MODULE")
 sys.stdout.flush()
@@ -40,9 +46,9 @@ print("")
 
 
 def import_pkg(framework, model_name):
-    """The model_name is the short form of the Benchmark: e.g., "nt3" The
-    module_name is the name of the Python module:
-
+    """
+    The model_name is the short form of the Benchmark: e.g., "nt3"
+    The module_name is the name of the Python module:
     e.g., 'nt3_baseline_keras2'
     """
     log("model_name:  " + model_name)
@@ -82,15 +88,16 @@ def debug(msg):
     if logFlush:
         sys.stdout.flush()
 
+
 def fatal(msg):
     global logger
-    logger.fatal("ABORT: " + msg)
+    logger.fatal("FATAL: " + msg)
     sys.stdout.flush()
     exit(1)
 
+
 def timestamp():
     from datetime import datetime
-
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
@@ -149,13 +156,13 @@ def stop_perf(Ps):
 
 
 def run_model(hyper_parameter_map, model_return):
-    """This run level does timing, handles model parameters, and dispatches to
-    the user model."""
+    """
+    This run level does timing, handles model parameters,
+    and dispatches to the user model.
+    """
     start = time.time()
-    global logger
-    logger = get_logger(logger, "MODEL RUNNER")
 
-    logger.debug("run(): START:")
+    debug("run_model(): START:")
 
     framework = hyper_parameter_map["framework"]
     log("framework:   " + str(framework))
@@ -167,20 +174,20 @@ def run_model(hyper_parameter_map, model_return):
     params_arg = {}
     if "CANDLE_DEFAULT_MODEL_FILE" in os.environ:
         config_file = os.getenv("CANDLE_DEFAULT_MODEL_FILE")
-        logger.info('CANDLE_DEFAULT_MODEL_FILE: "%s"' % config_file)
+        log('CANDLE_DEFAULT_MODEL_FILE: "%s"' % config_file)
         params_arg = {"default_model": config_file}
     if "config_file" in hyper_parameter_map:
         config_file = hyper_parameter_map["config_file"]
-        logger.info('specified config_file: "%s"' % config_file)
+        log('specified config_file: "%s"' % config_file)
         params_arg = {"default_model": config_file}
 
     # params is a Python dictionary
     params = setup_params(pkg, hyper_parameter_map, params_arg)
+    log_params(params)
 
     Ps = setup_perf(params)
 
-    # check for epochs if not present set to 1,
-    # used for checking early stopping in function get_results
+    # Used for checking early stopping in get_results():
     if "epochs" in hyper_parameter_map:
         epochs = hyper_parameter_map["epochs"]
     else:
@@ -203,7 +210,7 @@ def run_model(hyper_parameter_map, model_return):
         # Handle exceptions in user model codes here.
         # Somewhat redundant due to possible errors/misconfigurations,
         #          this message must get to the user!
-        logger.info("RUN EXCEPTION: " + str(e))
+        log("RUN EXCEPTION: " + str(e))
         print("RUN EXCEPTION: " + str(e))
         info = sys.exc_info()
         s = traceback.format_tb(info[2])
@@ -219,8 +226,8 @@ def run_model(hyper_parameter_map, model_return):
     duration = finish - start
 
     #  print the run_id and duration
-    logger.info("DONE: run_id %s in %0.2f seconds." %
-                (hyper_parameter_map["run_id"], duration))
+    log("DONE: run_id %s in %0.2f seconds." %
+        (hyper_parameter_map["run_id"], duration))
     log("PKG RUN STOP")
     sys.stdout.flush()
 
@@ -228,8 +235,13 @@ def run_model(hyper_parameter_map, model_return):
 
 
 def run_tensorflow(params, pkg, epochs, model_return):
+    log("run_tensorflow(): ...")
+    print_envs()
+    
+    log("run_tensorflow(): pkg.run() ...")
     # Run the model!
     history = pkg.run(params)
+    log("run_tensorflow(): pkg.run() done.")
 
     runner_utils.keras_clear_session("keras")
 
@@ -261,6 +273,19 @@ def run_pytorch(params, pkg, epochs, model_return):
     return (result, history_result)
 
 
+def print_envs():
+
+    envs = [ "ADLB_RANK_OFFSET",
+             "ZE_AFFINITY_MASK",
+             "ITEX_LIMIT_MEMORY_SIZE_IN_MB",
+             "ITEX_ENABLE_NEXTPLUGGABLE_DEVICE",
+             "TF_ENABLE_LAYOUT_OPT",
+             "TF_NUM_INTEROP_THREADS"
+            ]
+    for v in envs:
+        print("%s=%s" % (v, str(os.getenv(v))))
+
+
 def get_model_return():
     model_return = os.getenv("MODEL_RETURN")
     valid_model_returns = ["loss", "val_loss", "val_corr", "val_acc"]
@@ -276,7 +301,7 @@ def load_pre_post(hyper_parameter_map, key):
     module = None
     if key in hyper_parameter_map:
         module_name = hyper_parameter_map[key]
-        logger.debug("LOAD_PRE_POST: '%s'" % module_name)
+        debug("LOAD_PRE_POST: '%s'" % module_name)
         module = importlib.import_module(module_name)
     return module
 
@@ -285,37 +310,41 @@ def run_pre(hyper_parameter_map):
     module = load_pre_post(hyper_parameter_map, "pre_module")
     result = ModelResult.SUCCESS
     if module is not None:
-        logger.debug("PRE RUN START")
+        debug("PRE RUN START")
         result = module.pre_run(hyper_parameter_map)
-        logger.debug("PRE RUN STOP")
+        debug("PRE RUN STOP")
     return result
 
 
 def run_post(hyper_parameter_map, output_map):
     module = load_pre_post(hyper_parameter_map, "post_module")
     if module is not None:
-        logger.debug("POST RUN START")
+        debug("POST RUN START")
         module.post_run(hyper_parameter_map, output_map)
-        logger.debug("POST RUN STOP")
+        debug("POST RUN STOP")
 
 
 def run_wrapper(hyper_parameter_map):
-    """This run level writes to the run directory before and after the run,
-    invokes the pre/post methods, and invokes run_model()"""
+    """
+    This run level writes to the run directory before and after the run,
+    invokes the pre/post methods, and invokes run_model()
+    """
+
     # In-memory Python runs may not create sys.argv
     if "argv" not in dir(sys):
         # This is needed for CANDLE Benchmarks finalize_parameters():
         sys.argv = ["null"]
+
+    # Find our instance directory:
     instance_directory = hyper_parameter_map["instance_directory"]
     os.chdir(instance_directory)
+
     global logger
     logger = get_logger(logger, "MODEL RUNNER")
-    model_return = get_model_return()
-    # logger.info("run_model: node: " + hyper_parameter_map['node'])
-    directory = hyper_parameter_map["instance_directory"]
-    os.chdir(directory)
+    debug("run_wrapper() ...")
+
     if os.path.exists("stop.marker"):
-        logger.info("stop.marker exists!")
+        log("stop.marker exists!")
         return ("SKIP", "STOP_MARKER")
 
     result = run_pre(hyper_parameter_map)
@@ -334,22 +363,24 @@ def run_wrapper(hyper_parameter_map):
     else:
         assert result == ModelResult.SUCCESS  # proceed...
 
-    directory = hyper_parameter_map["instance_directory"]
-    os.chdir(directory)  # should be output_dir
+    # chdir again in case user module changed directory
+    os.chdir(instance_directory)  # should be output_dir
 
-    with open(directory + "/rank.txt", "w") as fp:
+    with open(instance_directory + "/rank.txt", "w") as fp:
         fp.write(str(os.getenv("ADLB_RANK_SELF")) + "\n")
 
+    model_return = get_model_return()
     result, history = run_model(hyper_parameter_map, model_return)
 
-    runner_utils.write_output(result, directory)
+    runner_utils.write_output(result, instance_directory)
     runner_utils.write_output(
-        json.dumps(history, cls=runner_utils.FromNPEncoder), directory,
+        json.dumps(history, cls=runner_utils.FromNPEncoder),
+        instance_directory,
         "history.txt")
 
     run_post(hyper_parameter_map, {})
 
-    logger.info("RUN STOP")
+    log("RUN STOP")
     log("")
     log("")
     sys.stdout.flush()
@@ -361,7 +392,7 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
     params = pkg.initialize_parameters(**params_arg)
     # If model developer forgets to 'return params', we get None:
     assert (params is not None)
-    logger.debug("PARAM UPDATE START")
+    debug("PARAM UPDATE START")
     for k, v in hyper_parameter_map.items():
         if k == "dense" or k == "dense_feature_layers":
             if type(v) != list:
@@ -371,19 +402,25 @@ def setup_params(pkg, hyper_parameter_map, params_arg):
             cp_str = v
             v = list()
             v.append(cp_str)
-        logger.debug(str(k) + " = " + str(v))
+        debug(str(k) + " = " + str(v))
         params[k] = v
-    logger.debug("PARAM UPDATE STOP")
+    debug("PARAM UPDATE STOP")
 
     if ("CANDLE_MODEL_IMPL" in environ and
             environ["CANDLE_MODEL_IMPL"] == "py"):
         environ["CUDA_VISIBLE_DEVICES"] = environ["ADLB_RANK_OFFSET"]
         print("CVD: " + str(os.getenv("CUDA_VISIBLE_DEVICES")))
 
-    logger.debug("WRITE_PARAMS START")
+    debug("WRITE_PARAMS START")
     runner_utils.write_params(params, hyper_parameter_map)
-    logger.debug("WRITE_PARAMS STOP")
+    debug("WRITE_PARAMS STOP")
     return params
+
+
+def log_params(hyper_parameter_map):
+    global logger
+    for k, v in hyper_parameter_map.items():
+        logger.info("PARAM: %-20s %s" % (k, str(v)))
 
 
 def get_results(history, model_return, epochs_expected):
@@ -395,7 +432,9 @@ def get_results(history, model_return, epochs_expected):
     history: The TensorFlow history
     """
 
-    logger.debug('get_results(): "%s"' % model_return)
+    log("get_result(): history: " + str(history))
+
+    debug("get_results(): '%s'" % model_return)
 
     known_params = ["loss", "val_loss"]
 
@@ -423,7 +462,7 @@ def get_results(history, model_return, epochs_expected):
         logger.warning("get_results(): returning NaN")
         result = math.nan
 
-    logger.info("RESULT: " + model_return + ": " + str(result))
+    log("RESULT: " + model_return + ": " + str(result))
     print("IMPROVE_RESULT " + str(result))
     history_result = history.history.copy()
     return result, history_result
@@ -432,7 +471,7 @@ def get_results(history, model_return, epochs_expected):
 # Usage: see how sys.argv is unpacked below:
 if __name__ == "__main__":
     logger = get_logger(logger, "MODEL_RUNNER")
-    logger.info("main: RUN START")
+    log("main: RUN START")
 
     (
         _,  # The Python program name (unused)
