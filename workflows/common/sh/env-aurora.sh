@@ -7,8 +7,9 @@ CANDLE_MODEL_IMPL=py
 # CANDLE_MODEL_IMPL=container
 
 SFW=/lus/flare/projects/candle_aesp_CNDA/sfw
-SWIFT=$SFW/aurora/swift-t/2025-06-03
-PY=$SFW/TF-2025-05-23
+# SWIFT=$SFW/aurora/swift-t/2025-06-12-hed
+SWIFT=$SFW/aurora/swift-t/2025-06-03-tmp
+# PY=$SFW/TF-2025-05-23
 
 if ! [[ -d $SWIFT ]]
 then
