@@ -86,19 +86,17 @@ export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 if [[ ${UPF_DFLTS:-} != "" ]]
 then
   UPF_DFLTS_FLAG=" -d=$UPF_DFLTS"
-  cp $UPF_DFLTS $TURBINE_OUTPUT
+  cp -v $UPF_DFLTS $TURBINE_OUTPUT
 fi
 
 if [[ ${RESTART:-} != "" ]]
 then
   RESTART_FROM=$TURBINE_OUTPUT/../$RESTART
   RESTART_FROM=$( realpath $RESTART_FROM )
-  if [[ ! -d $RESTART_FROM ]]
-  then
-    abort "workflow.sh: restart does not exist: $RESTART_FROM"
-  fi
+  assert-exists -d $RESTART_FROM
 
   log "restarting from: $RESTART_FROM"
+  echo $RESTART_FROM > $TURBINE_OUTPUT/restart.txt
   for DIR in markers run
   do
     if [[ -d $RESTART_FROM/$DIR ]]
