@@ -6,7 +6,7 @@
 abort()
 # Shut it down
 {
-  echo "abort:" ${*}
+  log "abort:" ${*}
   exit 1
 }
 
@@ -51,7 +51,7 @@ assert()
   then
     return
   fi
-  abort $MSG
+  abort "assert:" $MSG
 }
 
 show()
@@ -60,6 +60,19 @@ show()
   for v in $*
   do
     eval "echo $v=\${$v:-}"
+  done
+}
+
+assert-set()
+# Test that given variables are set by the user
+{
+  for v in $*
+  do
+    # Try to run noop command ":" with user variable argument:
+    if [[ ${!v:-} == "" ]]
+    then
+      abort "set variable '$v' !"
+    fi
   done
 }
 
@@ -237,7 +250,7 @@ get_expid()
   else
     TURBINE_OUTPUT=$EXPERIMENTS/$EXPID
   fi
-  mkdir -pv $TURBINE_OUTPUT
+  mkdir -p $TURBINE_OUTPUT
   TO=$( readlink --canonicalize $TURBINE_OUTPUT )
   if [[ $TO == "" ]]
   then
@@ -245,6 +258,7 @@ get_expid()
     exit 1
   fi
   export TURBINE_OUTPUT=$TO
+  log "get_expid(): EXP=$TURBINE_OUTPUT"
 }
 
 next()
@@ -371,7 +385,7 @@ source_site()
   fi
 
   local FILE=$REPLY
-  log "source_site(): sourcing $FILE"
+  log "source_site: $FILE"
   source $FILE
 }
 
@@ -417,7 +431,7 @@ source_cfg()
   fi
 
   local FILE=$REPLY
-  debug $VERBOSE "source_cfg(): sourcing file: $FILE"
+  debug $VERBOSE "source_cfg:  $FILE"
   source $FILE
   # REPLY may be modified by source FILE; set it again here:
   REPLY=$FILE
@@ -944,14 +958,25 @@ shopt -s expand_aliases
 alias SIGNATURE='signature $0'
 
 assert-exists()
+# Test for file/directory existence
+# Intersperse file names with -v for verbose, +v for silent (default)
+# or test flags -e/-f/-d etc. (default -e)
 {
   local MODE="-e" t
+  local VERBOSE=0
   for t in ${*}
   do
-    if [[ $t == -* ]]
+    case $t in
+      -v) VERBOSE=1
+          continue ;;
+      +v) VERBOSE=0
+          continue ;;
+      -*) MODE=${t}
+          continue ;;
+    esac
+    if (( VERBOSE ))
     then
-      MODE=${t}
-      continue
+      echo test $MODE $t
     fi
     if ! test $MODE $t
     then
