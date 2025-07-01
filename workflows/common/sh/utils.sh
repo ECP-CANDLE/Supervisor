@@ -68,7 +68,6 @@ assert-set()
 {
   for v in $*
   do
-    # Try to run noop command ":" with user variable argument:
     if [[ ${!v:-} == "" ]]
     then
       abort "set variable '$v' !"
