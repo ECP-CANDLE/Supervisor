@@ -10,6 +10,7 @@ SFW=/lus/flare/projects/candle_aesp_CNDA/sfw
 # SWIFT=$SFW/aurora/swift-t/2025-06-12-hed
 SWIFT=$SFW/aurora/swift-t/2025-06-03-tmp
 # PY=$SFW/TF-2025-05-23
+PY=/tmp/TF
 
 if ! [[ -d $SWIFT ]]
 then
@@ -31,7 +32,3 @@ PATH=$SWIFT/turbine/bin:$PATH
 PATH=$PY/bin:$PATH
 
 module load oneapi
-
-# PATH=$PY/bin:$PATH
-
-# module load PrgEnv-gnu

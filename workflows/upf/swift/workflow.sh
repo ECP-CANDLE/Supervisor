@@ -68,13 +68,8 @@ source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 LOG_NAME="workflow.sh"
 log_path PYTHONPATH
 
+# Set the scheduler job name:
 export TURBINE_JOBNAME="${EXPID}"
-
-OBJ_PARAM_ARG=""
-if [[ ${OBJ_PARAM:-} != "" ]]
-then
-  OBJ_PARAM_ARG="--obj_param=$OBJ_PARAM"
-fi
 
 # Miscellaneous defaults:
 export MODEL_SH=${MODEL_SH:-$WORKFLOWS_ROOT/common/sh/model.sh}
@@ -124,20 +119,14 @@ then
   cp $CFG_SYS $TURBINE_OUTPUT
 fi
 
-# Make run directory in advance to reduce contention
-mkdir -pv $TURBINE_OUTPUT/run
-
-cp -v $UPF $TURBINE_OUTPUT
+cp $UPF $TURBINE_OUTPUT
 
 TURBINE_STDOUT="$TURBINE_OUTPUT/out/out-@r.txt"
-mkdir -pv $TURBINE_OUTPUT/out
+# Make run directories in advance to reduce contention
+mkdir -p $TURBINE_OUTPUT/{run,out}
 
-if [[ ${CANDLE_DATA_DIR:-} == "" ]]
-then
-  abort "upf/workflow.sh: Set CANDLE_DATA_DIR!"
-fi
-
-export CANDLE_IMAGE=${CANDLE_IMAGE:-}
+export CANDLE_IMAGE=${CANDLE_IMAGE:-} CANDLE_DATA_DIR=${CANDLE_DATA_DIR:-}
+assert ${#CANDLE_DATA_DIR} "set CANDLE_DATA_DIR!"
 
 ENVS=(
   -e BENCHMARKS_ROOT
@@ -169,7 +158,7 @@ ENVS=(
   #        -e PATH=$PATH
 )
 
-which swift-t
+# which swift-t
 
 swift-t -u -n $PROCS \
         -o $THIS/workflow.tic \

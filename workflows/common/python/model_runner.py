@@ -72,6 +72,7 @@ def import_pkg(framework, model_name):
         pkg = importlib.import_module(module_name)
     except ModuleNotFoundError as e:
         fatal(str(e))
+    debug("module_name: " + module_name + " imported.")
     return pkg
 
 
