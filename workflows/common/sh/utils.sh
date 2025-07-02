@@ -758,15 +758,15 @@ check_output()
 }
 
 trace()
-# usage: trace VERBOSITY msg...
+# usage: trace V msg...
 {
-  log_if 2 $*
+  log_if 2 "$@"
 }
 
 debug()
-# usage: debug VERBOSITY msg...
+# usage: debug V msg...
 {
-  log_if 1 $*
+  log_if 1 "$@"
 }
 
 log_if()
@@ -776,7 +776,7 @@ log_if()
 {
   if (( ${#} < 3 ))
   then
-    echo "log_if(): bad arguments: ${*}"
+    echo "log_if(): bad arguments (count=${#}): ${*}"
     exit 1
   fi
   local LIMIT=$1 V=$2
@@ -791,7 +791,7 @@ log_if()
   fi
   # Print it!
   shift 2
-  log $*
+  log "$@"
 }
 
 log()
@@ -803,7 +803,7 @@ log()
   then
     TOKEN="${LOG_NAME}:"
   fi
-  echo $( date "+%Y-%m-%d %H:%M:%S" ) $TOKEN $*
+  echo $( date "+%Y-%m-%d %H:%M:%S" ) $TOKEN "$*"
 }
 
 error()
