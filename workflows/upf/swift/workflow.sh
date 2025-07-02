@@ -66,7 +66,7 @@ source_site sched $SITE
 source $WORKFLOWS_ROOT/common/sh/set-pythonpath.sh
 
 LOG_NAME="workflow.sh"
-log_path PYTHONPATH
+# log_path PYTHONPATH
 
 # Set the scheduler job name:
 export TURBINE_JOBNAME="${EXPID}"
@@ -80,8 +80,8 @@ export CANDLE_MODEL_TYPE BENCHMARK_TIMEOUT BENCHMARKS_ROOT
 
 if [[ ${UPF_DFLTS:-} != "" ]]
 then
-  UPF_DFLTS_FLAG=" -d=$UPF_DFLTS"
-  cp -v $UPF_DFLTS $TURBINE_OUTPUT
+  UPF_DFLTS_FLAG=( -d=$UPF_DFLTS )
+  cp $UPF_DFLTS $TURBINE_OUTPUT
 fi
 
 if [[ ${RESTART:-} != "" ]]
