@@ -205,8 +205,8 @@ get_expid()
   fi
   : ${CANDLE_MODEL_TYPE:=BENCHMARKS}
 
-  log "get_expid(): CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
-  log "get_expid(): MODEL_NAME=$MODEL_NAME"
+  log "get_expid: CANDLE_MODEL_TYPE=$CANDLE_MODEL_TYPE"
+  log "get_expid: MODEL_NAME='$MODEL_NAME'"
 
   export EXPERIMENTS=""
 
@@ -257,7 +257,7 @@ get_expid()
     exit 1
   fi
   export TURBINE_OUTPUT=$TO
-  log "get_expid(): EXP=$TURBINE_OUTPUT"
+  log "get_expid: EXP=$TURBINE_OUTPUT"
 }
 
 next()
