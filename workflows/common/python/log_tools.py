@@ -21,6 +21,7 @@ def get_logger(logger, name, stream=sys.stdout, milliseconds=False):
     import logging
     
     logger = logging.getLogger(name)
+    # Adjust logging level here:
     logger.setLevel(logging.DEBUG)
     h = logging.StreamHandler(stream=stream)
     if not milliseconds:
