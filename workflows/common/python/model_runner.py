@@ -44,122 +44,117 @@ for i in range(0, len(sys.path) - 1):
     print("%2i: %s" % (i, sys.path[i]))
 print("")
 
+def main():
+    logger = get_logger(logger, "RUNNER")
+    log("main: RUN START")
 
-def import_pkg(framework, model_name):
-    """
-    The model_name is the short form of the Benchmark: e.g., "nt3"
-    The module_name is the name of the Python module:
-    e.g., 'nt3_baseline_keras2'
-    """
-    log("model_name:  " + model_name)
-    if framework == "keras":
-        framework = framework + "2"
-    elif framework == "pytorch":
-        import torch  # noqa: F401
-    else:
-        raise ValueError("Framework must either be 'keras' or 'pytorch' " +
-                         "got: '{}'".format(framework))
+    (
+        _,  # The Python program name (unused)
+        param_string,
+        instance_directory,
+        framework,
+        runid,
+        benchmark_timeout,
+    ) = sys.argv
 
-    module_name = os.getenv("MODEL_PYTHON_SCRIPT")
-    if module_name is None or module_name == "":
-        # Default to train_improve as of 2024-04-02
-        suffix = "_train_improve"
-        if os.getenv("CANDLE_NAMING") == "1":
-            suffix = "_baseline_" + framework
-        module_name = model_name + suffix
-    log("module_name: " + module_name)
     try:
-        pkg = importlib.import_module(module_name)
-    except ModuleNotFoundError as e:
-        fatal(str(e))
-    debug("module_name: " + module_name + " imported.")
-    return pkg
+        hyper_parameter_map = runner_utils.init(param_string,
+                                                instance_directory,
+                                                framework,
+                                                out_dir_key="save")
+    except json.decoder.JSONDecodeError as e:
+        print("Bad JSON: '%s'" % param_string)
+        raise(e)
+
+    hyper_parameter_map["model_name"] = os.getenv("MODEL_NAME")
+    if hyper_parameter_map["model_name"] is None:
+        raise Exception("No MODEL_NAME was in the environment!")
+    hyper_parameter_map["experiment_id"] = os.getenv("EXPID")
+    hyper_parameter_map["run_id"] = runid
+    hyper_parameter_map["timeout"] = float(benchmark_timeout)
+
+    # tensorflow.__init__ calls _os.path.basename(_sys.argv[0])
+    # so we need to create a synthetic argv.
+    # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
+    # sys.argv  = ['nt3_tc1']
+    sys.argv = ["null"]
+    run_wrapper(hyper_parameter_map)
 
 
-def log(msg):
-    global logger, logFlush
-    logger.info(msg)
-    if logFlush:
-        sys.stdout.flush()
+def run_wrapper(hyper_parameter_map):
+    """
+    This is the interface from Swift/T (model_py.swift)
+    This run level:
+    writes to the run directory before and after the run
+           (rank.txt, history.txt),
+    invokes the user pre/post methods,
+    invokes run_model()
+    """
 
+    # In-memory Python runs may not create sys.argv
+    if "argv" not in dir(sys):
+        # This is needed for CANDLE Benchmarks finalize_parameters():
+        sys.argv = ["null"]
 
-def debug(msg):
-    global logger, logFlush
-    logger.debug(msg)
-    if logFlush:
-        sys.stdout.flush()
+    # Find our instance directory:
+    instance_directory = hyper_parameter_map["instance_directory"]
+    os.chdir(instance_directory)
 
-
-def fatal(msg):
     global logger
-    logger.fatal("FATAL: " + msg)
+    logger = get_logger(logger, "RUNNER")
+    debug("run_wrapper() ...")
+
+    if os.path.exists("stop.marker"):
+        log("stop.marker exists!")
+        return ("SKIP", "STOP_MARKER")
+
+    result = run_pre(hyper_parameter_map)
+
+    if result == ModelResult.ERROR:
+        logger.error("model_runner: run_pre() returned ERROR ...")
+        logger.error("model_runner: EXIT CODE=1")
+        sys.stdout.flush()
+        # Allow time for other failures to finish writing:
+        time.sleep(60)
+        exit(1)
+    elif result == ModelResult.SKIP:
+        logger.info("model_runner: run_pre() returned SKIP ...")
+        logger.info("model_runner: returning SKIP.")
+        return ("SKIP", "HISTORY_EMPTY")
+    else:
+        assert result == ModelResult.SUCCESS  # proceed...
+
+    # chdir again in case user module changed directory
+    os.chdir(instance_directory)  # should be output_dir
+
+    with open(instance_directory + "/rank.txt", "w") as fp:
+        fp.write(str(os.getenv("ADLB_RANK_SELF")) + "\n")
+
+    model_return = get_model_return()
+    result, history = run_model(hyper_parameter_map, model_return)
+
+    runner_utils.write_output(result, instance_directory)
+    runner_utils.write_output(
+        json.dumps(history, cls=runner_utils.FromNPEncoder),
+        instance_directory,
+        "history.txt")
+
+    run_post(hyper_parameter_map, {})
+
+    log("RUN STOP")
+    log("")
+    log("")
     sys.stdout.flush()
-    exit(1)
 
-
-def timestamp():
-    from datetime import datetime
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-def setup_perf(params):
-    return {"top": setup_perf_top(params), "nvidia": setup_perf_nvidia(params)}
-
-
-def setup_perf_top(params):
-    if "perf_top" not in params:
-        return None
-    if params["perf_top"] == "0":
-        return None
-    try:
-        delay = int(params["perf_top"])
-    except Exception:
-        msg = ('setup_perf_top(): params[perf_top] not an int: got: "%s"' %
-               params["perf_top"])
-        print(msg)
-        raise Exception(msg)
-    import subprocess
-
-    with open("perf-top.log", "a") as fp_out:
-        fp_out.write("model_runner: start: %s\n\n" % timestamp())
-        P = subprocess.Popen(["top", "-b", "-d", delay],
-                             stdout=fp_out,
-                             stderr=subprocess.STDOUT)
-    return P
-
-
-def setup_perf_nvidia(params):
-    if "perf_nvidia" not in params:
-        return None
-    if params["perf_nvidia"] == "0":
-        return None
-    try:
-        delay = int(params["perf_nvidia"])
-    except Exception:
-        msg = ("setup_perf_nvidia(): params[perf_nvidia] not an int: " +
-               'got: "%s"' % params["perf_nvidia"])
-        print(msg)
-        raise Exception(msg)
-    import subprocess
-
-    with open("perf-nvidia.log", "a") as fp_out:
-        fp_out.write("model_runner: start: %s\n\n" % timestamp())
-        P = subprocess.Popen(["nvidia-smi", "--loop=%i" % delay],
-                             stdout=fp_out,
-                             stderr=subprocess.STDOUT)
-    return P
-
-
-def stop_perf(Ps):
-    for s in ["top", "nvidia"]:
-        if Ps[s] is not None:
-            Ps[s].terminate()
+    return (result, history)
 
 
 def run_model(hyper_parameter_map, model_return):
     """
-    This run level does timing, handles model parameters,
-    and dispatches to the user model.
+    This run level:
+    does timing,
+    handles model parameters, and
+    dispatches to the user model
     """
     start = time.time()
 
@@ -235,10 +230,132 @@ def run_model(hyper_parameter_map, model_return):
     return (result, history_result)
 
 
+def setup_params(pkg, hyper_parameter_map, params_arg):
+    params = pkg.initialize_parameters(**params_arg)
+    # If model developer forgets to 'return params', we get None:
+    assert (params is not None)
+    debug("PARAM UPDATE START")
+    for k, v in hyper_parameter_map.items():
+        if k == "dense" or k == "dense_feature_layers":
+            if type(v) != list:
+                v = v.split(" ")
+            v = [int(i) for i in v]
+        if k == "cell_features":
+            cp_str = v
+            v = list()
+            v.append(cp_str)
+        debug(str(k) + " = " + str(v))
+        params[k] = v
+    debug("PARAM UPDATE STOP")
+
+    if ("CANDLE_MODEL_IMPL" in environ and
+            environ["CANDLE_MODEL_IMPL"] == "py"):
+        environ["CUDA_VISIBLE_DEVICES"] = environ["ADLB_RANK_OFFSET"]
+        print("CVD: " + str(os.getenv("CUDA_VISIBLE_DEVICES")))
+
+    debug("WRITE_PARAMS START")
+    runner_utils.write_params(params, hyper_parameter_map)
+    debug("WRITE_PARAMS STOP")
+    return params
+
+
+def log_params(hyper_parameter_map):
+    global logger
+    for k, v in hyper_parameter_map.items():
+        log("PARAM: %-20s %s" % (k, str(v)))
+
+
+def import_pkg(framework, model_name):
+    """
+    The model_name is the short form of the Benchmark: e.g., "nt3"
+    The module_name is the name of the Python module:
+    e.g., 'nt3_baseline_keras2'
+    """
+    log("model_name:  " + model_name)
+    if framework == "keras":
+        framework = framework + "2"
+    elif framework == "pytorch":
+        import torch  # noqa: F401
+    else:
+        raise ValueError("Framework must either be 'keras' or 'pytorch' " +
+                         "got: '{}'".format(framework))
+
+    module_name = os.getenv("MODEL_PYTHON_SCRIPT")
+    if module_name is None or module_name == "":
+        # Default to train_improve as of 2024-04-02
+        suffix = "_train_improve"
+        if os.getenv("CANDLE_NAMING") == "1":
+            suffix = "_baseline_" + framework
+        module_name = model_name + suffix
+    log("module_name: " + module_name)
+    try:
+        pkg = importlib.import_module(module_name)
+    except ModuleNotFoundError as e:
+        fatal(str(e))
+    debug("module_name: " + module_name + " imported.")
+    return pkg
+
+
+def setup_perf(params):
+    return {"top":    setup_perf_top(params),
+            "nvidia": setup_perf_nvidia(params)}
+
+
+def stop_perf(Ps):
+    for s in ["top", "nvidia"]:
+        if Ps[s] is not None:
+            Ps[s].terminate()
+
+
+def setup_perf_top(params):
+    if "perf_top" not in params:
+        return None
+    if params["perf_top"] == "0":
+        return None
+    try:
+        delay = int(params["perf_top"])
+    except Exception:
+        msg = ('setup_perf_top(): params[perf_top] not an int: got: "%s"' %
+               params["perf_top"])
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+
+    with open("perf-top.log", "a") as fp_out:
+        fp_out.write("model_runner: start: %s\n\n" % timestamp())
+        P = subprocess.Popen(["top", "-b", "-d", delay],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
+
+def setup_perf_nvidia(params):
+    if "perf_nvidia" not in params:
+        return None
+    if params["perf_nvidia"] == "0":
+        return None
+    try:
+        delay = int(params["perf_nvidia"])
+    except Exception:
+        msg = ("setup_perf_nvidia(): params[perf_nvidia] not an int: " +
+               'got: "%s"' % params["perf_nvidia"])
+        print(msg)
+        raise Exception(msg)
+    import subprocess
+
+    with open("perf-nvidia.log", "a") as fp_out:
+        fp_out.write("model_runner: start: %s\n\n" % timestamp())
+        P = subprocess.Popen(["nvidia-smi", "--loop=%i" % delay],
+                             stdout=fp_out,
+                             stderr=subprocess.STDOUT)
+    return P
+
+
 def run_tensorflow(params, pkg, epochs, model_return):
+    """ Run a TensorFlow model """
     log("run_tensorflow(): ...")
     print_tf_envs()
-    
+
     log("run_tensorflow(): pkg.run() ...")
     # Run the model!
     history = pkg.run(params)
@@ -260,8 +377,27 @@ def run_tensorflow(params, pkg, epochs, model_return):
     return (result, history_result)
 
 
+def print_tf_envs():
+
+    envs = [ "ADLB_RANK_OFFSET",
+             "ZE_AFFINITY_MASK",
+             "ITEX_LIMIT_MEMORY_SIZE_IN_MB",
+             "ITEX_ENABLE_NEXTPLUGGABLE_DEVICE",
+             "ITEX_AUTO_MIXED_PRECISION_DATA_TYPE",
+             "ITEX_AUTO_MIXED_PRECISION",
+             "TF_ENABLE_LAYOUT_OPT",
+             "TF_NUM_INTEROP_THREADS"
+            ]
+
+    print("print_tf_envs() START")
+    for v in envs:
+        print("ITEX: %s=%s" % (v, str(os.getenv(v))))
+    print("print_tf_envs() STOP")
+
+
 def run_pytorch(params, pkg, epochs, model_return):
-    # Run the model!
+    """ Run a PyTorch model """
+
     val_scores = pkg.run(params)
 
     class history:
@@ -272,22 +408,6 @@ def run_pytorch(params, pkg, epochs, model_return):
     history = history(val_scores)
     result, history_result = get_results(history, model_return, epochs)
     return (result, history_result)
-
-
-def print_tf_envs():
-
-    envs = [ "ADLB_RANK_OFFSET",
-             "ZE_AFFINITY_MASK",
-             "ITEX_LIMIT_MEMORY_SIZE_IN_MB",
-             "ITEX_ENABLE_NEXTPLUGGABLE_DEVICE",
-             "TF_ENABLE_LAYOUT_OPT",
-             "TF_NUM_INTEROP_THREADS"
-            ]
-
-    print("print_tf_envs() START")
-    for v in envs:
-        print("%s=%s" % (v, str(os.getenv(v))))
-    print("print_tf_envs() STOP")
 
 
 def get_model_return():
@@ -328,115 +448,17 @@ def run_post(hyper_parameter_map, output_map):
         debug("POST RUN STOP")
 
 
-def run_wrapper(hyper_parameter_map):
-    """
-    This run level writes to the run directory before and after the run,
-    invokes the pre/post methods, and invokes run_model()
-    """
-
-    # In-memory Python runs may not create sys.argv
-    if "argv" not in dir(sys):
-        # This is needed for CANDLE Benchmarks finalize_parameters():
-        sys.argv = ["null"]
-
-    # Find our instance directory:
-    instance_directory = hyper_parameter_map["instance_directory"]
-    os.chdir(instance_directory)
-
-    global logger
-    logger = get_logger(logger, "RUNNER")
-    debug("run_wrapper() ...")
-
-    if os.path.exists("stop.marker"):
-        log("stop.marker exists!")
-        return ("SKIP", "STOP_MARKER")
-
-    result = run_pre(hyper_parameter_map)
-
-    if result == ModelResult.ERROR:
-        logger.error("model_runner: run_pre() returned ERROR ...")
-        logger.error("model_runner: EXIT CODE=1")
-        sys.stdout.flush()
-        # Allow time for other failures to finish writing:
-        time.sleep(60)
-        exit(1)
-    elif result == ModelResult.SKIP:
-        logger.info("model_runner: run_pre() returned SKIP ...")
-        logger.info("model_runner: returning SKIP.")
-        return ("SKIP", "HISTORY_EMPTY")
-    else:
-        assert result == ModelResult.SUCCESS  # proceed...
-
-    # chdir again in case user module changed directory
-    os.chdir(instance_directory)  # should be output_dir
-
-    with open(instance_directory + "/rank.txt", "w") as fp:
-        fp.write(str(os.getenv("ADLB_RANK_SELF")) + "\n")
-
-    model_return = get_model_return()
-    result, history = run_model(hyper_parameter_map, model_return)
-
-    runner_utils.write_output(result, instance_directory)
-    runner_utils.write_output(
-        json.dumps(history, cls=runner_utils.FromNPEncoder),
-        instance_directory,
-        "history.txt")
-
-    run_post(hyper_parameter_map, {})
-
-    log("RUN STOP")
-    log("")
-    log("")
-    sys.stdout.flush()
-
-    return (result, history)
-
-
-def setup_params(pkg, hyper_parameter_map, params_arg):
-    params = pkg.initialize_parameters(**params_arg)
-    # If model developer forgets to 'return params', we get None:
-    assert (params is not None)
-    debug("PARAM UPDATE START")
-    for k, v in hyper_parameter_map.items():
-        if k == "dense" or k == "dense_feature_layers":
-            if type(v) != list:
-                v = v.split(" ")
-            v = [int(i) for i in v]
-        if k == "cell_features":
-            cp_str = v
-            v = list()
-            v.append(cp_str)
-        debug(str(k) + " = " + str(v))
-        params[k] = v
-    debug("PARAM UPDATE STOP")
-
-    if ("CANDLE_MODEL_IMPL" in environ and
-            environ["CANDLE_MODEL_IMPL"] == "py"):
-        environ["CUDA_VISIBLE_DEVICES"] = environ["ADLB_RANK_OFFSET"]
-        print("CVD: " + str(os.getenv("CUDA_VISIBLE_DEVICES")))
-
-    debug("WRITE_PARAMS START")
-    runner_utils.write_params(params, hyper_parameter_map)
-    debug("WRITE_PARAMS STOP")
-    return params
-
-
-def log_params(hyper_parameter_map):
-    global logger
-    for k, v in hyper_parameter_map.items():
-        logger.info("PARAM: %-20s %s" % (k, str(v)))
-
-
 def get_results(history, model_return, epochs_expected):
-    """Return the history entry that the user requested via MODEL_RETURN, which
-    may be math.nan in case of error.
+    """
+    Return the history entry that the user requested
+    via MODEL_RETURN, which may be math.nan in case of error.
 
     Also checks for early stopping and if so marks the directory
          with a 0-byte file named "stop.marker"
     history: The TensorFlow history
     """
 
-    log("get_result(): history: " + str(history))
+    log("get_result(): history: " + str(history.history))
 
     debug("get_results(): '%s'" % model_return)
 
@@ -453,7 +475,7 @@ def get_results(history, model_return, epochs_expected):
         values = history.history[model_return]
         if len(values) < epochs_expected:
             msg = "early stopping: %i/%i" % (len(values), epochs_expected)
-            logger.info("get_results(): " + msg)
+            log("get_results(): " + msg)
             with open("stop.marker", "w") as fp:
                 fp.write(msg + "\n")
         print("VALUES: ", values, values[-1], type(values[-1]))
@@ -472,39 +494,31 @@ def get_results(history, model_return, epochs_expected):
     return result, history_result
 
 
-# Usage: see how sys.argv is unpacked below:
-if __name__ == "__main__":
-    logger = get_logger(logger, "MODEL_RUNNER")
-    log("main: RUN START")
+def timestamp():
+    from datetime import datetime
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    (
-        _,  # The Python program name (unused)
-        param_string,
-        instance_directory,
-        framework,
-        runid,
-        benchmark_timeout,
-    ) = sys.argv
 
-    try:
-        hyper_parameter_map = runner_utils.init(param_string,
-                                                instance_directory,
-                                                framework,
-                                                out_dir_key="save")
-    except json.decoder.JSONDecodeError as e:
-        print("Bad JSON: '%s'" % param_string)
-        raise(e)
+def log(msg):
+    global logger, logFlush
+    logger.info(msg)
+    if logFlush:
+        sys.stdout.flush()
 
-    hyper_parameter_map["model_name"] = os.getenv("MODEL_NAME")
-    if hyper_parameter_map["model_name"] is None:
-        raise Exception("No MODEL_NAME was in the environment!")
-    hyper_parameter_map["experiment_id"] = os.getenv("EXPID")
-    hyper_parameter_map["run_id"] = runid
-    hyper_parameter_map["timeout"] = float(benchmark_timeout)
 
-    # tensorflow.__init__ calls _os.path.basename(_sys.argv[0])
-    # so we need to create a synthetic argv.
-    # if (not hasattr(sys, 'argv')) or (len(sys.argv) == 0):
-    # sys.argv  = ['nt3_tc1']
-    sys.argv = ["null"]
-    run_wrapper(hyper_parameter_map)
+def debug(msg):
+    global logger, logFlush
+    logger.debug(msg)
+    if logFlush:
+        sys.stdout.flush()
+
+
+def fatal(msg):
+    global logger
+    logger.fatal("FATAL: " + msg)
+    sys.stdout.flush()
+    exit(1)
+
+
+# Usage: see how sys.argv in main():
+if __name__ == "__main__": main()
