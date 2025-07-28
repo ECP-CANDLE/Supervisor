@@ -97,8 +97,11 @@ then
     if [[ -d $RESTART_FROM/$DIR ]]
     then
       LS=( $RESTART_FROM/$DIR/* )
-      log "restart: $DIR: ${#LS[@]}"
-      cp -r $RESTART_FROM/$DIR $TURBINE_OUTPUT
+      printf -v PREFIX "restart: %-9s " ${DIR}:
+      log    "$PREFIX" ${#LS[@]}
+      log -n "$PREFIX"
+      nice time --format="%E" \
+           cp -r $RESTART_FROM/$DIR $TURBINE_OUTPUT
     fi
   done
 fi
@@ -158,8 +161,9 @@ ENVS=(
   #        -e PATH=$PATH
 )
 
-# which swift-t
 
+log "running swift-t workflow.swift ..."
+# which swift-t
 swift-t -u -n $PROCS \
         -o $THIS/workflow.tic \
         ${MACHINE:-} \
@@ -168,3 +172,5 @@ swift-t -u -n $PROCS \
         -i model_$CANDLE_MODEL_IMPL \
         "${ENVS[@]}" \
         $EMEWS_PROJECT_ROOT/swift/workflow.swift ${CMD_LINE_ARGS[@]}
+
+log "OK"
