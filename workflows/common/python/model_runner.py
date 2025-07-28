@@ -105,7 +105,7 @@ def run_wrapper(hyper_parameter_map):
     debug("run_wrapper() ...")
 
     if os.path.exists("stop.marker"):
-        log("stop.marker exists!")
+        log("stop.marker exists in: " + os.getcwd())
         return ("SKIP", "STOP_MARKER")
 
     result = run_pre(hyper_parameter_map)
@@ -354,7 +354,7 @@ def setup_perf_nvidia(params):
 def run_tensorflow(params, pkg, epochs, model_return):
     """ Run a TensorFlow model """
     log("run_tensorflow(): ...")
-    print_tf_envs()
+    debug_tf_envs()
 
     log("run_tensorflow(): pkg.run() ...")
     # Run the model!
@@ -377,7 +377,13 @@ def run_tensorflow(params, pkg, epochs, model_return):
     return (result, history_result)
 
 
-def print_tf_envs():
+def debug_tf_envs():
+
+    import logging
+
+    global logger
+
+    if not logger.isEnabledFor(logging.DEBUG): return
 
     envs = [ "ADLB_RANK_OFFSET",
              "ZE_AFFINITY_MASK",
@@ -389,10 +395,10 @@ def print_tf_envs():
              "TF_NUM_INTEROP_THREADS"
             ]
 
-    print("print_tf_envs() START")
+    debug("print_tf_envs() START")
     for v in envs:
-        print("ITEX: %s=%s" % (v, str(os.getenv(v))))
-    print("print_tf_envs() STOP")
+        debug("ITEX: %s=%s" % (v, str(os.getenv(v))))
+    debug("print_tf_envs() STOP")
 
 
 def run_pytorch(params, pkg, epochs, model_return):
@@ -459,8 +465,7 @@ def get_results(history, model_return, epochs_expected):
     """
 
     log("get_result(): history: " + str(history.history))
-
-    debug("get_results(): '%s'" % model_return)
+    log("get_results(): model_return: '%s'" % model_return)
 
     known_params = ["loss", "val_loss"]
 
@@ -478,7 +483,6 @@ def get_results(history, model_return, epochs_expected):
             log("get_results(): " + msg)
             with open("stop.marker", "w") as fp:
                 fp.write(msg + "\n")
-        print("VALUES: ", values, values[-1], type(values[-1]))
         # Default: the last value in the history
         result = float(values[-1])
     else:
