@@ -75,6 +75,32 @@ assert-set()
   done
 }
 
+tee-backup()
+# tee to file after backing it up
+{
+  if (( ${#} != 1 ))
+  then
+    echo "tee-backup(): provide FILE!"
+    return 1
+  fi
+  local FILE=$1
+  bak $FILE
+  tee $FILE
+}
+
+bak()
+{
+  if (( ${#} != 1 ))
+  then
+    echo "bak(): provide FILE!"
+    return 1
+  fi
+  if [[ -e $FILE ]]
+  then
+    mv -v --backup=numbered --no-target-directory $FILE $FILE.bak
+  fi
+}
+
 log_path()
 # Pretty print a colon-separated variable, one entry per line
 # Provide the name of the variable (no dollar sign)
@@ -181,6 +207,7 @@ get_expid()
 #          a new EXPID under the experiments directory,
 #        If EXP_SUFFIX is set in the environment, the resulting
 #          EXPID will have that suffix.
+#        Starts at 001 , so EXP000 is always invalid
 # MODEL_NAME: The short name of the model, e.g., "uno"
 # CANDLE_MODEL_TYPE: "BENCHMARKS" or "SINGULARITY"
 #        Defaults to "BENCHMARKS"
@@ -219,7 +246,7 @@ get_expid()
   fi
   EXPERIMENTS=$CANDLE_DATA_DIR/$MODEL_TOKEN/Output
 
-  local i=0 EXPS E TO
+  local i=1 EXPS E TO
 
   if [[ $EXPID == "-a" ]]
   then
@@ -797,13 +824,20 @@ log_if()
 log()
 # General-purpose log line
 # Set global LOG_LINE to insert a token
+# Provide -n for no-newline (like echo -n)
 {
-  local TOKEN=""
+  local N="" TOKEN=""
+  if [[ ${1:-} == "-n" ]]
+  then
+    N="-n"
+    shift
+  fi
+
   if [[ ${LOG_NAME:-} != "" ]]
   then
     TOKEN="${LOG_NAME}:"
   fi
-  echo $( date "+%Y-%m-%d %H:%M:%S" ) $TOKEN "$*"
+  echo $N $( date "+%Y-%m-%d %H:%M:%S" ) $TOKEN "$*"
 }
 
 error()
