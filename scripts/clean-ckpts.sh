@@ -1,16 +1,18 @@
-#!/bin/sh
+#!/bin/bash
+set -eu
 
 # CLEAN CKPTS SH
 
-# Clean up old checkpoints
+# Clean up old checkpoints in DIR
+# Retains at least KEEP checkpoints
 
 THIS=$( readlink --canonicalize $( dirname $0 ) )
 
 SUPERVISOR=$( readlink --canonicalize $THIS/../../.. )
 source $SUPERVISOR/workflows/common/sh/utils.sh
 
-SIGNATURE -H "Provide an experiment DIR (e.g., .../experiments/X042)!" \
-          DIR - ${*}
+SIGNATURE -H "Provide DIR (e.g., .../experiments/X042) and KEEP" \
+          DIR KEEP - ${*}
 
 if [[ ! -d $DIR ]]
 then
@@ -22,6 +24,6 @@ RUNS=( $( echo $DIR/run/* ) )
 
 for RUN in ${RUNS[@]}
 do
-  $THIS/clean-ckpts-run.sh $RUN
+  $THIS/clean-ckpts-run.sh $RUN $KEEP
   echo
 done
