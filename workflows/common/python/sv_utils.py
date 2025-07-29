@@ -16,13 +16,16 @@ def fail(*args):
 def fail1(message):
     """Fail with message, return exit code 1."""
     print(message)
+    sys.stdout.flush()
     exit(1)
 
 
 def fail3(e, code, message):
     """Fail with message due to Exception e , return exit code."""
     print(message)
+    sys.stdout.flush()
     print(str(e))
+    sys.stdout.flush()
     exit(code)
 
 
