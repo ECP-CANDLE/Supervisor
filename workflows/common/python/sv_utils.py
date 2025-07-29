@@ -1,6 +1,9 @@
-# UTILS PY
 
-import os
+"""
+SUPERVISOR UTILS PY
+"""
+
+import sys
 
 
 def fail(*args):
@@ -29,6 +32,7 @@ def avg(values):
 
 
 def append(filename, text):
+    import os
     try:
         with open(filename, "a") as fp:
             fp.write(text)
@@ -83,8 +87,10 @@ class Grepper:
 
 
 def columnPrint(D, aligns):
-    """D: a dict mapping a header string to a list of string data"""
-    """ aligns: a string "llrlr" for left or right alignment by column """
+    """
+    D: a dict mapping a header string to a list of string data
+    aligns: a string "llrlr" for left or right alignment by column
+    """
     headers = D.keys()
     assert len(aligns) == len(
         headers), "Length of aligns (%i) does not match headers (%i)!" % (
