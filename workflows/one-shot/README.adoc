@@ -9,18 +9,19 @@ This is currently only set up for Theta.
 +
 ----
 $ cd /WORK/DIR
-$ git clone git@github.com:ECP-CANDLE/Benchmarks.git
+$ git clone https://github.com/ECP-CANDLE/Benchmarks.git
 $ cd Benchmarks
 $ git checkout develop
 $ cd /WORK/DIR
-$ git clone git@github.com:ECP-CANDLE/Supervisor.git
+$ git clone https://github.com/ECP-CANDLE/Supervisor.git
 $ cd Supervisor
 $ git checkout develop
 ----
 * Get the data manually (prevent FTP transfer)
 +
 ----
-$ cp ~wozniak/Public/data/nt*.csv /WORK/DIR/Benchmarks/Data/Pilot1
+$ mkdir -p /WORK/DIR/Benchmarks/Data/Pilot1
+$ cp ~/../wozniak/Public/data/nt*.csv /WORK/DIR/Benchmarks/Data/Pilot1
 ----
 * Add the +swift-t+ from +env-theta.sh+ to your PATH, or use your own.
 * Edit the modules in +run-nt3.sh+ as necessary.
